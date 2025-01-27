@@ -1,0 +1,44 @@
+
+.scrollify-container {
+  height: 100vh; /* Full screen height */
+  overflow: hidden; /* Hide scrollbars */
+  position: relative;
+}
+
+.panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full screen height for each slide */
+  width: 100vw;
+  background-color: #000; /* Optional: Set a background color */
+}
+
+.panel img {
+width: 100vw;
+height: 100vh;
+object-fit: cover;
+}
+.swiper-pagination {
+  left: 20px; /* Position pagination on the left */
+  top: 40%; /* Center it vertically */
+  transform: translateY(-50%); /* Adjust position to center vertically */
+  text-align: left; /* Align text to the left */
+  z-index: 10; /* Ensure it is above other elements */
+}
+
+.circle-pagination {
+  display: inline-block;
+  width: 22px; /* Circle width */
+  height: 22px; /* Circle height */
+  margin: 0 4px; /* Space between circles */
+  border-radius: 50%; /* Make it circular */
+  background: #ffffff; /* Circle color */
+  opacity: 0.5; /* Default opacity */
+  transition: opacity 0.3s; /* Smooth transition */
+}
+
+.circle-pagination.swiper-pagination-bullet-active {
+  opacity: 1; /* Active circle opacity */
+  background: #ffffff; /* Active circle color */
+}
