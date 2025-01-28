@@ -49,7 +49,7 @@ export default function Footer16() {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/assets/images/logo-black-wine.png"
+                  src="/ksa/assets/images/logo-black-wine.png"
                   width={112}
                   height={28}
                   alt="Ahmed"

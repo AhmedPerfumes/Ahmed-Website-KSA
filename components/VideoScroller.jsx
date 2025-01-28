@@ -52,7 +52,7 @@ const VideoScrollPlayer = () => {
       <video ref={vidRef} id="v0" tabIndex="0" autoBuffer="autoBuffer" preload="preload">
         <source
           type="video/mp4; codecs='avc1.42E01E, mp4a.40.2'"
-          src="/assets/videos/ignite-rose-video.mp4"
+          src="/ksa/assets/videos/ignite-rose-video.mp4"
         />
       </video>
     </div>

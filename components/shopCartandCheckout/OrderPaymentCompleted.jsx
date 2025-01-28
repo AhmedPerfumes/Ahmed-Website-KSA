@@ -26,7 +26,7 @@ export default function OrderPaymentCompleted({ orderDetails }) {
       // console.log('...', new Date(current_date_time), new Date(elm.discount.start_date));
       // if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
         // console.log('if...');
-        return <td>{(((elm.price * 1.05) - ((elm.price * 1.05) / 100 * elm.discount_percent)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+        return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.discount_percent)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       // } else {
       //   console.log('else...');
       //   return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
@@ -35,9 +35,9 @@ export default function OrderPaymentCompleted({ orderDetails }) {
         console.log('else if');
         return <td>{((elm.price - (elm.price / 100 * elm.coupon.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
     } else if(elm?.sale_price) {
-        return <td>{(((elm.price * 1.05) - ((elm.price * 1.05) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+        return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
     } else {
-        return <td>{((elm.price * 1.05) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+        return <td>{((elm.price * 1.15) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
     }
   };
 
@@ -118,11 +118,11 @@ export default function OrderPaymentCompleted({ orderDetails }) {
               </tr>
               <tr>
                 <th>SHIPPING</th>
-                <td>{orderDetails.sub_total >= 400 ? 'You Got Free Shipping' : `Shipping Cost: ${ (orderDetails.shipping_amount * 1.05).toFixed(2) }${ currency.symbol }`}</td>
+                <td>{orderDetails.sub_total >= 300 ? 'You Got Free Shipping' : `Shipping Cost: ${ (orderDetails.shipping_amount * 1.15).toFixed(2) }${ currency.symbol }`}</td>
               </tr>
               <tr>
                 <th>SERVICE FEE</th>
-                <td>{ (orderDetails.service_amount * 1.05).toFixed(2) }{ currency.symbol }</td>
+                <td>{ (orderDetails.service_amount * 1.15).toFixed(2) }{ currency.symbol }</td>
               </tr>
               <tr>
                 <th>TOTAL</th>
@@ -132,14 +132,14 @@ export default function OrderPaymentCompleted({ orderDetails }) {
             </tbody>
           </table>
         </div>
-        <a href='/'
+        <a href='/ksa'
           className="btn btn-primary w-100 text-uppercase mb-3"
         >
           Continue Shopping
         </a>
-      </div></> : <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>
+      </div></> : <a href='/ksa' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>
       } 
-    </div></> :  <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
+    </div></> :  <a href='/ksa' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
     </>
   );
 }

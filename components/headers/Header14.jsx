@@ -52,7 +52,7 @@ export default function Header14() {
     e.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/";
+    window.location.href = "/ksa";
   };
 
   const handleLangChange = (e) => {
@@ -98,7 +98,7 @@ export default function Header14() {
 
   const onSearch = (event) => {
     event.preventDefault();
-    window.location.href = `/${locale}/shop?q=${removeSpecialCharactersAndAmp(
+    window.location.href = `/ksa/${locale}/shop?q=${removeSpecialCharactersAndAmp(
       searchKeyWord
     )
       .split(" ")
@@ -123,7 +123,7 @@ export default function Header14() {
       <header
         id="header"
         className={`header header_sticky position-sticky w-100 bg-white`}
-        style={pathname == "/" ? {} : {}}
+        style={pathname == "/ksa" ? {} : {}}
       >
         <Swiper
           className="swiper-container js-swiper-slider slideshow type4 slideshow-navigation-white-sm swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events bg-black"
@@ -271,7 +271,7 @@ export default function Header14() {
                 </div>
               </div>
               <div className="logo">
-                <a href="/">
+                <a href="/ksa">
                   <img
                     src="https://www.ahmedalmaghribi.com/wp-content/uploads/2022/01/Ahmed-logo.svg"
                     width="200px"

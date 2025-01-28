@@ -45,7 +45,7 @@ export default function Footer10() {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/assets/images/logo-blue.png"
+                  src="/ksa/assets/images/logo-blue.png"
                   width={112}
                   height={28}
                   alt="Ahmed"

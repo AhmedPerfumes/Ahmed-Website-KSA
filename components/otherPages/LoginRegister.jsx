@@ -110,7 +110,7 @@ export default function LoginRegister() {
         setError(null);
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', btoa(JSON.stringify(data.data)));
-        setTimeout(() => window.location.href='/', 1000);
+        setTimeout(() => window.location.href='/ksa', 1000);
       }
       // console.log(data);
     } catch (error) {

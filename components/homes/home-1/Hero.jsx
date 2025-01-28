@@ -45,7 +45,7 @@ export default function Hero() {
             >
               <Image
                 loading="lazy"
-                src="/assets/images/slideshow-pattern.png"
+                src="/ksa/assets/images/slideshow-pattern.png"
                 width="1761"
                 height="778"
                 alt="Pattern"

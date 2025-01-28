@@ -20,7 +20,7 @@ export default function Footer11() {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/assets/images/logo-white.png"
+                  src="/ksa/assets/images/logo-white.png"
                   width={112}
                   height={28}
                   alt="Ahmed"

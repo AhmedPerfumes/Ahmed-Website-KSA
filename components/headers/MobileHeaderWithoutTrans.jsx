@@ -63,7 +63,7 @@ export default function MobileHeader() {
 
   const onSearch = (event) => {
     event.preventDefault();
-    window.location.href = `/en/shop?q=${removeSpecialCharactersAndAmp(
+    window.location.href = `/ksa/en/shop?q=${removeSpecialCharactersAndAmp(
       searchKeyWord
     )
       .split(" ")
@@ -104,7 +104,7 @@ export default function MobileHeader() {
         </Link>
 
         <div className="logo">
-          <a href="/">
+          <a href="/ksa">
             <Image
               src="https://www.ahmedalmaghribi.com/wp-content/uploads/2022/01/Ahmed-logo.svg"
               width={200}

@@ -80,7 +80,7 @@ const MobileAnimation = () => {
           <div className="modal-content loader-modal-content">
             <div className="preload">
               <img
-                src="/assets/preloader.gif"
+                src="/ksa/assets/preloader.gif"
                 alt="Modal Image"
                 className="preloader-gif"
               />

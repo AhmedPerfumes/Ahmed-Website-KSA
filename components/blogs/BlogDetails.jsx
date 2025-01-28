@@ -19,7 +19,7 @@ export default function BlogDetails({ blog }) {
           <Image
             loading="lazy"
             className="w-100 h-auto d-block"
-            src={blog.image ? `${process.env.NEXT_PUBLIC_API_URL}storage/${blog.image}` : '/assets/images/blog/blog-1.jpg'}
+            src={blog.image ? `${process.env.NEXT_PUBLIC_API_URL}storage/${blog.image}` : '/ksa/assets/images/blog/blog-1.jpg'}
             width="1410"
             height="550"
             alt="image"

@@ -8,7 +8,11 @@ const nextConfig = {
         remotePatterns: [
           {
             protocol: 'https',
-            hostname: 'phpstack-667016-4904984.cloudwaysapps.com',
+            hostname: 'phpstack-1403159-5212295.cloudwaysapps.com',
+          },
+          {
+            protocol: 'https',
+            hostname: 'adminksa.ahmed-perfume.com',
           },
           {
             protocol: 'http',
@@ -16,7 +20,8 @@ const nextConfig = {
           }
         ],
       },
-      productionBrowserSourceMaps: true
+      productionBrowserSourceMaps: true,
+      basePath: '/ksa'
 };
 
 export default withNextIntl(nextConfig);

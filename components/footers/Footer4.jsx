@@ -212,7 +212,7 @@ export default function Footer4() {
               <p className="mt-2">
                 <Image
                   loading="lazy"
-                  src="/assets/images/payment-options.png"
+                  src="/ksa/assets/images/payment-options.png"
                   width={324}
                   height={28}
                   alt="Acceptable payment gateways"

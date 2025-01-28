@@ -188,7 +188,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/assets/images/ahmed-icon.png"
+                        src="/ksa/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -239,9 +239,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /assets/images/best-sellers/notes/zumar@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/zumar@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/zumar@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/notes/zumar@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -271,28 +271,30 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/zumar@1x.jpg 1x, /assets/images/best-sellers/zumar@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/zumar@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/zumar@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/zumar@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
                                             data-v-399c522e=""
                                         />
-                                        <button
-                                            className="btn-classic"
-                                            data-v-8967c2b9=""
-                                            data-v-7aa9e1a2=""
-                                            onClick={() =>
-                                                window.open(
-                                                    "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/zumar"
-                                                )
-                                            }
-                                        >
-                                            <span data-v-7aa9e1a2="">
-                                                Discover
-                                            </span>
-                                        </button>
+                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
+                                            <button
+                                                className="btn-classic"
+                                                data-v-8967c2b9=""
+                                                data-v-7aa9e1a2=""
+                                                // onClick={() =>
+                                                //     window.open(
+                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/zumar"
+                                                //     )
+                                                // }
+                                            >
+                                                <span data-v-7aa9e1a2="">
+                                                    Discover
+                                                </span>
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -309,9 +311,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /assets/images/best-sellers/notes/zumar@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/zumar@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/zumar@2x.jpg"
+                                        src="/ksa/assets/images/best-sellers/notes/zumar@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -319,9 +321,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/zumar@1x.jpg 1x, /assets/images/best-sellers/zumar@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/zumar@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/zumar.jpg"
+                                        src="/ksa/assets/images/best-sellers/zumar.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -343,18 +345,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {/* as painted by Geoffroy Pithon */}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        window.open(
-                                            "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/zumar"
-                                        )
-                                    }
-                                    data-v-7aa9e1a2=""
-                                    data-v-8967c2b9=""
-                                    className="btn-classic"
-                                >
-                                    <span data-v-7aa9e1a2="">Discover</span>
-                                </button>
+                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
+                                    <button
+                                        // onClick={() =>
+                                        //     window.open(
+                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/zumar"
+                                        //     )
+                                        // }
+                                        data-v-7aa9e1a2=""
+                                        data-v-8967c2b9=""
+                                        className="btn-classic"
+                                    >
+                                        <span data-v-7aa9e1a2="">Discover</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* First slider */}
@@ -380,9 +384,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/binshaikh@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -412,28 +416,30 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/bin-shaikh@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/bin-shaikh@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
                                             data-v-399c522e=""
                                         />
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/bin-shaikh"
-                                                )
-                                            }
-                                            className="btn-classic"
-                                            data-v-8967c2b9=""
-                                            data-v-7aa9e1a2=""
-                                        >
-                                            <span data-v-7aa9e1a2="">
-                                                Discover
-                                            </span>
-                                        </button>
+                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}>
+                                            <button
+                                                // onClick={() =>
+                                                //     window.open(
+                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/bin-shaikh"
+                                                //     )
+                                                // }
+                                                className="btn-classic"
+                                                data-v-8967c2b9=""
+                                                data-v-7aa9e1a2=""
+                                            >
+                                                <span data-v-7aa9e1a2="">
+                                                    Discover
+                                                </span>
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -450,9 +456,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/binshaikh@2x.jpg"
+                                        src="/ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -460,9 +466,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/bin-shaikh@1x.jpg"
+                                        src="/ksa/assets/images/best-sellers/bin-shaikh@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -484,18 +490,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {/* as painted by Gabrielle Rul */}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        window.open(
-                                            "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/bin-shaikh"
-                                        )
-                                    }
-                                    data-v-7aa9e1a2=""
-                                    data-v-8967c2b9=""
-                                    className="btn-classic"
-                                >
-                                    <span data-v-7aa9e1a2="">Discover</span>
-                                </button>
+                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}>
+                                    <button
+                                        // onClick={() =>
+                                        //     window.open(
+                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/bin-shaikh"
+                                        //     )
+                                        // }
+                                        data-v-7aa9e1a2=""
+                                        data-v-8967c2b9=""
+                                        className="btn-classic"
+                                    >
+                                        <span data-v-7aa9e1a2="">Discover</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* Second slider */}
@@ -521,9 +529,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -553,28 +561,30 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/ignite-oud@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/ignite-oud@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/ignite-oud@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/ignite-oud@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
                                             data-v-399c522e=""
                                         />
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/ignite-oud"
-                                                )
-                                            }
-                                            className="btn-classic"
-                                            data-v-8967c2b9=""
-                                            data-v-7aa9e1a2=""
-                                        >
-                                            <span data-v-7aa9e1a2="">
-                                                Discover
-                                            </span>
-                                        </button>
+                                        <Link href={`/${locale}/shop/perfumes/occidental-fragrance/ignite-oud`}>
+                                            <button
+                                                // onClick={() =>
+                                                //     window.open(
+                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/ignite-oud"
+                                                //     )
+                                                // }
+                                                className="btn-classic"
+                                                data-v-8967c2b9=""
+                                                data-v-7aa9e1a2=""
+                                            >
+                                                <span data-v-7aa9e1a2="">
+                                                    Discover
+                                                </span>
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -591,9 +601,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
+                                        src="/ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -601,9 +611,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/ignite-oud@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/ignite-oud@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/ignite-oud@1x.jpg"
+                                        src="/ksa/assets/images/best-sellers/ignite-oud@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -625,18 +635,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {/* as painted by Ziling Wang */}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        window.open(
-                                            "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/ignite-oud"
-                                        )
-                                    }
-                                    data-v-7aa9e1a2=""
-                                    data-v-8967c2b9=""
-                                    className="btn-classic"
-                                >
-                                    <span data-v-7aa9e1a2="">Discover</span>
-                                </button>
+                                <Link href={`/${locale}/shop/perfumes/occidental-fragrance/ignite-oud`}>
+                                    <button
+                                        // onClick={() =>
+                                        //     window.open(
+                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/ignite-oud"
+                                        //     )
+                                        // }
+                                        data-v-7aa9e1a2=""
+                                        data-v-8967c2b9=""
+                                        className="btn-classic"
+                                    >
+                                        <span data-v-7aa9e1a2="">Discover</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* Third slider */}
@@ -662,9 +674,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/marj@1x.jpg 1x, /assets/images/best-sellers/notes/marj@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/notes/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/marj@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/marj@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/notes/marj@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -694,28 +706,30 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/marj@1x.jpg 1x, /assets/images/best-sellers/marj@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/marj@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/marj@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/marj@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
                                             data-v-399c522e=""
                                         />
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/marj"
-                                                )
-                                            }
-                                            className="btn-classic"
-                                            data-v-8967c2b9=""
-                                            data-v-7aa9e1a2=""
-                                        >
-                                            <span data-v-7aa9e1a2="">
-                                                Discover
-                                            </span>
-                                        </button>
+                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/marj`}>
+                                            <button
+                                                // onClick={() =>
+                                                //     window.open(
+                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/marj"
+                                                //     )
+                                                // }
+                                                className="btn-classic"
+                                                data-v-8967c2b9=""
+                                                data-v-7aa9e1a2=""
+                                            >
+                                                <span data-v-7aa9e1a2="">
+                                                    Discover
+                                                </span>
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -732,9 +746,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/marj@1x.jpg 1x, /assets/images/best-sellers/notes/marj@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/notes/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/marj@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/marj@2x.jpg"
+                                        src="/ksa/assets/images/best-sellers/notes/marj@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -742,9 +756,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/marj@1x.jpg 1x, /assets/images/best-sellers/marj@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/marj@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/marj@1x.jpg"
+                                        src="/ksa/assets/images/best-sellers/marj@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -766,18 +780,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {/* as painted by Zoé Rumeau */}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        window.open(
-                                            "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/marj"
-                                        )
-                                    }
-                                    data-v-7aa9e1a2=""
-                                    data-v-8967c2b9=""
-                                    className="btn-classic"
-                                >
-                                    <span data-v-7aa9e1a2="">Discover</span>
-                                </button>
+                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/marj`}>
+                                    <button
+                                        // onClick={() =>
+                                        //     window.open(
+                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/marj"
+                                        //     )
+                                        // }
+                                        data-v-7aa9e1a2=""
+                                        data-v-8967c2b9=""
+                                        className="btn-classic"
+                                    >
+                                        <span data-v-7aa9e1a2="">Discover</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* Fourth slider */}
@@ -803,9 +819,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -835,28 +851,30 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /ksa/assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/oud-and-roses@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/oud-and-roses@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
                                             data-v-399c522e=""
                                         />
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/oud-roses"
-                                                )
-                                            }
-                                            className="btn-classic"
-                                            data-v-8967c2b9=""
-                                            data-v-7aa9e1a2=""
-                                        >
-                                            <span data-v-7aa9e1a2="">
-                                                Discover
-                                            </span>
-                                        </button>
+                                        <Link href={`/${locale}/shop/perfumes/occidental-fragrance/oud-roses`}>
+                                            <button
+                                                // onClick={() =>
+                                                //     window.open(
+                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/oud-roses"
+                                                //     )
+                                                // }
+                                                className="btn-classic"
+                                                data-v-8967c2b9=""
+                                                data-v-7aa9e1a2=""
+                                            >
+                                                <span data-v-7aa9e1a2="">
+                                                    Discover
+                                                </span>
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -873,9 +891,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
+                                        src="/ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -883,9 +901,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /ksa/assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/oud-and-roses@1x.jpg"
+                                        src="/ksa/assets/images/best-sellers/oud-and-roses@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -907,18 +925,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {/* Sculptured by Victoire de Lencquesaing */}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        window.open(
-                                            "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/oud-roses"
-                                        )
-                                    }
-                                    data-v-7aa9e1a2=""
-                                    data-v-8967c2b9=""
-                                    className="btn-classic"
-                                >
-                                    <span data-v-7aa9e1a2="">Discover</span>
-                                </button>
+                                <Link href={`/${locale}/shop/perfumes/occidental-fragrance/oud-roses`}>
+                                    <button
+                                        // onClick={() =>
+                                        //     window.open(
+                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/oud-roses"
+                                        //     )
+                                        // }
+                                        data-v-7aa9e1a2=""
+                                        data-v-8967c2b9=""
+                                        className="btn-classic"
+                                    >
+                                        <span data-v-7aa9e1a2="">Discover</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* Fifth slider */}
@@ -944,9 +964,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/kaaf@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/notes/kaaf@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -976,28 +996,30 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/kaaf@1x.jpg 1x, /assets/images/best-sellers/kaaf@2x.jpg 2x"
+                                            srcSet="/ksa/assets/images/best-sellers/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/kaaf@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/kaaf@2x.jpg"
+                                            src="/ksa/assets/images/best-sellers/kaaf@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
                                             data-v-399c522e=""
                                         />
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/kaaf"
-                                                )
-                                            }
-                                            className="btn-classic"
-                                            data-v-8967c2b9=""
-                                            data-v-7aa9e1a2=""
-                                        >
-                                            <span data-v-7aa9e1a2="">
-                                                Discover
-                                            </span>
-                                        </button>
+                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/kaaf`}>
+                                            <button
+                                                // onClick={() =>
+                                                //     window.open(
+                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/kaaf"
+                                                //     )
+                                                // }
+                                                className="btn-classic"
+                                                data-v-8967c2b9=""
+                                                data-v-7aa9e1a2=""
+                                            >
+                                                <span data-v-7aa9e1a2="">
+                                                    Discover
+                                                </span>
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -1014,9 +1036,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/kaaf@2x.jpg"
+                                        src="/ksa/assets/images/best-sellers/notes/kaaf@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -1024,9 +1046,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/kaaf@1x.jpg 1x, /assets/images/best-sellers/kaaf@2x.jpg 2x"
+                                        srcSet="/ksa/assets/images/best-sellers/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/kaaf@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/kaaf@1x.jpg"
+                                        src="/ksa/assets/images/best-sellers/kaaf@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -1048,18 +1070,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {/* Imagined by François Azambourg */}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        window.open(
-                                            "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/kaaf"
-                                        )
-                                    }
-                                    data-v-7aa9e1a2=""
-                                    data-v-8967c2b9=""
-                                    className="btn-classic"
-                                >
-                                    <span data-v-7aa9e1a2="">Discover</span>
-                                </button>
+                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/kaaf`}>
+                                    <button
+                                        // onClick={() =>
+                                        //     window.open(
+                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/kaaf"
+                                        //     )
+                                        // }
+                                        data-v-7aa9e1a2=""
+                                        data-v-8967c2b9=""
+                                        className="btn-classic"
+                                    >
+                                        <span data-v-7aa9e1a2="">Discover</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* Sixth slider */}
@@ -1103,7 +1127,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/assets/images/ahmed-icon.png"
+                        src="/ksa/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1134,12 +1158,12 @@ const ScrollSnapHorizontalBootstrap = () => {
                             </div>
                             <div className="d-none d-md-block pb-3">
                                 <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel src="/assets/videos/multi-product.mp4" section='hundred'/>
+                                    <VideoPanel src="/ksa/assets/videos/multi-product.mp4" section='hundred'/>
                                 </div>
                             </div>
                             <div className="d-block d-sm-none pb-3">
                                 <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel src="/assets/videos/multi-product-mobile.mp4" section='hundred'/>
+                                    <VideoPanel src="/ksa/assets/videos/multi-product-mobile.mp4" section='hundred'/>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-center ">
@@ -1186,7 +1210,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/assets/images/ahmed-icon.png"
+                        src="/ksa/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1226,7 +1250,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <a href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}>
                         <Image
                             loading="lazy"
-                            src="/assets/images/Ihda-khas-giftset.jpg"
+                            src="/ksa/assets/images/Ihda-khas-giftset.jpg"
                             width="600"
                             height="600"
                             alt="Bakhoor-Ahmed"
@@ -1239,7 +1263,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     >
                         <Image
                             className="w-50 px-1"
-                            src="/assets/images/Antee-05-Giftset.jpg"
+                            src="/ksa/assets/images/Antee-05-Giftset.jpg"
                             width="600"
                             height="600"
                             alt="Oud-Asateen"
@@ -1252,7 +1276,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <a href={`/${locale}/shop/dakhoon/gift-sets`}>
                         <Image
                             loading="lazy"
-                            src="/assets/images/Ihda-khas-giftset.jpg"
+                            src="/ksa/assets/images/Ihda-khas-giftset.jpg"
                             width="600"
                             height="600"
                             alt="Bakhoor-Ahmed"
@@ -1263,7 +1287,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <a href={`/${locale}/shop/dakhoon/gift-sets`}>
                         <Image
                             className="w-100 h-100 px-1"
-                            src="/assets/images/Antee-05-Giftset.jpg"
+                            src="/ksa/assets/images/Antee-05-Giftset.jpg"
                             width="600"
                             height="600"
                             alt="Oud-Asateen"
@@ -1305,7 +1329,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/assets/images/ahmed-icon.png"
+                        src="/ksa/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1327,7 +1351,7 @@ const ScrollSnapHorizontalBootstrap = () => {
 
                 <div className="panel2 mt-5">
                     <div className="inner2">
-                        <VideoPanel src="/assets/videos/zumar-video.mp4" section='hundred'/>
+                        <VideoPanel src="/ksa/assets/videos/zumar-video.mp4" section='hundred'/>
                     </div>
                 </div>
 
@@ -1360,7 +1384,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         >
                             <img
                                 className="w-100"
-                                src="/assets/images/home/demo8/Bakhoor-Ahmed.jpg"
+                                src="/ksa/assets/images/home/demo8/Bakhoor-Ahmed.jpg"
                                 alt="Bakhoor Ahmed"
                             />
                         </Link>
@@ -1369,7 +1393,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         >
                             <img
                                 className="w-100"
-                                src="/assets/images/home/demo8/Oud-Asateen.jpg"
+                                src="/ksa/assets/images/home/demo8/Oud-Asateen.jpg"
                                 alt="Oud Asateen"
                             />
                         </Link>
@@ -1417,7 +1441,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/assets/images/ahmed-icon.png"
+                        src="/ksa/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1438,7 +1462,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                 <div className="d-flex flex-column flex-md-row align-items-center justify-content-center mb-5 pt-5">
                     <div className="order-1 order-md-0">
                         <VideoPanel
-                            src="/assets/videos/production.mp4"
+                            src="/ksa/assets/videos/production.mp4"
                             section='hundred'
                         />
                     </div>
@@ -1464,7 +1488,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <div className="order-0 order-md-1 mb-5">
                         <img
                             className="h-auto w-100"
-                            src="/assets/images/home/demo8/Shop.jpg"
+                            src="/ksa/assets/images/home/demo8/Shop.jpg"
                             alt="image"
                         />
                     </div>

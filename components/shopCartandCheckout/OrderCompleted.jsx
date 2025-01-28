@@ -138,7 +138,7 @@ export default function OrderCompleted() {
               </tr>
               <tr>
                 <th>SHIPPING</th>
-                <td>{(orderDetails.sub_total).toFixed(2) >= 400 ? 'You Got Free Shipping' : `Shipping Cost: ${ shippingServiceCharges[0].price }${ currency.symbol }`}</td>
+                <td>{(orderDetails.sub_total).toFixed(2) >= 300 ? 'You Got Free Shipping' : `Shipping Cost: ${ shippingServiceCharges[0].price }${ currency.symbol }`}</td>
               </tr>
               <tr>
                 <th>SERVICE FEE</th>
@@ -162,13 +162,13 @@ export default function OrderCompleted() {
             </tbody>
           </table>
         </div>
-        <a href='/'
+        <a href='/ksa'
           className="btn btn-primary w-100 text-uppercase mb-3"
         >
           Continue Shopping
         </a>
       </div>      
-    </div></> :  <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
+    </div></> :  <a href='/ksa' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
     </>
   );
 }

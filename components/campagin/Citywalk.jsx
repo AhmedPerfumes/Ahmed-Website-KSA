@@ -11,7 +11,7 @@ function CityWalk() {
         <Image
           loading="lazy"
           className="w-100 h-auto d-none d-lg-block"
-          src="/assets/images/home/demo5/city-walk.jpg"
+          src="/ksa/assets/images/home/demo5/city-walk.jpg"
           alt="image"
           width={1500}
           height={550}
@@ -21,7 +21,7 @@ function CityWalk() {
         <Image
           loading="lazy"
           className="w-100 h-auto d-lg-none"
-          src="/assets/images/home/demo5/mobile-city.jpg"
+          src="/ksa/assets/images/home/demo5/mobile-city.jpg"
           alt="image"
           width={1500}
           height={550}

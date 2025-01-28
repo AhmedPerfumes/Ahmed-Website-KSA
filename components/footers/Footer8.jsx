@@ -42,7 +42,7 @@ export default function Footer8() {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/assets/images/logo-dark-blue.png"
+                  src="/ksa/assets/images/logo-dark-blue.png"
                   alt="Ahmed"
                   width={113}
                   height={28}

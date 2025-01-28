@@ -56,7 +56,7 @@ export default function VerifyOTP() {
         setSuccess(data.message);
         setError(null);
         localStorage.setItem('token', data.access_token);
-        setTimeout(() => router.push('/'), 1000);
+        setTimeout(() => router.push('/ksa'), 1000);
       }
       // console.log(data);
     } catch (error) {

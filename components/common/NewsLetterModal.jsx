@@ -25,7 +25,7 @@ export default function NewsLetterModal() {
                   loading="lazy"
                   width={450}
                   height={550}
-                  src="/assets/images/newsletter-popup.jpg"
+                  src="/ksa/assets/images/newsletter-popup.jpg"
                   className="h-100 w-100 object-fit-cover d-block"
                   alt="image"
                 />

@@ -36,7 +36,7 @@ export default function Lookbook() {
             <Image
               loading="lazy"
               className="h-auto"
-              src="/assets/images/home/demo10/lookbook-bg.jpg"
+              src="/ksa/assets/images/home/demo10/lookbook-bg.jpg"
               width="770"
               height="750"
               alt="image"

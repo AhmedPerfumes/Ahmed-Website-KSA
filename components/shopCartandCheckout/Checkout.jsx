@@ -39,20 +39,20 @@ export default function Checkout() {
       last_name: '',
       mobile: '',
       email: '',
-      country: 'AE',
+      country: 'KSA',
       area: '',
       building: '',
-      emirates: ''
+      province: ''
     },
     billingAddress: {
       first_name: '',
       last_name: '',
       mobile: '',
       email: '',
-      country: 'AE',
+      country: 'KSA',
       area: '',
       building: '',
-      emirates: ''
+      province: ''
     },
     shippingAdd: false,
     note: '',
@@ -108,28 +108,28 @@ export default function Checkout() {
       return {
         ...prevData,
         shippingAdd: newSameAsShipping,
-        shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', emirates: '' }
+        shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' }
       }
     });
   };
 
-  const handleEmiratesChange = (event, emirates) => {
-    const { id } = event.target;
-    // console.log(id, emirates);
-    if (id.startsWith('shipping') || id.startsWith('billing')) {
-      const addressField = id.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
-      const fieldName = id.split('.')[1]; // Get the specific field (e.g., street, city)
-      setFormData((prevData) => {
-        return {
-          ...prevData,
-          [addressField]: {
-            ...prevData[addressField],
-            [fieldName]: emirates,
-          },
-        };
-      });
-    }
-  };
+  // const handleEmiratesChange = (event, emirates) => {
+  //   const { id } = event.target;
+  //   // console.log(id, emirates);
+  //   if (id.startsWith('shipping') || id.startsWith('billing')) {
+  //     const addressField = id.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
+  //     const fieldName = id.split('.')[1]; // Get the specific field (e.g., street, city)
+  //     setFormData((prevData) => {
+  //       return {
+  //         ...prevData,
+  //         [addressField]: {
+  //           ...prevData[addressField],
+  //           [fieldName]: emirates,
+  //         },
+  //       };
+  //     });
+  //   }
+  // };
  
   async function onOrder(event) {
     event.preventDefault();
@@ -195,7 +195,7 @@ export default function Checkout() {
             email: '',
             area: '',
             building: '',
-            emirates: ''
+            province: ''
           },
           billingAddress: {
             first_name: '',
@@ -204,7 +204,7 @@ export default function Checkout() {
             email: '',
             area: '',
             building: '',
-            emirates: ''
+            province: ''
           },
           shippingAdd: false,
         });
@@ -236,8 +236,8 @@ export default function Checkout() {
         if(data['billingAddress.building']) {
           setError(data['billingAddress.building']);
         }
-        if(data['billingAddress.emirates']) {
-          setError(data['billingAddress.emirates']);
+        if(data['billingAddress.province']) {
+          setError(data['billingAddress.province']);
         }
         setSuccess(null);
       }
@@ -540,9 +540,9 @@ export default function Checkout() {
                         className="form-control form-control-lg search-field__actor"
                         id="country"
                         name="billingAddress.country"
-                        value="United Arab Emirates"
+                        value="Saudi Arabia"
                         readOnly
-                        placeholder="United Arab Emirates"
+                        placeholder="Saudi Arabia"
                       />
                     </div>
                   </div>
@@ -581,7 +581,7 @@ export default function Checkout() {
                 </div>
               </div>
 
-              <div className="col-md-12">
+              {/* <div className="col-md-12">
                 <div className="search-field my-3">
                   <div
                     className={`form-label-fixed hover-container ${
@@ -589,7 +589,7 @@ export default function Checkout() {
                     }`}
                   >
                     <label htmlFor="search-dropdown" className="form-label">
-                      Emirates*
+                      Province*
                     </label>
                     <div className="js-hover__open">
                       <input
@@ -639,7 +639,41 @@ export default function Checkout() {
                     </div>
                   </div>
                 </div>
+              </div> */}
+
+              <div className="col-md-12">
+                <div className="form-floating mt-3 mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="checkout_province"
+                    placeholder="Province *"
+                    name="billingAddress.province"
+                    value={formData.billingAddress.province}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label htmlFor="checkout_province">
+                    Province *
+                  </label>
+                </div>
+                {/* <div className="form-floating mt-3 mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="checkout_street_address_2"
+                    placeholder="Building / Villa / Apartment"
+                    name="billingAddress.building"
+                    value={formData.billingAddress.building}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label htmlFor="checkout_company_name">
+                    Building / Villa / Apartment
+                  </label>
+                </div> */}
               </div>
+
               <div className="col-md-12">
                 <div className="form-floating my-3">
                   <input
@@ -658,7 +692,9 @@ export default function Checkout() {
               <div className="col-md-12">
                 <div className="form-floating my-3">
                   <input
-                    type="tel"
+                    type="text"
+                    pattern="^\d{10}$"
+                    title="Only positive integers allowed"
                     className="form-control"
                     id="checkout_otp"
                     placeholder="Eg. 0500000000 *"
@@ -669,7 +705,7 @@ export default function Checkout() {
                   />
                   <label htmlFor="checkout_phone">Mobile Number (Eg. 0500000000)*</label>
                 </div>
-                  {OTPError ? <div style={{ color: 'red' }}>{OTPError}</div> : <div style={{ color: 'green' }}>{OTPSuccess}</div>}
+                  {/* {OTPError ? <div style={{ color: 'red' }}>{OTPError}</div> : <div style={{ color: 'green' }}>{OTPSuccess}</div>}
                   {isOTPButton ? <button
                     className="btn btn-primary w-100 text-uppercase"
                     type="button"
@@ -696,7 +732,7 @@ export default function Checkout() {
                     onClick={verifyOTP}
                   >
                 {isSendOTPLoading ? 'Loading...' : 'Verify OTP'}
-                </button></>}</>}
+                </button></>}</>} */}
               </div>
               <div className="col-md-12">
                 {!isLoggedIn && <div className="form-check mt-3">
@@ -813,12 +849,12 @@ export default function Checkout() {
                   </tbody>
                 </table>
               </div>
-              <div >
+              {/* <div > */}
                 {/* <form
                   onSubmit={applyCoupon}
                   className="position-relative bg-body"
                 > */}
-                  {couponError ? <div style={{ color: 'red' }}>{couponError}</div> : <div style={{ color: 'green' }}>{couponSuccess}</div>}
+                  {/* {couponError ? <div style={{ color: 'red' }}>{couponError}</div> : <div style={{ color: 'green' }}>{couponSuccess}</div>}
                   <input
                     className="form-control"
                     type="text"
@@ -839,11 +875,11 @@ export default function Checkout() {
                       value="REMOVE COUPON"
                       onClick={removeCoupon}
                     />
-                  }
+                  } */}
                 {/* </form> */}
-                <br/>
+                {/* <br/> */}
                 {/* <button className="btn btn-light">UPDATE CART</button> */}
-              </div>
+              {/* </div> */}
               <div className="checkout__payment-methods">
                 <div className="form-check">
                   <input
@@ -868,7 +904,7 @@ export default function Checkout() {
                     </span> */}
                   </label>
                 </div>
-                <div className="form-check">
+                {/* <div className="form-check">
                   <input
                     className="form-check-input form-check-input_fill"
                     type="radio"
@@ -889,19 +925,13 @@ export default function Checkout() {
                       height="20"
                       alt="Cropped Faux leather Jacket"
                     />
-                    {/* <span className="option-detail d-block">
-                      Phasellus sed volutpat orci. Fusce eget lore mauris
-                      vehicula elementum gravida nec dui. Aenean aliquam varius
-                      ipsum, non ultricies tellus sodales eu. Donec dignissim
-                      viverra nunc, ut aliquet magna posuere eget.
-                    </span> */}
                   </label>
-                </div>
+                </div> */}
                 <div className="policy-text">
                   Your personal data will be used to process your order, support
                   your experience throughout this website, and for other
                   purposes described in our
-                  <Link href="/terms" target="_blank">
+                  <Link href={`/${locale}/privacy`} target="_blank">
                     privacy policy
                   </Link>
                   .
@@ -913,7 +943,7 @@ export default function Checkout() {
               <button
                 className="btn btn-primary w-100 text-uppercase"
                 type="submit"
-                disabled={isDisabled || isLoading}
+                disabled={isLoading}
               >
                 {isLoading ? 'Loading...' : 'Place Order'}
               </button>
@@ -974,9 +1004,9 @@ export default function Checkout() {
                           className="form-control form-control-lg search-field__actor"
                           id="country"
                           name="shippingAddress.country"
-                          value="United Arab Emirates"
+                          value="Saudi Arabia"
                           readOnly
-                          placeholder="United Arab Emirates"
+                          placeholder="Saudi Arabia"
                         />
                       </div>
                     </div>
@@ -1015,7 +1045,7 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                <div className="col-md-12">
+                {/* <div className="col-md-12">
                   <div className="search-field my-3">
                     <div
                       className={`form-label-fixed hover-container ${
@@ -1073,7 +1103,41 @@ export default function Checkout() {
                       </div>
                     </div>
                   </div>
+                </div> */}
+
+                <div className="col-md-12">
+                  <div className="form-floating mt-3 mb-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="checkout_province"
+                      placeholder="Province *"
+                      name="shippingAddress.province"
+                      value={formData.shippingAddress.province}
+                      onChange={handleChange}
+                      required
+                    />
+                    <label htmlFor="checkout_province">
+                      Province *
+                    </label>
+                  </div>
+                  {/* <div className="form-floating mt-3 mb-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="checkout_street_address_2"
+                      placeholder="Building / Villa / Apartment"
+                      name="shippingAddress.building"
+                      value={formData.shippingAddress.building}
+                      onChange={handleChange}
+                      required
+                    />
+                    <label htmlFor="checkout_company_name">
+                      Building / Villa / Apartment
+                    </label>
+                  </div> */}
                 </div>
+
                 <div className="col-md-12">
                   <div className="form-floating my-3">
                     <input
@@ -1092,7 +1156,9 @@ export default function Checkout() {
                 <div className="col-md-12">
                   <div className="form-floating my-3">
                     <input
-                      type="number"
+                      type="text"
+                      pattern="^\d{10}$"
+                      title="Only positive integers allowed"
                       className="form-control"
                       id="checkout_phone"
                       placeholder="Eg. 0500000000 *"

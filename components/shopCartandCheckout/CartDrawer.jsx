@@ -42,7 +42,7 @@ export default function CartDrawer() {
   }, [pathname]);
 
   // Calculate progress towards free shipping
-  const freeShippingThreshold = 400;
+  const freeShippingThreshold = 300;
   const progressPercentage = Math.min(
     (totalPrice / freeShippingThreshold) * 100,
     100
@@ -170,12 +170,12 @@ export default function CartDrawer() {
           height={200}
           alt="image"
         /> */}
-        <div className="d-flex-column justify-content-center d-none d-md-flex">
+        {/* <div className="d-flex-column justify-content-center d-none d-md-flex">
           <VideoPanel src="/assets/videos/popup video.mp4" section='popup'/>
         </div>
         <div className="d-flex-column justify-content-center d-flex d-md-none">
           <VideoPanel src="/assets/videos/popup video.mp4" section='sm_popup'/>
-        </div>
+        </div> */}
         <div className="free-shipping-progress mt-3">
               {totalPrice < freeShippingThreshold ? (
                 <div>

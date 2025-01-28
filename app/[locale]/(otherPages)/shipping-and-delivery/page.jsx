@@ -14,7 +14,7 @@ export const metadata = {
 function ShippingDelivery() {
   return (
     <div style={{
-        backgroundImage: `url(/assets/background-ivory.webp)`,
+        backgroundImage: `url(/ksa/assets/background-ivory.webp)`,
       }}> 
         <Header14/>
         

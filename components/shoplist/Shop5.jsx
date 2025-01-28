@@ -49,25 +49,25 @@ const Shop5 = () => {
       >
         <SwiperSlide className="panel">
           <img
-            src="/assets/images/home/demo8/gift-sets/oud-and-roses-gift-set-bnr.jpg"
+            src="/ksa/assets/images/home/demo8/gift-sets/oud-and-roses-gift-set-bnr.jpg"
             alt="Oud and Roses Gift Set"
           />
         </SwiperSlide>
         <SwiperSlide className="panel">
           <img
-            src="/assets/images/home/demo8/gift-sets/shauque-al-shuyookh-bnr.jpg"
+            src="/ksa/assets/images/home/demo8/gift-sets/shauque-al-shuyookh-bnr.jpg"
             alt="Shauque Al Shuyookh Gift Set"
           />
         </SwiperSlide>
         <SwiperSlide className="panel">
           <img
-            src="/assets/images/home/demo8/gift-sets/Ihdakhaas-banner.jpg"
+            src="/ksa/assets/images/home/demo8/gift-sets/Ihdakhaas-banner.jpg"
             alt="Bidun Esam Gift Set"
           />
         </SwiperSlide>
         <SwiperSlide className="panel">
           <img
-            src="/assets/images/home/demo8/gift-sets/dakhoon-collection-bnr.jpg"
+            src="/ksa/assets/images/home/demo8/gift-sets/dakhoon-collection-bnr.jpg"
             alt="The Dukhoon Collection"
           />
         </SwiperSlide>

@@ -38,7 +38,7 @@ export default function Context({ children }) {
       return accumulator + product.quantity * product.price;
     }, 0);
     setTotalPrice(subtotal);
-    setFreeShippingFlag((subtotal).toFixed(2) >= 400 ? true : false);
+    setFreeShippingFlag((subtotal).toFixed(2) >= 300 ? true : false);
   }, [cartProducts, couponDataContext]);
 
   const addProductToQuickView = (product) => {
