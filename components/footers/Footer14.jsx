@@ -137,9 +137,9 @@ export default function Footer14() {
             {/* <!-- /.logo --> */}
             <p className="footer-address">
               {t("Ahmed Al Maghribi Perfume Manuf")} <br />
-              {t("Jurf Industrial Zone 3")} <br />
-              {t("Ajman")} <br />
-              {t("UAE")}
+              {t("Madinah Al Munawwarah")} <br />
+              {t("Kingdom Of Saudi Arabia")} <br />
+          
             </p>
 
             <p className="m-0">
@@ -147,7 +147,7 @@ export default function Footer14() {
             </p>
             <p>
               <strong className="fw-medium">
-                +971 67420602 / 67422496 / 67446076
+              +966 55 5073629 
               </strong>
             </p>
 
