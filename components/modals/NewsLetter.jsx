@@ -78,7 +78,7 @@ export default function NewsLetter() {
                   height={650}
                   style={{ height: "fit-content" }}
                   loading="lazy"
-                  src="/assets/images/home/demo8/zumar.jpg"
+                  src="/ksa/assets/images/home/demo8/zumar.jpg"
                   className="h-100 w-100 object-fit-cover d-block"
                   alt="image"
                 />

@@ -217,7 +217,7 @@ useEffect(() => {
             >
               <Image
                 loading="lazy"
-                src="/assets/images/shop/multiple-products-banner.jpg"
+                src="/ksa/assets/images/shop/multiple-products-banner.jpg"
                 width="1759"
                 height="420"
                 alt="Pattern"

@@ -247,7 +247,7 @@ export const slidesData3 = [
   // },
   {
     id: 1,
-    imageSrc: "/assets/images/home/demo8/avif/Ignite-rose-web-Banner.avif",
+    imageSrc: "/ksa/assets/images/home/demo8/avif/Ignite-rose-web-Banner.avif",
     season: "Tailored Elegance",
     objectPosition: "50% center",
     title: "Feel Luxurious",
@@ -256,7 +256,7 @@ export const slidesData3 = [
   },
   {
     id: 2,
-    imageSrc: "/assets/images/zumar-bnr.jpg",
+    imageSrc: "/ksa/assets/images/zumar-bnr.jpg",
     season: "Lasting",
     objectPosition: "70% center",
     title: "Redefines luxury &",
@@ -277,7 +277,7 @@ export const slidesData33 = [
   // },
   {
     id: 2,
-    imageSrc: "/assets/images/zumar-bnr.jpg",
+    imageSrc: "/ksa/assets/images/zumar-bnr.jpg",
     season: "Lasting",
     objectPosition: "70% center",
     title: "Redefines luxury &",

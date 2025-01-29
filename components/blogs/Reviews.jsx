@@ -10,7 +10,7 @@ export default function Reviews() {
             loading="lazy"
             width={80}
             height={80}
-            src="/assets/images/avatar.jpg"
+            src="/ksa/assets/images/avatar.jpg"
             alt="image"
           />
         </div>
@@ -71,7 +71,7 @@ export default function Reviews() {
             loading="lazy"
             width={80}
             height={80}
-            src="/assets/images/avatar.jpg"
+            src="/ksa/assets/images/avatar.jpg"
             alt="image"
           />
         </div>
