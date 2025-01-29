@@ -19,7 +19,7 @@ export default function Footer5({ parentClass }) {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/ksa/assets/images/logo-white.png"
+                  src="/assets/images/logo-white.png"
                   alt="Ahmed"
                   width={112}
                   height={28}

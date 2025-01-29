@@ -48,7 +48,7 @@ export default function Footer13() {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/ksa/assets/images/logo-white-yellow.png"
+                  src="/assets/images/logo-white-yellow.png"
                   width={112}
                   height={28}
                   alt="Ahmed"

@@ -14,7 +14,7 @@ export const metadata = {
 function Refund() {
   return (
     <div style={{
-        backgroundImage: `url(/ksa/assets/background-ivory.webp)`,
+        backgroundImage: `url(/assets/background-ivory.webp)`,
       }}>
         <Header14/>
         <RefundPolicy/>

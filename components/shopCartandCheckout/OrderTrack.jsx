@@ -211,7 +211,7 @@ export default function OrderTrack() {
               </tbody>
             </table>
           </div>
-          <a href='/ksa'
+          <a href='/'
             className="btn btn-primary w-100 text-uppercase"
           >
             Continue Shopping

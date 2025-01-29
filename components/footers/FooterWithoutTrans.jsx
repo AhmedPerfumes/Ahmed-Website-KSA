@@ -124,7 +124,7 @@ export default function Footer14() {
         <div className="row row-cols-lg-5 row-cols-2">
           <div className="footer-column footer-store-info col-12 mb-4 mb-lg-0">
             <div className="logo">
-              <a href="/ksa">
+              <a href="/">
                 <Image
                   src="https://www.ahmedalmaghribi.com/wp-content/uploads/2022/01/Ahmed-logo.svg"
                   width={200}

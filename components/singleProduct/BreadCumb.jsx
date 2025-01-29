@@ -14,7 +14,7 @@ export default function BreadCumb({ category, subcategory, product }) {
 
   return (
     <>
-      <a href="/ksa" className="menu-link menu-link_us-s text-uppercase fw-medium">
+      <a href="/" className="menu-link menu-link_us-s text-uppercase fw-medium">
       {t("Home")}
       </a>
       <span className="breadcrumb-separator menu-link fw-medium ps-1 pe-1">

@@ -12,7 +12,7 @@ export default function Lookbook() {
       <div className="position-relative">
         <Image
           loading="lazy"
-          src="/ksa/assets/images/home/demo15/banner-1.jpg"
+          src="/assets/images/home/demo15/banner-1.jpg"
           className="w-100 h-auto"
           width="1410"
           height="600"

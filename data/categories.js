@@ -48,47 +48,47 @@ export const categories3 = [
 export const categories8 = [
   {
     id: 1,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Antee Gift Set",
     subText: "Whispers of Elegance",
-    videoSrc: "/ksa/assets/videos/giftsets/antee.mp4",
-    imgSrc2: "/ksa/assets/videos/giftsets/thumbnails/antee.jpg",
+    videoSrc: "/assets/videos/giftsets/antee.mp4",
+    imgSrc2: "/assets/videos/giftsets/thumbnails/antee.jpg",
     link: "/shop/gift-sets/gift-sets/antee-gift-set-05"
   },
   {
     id: 2,
-    imgSrc: "/ksa/assets/images/home/demo15/category-2.jpg",
+    imgSrc: "/assets/images/home/demo15/category-2.jpg",
     altText: "The Dukhoon Collection",
     subText: "Tradition Reimagined",
-    videoSrc: "/ksa/assets/videos/giftsets/dakhoon-collection.mp4",
-    imgSrc2: "/ksa/assets/videos/giftsets/thumbnails/dukhoon-collection.jpg",
+    videoSrc: "/assets/videos/giftsets/dakhoon-collection.mp4",
+    imgSrc2: "/assets/videos/giftsets/thumbnails/dukhoon-collection.jpg",
     link: "/shop/gift-sets/gift-sets/the-dukhoon-collection"
   },
   {
     id: 3,
-    imgSrc: "/ksa/assets/images/home/demo15/category-3.jpg",
+    imgSrc: "/assets/images/home/demo15/category-3.jpg",
     altText: "Ihdaa Khaas Gift Set",
     subText: "Essence of Luxury",
-    videoSrc: "/ksa/assets/videos/giftsets/ihdakhas.mp4",
-    imgSrc2: "/ksa/assets/videos/giftsets/thumbnails/ihda-khas.jpg",
+    videoSrc: "/assets/videos/giftsets/ihdakhas.mp4",
+    imgSrc2: "/assets/videos/giftsets/thumbnails/ihda-khas.jpg",
     link: "/shop/gift-sets/gift-sets/ihdaa-khaas"
   },
   {
     id: 4,
-    imgSrc: "/ksa/assets/images/home/demo15/category-4.jpg",
+    imgSrc: "/assets/images/home/demo15/category-4.jpg",
     altText: "Oud & Roses Gift Set",
     subText: "Expression of Memories",
-    videoSrc: "/ksa/assets/videos/giftsets/oud-and-roses-giftset.mp4",
-    imgSrc2: "/ksa/assets/videos/giftsets/thumbnails/oud-roses-giftset.jpg",
+    videoSrc: "/assets/videos/giftsets/oud-and-roses-giftset.mp4",
+    imgSrc2: "/assets/videos/giftsets/thumbnails/oud-roses-giftset.jpg",
     link: "/shop/gift-sets/gift-sets/oud-roses-gift-set"
   },
   {
     id: 5,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Shauque Al Shuyookh Gift Set",
     subText: "A Legacy of Grace",
-    videoSrc: "/ksa/assets/videos/giftsets/shaquealsheukh-giftset.mp4",
-    imgSrc2: "/ksa/assets/videos/giftsets/thumbnails/shauque-al-shuyookh.jpg",
+    videoSrc: "/assets/videos/giftsets/shaquealsheukh-giftset.mp4",
+    imgSrc2: "/assets/videos/giftsets/thumbnails/shauque-al-shuyookh.jpg",
     link: "/shop/gift-sets/gift-sets/shauque-al-shuyookh"
   },
   // {
@@ -120,11 +120,11 @@ export const categories8 = [
 export const categories88 = [
   {
     id: 1,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Gauahar Khan",
     subText: "Exude effortless allure",
-    videoSrc: "/ksa/assets/videos/vlogs/gauhar-khan.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/gauhar-khan.jpg",
+    videoSrc: "/assets/videos/vlogs/gauhar-khan.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/gauhar-khan.jpg",
     link: "#"
   },
   // {
@@ -138,56 +138,56 @@ export const categories88 = [
   // },
   {
     id: 3,
-    imgSrc: "/ksa/assets/images/home/demo15/category-3.jpg",
+    imgSrc: "/assets/images/home/demo15/category-3.jpg",
     altText: "Aromatix - Neeb Alwaz",
     subText: "Uncover your signature glow",
-    videoSrc: "/ksa/assets/videos/vlogs/Neeb.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/Neeb.jpg",
+    videoSrc: "/assets/videos/vlogs/Neeb.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/Neeb.jpg",
     link: "#"
   },
   {
     id: 4,
-    imgSrc: "/ksa/assets/images/home/demo15/category-4.jpg",
+    imgSrc: "/assets/images/home/demo15/category-4.jpg",
     altText: "Rico Fragrance",
     subText: "Radiate pure, refined luxury",
-    videoSrc: "/ksa/assets/videos/vlogs/Rico.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/Rico.jpg",
+    videoSrc: "/assets/videos/vlogs/Rico.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/Rico.jpg",
     link: "#"
   },
   {
     id: 5,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Sana Khan",
     subText: "Embrace unforgettable elegance",
-    videoSrc: "/ksa/assets/videos/vlogs/Sana-Khan.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/Sana-Khan.jpg",
+    videoSrc: "/assets/videos/vlogs/Sana-Khan.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/Sana-Khan.jpg",
     link: "#"
   },
   {
     id: 6,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Yasser Salah Salem",
     subText: "Embrace unforgettable elegance",
-    videoSrc: "/ksa/assets/videos/vlogs/yassersalahsalem.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/yassersalahsalem.jpg",
+    videoSrc: "/assets/videos/vlogs/yassersalahsalem.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/yassersalahsalem.jpg",
     link: "#"
   },
   {
     id: 7,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "The Cologne Boy",
     subText: "Embrace unforgettable elegance",
-    videoSrc: "/ksa/assets/videos/vlogs/The-Cologne-Boy.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/The-Cologne-Boy.jpg",
+    videoSrc: "/assets/videos/vlogs/The-Cologne-Boy.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/The-Cologne-Boy.jpg",
     link: "#"
   },
   {
     id: 8,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Hina Khan",
     subText: "Embrace unforgettable elegance",
-    videoSrc: "/ksa/assets/videos/vlogs/Henna-Khan.mp4",
-    imgSrc2: "/ksa/assets/videos/vlogs/thumbnails/Henna-Khan.jpg",
+    videoSrc: "/assets/videos/vlogs/Henna-Khan.mp4",
+    imgSrc2: "/assets/videos/vlogs/thumbnails/Henna-Khan.jpg",
     link: "#"
   },
 ];
@@ -195,47 +195,47 @@ export const categories88 = [
 export const categoriesInfluencers = [
   {
     id: 1,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Oud Ma'attar Asaateen",
     subText: "Oud, leather, and rose luxury",
-    videoSrc: "/ksa/assets/videos/dakhoon/asateen.mp4",
-    imgSrc2: "/ksa/assets/videos/dakhoon/thumbnails/asateen.jpg",
+    videoSrc: "/assets/videos/dakhoon/asateen.mp4",
+    imgSrc2: "/assets/videos/dakhoon/thumbnails/asateen.jpg",
     link: "/product-category/dakhoon"
   },
   {
     id: 2,
-    imgSrc: "/ksa/assets/images/home/demo15/category-2.jpg",
+    imgSrc: "/assets/images/home/demo15/category-2.jpg",
     altText: "Bakhoor Hind",
     subText: "Exotic warmth of saffron",
-    videoSrc: "/ksa/assets/videos/dakhoon/bakhoor-hind.mp4",
-    imgSrc2: "/ksa/assets/videos/dakhoon/thumbnails/bakhoor-hind.jpg",
+    videoSrc: "/assets/videos/dakhoon/bakhoor-hind.mp4",
+    imgSrc2: "/assets/videos/dakhoon/thumbnails/bakhoor-hind.jpg",
     link: "/product-category/dakhoon"
   },
   {
     id: 3,
-    imgSrc: "/ksa/assets/images/home/demo15/category-3.jpg",
+    imgSrc: "/assets/images/home/demo15/category-3.jpg",
     altText: "Oud Ma'attar Khususi",
     subText: "Citrus and oud, pure elegance",
-    videoSrc: "/ksa/assets/videos/dakhoon/khususi.mp4",
-    imgSrc2: "/ksa/assets/videos/dakhoon/thumbnails/majalis.jpg",
+    videoSrc: "/assets/videos/dakhoon/khususi.mp4",
+    imgSrc2: "/assets/videos/dakhoon/thumbnails/majalis.jpg",
     link: "/product-category/dakhoon"
   },
   {
     id: 4,
-    imgSrc: "/ksa/assets/images/home/demo15/category-4.jpg",
+    imgSrc: "/assets/images/home/demo15/category-4.jpg",
     altText: "Oud Ma'Attar Maliki",
     subText: "Royal saffron and oud bliss",
-    videoSrc: "/ksa/assets/videos/dakhoon/maliki.mp4",
-    imgSrc2: "/ksa/assets/videos/dakhoon/thumbnails/maliki.jpg",
+    videoSrc: "/assets/videos/dakhoon/maliki.mp4",
+    imgSrc2: "/assets/videos/dakhoon/thumbnails/maliki.jpg",
     link: "/product-category/dakhoon"
   },
   {
     id: 5,
-    imgSrc: "/ksa/assets/images/home/demo15/category-1.jpg",
+    imgSrc: "/assets/images/home/demo15/category-1.jpg",
     altText: "Oud Philippine",
     subText: "Citrus, roses, and musk bliss",
-    videoSrc: "/ksa/assets/videos/dakhoon/oud.mov",
-    imgSrc2: "/ksa/assets/videos/dakhoon/thumbnails/oud.jpg",
+    videoSrc: "/assets/videos/dakhoon/oud.mov",
+    imgSrc2: "/assets/videos/dakhoon/thumbnails/oud.jpg",
     link: "/product-category/dakhoon"
   },
 ];

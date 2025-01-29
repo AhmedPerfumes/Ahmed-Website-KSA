@@ -78,7 +78,7 @@ export default function VideoBanner() {
         id="video_banner_1"
         className="bg-video"
       >
-        <source src="/ksa/assets/videos/video_1.mp4" />
+        <source src="/assets/videos/video_1.mp4" />
       </video>
     </section>
   );

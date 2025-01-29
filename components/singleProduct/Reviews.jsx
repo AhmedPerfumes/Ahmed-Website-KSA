@@ -7,14 +7,14 @@ const reviews = [
     date: "April 06, 2023",
     text: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est…",
     rating: 5,
-    avatar: "/ksa/assets/images/avatar.jpg",
+    avatar: "/assets/images/avatar.jpg",
   },
   {
     name: "Benjam Porter",
     date: "April 06, 2023",
     text: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est…",
     rating: 5,
-    avatar: "/ksa/assets/images/avatar.jpg",
+    avatar: "/assets/images/avatar.jpg",
   },
 ];
 export default function Reviews() {

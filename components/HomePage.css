@@ -40,7 +40,7 @@
 }
 
 .section-1 {
-	background-image: url('/ksa/assets/images/home/demo8/avif/multiple-products-banner.avif');
+	background-image: url('/assets/images/home/demo8/avif/multiple-products-banner.avif');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: bottom;
@@ -54,7 +54,7 @@
 
 @media screen and (min-width: 320px) and (max-width: 1024px) {
   .section-1 {
-    background-image: url('/ksa/assets/images/home/demo8/avif/multiple-products-banner.avif');
+    background-image: url('/assets/images/home/demo8/avif/multiple-products-banner.avif');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: right;
@@ -69,7 +69,7 @@
 }
 
 .section-2 {
-	background-image: url('/ksa/assets/images/home/demo8/avif/collection-bnr.avif');
+	background-image: url('/assets/images/home/demo8/avif/collection-bnr.avif');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: bottom;
@@ -84,7 +84,7 @@
 
 @media screen and (min-width: 320px) and (max-width: 1024px) {
 	.section-2 {
-	  background-image: url('/ksa/assets/images/home/demo8/avif/collection-bnr.avif');
+	  background-image: url('/assets/images/home/demo8/avif/collection-bnr.avif');
 	  background-size: cover;
 	  background-repeat: no-repeat;
 	  background-position: right;
@@ -106,7 +106,7 @@
 }
 
 .section-4 {
-	background-image: url('/ksa/assets/images/home/demo8/avif/giftset-bnr.avif');
+	background-image: url('/assets/images/home/demo8/avif/giftset-bnr.avif');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: bottom;
@@ -121,7 +121,7 @@
 
 @media screen and (min-width: 320px) and (max-width: 1024px) {
 	.section-4 {
-	  background-image: url('/ksa/assets/images/home/demo8/avif/giftset-bnr.avif');
+	  background-image: url('/assets/images/home/demo8/avif/giftset-bnr.avif');
 	  background-size: cover;
 	  background-repeat: no-repeat;
 	  background-position: right;
@@ -129,7 +129,7 @@
   }
   
 .section-6 {
-	background-image: url('/ksa/assets/images/home/demo8/avif/dakhoon-bnr.avif');
+	background-image: url('/assets/images/home/demo8/avif/dakhoon-bnr.avif');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: bottom;
@@ -143,7 +143,7 @@
 
 @media screen and (min-width: 320px) and (max-width: 1024px) {
 	.section-6 {
-	  background-image: url('/ksa/assets/images/home/demo8/avif/dakhoon-bnr.avif');
+	  background-image: url('/assets/images/home/demo8/avif/dakhoon-bnr.avif');
 	  background-size: cover;
 	  background-repeat: no-repeat;
 	  background-position: left;
@@ -151,7 +151,7 @@
   }
 
   .section-7 {
-    background-image: url('/ksa/assets/images/home/demo8/avif/production.avif');
+    background-image: url('/assets/images/home/demo8/avif/production.avif');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: bottom;
@@ -165,7 +165,7 @@
 
 @media screen and (min-width: 320px) and (max-width: 1024px) {
     .section-7 {
-      background-image: url('/ksa/assets/images/home/demo8/avif/production.avif');
+      background-image: url('/assets/images/home/demo8/avif/production.avif');
       background-size: cover;
       background-repeat: no-repeat;
       background-position: right;

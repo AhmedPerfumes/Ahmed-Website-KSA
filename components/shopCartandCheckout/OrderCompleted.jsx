@@ -162,13 +162,13 @@ export default function OrderCompleted() {
             </tbody>
           </table>
         </div>
-        <a href='/ksa'
+        <a href='/'
           className="btn btn-primary w-100 text-uppercase mb-3"
         >
           Continue Shopping
         </a>
       </div>      
-    </div></> :  <a href='/ksa' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
+    </div></> :  <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
     </>
   );
 }

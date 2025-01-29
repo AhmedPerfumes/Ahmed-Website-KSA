@@ -22,7 +22,7 @@ export default function Footer9() {
                 <Image
                   width={112}
                   height={28}
-                  src="/ksa/assets/images/logo-black.png"
+                  src="/assets/images/logo-black.png"
                   alt="Ahmed"
                   className="logo__image d-block"
                 />

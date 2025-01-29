@@ -21,7 +21,7 @@ export default function MobileFooter1() {
       <div className="row text-center">
         <div className="col-4">
           <a
-            href="/ksa"
+            href="/"
             className="footer-mobile__link d-flex flex-column align-items-center"
           >
             <svg

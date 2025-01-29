@@ -98,7 +98,7 @@ export default function Footer18() {
             <div className="logo">
               <Link href="/">
                 <Image
-                  src="/ksa/assets/images/logo-watches-footer.png"
+                  src="/assets/images/logo-watches-footer.png"
                   alt="Ahmed"
                   width={112}
                   height={28}

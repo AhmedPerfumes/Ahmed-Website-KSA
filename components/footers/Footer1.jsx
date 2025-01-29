@@ -133,7 +133,7 @@ export default function Footer1() {
                   loading="lazy"
                   width={324}
                   height={38}
-                  src="/ksa/assets/images/payment-options.png"
+                  src="/assets/images/payment-options.png"
                   alt="Acceptable payment gateways"
                   className="mw-100"
                 />

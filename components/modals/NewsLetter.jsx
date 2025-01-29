@@ -78,11 +78,11 @@ export default function NewsLetter() {
                   height={650}
                   style={{ height: "fit-content" }}
                   loading="lazy"
-                  src="/ksa/assets/images/home/demo8/zumar.jpg"
+                  src="/assets/images/home/demo8/zumar.jpg"
                   className="h-100 w-100 object-fit-cover d-block"
                   alt="image"
                 />
-                {/* <VideoPanel src="/ksa/assets/videos/popup video.mp4" section='hundred'/> */}
+                {/* <VideoPanel src="/assets/videos/popup video.mp4" section='hundred'/> */}
               </div>
             </div>
             <div className="col-md-4 p-0 d-flex align-items-center text-center">

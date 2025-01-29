@@ -188,7 +188,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/ksa/assets/images/ahmed-icon.png"
+                        src="/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -239,9 +239,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/zumar@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /assets/images/best-sellers/notes/zumar@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/notes/zumar@2x.jpg"
+                                            src="/assets/images/best-sellers/notes/zumar@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -271,9 +271,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/zumar@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/zumar@1x.jpg 1x, /assets/images/best-sellers/zumar@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/zumar@2x.jpg"
+                                            src="/assets/images/best-sellers/zumar@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -311,9 +311,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/ksa/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/zumar@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /assets/images/best-sellers/notes/zumar@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/notes/zumar@2x.jpg"
+                                        src="/assets/images/best-sellers/notes/zumar@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -321,9 +321,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/ksa/assets/images/best-sellers/zumar@1x.jpg 1x, /ksa/assets/images/best-sellers/zumar@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/zumar@1x.jpg 1x, /assets/images/best-sellers/zumar@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/zumar.jpg"
+                                        src="/assets/images/best-sellers/zumar.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -384,9 +384,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg"
+                                            src="/assets/images/best-sellers/notes/binshaikh@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -416,9 +416,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/bin-shaikh@2x.jpg"
+                                            src="/assets/images/best-sellers/bin-shaikh@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -456,9 +456,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/ksa/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/notes/binshaikh@2x.jpg"
+                                        src="/assets/images/best-sellers/notes/binshaikh@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -466,9 +466,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/ksa/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /ksa/assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/bin-shaikh@1x.jpg"
+                                        src="/assets/images/best-sellers/bin-shaikh@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -529,9 +529,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
+                                            src="/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -561,9 +561,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/ignite-oud@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/ignite-oud@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/ignite-oud@2x.jpg"
+                                            src="/assets/images/best-sellers/ignite-oud@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -601,9 +601,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/ksa/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
+                                        src="/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -611,9 +611,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/ksa/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /ksa/assets/images/best-sellers/ignite-oud@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/ignite-oud@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/ignite-oud@1x.jpg"
+                                        src="/assets/images/best-sellers/ignite-oud@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -674,9 +674,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/notes/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/marj@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/notes/marj@1x.jpg 1x, /assets/images/best-sellers/notes/marj@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/notes/marj@2x.jpg"
+                                            src="/assets/images/best-sellers/notes/marj@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -706,9 +706,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/marj@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/marj@1x.jpg 1x, /assets/images/best-sellers/marj@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/marj@2x.jpg"
+                                            src="/assets/images/best-sellers/marj@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -746,9 +746,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/ksa/assets/images/best-sellers/notes/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/marj@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/notes/marj@1x.jpg 1x, /assets/images/best-sellers/notes/marj@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/notes/marj@2x.jpg"
+                                        src="/assets/images/best-sellers/notes/marj@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -756,9 +756,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/ksa/assets/images/best-sellers/marj@1x.jpg 1x, /ksa/assets/images/best-sellers/marj@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/marj@1x.jpg 1x, /assets/images/best-sellers/marj@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/marj@1x.jpg"
+                                        src="/assets/images/best-sellers/marj@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -819,9 +819,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
+                                            src="/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -851,9 +851,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /ksa/assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/oud-and-roses@2x.jpg"
+                                            src="/assets/images/best-sellers/oud-and-roses@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -891,9 +891,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/ksa/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
+                                        src="/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -901,9 +901,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/ksa/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /ksa/assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/oud-and-roses@1x.jpg"
+                                        src="/assets/images/best-sellers/oud-and-roses@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -964,9 +964,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/notes/kaaf@2x.jpg"
+                                            src="/assets/images/best-sellers/notes/kaaf@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -996,9 +996,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                     >
                                         <img
                                             className="img-classic loading-background"
-                                            srcSet="/ksa/assets/images/best-sellers/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/kaaf@2x.jpg 2x"
+                                            srcSet="/assets/images/best-sellers/kaaf@1x.jpg 1x, /assets/images/best-sellers/kaaf@2x.jpg 2x"
                                             sizes="(min-width: 768px) 1040w"
-                                            src="/ksa/assets/images/best-sellers/kaaf@2x.jpg"
+                                            src="/assets/images/best-sellers/kaaf@2x.jpg"
                                             alt=""
                                             loading="lazy"
                                             data-v-8967c2b9=""
@@ -1036,9 +1036,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-artist"
-                                        srcSet="/ksa/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/notes/kaaf@2x.jpg"
+                                        src="/assets/images/best-sellers/notes/kaaf@2x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -1046,9 +1046,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         data-v-399c522e=""
                                         data-v-8967c2b9=""
                                         className="img-classic img-fragrance"
-                                        srcSet="/ksa/assets/images/best-sellers/kaaf@1x.jpg 1x, /ksa/assets/images/best-sellers/kaaf@2x.jpg 2x"
+                                        srcSet="/assets/images/best-sellers/kaaf@1x.jpg 1x, /assets/images/best-sellers/kaaf@2x.jpg 2x"
                                         sizes="(min-width: 768px) 1040w"
-                                        src="/ksa/assets/images/best-sellers/kaaf@1x.jpg"
+                                        src="/assets/images/best-sellers/kaaf@1x.jpg"
                                         alt=""
                                         loading="lazy"
                                     />
@@ -1127,7 +1127,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/ksa/assets/images/ahmed-icon.png"
+                        src="/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1158,12 +1158,12 @@ const ScrollSnapHorizontalBootstrap = () => {
                             </div>
                             <div className="d-none d-md-block pb-3">
                                 <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel src="/ksa/assets/videos/multi-product.mp4" section='hundred'/>
+                                    <VideoPanel src="/assets/videos/multi-product.mp4" section='hundred'/>
                                 </div>
                             </div>
                             <div className="d-block d-sm-none pb-3">
                                 <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel src="/ksa/assets/videos/multi-product-mobile.mp4" section='hundred'/>
+                                    <VideoPanel src="/assets/videos/multi-product-mobile.mp4" section='hundred'/>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-center ">
@@ -1210,7 +1210,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/ksa/assets/images/ahmed-icon.png"
+                        src="/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1250,7 +1250,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <a href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}>
                         <Image
                             loading="lazy"
-                            src="/ksa/assets/images/Ihda-khas-giftset.jpg"
+                            src="/assets/images/Ihda-khas-giftset.jpg"
                             width="600"
                             height="600"
                             alt="Bakhoor-Ahmed"
@@ -1263,7 +1263,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     >
                         <Image
                             className="w-50 px-1"
-                            src="/ksa/assets/images/Antee-05-Giftset.jpg"
+                            src="/assets/images/Antee-05-Giftset.jpg"
                             width="600"
                             height="600"
                             alt="Oud-Asateen"
@@ -1276,7 +1276,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <a href={`/${locale}/shop/dakhoon/gift-sets`}>
                         <Image
                             loading="lazy"
-                            src="/ksa/assets/images/Ihda-khas-giftset.jpg"
+                            src="/assets/images/Ihda-khas-giftset.jpg"
                             width="600"
                             height="600"
                             alt="Bakhoor-Ahmed"
@@ -1287,7 +1287,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <a href={`/${locale}/shop/dakhoon/gift-sets`}>
                         <Image
                             className="w-100 h-100 px-1"
-                            src="/ksa/assets/images/Antee-05-Giftset.jpg"
+                            src="/assets/images/Antee-05-Giftset.jpg"
                             width="600"
                             height="600"
                             alt="Oud-Asateen"
@@ -1329,7 +1329,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/ksa/assets/images/ahmed-icon.png"
+                        src="/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1351,7 +1351,7 @@ const ScrollSnapHorizontalBootstrap = () => {
 
                 <div className="panel2 mt-5">
                     <div className="inner2">
-                        <VideoPanel src="/ksa/assets/videos/zumar-video.mp4" section='hundred'/>
+                        <VideoPanel src="/assets/videos/zumar-video.mp4" section='hundred'/>
                     </div>
                 </div>
 
@@ -1384,7 +1384,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         >
                             <img
                                 className="w-100"
-                                src="/ksa/assets/images/home/demo8/Bakhoor-Ahmed.jpg"
+                                src="/assets/images/home/demo8/Bakhoor-Ahmed.jpg"
                                 alt="Bakhoor Ahmed"
                             />
                         </Link>
@@ -1393,7 +1393,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         >
                             <img
                                 className="w-100"
-                                src="/ksa/assets/images/home/demo8/Oud-Asateen.jpg"
+                                src="/assets/images/home/demo8/Oud-Asateen.jpg"
                                 alt="Oud Asateen"
                             />
                         </Link>
@@ -1441,7 +1441,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         width={40}
                         height={40}
                         className="bottom-0 scroll-icon"
-                        src="/ksa/assets/images/ahmed-icon.png"
+                        src="/assets/images/ahmed-icon.png"
                         alt="logo Ahmed"
                         loading="lazy"
                     />
@@ -1462,7 +1462,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                 <div className="d-flex flex-column flex-md-row align-items-center justify-content-center mb-5 pt-5">
                     <div className="order-1 order-md-0">
                         <VideoPanel
-                            src="/ksa/assets/videos/production.mp4"
+                            src="/assets/videos/production.mp4"
                             section='hundred'
                         />
                     </div>
@@ -1488,7 +1488,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     <div className="order-0 order-md-1 mb-5">
                         <img
                             className="h-auto w-100"
-                            src="/ksa/assets/images/home/demo8/Shop.jpg"
+                            src="/assets/images/home/demo8/Shop.jpg"
                             alt="image"
                         />
                     </div>

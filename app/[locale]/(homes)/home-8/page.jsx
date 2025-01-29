@@ -25,7 +25,7 @@ export default function HomePage8() {
     return (
         <div
             style={{
-                backgroundImage: `url(/ksa/assets/background-ivory.webp)`,
+                backgroundImage: `url(/assets/background-ivory.webp)`,
             }}
         >
             <NewsLetter />

@@ -14,7 +14,7 @@ export default function Pagination1() {
         aria-valuemin="0"
         aria-valuemax="100"
       ></div> */}
-      <img src="/ksa/assets/images/page-loader.gif" alt="loading"/>
+      <img src="/assets/images/page-loader.gif" alt="loading"/>
     </div>
   );
 }
