@@ -375,6 +375,7 @@
   "ٌRedJewel": "Red Jewels",
   "Zumar": "Zumar",
   "La Rosee": "La Rosee",
+  "Miss Rose": "Miss Rose",
 
   "----------Gel Category---------":"----------Gel Category---------",
   "Marj Body Gel":"Marj Body Gel",
@@ -443,6 +444,7 @@
 "Red Jewel Description":"Red Jewel is a captivating fragrance that embodies elegance and charm, crafted for those who appreciate a rich, multi-layered olfactory experience.",
 "Cocoblend Description":"At the heart, a rich bouquet of Oud and the timeless beauty of Rose of Bulgaria intertwine with the delicate Orange Blossom and Vetiver. The serene notes of Water Lily and Damask Rose, enhanced by the exotic Frangipani Flower, evoke an aura of grace and sensuality.",
 "Aayah Description": "<p>AAYAH SINGS THE ETERNAL BALLAD OF BEAUTY</p>",
+"Miss Rose Description":"<p>'MISS ROSE EDP 100ml' invites you into a world of enchanting beauty and delightful aroma.</p>",
 
 
 "Shay Jadeed Content": "<p>Besiege in with tickling prefusions of shay jadeed. Let go the scents beyond the Middle East. Just a trifling amount of splash, fills your essence with liveliness; as juicy citruses sums the top the note with thier zesty flavors. </p>",
@@ -477,6 +479,7 @@
 "Green Pearl Content":"Green Pearl opens with a vibrant burst of juicy apple, luscious red fruits, crisp pear, and a zesty citrus accord, delicately enhanced by the subtle sweetness of orange blossom. As the fragrance unfolds, a captivating floral heart emerges, featuring the elegance of white flowers, rich jasmine, and the fresh charm of lily of the valley. The scent gracefully settles into a warm and sensual base, where the sweetness of amber, creamy vanilla, and maltol blend seamlessly with the soft allure of musk and the earthy depth of cedarwood. This exquisite fragrance offers a perfect balance of fruity freshness, floral sophistication, and comforting warmth, making Green Pearl ideal for those seeking a refined and lasting impression.",
 "Red Jewel Content":"The fragrance opens with a vibrant burst of bergamot, strawberry, and raspberry, creating a sparkling and fruity introduction that immediately commands attention.At its heart, delicate floral notes of jasmine and violet blend seamlessly with the creamy warmth of sandalwood, adding depth and sophistication.The base unfolds into a sensual embrace of musk, vanilla, amber, and milk notes, leaving a velvety, lingering trail of comfort and refinement.Red Jewel is more than just a scent; it's a statement of luxury and timeless beauty. Perfect for special occasions and moments when you want to leave a lasting impression.",
 "Cocoblend Content":"At the heart, a rich bouquet of Oud and the timeless beauty of Rose of Bulgaria intertwine with the delicate Orange Blossom and Vetiver, creating a sophisticated harmony. The serene notes of Water Lily and Damask Rose, enhanced by the exotic Frangipani Flower, evoke an aura of grace and sensuality. Together, these elements weave a mesmerizing fragrance that exudes elegance and allure, leaving a lingering, unforgettable impression that captivates the senses and transports you to a world of refined luxury.",
+"Miss Rose Content":"Behold MISS ROSE a fragrance that epitomizes the essence of femininity and sophistication. The top notes burst forth with bergamot, strawberry, and raspberry, offering a fresh and playful introduction. The heart notes unfold with jasmine, violet, and sandalwood, adding a floral and woody complexity that embodies grace. As the fragrance settles, the base notes of musk, vanilla, amber, and milk notes provide a warm and comforting foundation. MISS ROSE EDP 100ml is an enchanting olfactory journey, inviting you to embrace its timeless beauty and delightful aroma",
 
 "Shay Jadeed Notes": "<p>Top – citrus (Lemon) <br>heart – Flower (lavender vanilla) <br>base - woody (agarwood, frankincense)</p>",
 "Saba Horoof Notes": "<p>Top - Citrus </p><p>Heart - White floral -rosy </p><p>Base - Musky - woody </p>",
@@ -509,6 +512,7 @@
 "Abaan Notes":"<p>Top :Litchi, Jackfruit, Kiwi.</p><p>Heart : White chocolate, Orchid, Jasmine, Vanilla Cake Accord.</p><p>Bottom: Musk, Orris, Woody Accord</p>",
 "Maani Notes":"<p>TOP : ROSE, JASMINE</p> <p>HEART : LILLY OF THE VALLEY,VIOLET.</p> <p>BOTTOM : SANDALWOOD, CEDARWOOD, VETIVER.</p>",
 "Cocoblend Notes":"<p>TOP : ORANGE, MANDARIN, BERGAMOT, ORANGE BLOSSOM</p><p>HEART : TURKISH ROSE, JASMINE, YLANG-YLANG, MIMOSA.</p><p>BOTTOM : PATCHOULI, WHITEMUSK, VANILLA. VETIVER, TONKA BEAN, AMBROXAN.</p>",
+"Miss Rose Notes":"<p>Top - Bergamot, Strawberry, Raspberry</p><p>Heart - Jasmine, Violet, Sandalwood</p><p>Base - Musk, Vanilla, Amber, Milk Notes</p>",
 
 "----------EAU DE Parfum Single Product Page Occidental Fragrance":"----------EAU DE Parfum Single Product Page Occidental Fragrance",
 "Instance 60ML Description": "<p><span>Instance Perfume is a timeless and versatile fragrance that suits every occasion.</span></p>",
