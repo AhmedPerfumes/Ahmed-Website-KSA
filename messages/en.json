@@ -375,6 +375,7 @@
   "ٌRedJewel": "Red Jewels",
   "Zumar": "Zumar",
   "La Rosee": "La Rosee",
+  "Miss Rose": "Miss Rose",
 
   "----------Gel Category---------":"----------Gel Category---------",
   "Marj Body Gel":"Marj Body Gel",
@@ -398,6 +399,7 @@
 "Bidun esam Gift Set":"Bidun esam Gift Set",
 "Atri Gift Set":"Atri Gift Set",
 "The Dhakoon Collection":"The Dhakoon Collection",
+"Kun Bakhair Gift Set":"Kun Bakhair Gift Set",
 
 "----------Hair Mist Category":"----------Hair Mist Category",
 "Supreme Hair Mist":"Supreme Hair Mist",
@@ -442,6 +444,9 @@
 "Red Jewel Description":"Red Jewel is a captivating fragrance that embodies elegance and charm, crafted for those who appreciate a rich, multi-layered olfactory experience.",
 "Cocoblend Description":"At the heart, a rich bouquet of Oud and the timeless beauty of Rose of Bulgaria intertwine with the delicate Orange Blossom and Vetiver. The serene notes of Water Lily and Damask Rose, enhanced by the exotic Frangipani Flower, evoke an aura of grace and sensuality.",
 "Aayah Description": "<p>AAYAH SINGS THE ETERNAL BALLAD OF BEAUTY</p>",
+"Miss Rose Description":"<p>'MISS ROSE EDP 100ml' invites you into a world of enchanting beauty and delightful aroma.</p>",
+"Ameer AL Oud Description":"<p>Introducing Ameer Al Oud, a captivating fragrance that exudes opulence and sophistication in every drop.</p>",
+"Musk Kashmiri Description":"Introducing \"MUSK KASHMIRI,\" a captivating fragrance that evokes the serene beauty of the Kashmiri landscape.",
 
 
 "Shay Jadeed Content": "<p>Besiege in with tickling prefusions of shay jadeed. Let go the scents beyond the Middle East. Just a trifling amount of splash, fills your essence with liveliness; as juicy citruses sums the top the note with thier zesty flavors. </p>",
@@ -476,6 +481,9 @@
 "Green Pearl Content":"Green Pearl opens with a vibrant burst of juicy apple, luscious red fruits, crisp pear, and a zesty citrus accord, delicately enhanced by the subtle sweetness of orange blossom. As the fragrance unfolds, a captivating floral heart emerges, featuring the elegance of white flowers, rich jasmine, and the fresh charm of lily of the valley. The scent gracefully settles into a warm and sensual base, where the sweetness of amber, creamy vanilla, and maltol blend seamlessly with the soft allure of musk and the earthy depth of cedarwood. This exquisite fragrance offers a perfect balance of fruity freshness, floral sophistication, and comforting warmth, making Green Pearl ideal for those seeking a refined and lasting impression.",
 "Red Jewel Content":"The fragrance opens with a vibrant burst of bergamot, strawberry, and raspberry, creating a sparkling and fruity introduction that immediately commands attention.At its heart, delicate floral notes of jasmine and violet blend seamlessly with the creamy warmth of sandalwood, adding depth and sophistication.The base unfolds into a sensual embrace of musk, vanilla, amber, and milk notes, leaving a velvety, lingering trail of comfort and refinement.Red Jewel is more than just a scent; it's a statement of luxury and timeless beauty. Perfect for special occasions and moments when you want to leave a lasting impression.",
 "Cocoblend Content":"At the heart, a rich bouquet of Oud and the timeless beauty of Rose of Bulgaria intertwine with the delicate Orange Blossom and Vetiver, creating a sophisticated harmony. The serene notes of Water Lily and Damask Rose, enhanced by the exotic Frangipani Flower, evoke an aura of grace and sensuality. Together, these elements weave a mesmerizing fragrance that exudes elegance and allure, leaving a lingering, unforgettable impression that captivates the senses and transports you to a world of refined luxury.",
+"Miss Rose Content":"Behold MISS ROSE a fragrance that epitomizes the essence of femininity and sophistication. The top notes burst forth with bergamot, strawberry, and raspberry, offering a fresh and playful introduction. The heart notes unfold with jasmine, violet, and sandalwood, adding a floral and woody complexity that embodies grace. As the fragrance settles, the base notes of musk, vanilla, amber, and milk notes provide a warm and comforting foundation. MISS ROSE EDP 100ml is an enchanting olfactory journey, inviting you to embrace its timeless beauty and delightful aroma",
+"Ameer AL Oud Content":"Introducing Ameer Al Oud, a captivating fragrance that exudes opulence and sophistication in every drop. This 100ml bottle holds a symphony of rich, exotic notes that transport you to a realm of timeless luxury. Ameer Al Oud opens with the mesmerizing essence of rare oud wood, a precious ingredient revered for its deep, woody aroma.",
+"Musk Kashmiri Content":"Introducing \"MUSK KASHMIRI,\" a captivating fragrance that evokes the serene beauty of the Kashmiri landscape. At the top, bergamot, pink pepper, and pear blossom create a fresh and invigorating opening. The heart notes unveil jasmine and tuberose, adding a floral and intoxicating depth. As the fragrance settles, the base notes of musk and patchouli provide a warm and comforting foundation. \"MUSK KASHMIRI EDP 60ml\" is a captivating olfactory journey that invites you to embrace its timeless charm and enchanting aroma.",
 
 "Shay Jadeed Notes": "<p>Top – citrus (Lemon) <br>heart – Flower (lavender vanilla) <br>base - woody (agarwood, frankincense)</p>",
 "Saba Horoof Notes": "<p>Top - Citrus </p><p>Heart - White floral -rosy </p><p>Base - Musky - woody </p>",
@@ -508,6 +516,10 @@
 "Abaan Notes":"<p>Top :Litchi, Jackfruit, Kiwi.</p><p>Heart : White chocolate, Orchid, Jasmine, Vanilla Cake Accord.</p><p>Bottom: Musk, Orris, Woody Accord</p>",
 "Maani Notes":"<p>TOP : ROSE, JASMINE</p> <p>HEART : LILLY OF THE VALLEY,VIOLET.</p> <p>BOTTOM : SANDALWOOD, CEDARWOOD, VETIVER.</p>",
 "Cocoblend Notes":"<p>TOP : ORANGE, MANDARIN, BERGAMOT, ORANGE BLOSSOM</p><p>HEART : TURKISH ROSE, JASMINE, YLANG-YLANG, MIMOSA.</p><p>BOTTOM : PATCHOULI, WHITEMUSK, VANILLA. VETIVER, TONKA BEAN, AMBROXAN.</p>",
+"Miss Rose Notes":"<p>Top - Bergamot, Strawberry, Raspberry</p><p>Heart - Jasmine, Violet, Sandalwood</p><p>Base - Musk, Vanilla, Amber, Milk Notes</p>",
+"Ameer AL Oud Notes":"<p>TOP : ALDEHYDES, SAFFRON </p><p>HEART : ROSE, VANILLA, WOODS. </p><p>Base : LABDANUM, AGARWOODS, VANILLA.</p>",
+"Musk Kashmiri Notes":"<p>TOP : BERGAMOT, PINK PEPPER, PEAR BLOSSOM</p><p>HEART : JASMINE, TUBEROSE</p><p>BASE : MUSK, PATCHOULI</p>",
+
 
 "----------EAU DE Parfum Single Product Page Occidental Fragrance":"----------EAU DE Parfum Single Product Page Occidental Fragrance",
 "Instance 60ML Description": "<p><span>Instance Perfume is a timeless and versatile fragrance that suits every occasion.</span></p>",
@@ -575,6 +587,7 @@
 "Zumar Description": "<p>Zumar is a truly luxurious scent crafted for those who embrace elegance and sophistication, making it an essential addition to the collection of any perfume connoisseur.</p>",
 "Ghali Description": "<p>Ghali the scent of luxury and pure perfection.</p>",
 "Ghawi Description": "<p>Every drop reflects nature's purity and timeless elegance.</p>",
+"Mosaic Description":" MOSAIC is a celebration of individuality, offering a unique harmony of warmth, sweetness, and floral elegance for those who seek a signature scent as multifaceted as their personality.",
 
 "Instance 60ML Content": "<p><span>\"Whether you're preparing for a special evening out, a professional meeting, or just want to feel your best every day, this fragrance complements your style and personality effortlessly. The carefully selected notes in this perfume harmonize to create a scent that's both elegant and memorable, leaving a lasting impression that in the hearts and minds of those around you. Embrace the power of Instance Perfume and let your presence be felt, making every moment an unforgettable instance of beauty.\"</span></p>",
 "Oud Roses Content": "<p>The notes infuse sweet floral to a heavy musky fragrance from top to bottom while the hypnotic colour of this flask moves from pastel lavender to midnight black from bottom to top, exhibiting the mesmerizing beauty of opposites. The dynamic head note of Turkish rose sprinkled with tangy lemon and radiant peony is like a lush garden awakened in spring. This transitions to serene white flowers and musky agarwood, embodying the essence of a fragrant lily blooming on a damp moss-covered branch.</p>",
@@ -641,6 +654,8 @@
 "Ghali Content": "<p>Ghali the scent of luxury and pure perfection. The magical, tantalizing, enticing, and intoxicating perfume of Hindi Oud is beyond description; it is so rich, pristine, flawless, unique, and sophisticated that words fail to express it. An infusion of natural leather leads to a trail to a mellow but smoky start. Petals of white flowers bow their wings towards you in royalty, emitting the most sweet and delicious aromas, vanilla joins in with their attractive non- resistable luscious fragrances. As you reach to the end notes, white musks greets you with their warm hugs, hypnotizing you with calm and soothing essence. Precious amber with their golden aura adds an enchantment to entire arena. This absolutely stunning glass bottle adorned with a golden clasp holds 15 ml of concentrated oil.</p>",
 "Ghawi Content": "<p>The aroma is so pure, it promptly grabs your attention.  A bottle that, even after a decade, is immediately identifiable.  The first sensations of floral accords are sweet, not sickeningly saccharine but certainly a little sugary. The herby notes in Ghawi concentrated oil are full of freshness and contribute to the greenness of the perfume.  A tiny proportion of Indian roses are collected from the regions of Kannauj and added to the depth of the heart of perfume, which improves its surroundings with its enticing aroma. Vanilla adds a kind of magic to the flavor while simultaneously drifting a tiny pinch of powdery synthetic notes into the scent.  The foundation of perfume is made from the most expensive and luxurious elements. Rare and precious Indian oud chips, imported specifically from the state of Assam, are matured before being included in the oil. The most luxurious and pristine varieties of oud are extracted from the bark of old trees that grow in the jungles of Indonesia. This process yields the oud bark that is used to create the enchanted Cambodian oud oil blend. Its natural essence emphasizes its purity and affinity for nature. Amber and musk are both included in the art of forming GHAWI and thus have a more alluring aroma. </p>",
 "Moonlit Content":"Moonlit captures the magic of a moonlit night with its enchanting blend of citrus, nectarine, apple, black currant, gardenia, magnolia, jasmine, freesia, lily of the valley, patchouli, musk, sandalwood, vanilla, and amber, leaving a lasting impression of sophistication and charm.",
+"Mosaic Content":"MOSAIC is a masterful creation that captivates the senses with its luxurious blend of contrasts. The fragrance opens with an energizing burst of coffee and almond, beautifully balanced by the zesty brightness of orange and the rich warmth of cacao. At its heart, a sophisticated bouquet of white flowers, orris, and the timeless allure of Bulgarian rose exudes elegance and romance. As it dries down, the fragrance reveals a comforting base of tonka bean, vanilla, and praline, enriched by the creamy softness of sandalwood and the sensual depth of musk.",
+
 
 "Instance 60ML Notes": "<p><strong>Notes</strong></p><p>Top - pear, bergamot , pink pepper<br>Heart - rose , jasmine<br>Base - white musk, vanilla,patchouli, cedar</p>",
 "Oud Roses Notes": "<div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/product-notes-images/top-notes-oud-roses.jpg\" alt=\"Top Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Top Notes</h3><p>Floral (Turkish rose, lavender, lemon, peony)</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5 flex-column-reverse flex-lg-row\"><p class=\"order-1 order-lg-2\"><img class=\"img-fluid\" src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/product-notes-images/heart-images-oud-roses.jpg\" alt=\"first-notes-3.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5 order-2 order-lg-1\"><h3 class=\"mb-3 text-white\">Heart Notes</h3><p>Sweet (sandalwood, white flowers, frankincense)</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/product-notes-images/bottom-notes-oud-roses.jpg\" alt=\"Bottom Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Bottom Notes</h3><p>Musky( agarwood, guaiac wood, oak moss, Musk, amber)</p></div></div>",
@@ -708,6 +723,7 @@
 "Ghawi Notes": "<p>Top - Floral Accord, Herbs</p><p>Heart-Indian Rose, Vanilla, Powdery Notes </p><p>Base - Indian &amp; Cambodian Oud Notes, Amber, Musk</p>",
 "La Rosee Content":"La Rosée is a captivating blend of vibrant and sensual notes, beginning with a sparkling burst of pink pepper, mandarin, bergamot, passion fruit, and peach, enhanced by a sweet oud accord. Its heart reveals the elegance of Rose Grasse and Rose Bulgaria, enriched with almond, geranium, and caramel. The base unfolds with heliotrope, patchouli, vanilla, tonka, sugar, moss, musk, and oud, leaving a warm and irresistible trail.",
 "La Rosee Notes":"<p>TOP : PINK PEPPER, MANDARIN, BERGAMOT, PASSION FRUIT, PEACH, SWEET OUD ACCORD.</p><p>HEART : ROSE GRASSE, ROSE BULGARIA, ALMOND, GERANIUM, CARAMEL</p><p>BOTTOM : HELIOTROPE NOTES, PATCHOULI, VANILLA. TONKA, SUGAR, MOSS, MUSK, OUD</p>",
+"Mosaic Notes":"<p>TOP : Coffee, Almond, Orange, Cacao. </p><p>HEART : White flowers, Orris, Bulgarian Rose.</p><p>BOTTOM : Tonka bean, , Vanilla, Praline, Sandalwood, Musk,</p>",
 
 "----------Concentrated Parfum Single Product Page Dehn Al Oud":"----------Concentrated Parfum Single Product Page Dehn Al Oud",
 "Dehn Al Oud Kalakasi Description": "<p>Dehn Al Oud Kalakasi 3ML is an luxury fragrance known for its pure and natural oud composition.</p>",
@@ -937,6 +953,7 @@
 "Bidun Esam Gift Set Description": "<p>The Gift Set contains Bidun Esam 50ml, Bidun Esam 12ml &amp; Bidun Esam Gel</p>",
 "Atri Giftset Description": "<p>The Giftset contains ( Tanuf Oil e12 ml , Malyoon Oil e12 ml , Lamees Oil e12 ml , D\/oud AMG Oil e12 ml )</p>",
 "The Dukhoon Collection Description": "<p>The Dukhoon collection contains:</p><p>Oud Ma'attar Majalis, Mariya Oud Mubakhar 36 Grams, Bakhoor Ahmed 20 Tabs and Khashab Al Oud.</p>",
+"Kun Bakhair Gift Set Description": "<p>The Giftset contains Endless 100ml, Oud Classic 50ml, Dehn Al Oud Combodi 12ml, Oud Combodian 30Grams & a prayer Mat.</p>",
 
 "Qarnain Content": "<p>Elevate your EID festivities with our exquisite Qarnain Giftset, crafted with love and designed to capture the spirit of this joyous occasion.</p><p style=\"text-align:left;\">The Qarnain Gift Set is a trio set with Dehn Al Oud Indian Seufi 1.2ml, Dehn Al Oud Combodi 1.2ml, and Dehn Al Oud Mubakhkhar 1.2ml. Each one has a unique scent that everyone likes.</p><p>Celebrate the spirit of togetherness and generosity with our Qarnain Giftset, a token of appreciation that honors cherished traditions while embracing the spirit of modern elegance. Make this EID unforgettable with the perfect gift that speaks volumes of love, respect, and appreciation.</p><p>Experience the magic of EID with Qarnain Giftset - where tradition meets luxury. Order now and spread joy this festive season!</p>",
 "Shauque Al Shuyookh Content": "<p>This exquisite collection features the captivating Bin Shaikh Perfume, the timeless Oud Classic Perfume, and the rich Dehn Al Oudh Mubakhar. Accompanied by a beautifully crafted Mabkhar, an elegant Prayer Mat, and a traditional Masbaha, this set is the perfect gift for those who appreciate elegance and tradition.</p>",
@@ -953,6 +970,7 @@
 "Bidun Esam Gift Set Content": "<p>The Gift Set contains Bidun Esam 50ml, Bidun Esam 12ml &amp; Bidun Esam Gel</p>",
 "Atri Giftset Content": "<p>The Giftset contains ( Tanuf Oil e12 ml , Malyoon Oil e12 ml , Lamees Oil e12 ml , D/oud AMG Oil e12 ml )</p>",
 "The Dukhoon Collection Content": "<p>Enhancing leisure with a range of traditional blended Dukhoons.</p><p>The Dukhoon collection contains:</p><p>Oud Ma’attar Majalis, Mariya Oud Mubakhar 36 Grams, Bakhoor Ahmed 20 Tabs and Khashab Al Oud.</p>",
+"Kun Bakhair Gift Set Content": "<p>The Giftset contains Endless 100ml, Oud Classic 50ml, Dehn Al Oud Combodi 12ml, Oud Combodian 30Grams & a prayer Mat.</p>",
 
 "Qarnain Notes": "<p>Dehn Al Oud Indian Seufi 1.2ml<br>Dehn Al Oud Combodi 1.2ml<br>Dehn Al Oud Mubakhkhar 1.2ml</p>",
 "Shauque Al Shuyookh Notes": "<p>Bin Shaikh Perfume<br>Oud Classic Perfume<br>Dehn Al Oudh Mubakhar<br>Mabkhar<br>Prayer Mat</p>",
@@ -969,6 +987,7 @@
 "Bidun Esam Gift Set Notes": "<p>The Gift Set contains Bidun Esam 50ml, Bidun Esam 12ml &amp; Bidun Esam Gel</p>",
 "Atri Giftset Notes": "<p>The Giftset contains ( Tanuf Oil e12 ml , Malyoon Oil e12 ml , Lamees Oil e12 ml , D/oud AMG Oil e12 ml )</p>",
 "The Dukhoon Collection Notes": "<p>Oud Ma’attar Majalis, Mariya Oud Mubakhar 36 Grams, Bakhoor Ahmed 20 Tabs and Khashab Al Oud.</p>",
+"Kun Bakhair Gift Set Notes": "<p></p>",
 
 "----------Gel Single Product Page Body Gel":"----------Gel Single Product Page Body Gel",
 "Marj Body Gel Description": "<p>Experience pampered, refreshed skin with the elegant, multi-note fragrance of our enchanting body gel.</p>",
