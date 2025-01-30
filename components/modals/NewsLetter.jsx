@@ -73,6 +73,7 @@ export default function NewsLetter() {
           <div className="row p-0 m-0">
             <div className="col-md-8 p-0">
               <div className="newsletter-popup__bg h-100 w-100">
+                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
                 <Image
                   width={550}
                   height={650}
@@ -81,26 +82,24 @@ export default function NewsLetter() {
                   src="/assets/images/home/demo8/zumar.jpg"
                   className="h-100 w-100 object-fit-cover d-block"
                   alt="image"
-                />
+                  />
+                  </Link>
                 {/* <VideoPanel src="/assets/videos/popup video.mp4" section='hundred'/> */}
               </div>
             </div>
             <div className="col-md-4 p-0 d-flex align-items-center text-center">
               <div className="block-newsletter w-100">
-                <h3 className="section-title fw-normal mb-3 pb-2" style={{ color: '#cfa91a' }}>
-                  SHOP & WIN
-                  {/* Coming Soon */}
+              <h3 className="section-title fw-normal mb-3 pb-2" style={{ color: '#cfa91a' }}>
+                  Zumar
                 </h3>
                 <p>
-                  Purchase above AED 250 and get a chance to WIN. <br />
-                  Valid till 30th Jan 2025. <br />
-                  Terms & Conditions apply.
+                Zumar is a truly luxurious scent crafted for those who embrace elegance and sophistication, making it an essential addition to the collection of any perfume connoisseur.
                   {/* <b className="sub-title">Don't miss out.</b> */}
 
                 </p>
                 <a
                   className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
-                  href={`/${locale}/shop`}
+                  href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}
                 >
                   Shop Now
                 </a>
