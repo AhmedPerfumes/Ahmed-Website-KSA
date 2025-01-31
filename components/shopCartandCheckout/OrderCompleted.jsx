@@ -140,10 +140,10 @@ export default function OrderCompleted() {
                 <th>SHIPPING</th>
                 <td>{(orderDetails.sub_total).toFixed(2) >= 300 ? 'You Got Free Shipping' : `Shipping Cost: ${ shippingServiceCharges[0].price }${ currency.symbol }`}</td>
               </tr>
-              <tr>
+              {/* <tr>
                 <th>SERVICE FEE</th>
                 <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
-              </tr>
+              </tr> */}
               <tr>
                 <th>TOTAL</th>
                 <td>{parseFloat(orderDetails.total).toFixed(2)}{ currency.symbol } (includes { orderDetails.shipping_amount > 0 ? (

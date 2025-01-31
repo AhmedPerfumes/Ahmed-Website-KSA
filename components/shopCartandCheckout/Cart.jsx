@@ -322,10 +322,10 @@ export default function Cart() {
                       </div> */}
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <th>SERVICE FEE</th>
                     <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
-                  </tr>
+                  </tr> */}
                   <tr>
                     <th>Total</th>
                     <td>
