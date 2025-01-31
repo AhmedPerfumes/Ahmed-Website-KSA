@@ -78,7 +78,6 @@ export default function MobileFooter2() {
           Ahmed Al Maghribi Perfume Manuf L.L.C, <br />
           Madinah Al Munawwarah <br />
           Kingdom Of Saudi Arabia <br />
-          UAE
         </p>
 
         <p className="m-0 text-white text-center">
