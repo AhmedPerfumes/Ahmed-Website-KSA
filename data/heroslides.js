@@ -236,53 +236,48 @@ export const slidesData2 = [
   },
 ];
 export const slidesData3 = [
-  // {
-  //   id: 3,
-  //   imageSrc: "/assets/images/home/demo8/raffle-draw.jpg",
-  //   season: "",
-  //   // objectPosition: "50% center",
-  //   title: "",
-  //   subtitle: "",
-  //   href: "/shop/",
-  // },
   {
     id: 1,
-    imageSrc: "/assets/images/home/demo8/avif/Ignite-rose-web-Banner.avif",
-    season: "Tailored Elegance",
+    imageSrc: "/assets/images/home/la-rose.jpg",
+    season: "La Rosee",
     objectPosition: "50% center",
     title: "Feel Luxurious",
     subtitle: "with",
-    href: "shop/perfumes/occidental-fragrance/ignite-rose",
+    href: "shop/perfumes/occidental-fragrance/la-rosee",
+    color: "text-black"
   },
   {
     id: 2,
     imageSrc: "/assets/images/zumar-bnr.jpg",
-    season: "Lasting",
+    season: "Zumar",
     objectPosition: "70% center",
     title: "Redefines luxury &",
     subtitle: "evokes the spirit of royalty",
     href: "shop/perfumes/occidental-fragrance/zumar",
+    color: "text-white"
   },
   
 ];
 export const slidesData33 = [
-  // {
-  //   id: 3,
-  //   imageSrc: "/assets/images/home/demo8/raffle-draw-mobile-new.jpg",
-  //   season: "",
-  //   objectPosition: "50% center",
-  //   title: "",
-  //   subtitle: "",
-  //   href: "/shop/",
-  // },
+  {
+    id: 1,
+    imageSrc: "/assets/images/home/la-rose.jpg",
+    season: "La Rosee",
+    objectPosition: "50% center",
+    title: "Feel Luxurious",
+    subtitle: "with",
+    href: "shop/perfumes/occidental-fragrance/la-rosee",
+    color: "text-black"
+  },
   {
     id: 2,
     imageSrc: "/assets/images/zumar-bnr.jpg",
-    season: "Lasting",
+    season: "Zumar",
     objectPosition: "70% center",
     title: "Redefines luxury &",
     subtitle: "evokes the spirit of royalty",
     href: "shop/perfumes/occidental-fragrance/zumar",
+    color: "text-white"
   },
 
 ];
@@ -482,7 +477,7 @@ export const slideData1000 = [
     bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
     title: "Natural Glow",
     description:
-      "Free Shipping on orders SAR 300 and above",
+      "Free Shipping on orders AED 400 and above",
   },
   {
     id: 2,
@@ -498,13 +493,7 @@ export const slideData1000 = [
   //   description:
   //     "FOR ANY INQUIRIES, PLEASE CONTACT OUR CUSTOMER CARE TEAM AT +800 472 1828",
   // },
-  {
-    id: 3,
-    bgImage: "/assets/images/home/demo15/slider2_bg.jpg",
-    title: "Natural Glow",
-    description:
-      "Welcome to Ahmed Perfumes KSA",
-  },
+ 
 ];
 
 

@@ -20,6 +20,7 @@ import Image from "next/image";
 import Link from "next/link";
 import "swiper/css/pagination";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import ProductSlider from "./ProductSlider";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -101,7 +102,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                 ease: "none",
                 scrollTrigger: {
                     trigger: ".cont",
-                    start: 'top top',
+                    start: "top top",
                     end: `+=${panels.length * window.innerWidth}`,
                     pin: true,
                     scrub: 1,
@@ -152,7 +153,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                 <Hero />
             </section>
             <div className="d-block d-lg-none">
-                <Hero2/>
+                <Hero2 />
             </div>
 
             <section className="scroll-section d-flex flex-direction-column section-1">
@@ -175,10 +176,10 @@ const ScrollSnapHorizontalBootstrap = () => {
                         </p>
                         <div className="d-flex justify-content-center pt-5">
                             <Link
-                                href={`/${locale}/shop`}
-                                className="btn-link btn-link_lg default-underline text-uppercase fw-medium text-white"
+                                href={`/${locale}/product-category/perfumes`}
+                                className="btn-rounded btn-link_lg  text-uppercase fw-medium text-white"
                             >
-                                {t("Discover Now")}
+                                {t("Shop Now")}
                             </Link>
                         </div>
                     </div>
@@ -200,7 +201,7 @@ const ScrollSnapHorizontalBootstrap = () => {
 
             <section
                 id="second-chapter-slider"
-                className="container flex__column__center"
+                className="container flex__column__center justify-content-center"
                 data-v-ea8e1c8e=""
             >
                 <div
@@ -208,892 +209,12 @@ const ScrollSnapHorizontalBootstrap = () => {
                     data-v-ea8e1c8e=""
                 >
                     <h2 className="h1 text-center pt-3">{t("Best Sellers")}</h2>
-                    <div className="t__m t__color-blue" data-v-ea8e1c8e="">
+                    <p className="text-center section-paragraph">
                         {t("Discover Best Selling")}
-                    </div>
+                    </p>
                 </div>
 
-                <div
-                    className="swiper swiper-initialized swiper-horizontal slider-artist swiper-backface-hidden mySwiper"
-                    data-v-8967c2b9=""
-                >
-                    <div className="swiper-wrapper">
-                        {/* First slider */}
-                        <div
-                            className="swiper-slide slide"
-                            data-swiper-slide-index="0"
-                            data-v-8967c2b9=""
-                            style={{ width: "752px", marginRight: "10px" }}
-                        >
-                            <div
-                                className="container-desktop d-none d-md-block"
-                                data-v-8967c2b9=""
-                            >
-                                <div
-                                    className="container-desktop"
-                                    data-v-8967c2b9=""
-                                >
-                                    <div
-                                        className="col-left"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /assets/images/best-sellers/notes/zumar@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/zumar@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <div
-                                            className="container-artist flex__column__left"
-                                            data-v-8967c2b9=""
-                                        >
-                                            <div
-                                                className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {t("Zumar")}
-                                            </div>
-                                            <div
-                                                className="t__sub-title t__color-blue"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {/* as painted by Geoffroy Pithon */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="col-right"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/zumar@1x.jpg 1x, /assets/images/best-sellers/zumar@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/zumar@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
-                                            <button
-                                                className="btn-classic"
-                                                data-v-8967c2b9=""
-                                                data-v-7aa9e1a2=""
-                                                // onClick={() =>
-                                                //     window.open(
-                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/zumar"
-                                                //     )
-                                                // }
-                                            >
-                                                <span data-v-7aa9e1a2="">
-                                                    Discover
-                                                </span>
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                data-v-8967c2b9=""
-                                className="container-mobile d-sm-block d-md-none"
-                            >
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-images"
-                                >
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/zumar@1x.jpg 1x, /assets/images/best-sellers/notes/zumar@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/zumar@2x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/zumar@1x.jpg 1x, /assets/images/best-sellers/zumar@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/zumar.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-artist flex__column__left"
-                                >
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                    >
-                                        {t("Zumar")}
-                                    </div>
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__sub-title t__color-blue"
-                                    >
-                                        {/* as painted by Geoffroy Pithon */}
-                                    </div>
-                                </div>
-                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
-                                    <button
-                                        // onClick={() =>
-                                        //     window.open(
-                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/zumar"
-                                        //     )
-                                        // }
-                                        data-v-7aa9e1a2=""
-                                        data-v-8967c2b9=""
-                                        className="btn-classic"
-                                    >
-                                        <span data-v-7aa9e1a2="">Discover</span>
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                        {/* First slider */}
-
-                        {/* Second slider */}
-                        <div
-                            className="swiper-slide slide"
-                            data-swiper-slide-index="1"
-                            data-v-8967c2b9=""
-                            style={{ width: "752px", marginRight: "10px" }}
-                        >
-                            <div
-                                className="container-desktop d-none d-md-block"
-                                data-v-8967c2b9=""
-                            >
-                                <div
-                                    className="container-desktop"
-                                    data-v-8967c2b9=""
-                                >
-                                    <div
-                                        className="col-left"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/binshaikh@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <div
-                                            className="container-artist flex__column__left"
-                                            data-v-8967c2b9=""
-                                        >
-                                            <div
-                                                className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {t("Bin Shaikh")}
-                                            </div>
-                                            <div
-                                                className="t__sub-title t__color-blue"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {/* as painted by Gabrielle Rul */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="col-right"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/bin-shaikh@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}>
-                                            <button
-                                                // onClick={() =>
-                                                //     window.open(
-                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/bin-shaikh"
-                                                //     )
-                                                // }
-                                                className="btn-classic"
-                                                data-v-8967c2b9=""
-                                                data-v-7aa9e1a2=""
-                                            >
-                                                <span data-v-7aa9e1a2="">
-                                                    Discover
-                                                </span>
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                data-v-8967c2b9=""
-                                className="container-mobile d-sm-block d-md-none"
-                            >
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-images"
-                                >
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/binshaikh@1x.jpg 1x, /assets/images/best-sellers/notes/binshaikh@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/binshaikh@2x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/bin-shaikh@1x.jpg 1x, /assets/images/best-sellers/bin-shaikh@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/bin-shaikh@1x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-artist flex__column__left"
-                                >
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                    >
-                                        {t("Bin Shaikh")}
-                                    </div>
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__sub-title t__color-blue"
-                                    >
-                                        {/* as painted by Gabrielle Rul */}
-                                    </div>
-                                </div>
-                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}>
-                                    <button
-                                        // onClick={() =>
-                                        //     window.open(
-                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/bin-shaikh"
-                                        //     )
-                                        // }
-                                        data-v-7aa9e1a2=""
-                                        data-v-8967c2b9=""
-                                        className="btn-classic"
-                                    >
-                                        <span data-v-7aa9e1a2="">Discover</span>
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                        {/* Second slider */}
-
-                        {/* Third slider */}
-                        <div
-                            className="swiper-slide slide"
-                            data-swiper-slide-index="2"
-                            data-v-8967c2b9=""
-                            style={{ width: "752px", marginRight: "10px" }}
-                        >
-                            <div
-                                className="container-desktop d-none d-md-block"
-                                data-v-8967c2b9=""
-                            >
-                                <div
-                                    className="container-desktop"
-                                    data-v-8967c2b9=""
-                                >
-                                    <div
-                                        className="col-left"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <div
-                                            className="container-artist flex__column__left"
-                                            data-v-8967c2b9=""
-                                        >
-                                            <div
-                                                className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {t("Ignite Oud")}
-                                            </div>
-                                            <div
-                                                className="t__sub-title t__color-blue"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {/* as painted by Ziling Wang */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="col-right"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/ignite-oud@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/ignite-oud@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <Link href={`/${locale}/shop/perfumes/occidental-fragrance/ignite-oud`}>
-                                            <button
-                                                // onClick={() =>
-                                                //     window.open(
-                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/ignite-oud"
-                                                //     )
-                                                // }
-                                                className="btn-classic"
-                                                data-v-8967c2b9=""
-                                                data-v-7aa9e1a2=""
-                                            >
-                                                <span data-v-7aa9e1a2="">
-                                                    Discover
-                                                </span>
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                data-v-8967c2b9=""
-                                className="container-mobile d-sm-block d-md-none"
-                            >
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-images"
-                                >
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/notes/ignite-oud@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/ignite-oud@2x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/ignite-oud@1x.jpg 1x, /assets/images/best-sellers/ignite-oud@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/ignite-oud@1x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-artist flex__column__left"
-                                >
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                    >
-                                        {t("Ignite Oud")}
-                                    </div>
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__sub-title t__color-blue"
-                                    >
-                                        {/* as painted by Ziling Wang */}
-                                    </div>
-                                </div>
-                                <Link href={`/${locale}/shop/perfumes/occidental-fragrance/ignite-oud`}>
-                                    <button
-                                        // onClick={() =>
-                                        //     window.open(
-                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/ignite-oud"
-                                        //     )
-                                        // }
-                                        data-v-7aa9e1a2=""
-                                        data-v-8967c2b9=""
-                                        className="btn-classic"
-                                    >
-                                        <span data-v-7aa9e1a2="">Discover</span>
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                        {/* Third slider */}
-
-                        {/* Fourth slider */}
-                        <div
-                            className="swiper-slide slide"
-                            data-swiper-slide-index="3"
-                            data-v-8967c2b9=""
-                            style={{ width: "752px", marginRight: "10px" }}
-                        >
-                            <div
-                                className="container-desktop d-none d-md-block"
-                                data-v-8967c2b9=""
-                            >
-                                <div
-                                    className="container-desktop"
-                                    data-v-8967c2b9=""
-                                >
-                                    <div
-                                        className="col-left"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/marj@1x.jpg 1x, /assets/images/best-sellers/notes/marj@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/marj@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <div
-                                            className="container-artist flex__column__left"
-                                            data-v-8967c2b9=""
-                                        >
-                                            <div
-                                                className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {t("Marj")}
-                                            </div>
-                                            <div
-                                                className="t__sub-title t__color-blue"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {/* s painted by Zoé Rumeau */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="col-right"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/marj@1x.jpg 1x, /assets/images/best-sellers/marj@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/marj@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/marj`}>
-                                            <button
-                                                // onClick={() =>
-                                                //     window.open(
-                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/marj"
-                                                //     )
-                                                // }
-                                                className="btn-classic"
-                                                data-v-8967c2b9=""
-                                                data-v-7aa9e1a2=""
-                                            >
-                                                <span data-v-7aa9e1a2="">
-                                                    Discover
-                                                </span>
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                data-v-8967c2b9=""
-                                className="container-mobile d-sm-block d-md-none"
-                            >
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-images"
-                                >
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/marj@1x.jpg 1x, /assets/images/best-sellers/notes/marj@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/marj@2x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/marj@1x.jpg 1x, /assets/images/best-sellers/marj@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/marj@1x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-artist flex__column__left"
-                                >
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                    >
-                                        {t("Marj")}
-                                    </div>
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__sub-title t__color-blue"
-                                    >
-                                        {/* as painted by Zoé Rumeau */}
-                                    </div>
-                                </div>
-                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/marj`}>
-                                    <button
-                                        // onClick={() =>
-                                        //     window.open(
-                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/marj"
-                                        //     )
-                                        // }
-                                        data-v-7aa9e1a2=""
-                                        data-v-8967c2b9=""
-                                        className="btn-classic"
-                                    >
-                                        <span data-v-7aa9e1a2="">Discover</span>
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                        {/* Fourth slider */}
-
-                        {/* Fifth slider */}
-                        <div
-                            className="swiper-slide slide"
-                            data-swiper-slide-index="4"
-                            data-v-8967c2b9=""
-                            style={{ width: "752px", marginRight: "10px" }}
-                        >
-                            <div
-                                className="container-desktop d-none d-md-block"
-                                data-v-8967c2b9=""
-                            >
-                                <div
-                                    className="container-desktop"
-                                    data-v-8967c2b9=""
-                                >
-                                    <div
-                                        className="col-left"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <div
-                                            className="container-artist flex__column__left"
-                                            data-v-8967c2b9=""
-                                        >
-                                            <div
-                                                className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {t("Oud & Roses")}
-                                            </div>
-                                            <div
-                                                className="t__sub-title t__color-blue"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {/* as painted by Zoé Rumeau */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="col-right"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/oud-and-roses@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <Link href={`/${locale}/shop/perfumes/occidental-fragrance/oud-roses`}>
-                                            <button
-                                                // onClick={() =>
-                                                //     window.open(
-                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/oud-roses"
-                                                //     )
-                                                // }
-                                                className="btn-classic"
-                                                data-v-8967c2b9=""
-                                                data-v-7aa9e1a2=""
-                                            >
-                                                <span data-v-7aa9e1a2="">
-                                                    Discover
-                                                </span>
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                data-v-8967c2b9=""
-                                className="container-mobile d-sm-block d-md-none"
-                            >
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-images"
-                                >
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/oud-and-rose@1x.jpg 1x, /assets/images/best-sellers/notes/oud-and-rose@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/oud-and-rose@2x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/oud-and-roses@1x.jpg 1x, /assets/images/best-sellers/oud-and-roses@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/oud-and-roses@1x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-artist flex__column__left"
-                                >
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                    >
-                                       {t("Oud & Roses")}
-                                    </div>
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__sub-title t__color-blue"
-                                    >
-                                        {/* Sculptured by Victoire de Lencquesaing */}
-                                    </div>
-                                </div>
-                                <Link href={`/${locale}/shop/perfumes/occidental-fragrance/oud-roses`}>
-                                    <button
-                                        // onClick={() =>
-                                        //     window.open(
-                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/occidental-fragrance/oud-roses"
-                                        //     )
-                                        // }
-                                        data-v-7aa9e1a2=""
-                                        data-v-8967c2b9=""
-                                        className="btn-classic"
-                                    >
-                                        <span data-v-7aa9e1a2="">Discover</span>
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                        {/* Fifth slider */}
-
-                        {/* Sixth slider */}
-                        <div
-                            className="swiper-slide slide"
-                            data-swiper-slide-index="5"
-                            data-v-8967c2b9=""
-                            style={{ width: "752px", marginRight: "10px" }}
-                        >
-                            <div
-                                className="container-desktop d-none d-md-block"
-                                data-v-8967c2b9=""
-                            >
-                                <div
-                                    className="container-desktop"
-                                    data-v-8967c2b9=""
-                                >
-                                    <div
-                                        className="col-left"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/notes/kaaf@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <div
-                                            className="container-artist flex__column__left"
-                                            data-v-8967c2b9=""
-                                        >
-                                            <div
-                                                className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                                data-v-8967c2b9=""
-                                            >
-                                              {t("Kaaf")}
-                                            </div>
-                                            <div
-                                                className="t__sub-title t__color-blue"
-                                                data-v-8967c2b9=""
-                                            >
-                                                {/* as painted by Zoé Rumeau */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="col-right"
-                                        data-v-8967c2b9=""
-                                    >
-                                        <img
-                                            className="img-classic loading-background"
-                                            srcSet="/assets/images/best-sellers/kaaf@1x.jpg 1x, /assets/images/best-sellers/kaaf@2x.jpg 2x"
-                                            sizes="(min-width: 768px) 1040w"
-                                            src="/assets/images/best-sellers/kaaf@2x.jpg"
-                                            alt=""
-                                            loading="lazy"
-                                            data-v-8967c2b9=""
-                                            data-v-399c522e=""
-                                        />
-                                        <Link href={`/${locale}/shop/perfumes/oriental-fragrance/kaaf`}>
-                                            <button
-                                                // onClick={() =>
-                                                //     window.open(
-                                                //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/kaaf"
-                                                //     )
-                                                // }
-                                                className="btn-classic"
-                                                data-v-8967c2b9=""
-                                                data-v-7aa9e1a2=""
-                                            >
-                                                <span data-v-7aa9e1a2="">
-                                                    Discover
-                                                </span>
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                data-v-8967c2b9=""
-                                className="container-mobile d-sm-block d-md-none"
-                            >
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-images"
-                                >
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-artist"
-                                        srcSet="/assets/images/best-sellers/notes/kaaf@1x.jpg 1x, /assets/images/best-sellers/notes/kaaf@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/notes/kaaf@2x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        data-v-399c522e=""
-                                        data-v-8967c2b9=""
-                                        className="img-classic img-fragrance"
-                                        srcSet="/assets/images/best-sellers/kaaf@1x.jpg 1x, /assets/images/best-sellers/kaaf@2x.jpg 2x"
-                                        sizes="(min-width: 768px) 1040w"
-                                        src="/assets/images/best-sellers/kaaf@1x.jpg"
-                                        alt=""
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div
-                                    data-v-8967c2b9=""
-                                    className="container-artist flex__column__left"
-                                >
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__h4 t__color-primary t__capitalize fs-2 font-weight-bold"
-                                    >
-                                        {t("Kaaf")}
-                                    </div>
-                                    <div
-                                        data-v-8967c2b9=""
-                                        className="t__sub-title t__color-blue"
-                                    >
-                                        {/* Imagined by François Azambourg */}
-                                    </div>
-                                </div>
-                                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/kaaf`}>
-                                    <button
-                                        // onClick={() =>
-                                        //     window.open(
-                                        //         "https://www.ahmed-perfume.com/en/shop/perfumes/oriental-fragrance/kaaf"
-                                        //     )
-                                        // }
-                                        data-v-7aa9e1a2=""
-                                        data-v-8967c2b9=""
-                                        className="btn-classic"
-                                    >
-                                        <span data-v-7aa9e1a2="">Discover</span>
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                        {/* Sixth slider */}
-                    </div>
-
-                    {/* Navigation buttons */}
-                    <div className="swiper-button-next"></div>
-                    <div className="swiper-button-prev"></div>
-                    {/* Pagination Bullets */}
-                </div>
+                <ProductSlider prodSlide="bestSellers" />
             </section>
 
             <section className="scroll-section d-flex flex-direction-column section-2">
@@ -1115,9 +236,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                         <div className="d-flex justify-content-center pt-5">
                             <Link
                                 href={`/${locale}/shop`}
-                                className="btn-link btn-link_lg default-underline text-uppercase fw-medium text-white"
+                                className="btn-rounded btn-link_lg  text-uppercase fw-medium text-white"
                             >
-                                {t("Discover Now")}
+                                {t("Shop Now")}
                             </Link>
                         </div>
                     </div>
@@ -1140,8 +261,8 @@ const ScrollSnapHorizontalBootstrap = () => {
             <section className="d-flex section-3">
                 <div className="">
                     <div className="section-content">
-                        <div className="d-flex flex-column justify-content-around gap-5">
-                            <div className="section-head">
+                        <div className="d-flex flex-column justify-content-around ">
+                            <div className="section-head pt-5 pb-5">
                                 <h2 className="text-center">
                                     {t("Crafted for The")}
                                     <br />
@@ -1149,29 +270,41 @@ const ScrollSnapHorizontalBootstrap = () => {
                                         {t("discerning")}
                                     </span>
                                 </h2>
-                                <p className="text-center section-paragraph">
+                                {/* <p className="text-center section-paragraph">
                                     {t(
                                         "Explore our exclusive collection of refined scents"
                                     )}
                                     <br />{" "}
-                                </p>
+                                </p> */}
                             </div>
                             <div className="d-none d-md-block pb-3">
                                 <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel src="/assets/videos/multi-product.mp4" section='hundred'/>
+                                    <VideoPanel
+                                        src="/assets/videos/multi-product.mp4"
+                                        section="hundred"
+                                    />
                                 </div>
                             </div>
                             <div className="d-block d-sm-none pb-3">
                                 <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel src="/assets/videos/multi-product-mobile.mp4" section='hundred'/>
+                                    <VideoPanel
+                                        src="/assets/videos/multi-product-mobile.mp4"
+                                        section="hundred"
+                                    />
                                 </div>
                             </div>
+                            <p className="text-center section-paragraph">
+                                {t(
+                                    "Explore our exclusive collection of refined scents"
+                                )}
+                                <br />{" "}
+                            </p>
                             <div className="d-flex justify-content-center ">
                                 <Link
                                     href={`/${locale}/shop`}
-                                    className="btn-link btn-link_lg default-underline text-uppercase fw-medium "
+                                    className="btn-rounded btn-link_lg  text-uppercase fw-medium "
                                 >
-                                    {t("Discover Now")}
+                                    {t("Shop Now")}
                                 </Link>
                             </div>
                         </div>
@@ -1198,9 +331,9 @@ const ScrollSnapHorizontalBootstrap = () => {
                         <div className="d-flex justify-content-center pt-5">
                             <Link
                                 href={`/${locale}/shop`}
-                                className="btn-link btn-link_lg default-underline text-uppercase fw-medium text-white"
+                                className="btn-rounded btn-link_lg text-uppercase fw-medium text-white"
                             >
-                                {t("Discover Now")}
+                                {t("Shop Now")}
                             </Link>
                         </div>
                     </div>
@@ -1228,7 +361,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                                 {t("Gifts for Every")}
                                 <br />
                                 <span className="text-italic">
-                                    {t("Occasion")}
+                                    {/* {t("Occasion")} */}
                                 </span>
                             </h2>
                             <p className="text-center section-paragraph">
@@ -1246,30 +379,52 @@ const ScrollSnapHorizontalBootstrap = () => {
                 <span className="t-subtitle">
                     {t("The perfect gift for every occasion")}
                 </span>
-                <div className="mt-4 mb-5 d-none d-md-block">
-                    <a href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}>
-                        <Image
-                            loading="lazy"
-                            src="/assets/images/Ihda-khas-giftset.jpg"
-                            width="600"
-                            height="600"
-                            alt="Bakhoor-Ahmed"
-                            className="w-50 px-1"
-                            style={{ objectFit: "contain" }}
-                        />
-                    </a>
-                    <a
-                        href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
-                    >
-                        <Image
-                            className="w-50 px-1"
-                            src="/assets/images/Antee-05-Giftset.jpg"
-                            width="600"
-                            height="600"
-                            alt="Oud-Asateen"
-                            style={{ objectFit: "contain" }}
-                        />
-                    </a>
+                <div className="d-flex flex-row align-items-center ">
+                    <div className="mt-4 mb-5 d-none d-md-block">
+                        <a
+                            href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}
+                        >
+                            <Image
+                                loading="lazy"
+                                src="/assets/images/Ihda-khas-giftset.jpg"
+                                width="600"
+                                height="600"
+                                alt="Ihda-khas-giftset"
+                                className="px-1"
+                                style={{ objectFit: "contain" }}
+                            />
+                        </a>
+                        <div className="d-flex justify-content-center pt-3">
+                            <Link
+                                href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}
+                                className="btn-rounded btn-link_lg text-uppercase fw-medium "
+                            >
+                                {t("Shop Now")}
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="mt-4 mb-5 d-none d-md-block">
+                        <a
+                            href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
+                        >
+                            <Image
+                                className="px-1"
+                                src="/assets/images/Antee-05-Giftset.jpg"
+                                width="600"
+                                height="600"
+                                alt="Antee"
+                                style={{ objectFit: "contain" }}
+                            />
+                        </a>
+                        <div className="d-flex justify-content-center pt-3">
+                            <Link
+                                href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
+                                className="btn-rounded btn-link_lg text-uppercase fw-medium "
+                            >
+                                {t("Shop Now")}
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="mt-4 mb-5 d-block d-sm-none d-flex flex-column">
@@ -1279,11 +434,19 @@ const ScrollSnapHorizontalBootstrap = () => {
                             src="/assets/images/Ihda-khas-giftset.jpg"
                             width="600"
                             height="600"
-                            alt="Bakhoor-Ahmed"
+                            alt="Ihda-khas-giftset"
                             className="w-100 h-100 px-1"
                             style={{ paddingTop: "1rem", objectFit: "contain" }}
                         />
                     </a>
+                    <div className="d-flex justify-content-center pt-3">
+                        <Link
+                            href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}
+                            className="btn-rounded btn-link_lg text-uppercase fw-medium "
+                        >
+                            {t("Shop Now")}
+                        </Link>
+                    </div>
                     <a href={`/${locale}/shop/dakhoon/gift-sets`}>
                         <Image
                             className="w-100 h-100 px-1"
@@ -1294,32 +457,39 @@ const ScrollSnapHorizontalBootstrap = () => {
                             style={{ paddingTop: "1rem", objectFit: "contain" }}
                         />
                     </a>
+                    <div className="d-flex justify-content-center pt-3">
+                        <Link
+                            href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
+                            className="btn-rounded btn-link_lg text-uppercase fw-medium "
+                        >
+                            {t("Shop Now")}
+                        </Link>
+                    </div>
                 </div>
             </section>
 
             <section className="scroll-section d-flex flex-direction-column section-6">
                 <div className="panel w-100 vh-100">
-                    {/* <div className="background-overlay"></div> */}
                     <div className="section-content">
                         <div className="text-center text-white d-flex justify-content-center">
                             <span className="t-subtitle">
-                            {t("Ancient Aromas")}
+                                {t("Ancient Aromas")}
                             </span>
                         </div>
                         <h2 className="h1 text-center text-white pt-3">
-                        {t("The Essence of Arabic Dakhoon")}
+                            {t("The Essence of Arabic Dakhoon")}
                         </h2>
                         <p className="text-center text-white section-paragraph">
-                        {t(
-                "Experience the heritage of Arabic Dakhoon made from natural ingredients Enjoy rich long lasting aromas that bring warmth and tradition to your home"
-              )}
+                            {t(
+                                "Experience the heritage of Arabic Dakhoon made from natural ingredients Enjoy rich long lasting aromas that bring warmth and tradition to your home"
+                            )}
                         </p>
                         <div className="d-flex justify-content-center pt-5">
                             <Link
-                                href={`/${locale}/shop`}
-                                className="btn-link btn-link_lg default-underline text-uppercase fw-medium text-white"
+                                href={`/${locale}/product-category/dakhoon`}
+                                className="btn-rounded btn-link_lg  text-uppercase fw-medium text-white"
                             >
-                                {t("Discover Now")}
+                                {t("Shop Now")}
                             </Link>
                         </div>
                     </div>
@@ -1334,7 +504,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         loading="lazy"
                     />
                     <span className="text-white text-uppercase mt-2">
-                    `   {t("Scroll to discover")}
+                        ` {t("Scroll to discover")}
                     </span>
                 </div>
             </section>
@@ -1351,7 +521,10 @@ const ScrollSnapHorizontalBootstrap = () => {
 
                 <div className="panel2 mt-5">
                     <div className="inner2">
-                        <VideoPanel src="/assets/videos/zumar-video.mp4" section='hundred'/>
+                        <VideoPanel
+                            src="/assets/videos/zumar-video.mp4"
+                            section="hundred"
+                        />
                     </div>
                 </div>
 
@@ -1367,13 +540,13 @@ const ScrollSnapHorizontalBootstrap = () => {
                             {/* {t("Reaching Every Corner of the World")} */}
                             {t("Essence of Arabia")}
                         </h3>
-                        <p className="text-center section-paragraph">
+                        <p className="text-center section-paragraph pb-3">
                             {/* {t("Exports Text")} */}
                             {t("Step into")}
                         </p>
                         <Link
                             href={`/${locale}/shop/dakhoon`}
-                            className="btn-link btn-link_lg default-underline text-uppercase fw-medium pt-5"
+                            className="btn-rounded btn-link_lg  text-uppercase fw-medium"
                         >
                             {t("Discover")}
                         </Link>
@@ -1384,16 +557,16 @@ const ScrollSnapHorizontalBootstrap = () => {
                         >
                             <img
                                 className="w-100"
-                                src="/assets/images/home/demo8/Bakhoor-Ahmed.jpg"
+                                src="/assets/images/bakhoor-ahmed.jpg"
                                 alt="Bakhoor Ahmed"
                             />
                         </Link>
                         <Link
-                            href={`/${locale}/shop/dakhoon/oud-maattar/oud-mtr-asaateen`}
+                            href={`/${locale}/shop/dakhoon/oud-maattar/oud-kiflain`}
                         >
                             <img
                                 className="w-100"
-                                src="/assets/images/home/demo8/Oud-Asateen.jpg"
+                                src="/assets/images/oud-kiflain.jpg"
                                 alt="Oud Asateen"
                             />
                         </Link>
@@ -1401,8 +574,32 @@ const ScrollSnapHorizontalBootstrap = () => {
                 </div>
             </section>
 
-            {/* <section className="scroll-section d-lg-none d-flex flex-direction-column">
-                <Categories section="section4" />
+            {/* For Mobile Horizontal Slider  */}
+
+            <section className="scroll-section d-lg-none d-flex flex-direction-column align-items-center">
+                <Categories />
+            </section>
+
+            {/* <section
+                id="second-chapter-slider"
+                className="d-lg-none container flex__column__center justify-content-center"
+                data-v-ea8e1c8e=""
+            >
+                <div
+                    className="container-description flex__column__center__bottom flex__g-xxs"
+                    data-v-ea8e1c8e=""
+                >
+                    <h2 className="h1 text-center pt-3">
+                        {t("Luxury Delight")}
+                    </h2>
+                    <div className="t__m t__color-blue" data-v-ea8e1c8e="">
+                        {t(
+                            "Explore our full range of luxurious Dakhoon products and bring home the essence of tranquility today!"
+                        )}
+                    </div>
+                </div>
+
+                <ProductSlider prodSlide="mobileHorizontal" />
             </section> */}
 
             {/* Vertical Section 3 */}
@@ -1429,7 +626,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                         <div className="d-flex justify-content-center pt-5">
                             <Link
                                 href={`/${locale}/shop`}
-                                className="btn-link btn-link_lg default-underline text-uppercase fw-medium text-white"
+                                className="btn-rounded btn-link_lg  text-uppercase fw-medium text-white"
                             >
                                 {t("Discover Now")}
                             </Link>
@@ -1459,20 +656,20 @@ const ScrollSnapHorizontalBootstrap = () => {
                 id="end"
                 className="container d-flex flex-column justify-content-center"
             >
-                <div className="d-flex flex-column flex-md-row align-items-center justify-content-center mb-5 pt-5">
+                <div className="d-flex flex-column flex-md-row align-items-center justify-content-center pt-5">
                     <div className="order-1 order-md-0">
                         <VideoPanel
                             src="/assets/videos/production.mp4"
-                            section='hundred'
+                            section="hundred"
                         />
                     </div>
-                    <div className="col-lg-7 p-5 text-center order-3 order-md-1">
-                        <h3 className="mb-3">
+                    <div className="col-lg-7 p-3 text-center order-3 order-md-1">
+                        <h3 className="section-head section-title text-uppercase fs-25 fw-medium text-center mb-2">
                             {t(
                                 "Quality Crafted Through Expertise 20 plus Years of Mastery"
                             )}
                         </h3>
-                        <p>
+                        <p className="section-paragraph">
                             {t(
                                 "For over 20 years Ahmed Al Maghribi Perfumes has been dedicated to creating luxurious timeless scents Using only the finest natural ingredients we ensure every fragrance is crafted with precision and excellence offering lasting quality"
                             )}
@@ -1480,10 +677,14 @@ const ScrollSnapHorizontalBootstrap = () => {
                     </div>
                 </div>
 
-                <div className="d-flex flex-column flex-md-row align-items-center justify-content-center mt-5">
-                    <div className="col-lg-7 p-5 text-center order-1 order-md-0">
-                        <h3 className="mb-3">{t("The Company")}</h3>
-                        <p>{t("Steps")}</p>
+                <div className="d-flex flex-column flex-md-row align-items-center justify-content-center mt-3">
+                    <div className="col-lg-7 p-3 text-center order-1 order-md-0">
+                        <h3 className="section-head section-title text-uppercase fs-25 fw-medium text-center mb-2">
+                            {t(
+                                "A gracious invitation to experience our boutique"
+                            )}
+                        </h3>
+                        <p className="section-paragraph">{t("Steps")}</p>
                     </div>
                     <div className="order-0 order-md-1 mb-5">
                         <img

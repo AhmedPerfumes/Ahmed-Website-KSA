@@ -5,21 +5,17 @@ import "../../public/assets/sass/style.scss";
 import "rc-slider/assets/index.css";
 import "tippy.js/dist/tippy.css";
 import LoginFormPopup from "@/components/common/LoginFormPopup";
-// import { useEffect } from "react";
 import ScrollTop from "@/components/common/ScrollTop";
 import Context from "@/context/Context";
 import { MenuProvider } from "@/context/MenuContext";
 import { UserProvider } from "@/context/UserContext";
-// import QuickView from "@/components/modals/QuickView";
 import CartDrawer from "@/components/shopCartandCheckout/CartDrawer";
 import SiteMap from "@/components/modals/SiteMap";
 import NewsLetter from "@/components/modals/NewsLetter";
-// import CookieContainer from "@/components/common/CookieContainer";
 import MobileHeader from "@/components/headers/MobileHeader";
 import SizeGuide from "@/components/modals/SizeGuide";
 import Delivery from "@/components/modals/Delivery";
 import CustomerLogin from "@/components/asides/CustomerLogin";
-// import ShopFilter from "@/components/asides/ShopFilter";
 import ProductDescription from "@/components/asides/ProductDescription";
 import ProductAdditionalInformation from "@/components/asides/ProductAdditionalInformation";
 import ProductReviews from "@/components/asides/ProductReviews";
@@ -32,47 +28,40 @@ import { routing } from "@/i18n/routing";
 import { FacebookPixelEvents } from "@/components/Metapixel";
 import Head from "next/head";
 
-// const myFont = localFont({
-//     src: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.ttf",
-// });
+// Import English font
 const englishFont = localFont({
-    src: '../../public/assets/fonts/wulkan/WulkanDisplayRegular.ttf',
+    src: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.ttf",
 });
-  
+
+// Import Arabic font
 const arabicFont = localFont({
-    src: '../../public/assets/fonts/alexandria-arabic/static/Alexandria-Regular.ttf',
+    src: "../../public/assets/fonts/alexandria-arabic/static/Alexandria-Regular.ttf",
+});
+
+// Import Sofia Pro Regular font as a secondary font
+const sofiaFont = localFont({
+    src: "../../public/assets/fonts/sofia/SofiaProRegular.ttf",
 });
 
 export default async function LocaleLayout({ children, params: { locale } }) {
-    // useEffect(() => {
-    //   if (typeof window !== "undefined") {
-    //     // Import the script only on the client side
-    //     import("bootstrap/dist/js/bootstrap.esm").then(() => {
-    //       // Module is imported, you can access any exported functionality if
-    //     });
-
-    //     localStorage.setItem("orderData", "");
-    //     localStorage.setItem("cartList", []);
-    //     localStorage.setItem("wishList", []);
-    //   }
-    // }, []);
-
     if (!routing.locales.includes(locale)) {
         notFound();
     }
 
+    // Select the font based on locale or other conditions
     let selectedFont = englishFont;
 
-    if (locale == 'ar') {
+    if (locale === "ar") {
         selectedFont = arabicFont;
+    } else if (locale === "secondary") {
+        selectedFont = sofiaFont; // Apply Sofia Pro Regular as a secondary font
     }
 
-    // Providing all messages to the client
-    // side is the easiest way to get started
+    // Fetch translation messages
     const messages = await getMessages();
 
     return (
-        <html lang={locale} dir={locale == "ar" ? "rtl" : "ltr"}>
+        <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
             <Head>
                 {/* Facebook Pixel Script */}
                 <script
@@ -101,7 +90,6 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                 </noscript>
             </Head>
             <body className={selectedFont.className}>
-            {/* <body style={{ fontFamily: selectedFont.style.fontFamily }}> */}
                 <NextIntlClientProvider messages={messages}>
                     <Svgs />
                     <Context>
@@ -111,17 +99,13 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                 <MobileHeader />
                                 {children}
                                 <MobileFooter1 />
-                                {/* //modals and asides */}
+                                {/* Modals and Asides */}
                                 <LoginFormPopup />
-                                {/* <QuickView /> */}
-                                {/* <NewsLetter /> */}
-                                {/* <CookieContainer /> */}
                                 <SizeGuide />
                                 <Delivery />
                                 <CartDrawer />
                                 <SiteMap />
                                 <CustomerLogin />
-                                {/* <ShopFilter /> */}
                                 <ProductDescription />
                                 <ProductAdditionalInformation />
                                 <ProductReviews />
@@ -131,8 +115,6 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     <div className="page-overlay" id="pageOverlay"></div>
                     <ScrollTop />
                 </NextIntlClientProvider>
-
-                {/* <script src="/assets/scroll-frames.js"></script> */}
             </body>
         </html>
     );

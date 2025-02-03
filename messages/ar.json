@@ -11,6 +11,8 @@
   "Eau De Parfum": "عطور",
   "Concentrated Parfum": "العطورالزيتية",
   "Perfumes":"عطور",
+  "concentrated parfum":"العطور الزيتية",
+  "dakhoon": "دخون",
   
   
 
@@ -31,7 +33,7 @@
   "Be the First":"كن اول مايحصل على احدث الاخبار حول الاتجاهات والعروض الترويجية والمزيد",
   "Exude effortless allure":"أظهر سحرك دون عناء",
   "15% OFF ON OUR EXCLUSIVE COLLECTION SETS":"خصم 15% على مجموعاتنا الحصرية",
-  "Free Shipping on orders SAR 300 and above":"شحن مجاني للطلبات بقيمة 300 ر.س فما فوق",
+  "Free Shipping on orders AED 400 and above":"شحن مجاني للطلبات بقيمة 400 درهم فما فوق",
   "A huge selection of best fragrance": "مجموعة كبيرة من أفضل العطور.",
   "HOME DELIVERY NOW AVAILABLE":"توصيل الى المنازل متاح الأن",
   "FOR ANY INQUIRIES, PLEASE CONTACT OUR CUSTOMER CARE TEAM AT +800 472 1828":"لأي إستفسارات, يرجى الإتصال بفريق خدمة العملاء لدينا على الرقم  +971 67420602",
@@ -41,7 +43,14 @@
   "Uncover your signature glow":"اكتشف توهجك المميز",
   "Prestige":"هيبة",
   "Radiate pure, refined luxury":"اشعُر بالفخامة النقية والمصقولة",
+  "View Cart":"عرض السلة",
+  "Checkout":"الدفع",
+  "Exploreshop":"استكشف المتجر",
+  "SHOPPING BAG":"سلة التسوق",
+  "SUBTOTAL":"المجموع الفرعي",
+  "Spend":"النفقات",
   
+  "Your cart is empty Start shopping":"سلة التسوق فارغة. بدء التسوق",
   "Aura":"هالة",
   "Embrace unforgettable elegance":"احتضن الأناقة التي لا تُنسى",
   "Essence of Arabia":"جوهر العرب",
@@ -52,13 +61,15 @@
   "Delight your loved ones with our luxurious gift sets, thoughtfully curated to include our most exquisite fragrances":"أسعد أحبائك بمجموعات الهدايا الفاخرة التي تم تصميمها بعناية لتشمل أروع عطورنا",
   "The perfect gift for every occasion":"الهدية المثالية لكل مناسبة",
   "Iconic Indulgence": "ترف أيقوني",
-  "Madinah Al Munawwarah": "المدينة المنورة",
-  "Kingdom Of Saudi Arabia": "المملكة العربية السعودية",  
+  "Ajman":" صندوق بريد عجمان 3850",
+  "UAE": "إ . ع . م",
   "Shop Now": "تسوق الان",
   "Dakhoon": "دخون",
   "Gift Sets": "أطقم هدايا",
   "Gel": "عناية الجسم",
+  "gel": "عناية الجسم",
   "Hair Mist": "عطور للشعر",
+  "hair mist": "عطور للشعر",
   "Extrait De Parfum": "إيكستريت دو بارفان",
   "Collections": "المجموعات",
   "PRODUCT TYPES": "أنواع المنتجات",
@@ -140,6 +151,7 @@
   "Best Sellers":"الأكثر مبيعا",
   "Premium Collection": "مجموعة متميزة",
   "Online Exclusive": "حصرياً على الإنترنت",
+  "online exclusive": "حصرياً على الإنترنت",
   "Search Products": "البحث عن المنتجات",
   "Quicklinks": "روابط سريعة",
   "Marj": "مرج",
@@ -376,10 +388,8 @@
   "Zumar": "زمر",
   "RedJewel":"ريد جويل",
   "Cocoblend":"كوكو بليند",
-  "Ameer AL Oud":"أمير العود",
-  "Miss Rose":"مس روز",
-  "Musk Kashmiri":"مسك كاشميري",
-
+  "Mosaic": "موزيك",
+  "Cinder": "سندر",
   
   "----------Gel Category---------":"----------Gel Category---------",
   "Marj Body Gel":"مرج (بودي جل)",
@@ -403,7 +413,6 @@
 "Bidun Esam Gift Set":"طقم هدايا بدون إسم",
 "Atri Giftset":"طقم هدايا عطري",
 "The Dhakoon Collection":"دخون كوليكشن",
-"Kun Bakhair Gift Set":"طقم هدايا كن بخير",
 
 "----------Hair Mist Category":"----------Hair Mist Category",
 "Supreme Hair Mist":"سبريم (عطرللشعر)",
@@ -580,6 +589,7 @@
 "Scentique White Description":" ”سينتك وايت ” إنه أكثر من مجرد عطر - إنها تجربة.",
 "RedJewel Description":"”ريد جويل ” هو عطر آسر يجسد الأناقة والسحر، وهو مصمم لأولئك الذين يقدرون تجربة شمية غنية ومتعددة الطبقات.",
 "Cocoblend Description":"في القلب، تتشابك باقة غنية من العود والجمال الخالد لورد بلغاري مع زهر البرتقال ونجيل الهند الرقيقين. تثير النفحات الهادئة من زنبق الماء والورد الدمشقي، المعززة بزهرة فرانجيباني الغريبة، هالة من النعمة والإثارة.",
+"Moonlit Description":"",
 
 "Instance 60ML Content": "<p><span>\"سواء كنت تستعد لقضاء أمسية خاصة، أو اجتماع احترافي، أو تريد فقط أن تشعر بأفضل ما لديك كل يوم، فإن هذا العطر يكمل أسلوبك وشخصيتك دون عناء. تتناغم المكونات المختارة بعناية في هذا العطر لتكوين رائحة أنيقة لا تُنسى، مما يترك انطباعًا دائمًا في قلوب وعقول من حولك. احتضن قوة عطر إنستانس واجعل حضورك محسوسًا، مما يجعل كل لحظة مثالًا لا يُنسى من الجمال\"</span></p>",
 
@@ -660,6 +670,7 @@
 "Ain Content": "<p>يأسر العطر” عين ” قلبك بمكونات عليا من الكشمش الأسود والبرغموت والحمضيات. يضفي القلب زهرة بيضاء أنثوية غنية ، السوسن ، والأناناس. عطر حالم من المسك وراتنجات العود والعنبر.</p>",
 "RedJewel Content":"يبدأ العطر بنفحة نابضة بالحياة من البرغموت والفراولة والتوت، مما يخلق مقدمة متألقة وفاكهية تجذب الانتباه على الفور. في قلب العطر، تمتزج روائح الزهور الرقيقة من الياسمين والبنفسج بسلاسة مع الدفء الكريمي لخشب الصندل، مما يضيف العمق والرقي. تبدأ القاعدة لتتحول إلى احتضان حسي من المسك والفانيليا والعنبر والحليب، مما يترك أثرًا مخمليًا طويل الأمد من الراحة والرقي. الجوهرة هي أكثر من مجرد رائحة؛ إنه بيان للفخامة والجمال الخالد. مثالي للمناسبات واللحظات الخاصة التي تريد فيها ترك انطباع دائم.",
 "Cocoblend Content":"في القلب، تتشابك باقة غنية من العود والجمال الخالد لورد بلغاري مع زهر البرتقال ونجيل الهند الرقيقين، مما يخلق تناغمًا متطورًا. تثير النفحات الهادئة من زنبق الماء والورد الدمشقي، المعززة بزهرة فرانجيباني الغريبة، هالة من النعمة والإثارة. تنسج هذه العناصر معًا عطرًا ساحرًا يفوح بالأناقة والجاذبية، ويترك انطباعًا لا ينسى يأسر الحواس وينقلك إلى عالم من الفخامة الراقية.",
+"Moonlit Content":"",
 
 "Instance 60ML Notes": "<p><strong>Notes</strong></p><p>العليا - الكمثرى، البرغموت، الفلفل الوردي<br>الوسطى- الورد، الياسمين<br>القاعدة - المسك الأبيض، الفانيليا، الباتشولي، الأرز</p>",
 "Oud Roses Notes": "<div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/product-notes-images/top-notes-oud-roses.jpg\" alt=\"Top Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">المكونات العليا</h3><p>زهري (الورد التركي، الخزامى، الليمون، الفاوانيا)</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5 flex-column-reverse flex-lg-row\"><p class=\"order-1 order-lg-2\"><img class=\"img-fluid\" src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/product-notes-images/heart-images-oud-roses.jpg\" alt=\"first-notes-3.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5 order-2 order-lg-1\"><h3 class=\"mb-3 text-white\">المكونات الوسطى</h3><p>سويتي (خشب الصندل، الزهور البيضاء، اللبان)</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/product-notes-images/bottom-notes-oud-roses.jpg\" alt=\"Bottom Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">القاعدة</h3><p>مسكي (خشب العود، خشب الغاياك، طحلب البلوط، المسك، العنبر)</p></div></div>",
@@ -1030,7 +1041,7 @@
 
 "Bidun Esam Collection Notes": "",
 
-"Shop & Win – Terms and Conditions":"تسوق و اربح – الشروط والأحكام",
+"Shop & Win Terms and Conditions":"تسوق و اربح – الشروط والأحكام",
 "Purchase above AED 250 and Get a Chance to win":"اشترِ بمبلغ يزيد عن 250 درهم إماراتي واحصل على فرصة للفوز.",
 "By entering this raffle you agree to be bound by these terms and conditions Any raffle entry and participation instructions form part of these terms and conditions Any entries not complying with these terms and conditions willnot be valid":"بدخولك هذه السحب، فإنك توافق على الالتزام بهذه الشروط والأحكام. تعتبر أي تعليمات للدخول في السحب والمشاركة جزءًا من هذه الشروط والأحكام. أي مدخلات لا تتوافق مع هذه الشروط والأحكام ستكون غير صالحة.",
 "This raffle is only open to UAE residents aged 18 years or over with a valid UAE driving license Any person who has entered the raffle and who is found to be under 18 years of age will automatically forfeit any prize AHMED ALMAGHRIBI PERFUMES reserves the right to require proof of identity and age":"هذه السحب مفتوحة فقط للمقيمين في دولة الإمارات العربية المتحدة الذين تبلغ أعمارهم 18 عامًا أو أكثر ولديهم رخصة قيادة إماراتية سارية. أي شخص يدخل السحب ويُكتشف أنه تحت سن 18 عامًا سيفقد تلقائيًا أي جائزة. تحتفظ شركة أحمد المغربي للعطور بالحق في طلب إثبات الهوية والعمر.",
@@ -1048,7 +1059,7 @@
 "Winning Logic:":"منطق الفوز",
 "The three prize categories for each draw are as follows:":"فئات الجوائز الثلاث لكل سحب هي كما يلي:",
 "First Prize – 1 – Jetour T2":"الجائزة الأولى – 1 – جيتور T2",
-"Second Prize – 7 – iPhone 16 Pro Max":"الجائزة الثانية – 7 – آيفون 16 برو ماكس",
-"Third Prize – AED 500 Cash Vouchers for 50 Winners":"الجائزة الثالثة – قسائم نقدية بقيمة 500 درهم إماراتي لـ 50 فائزًا",
+"Second Prize":"الجائزة الثانية – 7 – آيفون 16 برو ماكس",
+"Third Prize":"الجائزة الثالثة – قسائم نقدية بقيمة 500 درهم إماراتي لـ 50 فائزًا",
 "If more than one participant has matched the winning selection correctly the participant whose entry was registered first will win the prize":"إذا كان هناك أكثر من مشارك قد تطابق اختياره مع الفائز بشكل صحيح، فإن المشارك الذي تم تسجيل مشاركته أولاً سيكون هو الفائز بالجائزة."
 }
