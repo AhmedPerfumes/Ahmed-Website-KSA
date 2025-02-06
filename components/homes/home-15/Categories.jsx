@@ -19,10 +19,10 @@ export default function Categories({ section }) {
             delay: 5000,
         },
         modules: [Autoplay, Navigation],
-        slidesPerView: 5,
-        slidesPerGroup: 2,
+        slidesPerView: 4,
+        slidesPerGroup: 4,
         effect: "none",
-        loop: true,
+        loop: false,
         // pagination: {
         //   el: ".swiper-pagination",
         //   clickable: true,
@@ -39,7 +39,7 @@ export default function Categories({ section }) {
                 spaceBetween: 14,
             },
             768: {
-                slidesPerView: 4,
+                slidesPerView: 3,
                 slidesPerGroup: 3,
                 spaceBetween: 24,
             },
@@ -83,6 +83,14 @@ export default function Categories({ section }) {
                         </span>
                     </Link>
                 </div>
+                <div className="d-flex justify-content-center">
+                    <Link
+                        href={`/${locale}${elm.btn}`}
+                        className="btn-videos btn-link_lg text-uppercase fw-medium "
+                    >
+                        {t("Discover Now")}
+                    </Link>
+                </div>
             </SwiperSlide>
         ));
 
@@ -118,7 +126,7 @@ export default function Categories({ section }) {
         categoryRend = (
             <>
                 <h2 className="section-title text-uppercase fs-25 fw-medium text-center mb-2">
-                    {t("Gem Collection")}
+                    {t("Luxury Delight")}
                 </h2>
                 <p className="fs-15 mb-4 pb-xl-2 mb-xl-4 text-secondary text-center">
                     {t("Modern elegance meets Middle Eastern tradition")}

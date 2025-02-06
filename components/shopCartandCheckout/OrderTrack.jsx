@@ -199,10 +199,10 @@ export default function OrderTrack() {
                   <th>SHIPPING</th>
                   <td>{orderDetails.sub_total >= 300 ? 'You Got Free Shipping' : `Shipping Cost: ${(orderDetails.shipping_amount * 1.15).toFixed(2)}${ currency.symbol }`}</td>
                 </tr>
-                <tr>
+                {/* <tr>
                   <th>SERVICE FEE</th>
                   <td>{ (orderDetails.service_amount * 1.15).toFixed(2) }{ currency.symbol }</td> 
-                </tr>
+                </tr> */}
                 <tr>
                   <th>TOTAL</th>
                   <td>{orderDetails.total}{ currency.symbol } (includes { orderDetails.tax_amount }{ currency.symbol } VAT)

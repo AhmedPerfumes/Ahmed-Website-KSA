@@ -827,10 +827,10 @@ export default function Checkout() {
                       <th>SHIPPING</th>
                       <td>{freeShippingFlag ? 'You Got Free Shipping' : `Shipping Cost: ${ shippingServiceCharges[0].price }${ currency.symbol}`}</td>
                     </tr>
-                    <tr>
-                    <th>SERVICE FEE</th>
-                    <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
-                    </tr>
+                    {/* <tr>
+                      <th>SERVICE FEE</th>
+                      <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
+                    </tr> */}
                     <tr>
                       <th>TOTAL</th>
                       <td>{!freeShippingFlag ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) :
