@@ -62,7 +62,7 @@ export default function Footer14() {
                   {t("Swift Complimentary Shipping")}
                 </h3>
                 <p className="service-promotion__content text-secondary mb-0 text-white">
-                  {t("Free delivery on orders over AED 400")}
+                  {t("Free delivery on orders over SAR 300")}
                 </p>
               </div>
             </div>
