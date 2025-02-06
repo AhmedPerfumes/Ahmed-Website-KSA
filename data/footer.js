@@ -37,12 +37,12 @@ export const languageOptions2 = [
 ];
 
 export const currencyOptions = [
-  { value: "ksa", text: "KSA", selected: true, link: "https://www.ahmedalmaghribi.com/" },
+  { value: "ksa", text: "KSA", selected: true, link: "https://ksa.ahmedalmaghribi.com" },
   { value: "/", text: "UAE", link: "https://www.ahmed-perfume.com" },
-  { value: "om", text: "OMAN", link: "https://www.ahmedalmaghribi.com/om" },
-  { value: "bh", text: "BAHRAIN", link: "https://www.ahmedalmaghribi.com/bh" },
-  { value: "kw", text: "KUWAIT", link: "https://www.ahmedalmaghribi.com/kw" },
-  { value: "qa", text: "QATAR", link: "https://www.ahmedalmaghribi.com/qa" },
+  { value: "om", text: "OMAN", link: "https://om.ahmedalmaghribi.com" },
+  { value: "bh", text: "BAHRAIN", link: "https://bh.ahmedalmaghribi.com" },
+  { value: "kw", text: "KUWAIT", link: "https://kw.ahmedalmaghribi.com" },
+  { value: "qa", text: "QATAR", link: "https://qa.ahmedalmaghribi.com" },
 ];
 
 
