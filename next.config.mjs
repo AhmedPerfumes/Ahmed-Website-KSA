@@ -12,7 +12,7 @@ const nextConfig = {
           },
           {
             protocol: 'https',
-            hostname: 'adminksa.ahmed-perfume.com',
+            hostname: 'adminksa.ahmedalmaghribi.com',
           },
           {
             protocol: 'http',
