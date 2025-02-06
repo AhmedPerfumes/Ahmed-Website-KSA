@@ -477,7 +477,7 @@ export const slideData1000 = [
     bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
     title: "Natural Glow",
     description:
-      "Free Shipping on orders AED 400 and above",
+      "Free Shipping on orders SAR 300 and above",
   },
   {
     id: 2,
