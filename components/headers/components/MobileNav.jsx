@@ -230,15 +230,15 @@ export default function MobileNav() {
     )
   });
 
-  categoriesSubCategoriesBody.push(
-    <li key="export" className="navigation__item">
-      <Link href={`/${locale}/export`} className={`navigation__link
-          ${isActiveExportMenu(`/export`) ? "menu-active" : ""}
-          `}>
-        {t("Worldwide Distribution")}
-      </Link>
-    </li>
-  );
+  // categoriesSubCategoriesBody.push(
+  //   <li key="export" className="navigation__item">
+  //     <Link href={`/${locale}/export`} className={`navigation__link
+  //         ${isActiveExportMenu(`/export`) ? "menu-active" : ""}
+  //         `}>
+  //       {t("Worldwide Distribution")}
+  //     </Link>
+  //   </li>
+  // );
   
   return (
     <>
