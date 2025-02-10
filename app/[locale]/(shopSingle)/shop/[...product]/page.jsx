@@ -73,7 +73,22 @@ const ProductDetailsPage16 = async({ params }) => {
     );
   } catch (error) {
     console.error(error);
-    return <p>Failed to load user data.</p>;
+    return <>
+            <Header14 />
+            <main className="page-wrapper text-center">
+              <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>
+              {/* <RelatedSlider relatedProds={ null }/> */}
+              <a href='/' className="btn btn-primary w-50 text-uppercase mb-3 mx-auto">Continue Shopping</a>
+            </main>
+            <section className="d-none d-lg-block" style={{ height: "100%" }}>
+              <Footer14 />
+            </section>
+            <section className="d-sm-block d-md-none bg-dark pt-5  ">
+              <div className="MobileFooter">
+                <MobileFooter2/>
+              </div>
+            </section>
+          </>;
   }
 }
 
