@@ -238,7 +238,7 @@ export const slidesData2 = [
 export const slidesData3 = [
   {
     id: 1,
-    imageSrc: "/assets/images/home/la-rose.jpg",
+    imageSrc: "/assets/images/la-rose.jpg",
     season: "La Rosee",
     objectPosition: "50% center",
     title: "Feel Luxurious",
@@ -261,7 +261,7 @@ export const slidesData3 = [
 export const slidesData33 = [
   {
     id: 1,
-    imageSrc: "/assets/images/home/la-rose.jpg",
+    imageSrc: "/assets/images/la-rose.jpg",
     season: "La Rosee",
     objectPosition: "50% center",
     title: "Feel Luxurious",
