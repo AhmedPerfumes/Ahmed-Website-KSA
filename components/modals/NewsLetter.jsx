@@ -73,7 +73,7 @@ export default function NewsLetter() {
           <div className="row p-0 m-0">
             <div className="col-md-8 p-0">
               <div className="newsletter-popup__bg h-100 w-100">
-                <Link href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
+              <a href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}>
                 <Image
                   width={550}
                   height={650}
@@ -83,7 +83,7 @@ export default function NewsLetter() {
                   className="h-100 w-100 object-fit-cover d-block"
                   alt="image"
                   />
-                  </Link>
+                </a>
                 {/* <VideoPanel src="/assets/videos/popup video.mp4" section='hundred'/> */}
               </div>
             </div>
