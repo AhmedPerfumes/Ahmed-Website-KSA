@@ -26,7 +26,7 @@ export default function VerifyOTP() {
      setIsLoading(false);
      return;
    }
-   const regex = /^\d{9}$/;
+   const regex = /^\d{10}$/;
    if(!regex.test(mobile)) {
      setError('Invalid Mobile Number');
      setSuccess(null);
@@ -56,7 +56,9 @@ export default function VerifyOTP() {
         setSuccess(data.message);
         setError(null);
         localStorage.setItem('token', data.access_token);
-        setTimeout(() => router.push('/'), 1000);
+        localStorage.setItem('user', btoa(JSON.stringify(data.data)));
+        // setTimeout(() => router.push('/'), 1000);
+        setTimeout(() => window.location.href='/', 1000);
       }
       // console.log(data);
     } catch (error) {
@@ -95,7 +97,7 @@ export default function VerifyOTP() {
                   onChange={validateMobile}
                   required
                 />
-                <label>Mobile Number (Eg. 500000000)*</label>
+                <label>Mobile Number (Eg. 0500000000)*</label>
               </div>
 
               <div className="pb-3"></div>

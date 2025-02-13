@@ -28,7 +28,7 @@ export default function LoginRegister() {
       setIsLoading(false);
       return;
     }
-    const regex = /^\d{9}$/;
+    const regex = /^\d{10}$/;
     if(!regex.test(mobile)) {
       setError('Invalid Mobile Number');
       setSuccess(null);
@@ -79,7 +79,7 @@ export default function LoginRegister() {
      setIsLoading(false);
      return;
    }
-   const regex = /^\d{9}$/;
+   const regex = /^\d{10}$/;
    if(!regex.test(mobile)) {
      setError('Invalid Mobile Number');
      setSuccess(null);
@@ -178,7 +178,7 @@ export default function LoginRegister() {
                   onChange={validateMobile}
                   required
                 />
-                <label>Mobile Number (Eg. 500000000)*</label>
+                <label>Mobile Number (Eg. 0500000000)*</label>
               </div>
 
               <div className="pb-3"></div>
@@ -285,7 +285,7 @@ export default function LoginRegister() {
                   onChange={validateMobile}
                   required
                 />
-                <label htmlFor="customerMobileInput">Mobile Number (Eg. 500000000)*</label>
+                <label htmlFor="customerMobileInput">Mobile Number (Eg. 0500000000)*</label>
               </div>
 
               <div className="form-floating mb-3">

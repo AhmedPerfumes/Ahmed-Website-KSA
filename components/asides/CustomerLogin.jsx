@@ -40,7 +40,7 @@ export default function CustomerLogin() {
       setIsLoading(false);
       return;
     }
-    const regex = /^\d{9}$/;
+    const regex = /^\d{10}$/;
     if(!regex.test(mobile)) {
       setError('Invalid Mobile Number');
       setSuccess(null);
@@ -90,7 +90,7 @@ export default function CustomerLogin() {
       setIsLoading(false);
       return;
     }
-    const regex = /^\d{9}$/;
+    const regex = /^\d{10}$/;
     if(!regex.test(mobile)) {
       setError('Invalid Mobile Number');
       setSuccess(null);
@@ -158,7 +158,7 @@ export default function CustomerLogin() {
                 onChange={validateMobile}
                 required
               />
-              <label>Mobile Number (Eg. 500000000)*</label>
+              <label>Mobile Number (Eg. 0500000000)*</label>
             </div>
             <div className="pb-3" />
             <div className="form-label-fixed mb-3">
@@ -243,7 +243,7 @@ export default function CustomerLogin() {
                 onChange={validateMobile}
                 required
               />
-              <label>Mobile Number (Eg. 500000000)*</label>
+              <label>Mobile Number (Eg. 0500000000)*</label>
             </div>
 
             <div className="pb-1" />
