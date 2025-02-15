@@ -350,7 +350,7 @@ export default function Header14() {
                                     </form>
                                 </div>
 
-                                <div className="header-tools__item hover-container">
+                                {/* <div className="header-tools__item hover-container">
                                     {!isLoggedIn ? (
                                         <Link
                                             className="js-open-aside"
@@ -363,7 +363,7 @@ export default function Header14() {
                                             <FiLogOut size={20} />
                                         </Link>
                                     )}
-                                </div>
+                                </div> */}
 
                                 <Link className="header-tools__item" href="#">
                                     <IoLocationOutline size={20} />
