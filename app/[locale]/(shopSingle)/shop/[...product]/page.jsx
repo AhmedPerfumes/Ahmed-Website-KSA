@@ -69,9 +69,9 @@ const ProductSchema = ({ category, subcategory, product }) => {
       brand: { "@type": "Brand", name: "Ahmed Al Maghribi Perfumes" },
       offers: {
           "@type": "Offer",
-          priceCurrency: "AED",
+          priceCurrency: "SAR",
           price: product.price,
-          url: `https://ae.ahmedalmaghribi.com/en/shop/${category}/${subcategory}/${product.product_name
+          url: `https://ksa.ahmedalmaghribi.com/en/shop/${category}/${subcategory}/${product.product_name
               .split(" ")
               .join("-")
               .toLowerCase()}`,
@@ -115,7 +115,7 @@ const ProductDetailsPage16 = async({ params }) => {
           />
           <meta
               property="og:url"
-              content={`https://ae.ahmedalmaghribi.com/en/shop/${categoryName}/${subCategoryName}/${data.product_name
+              content={`https://ksa.ahmedalmaghribi.com/en/shop/${categoryName}/${subCategoryName}/${data.product_name
                   .split(" ")
                   .join("-")
                   .toLowerCase()}`}
@@ -126,7 +126,7 @@ const ProductDetailsPage16 = async({ params }) => {
               property="product:price:amount"
               content={data.price}
           />
-          <meta property="product:price:currency" content="AED" />
+          <meta property="product:price:currency" content="SAR" />
           <meta
               property="product:brand"
               content="Ahmed Al Maghribi Perfumes"
