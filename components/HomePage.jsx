@@ -522,7 +522,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                 <div className="panel2 mt-5">
                     <div className="inner2">
                         <VideoPanel
-                            src="/assets/videos/zumar-video.mp4"
+                            src="/assets/videos/ahl.mp4"
                             section="hundred"
                         />
                     </div>
