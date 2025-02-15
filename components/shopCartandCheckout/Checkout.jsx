@@ -950,7 +950,7 @@ export default function Checkout() {
                     </span> */}
                   </label>
                 </div>
-                <div className="form-check">
+                {/* <div className="form-check">
                   <input
                     className="form-check-input form-check-input_fill"
                     type="radio"
@@ -983,14 +983,14 @@ export default function Checkout() {
                         </g>
                       </g>
                     </svg>
-                    {/* <Image
+                    --<Image
                       src="https://www.ahmedalmaghribi.com/wp-content/plugins/paytabs-woocommerce/icons/creditcard.svg"
                       width="50"
                       height="20"
                       alt="Cropped Faux leather Jacket"
-                    /> */}
+                    />--
                   </label>
-                </div>
+                </div> */}
                 <div className="policy-text">
                   Your personal data will be used to process your order, support
                   your experience throughout this website, and for other
