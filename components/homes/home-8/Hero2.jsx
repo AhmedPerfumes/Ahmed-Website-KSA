@@ -45,7 +45,7 @@ export default function Hero() {
                             </Link>
                         </div>
                         <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
-                            {elm.id != 3 && (
+                            {elm.id != 4 && (
                                 <h6
                                     className={`t-subtitle text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3 ${elm.color}`}
                                 >
@@ -62,7 +62,7 @@ export default function Hero() {
                             >
                                 {t(elm.subtitle)}
                             </h2>
-                            {elm.id != 3 && (
+                            {elm.id != 4 && (
                                 <a
                                     href={`${locale}/${elm.href}`}
                                     className={`btn-link btn-link_lg default-underline text-uppercase fw-bold animate animate_fade animate_btt animate_delay-7 ${elm.color}`}
