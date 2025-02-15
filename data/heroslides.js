@@ -256,6 +256,16 @@ export const slidesData3 = [
     href: "shop/perfumes/occidental-fragrance/zumar",
     color: "text-white"
   },
+  {
+    id: 3,
+    imageSrc: "/assets/images/banners/AHL-Banner.jpg",
+    season: "AHL",
+    objectPosition: "70% center",
+    title: "The Essence",
+    subtitle: "of Belonging",
+    href: "shop/perfumes/oriental-fragrance/ahl",
+    color: "text-black"
+  },
   
 ];
 export const slidesData33 = [
@@ -278,6 +288,16 @@ export const slidesData33 = [
     subtitle: "evokes the spirit of royalty",
     href: "shop/perfumes/occidental-fragrance/zumar",
     color: "text-white"
+  },
+  {
+    id: 3,
+    imageSrc: "/assets/images/banners/AHL-Banner.jpg",
+    season: "AHL",
+    objectPosition: "70% center",
+    title: "The Essence",
+    subtitle: "of Belonging",
+    href: "shop/perfumes/oriental-fragrance/ahl",
+    color: "text-black"
   },
 
 ];
