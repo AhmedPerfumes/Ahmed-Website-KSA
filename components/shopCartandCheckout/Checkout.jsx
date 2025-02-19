@@ -983,14 +983,31 @@ export default function Checkout() {
                         </g>
                       </g>
                     </svg>
-                    --<Image
-                      src="https://www.ahmedalmaghribi.com/wp-content/plugins/paytabs-woocommerce/icons/creditcard.svg"
-                      width="50"
-                      height="20"
-                      alt="Cropped Faux leather Jacket"
-                    />--
                   </label>
                 </div> */}
+                <div className="form-check">
+                  <input
+                    className="form-check-input form-check-input_fill"
+                    type="radio"
+                    name="checkout_payment_method"
+                    id="checkout_payment_method_4"
+                    value={'tabby'}
+                    checked={selectedOption === 'tabby'}
+                    onChange={handleRadioChange}
+                  />
+                  <label
+                    className="form-check-label"
+                    htmlFor="checkout_payment_method_4"
+                  >
+                    Pay in 4. No interes, no fees.
+                    <Image
+                      src="/assets/images/paymentGateway/tabby.svg"
+                      width="60"
+                      height="50"
+                      alt="Cropped Faux leather Jacket"
+                    />
+                  </label>
+                </div> 
                 <div className="policy-text">
                   Your personal data will be used to process your order, support
                   your experience throughout this website, and for other
