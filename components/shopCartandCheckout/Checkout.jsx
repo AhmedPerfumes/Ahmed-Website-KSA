@@ -209,7 +209,7 @@ export default function Checkout() {
           shippingAdd: false,
         });
         setTimeout(() => router.push(`/${locale}/shop-order-complete`), 1000);
-      } else if(data.message && data.message.split(' ')[0] == 'Redirecting') {
+      } else if(data.message && data.message == 'Redirecting to Payfort...') {
         setSuccess(data.message);
         setError(null);
         // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
@@ -260,6 +260,11 @@ export default function Checkout() {
 
         // Submit the form
         form.submit();return;
+      } else if(data.message && data.message == 'Redirecting to Tabby...') {
+          setSuccess(data.message);
+          setError(null);
+          // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
+          router.push(data.redirect_url);
       } else {
         if(data.products) {
           setError(data.products);
@@ -284,6 +289,9 @@ export default function Checkout() {
         }
         if(data['billingAddress.province']) {
           setError(data['billingAddress.province']);
+        }
+        if(data.error) {
+          setError(data.error);
         }
         setSuccess(null);
       }
