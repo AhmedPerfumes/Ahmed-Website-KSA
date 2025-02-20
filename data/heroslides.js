@@ -238,7 +238,7 @@ export const slidesData2 = [
 export const slidesData3 = [
   {
     id: 4,
-    imageSrc: "/assets/images/banners/founding-day.jpg",
+    imageSrc: "/assets/images/banners/founding-pc.jpg",
     season: "La Rosee",
     objectPosition: "50% center",
     title: "",
@@ -311,7 +311,7 @@ export const slidesData33 = [
   },
   {
     id: 4,
-    imageSrc: "/assets/images/banners/mobile-founding-day.jpg",
+    imageSrc: "/assets/images/banners/founding-mobile.jpg",
     season: "La Rosee",
     objectPosition: "50% center",
     title: "",
