@@ -236,16 +236,16 @@ export const slidesData2 = [
   },
 ];
 export const slidesData3 = [
-  {
-    id: 4,
-    imageSrc: "/assets/images/banners/founding-pc.jpg",
-    season: "La Rosee",
-    objectPosition: "50% center",
-    title: "",
-    subtitle: "",
-    href: "shop/",
-    color: "text-black"
-  },
+  // {
+  //   id: 4,
+  //   imageSrc: "/assets/images/banners/founding-pc.jpg",
+  //   season: "La Rosee",
+  //   objectPosition: "50% center",
+  //   title: "",
+  //   subtitle: "",
+  //   href: "shop/",
+  //   color: "text-black"
+  // },
   {
     id: 1,
     imageSrc: "/assets/images/la-rose.jpg",
@@ -309,16 +309,16 @@ export const slidesData33 = [
     href: "shop/perfumes/oriental-fragrance/ahl",
     color: "text-black"
   },
-  {
-    id: 4,
-    imageSrc: "/assets/images/banners/founding-mobile.jpg",
-    season: "La Rosee",
-    objectPosition: "50% center",
-    title: "",
-    subtitle: "",
-    href: "shop/",
-    color: "text-black"
-  },
+  // {
+  //   id: 4,
+  //   imageSrc: "/assets/images/banners/founding-mobile.jpg",
+  //   season: "La Rosee",
+  //   objectPosition: "50% center",
+  //   title: "",
+  //   subtitle: "",
+  //   href: "shop/",
+  //   color: "text-black"
+  // },
 
 ];
 export const slidesData4 = [
