@@ -48,6 +48,24 @@ export default function OrderPaymentCompleted({ orderDetails }) {
     return <div>{ isMenuError }</div>;
   }
 
+  const paymentStatus = () => {
+    if(orderDetails.payment_channel == 'tabby') {
+      if(orderDetails.payment_description == 'EXPIRED' || orderDetails.payment_status == 'expired') {
+        return <h3>You aborted the payment. Please retry or choose another payment method.</h3>;
+      } else if(orderDetails.payment_description == 'REJECTED' || orderDetails.payment_status == 'rejected') {
+        return <h3>Sorry, Tabby is unable to approve this purchase. Please use an alternative payment method for your order.</h3>;
+      } else {
+        return <><h3>Your order is completed!</h3><p>Thank you. Your order has been received.</p></>;
+      }
+    } else {
+      if(orderDetails.payment_status != 'failed') {
+        return <><h3>Your order is completed!</h3><p>Thank you. Your order has been received.</p></>;
+      } else {
+        return <h3>Your order is failed!</h3>;
+      }
+    }
+  }
+
   return (
     <>
     {orderDetails.order_id ? <><div className="order-complete">
@@ -65,8 +83,9 @@ export default function OrderPaymentCompleted({ orderDetails }) {
             fill="white"
           />
         </svg>}
-        {orderDetails.payment_status != 'failed' ? <h3>Your order is completed!</h3> : <h3>Your order is failed!</h3>}
-        {orderDetails.payment_status != 'failed' && <p>Thank you. Your order has been received.</p>}
+        {/* {orderDetails.payment_status != 'failed' ? <h3>Your order is completed!</h3> : <h3>Your order is failed!</h3>}
+        {orderDetails.payment_status != 'failed' && <p>Thank you. Your order has been received.</p>} */}
+        { paymentStatus() }
       </div>
       {orderDetails.payment_status != 'failed' ? <>
       <div className="order-info">
