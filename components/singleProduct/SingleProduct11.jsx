@@ -127,7 +127,7 @@ export default function SingleProduct11({ category, subcategory, product }) {
             </div>
             <h6 style={{ color: "red" }}>{error && error}</h6>
             <form onSubmit={(e) => e.preventDefault()}>
-              {product.product_qty > 0 &&
+              {product.product_qty > 0 ? (
               <div className="product-single__addtocart">
                 <div className="qty-control position-relative">
                   <input
@@ -175,7 +175,15 @@ export default function SingleProduct11({ category, subcategory, product }) {
                   {isIncludeCard() ? t("Already Added") : t("Add to Cart")}
                 </button>
               </div>
-              }
+              ):(
+              <div className="out-of-stock">
+  <span className="badge fs-5 text-uppercase">Out of Stock</span>
+  <p className="text-red mt-2">
+    This product is currently unavailable.
+  </p>
+ 
+</div>
+              )}
             </form>
             <div className="product-single__addtolinks">
               <ShareComponent title={product.product_name} />
