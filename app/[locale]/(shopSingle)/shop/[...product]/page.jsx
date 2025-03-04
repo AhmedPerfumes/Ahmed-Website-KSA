@@ -8,13 +8,13 @@ import React from "react";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import Head from "next/head";
 
-export const metadata = {
-  title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
-  description: "Buy Best Perfumes Online Ahmed Perfume",
-  icons: {
-    icon: "https://www.ahmedalmaghribi.com/wp-content/uploads/2021/08/Ahmed-Logo-e1631552829722-100x100.png",
-  },
-};
+// export const metadata = {
+//   title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
+//   description: "Buy Best Perfumes Online Ahmed Perfume",
+//   icons: {
+//     icon: "https://www.ahmedalmaghribi.com/wp-content/uploads/2021/08/Ahmed-Logo-e1631552829722-100x100.png",
+//   },
+// };
 
 async function getproduct(categoryName, subCategoryName, product) {
   // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
@@ -42,6 +42,41 @@ async function getproduct(categoryName, subCategoryName, product) {
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');
+  }
+  return response.json();
+}
+async function getProductSEO(categoryName, subCategoryName, product) {
+  // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     category: categoryName.split("-").join(" ").toUpperCase(),
+  //     subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
+  //     product: product.split("-").join(" ").toUpperCase(),
+  //   })
+  // });
+  const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}api/productSEO`,
+      {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              category: categoryName.split("-").join(" ").toUpperCase(),
+              subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
+              product: product.split("-").join(" ").toUpperCase(),
+          }),
+          cache: "no-store",
+      }
+  );
+  
+  if (!response.ok) {
+      const errorMessage = await response.text(); // Get the error message from the server
+      console.error("SEO API Error:", errorMessage);
+      throw new Error(`SEO API Error: ${errorMessage}`);
   }
   return response.json();
 }
