@@ -3,7 +3,7 @@ import React from "react";
 export default function Pagination1() {
   return (
     <div
-      className="mb-3 ms-auto me-auto"
+      className="mt-3 mb-3 ms-auto me-auto"
       style={{ width: "300px" }}
     >
       {/* <div
