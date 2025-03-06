@@ -4,7 +4,7 @@
   width: $aside-width;
   max-width: 100%;
   height: 100vh;
-  height: -webkit-fill-available;
+  // height: -webkit-fill-available;
   transition: all 0.32s cubic-bezier(0.39, 0.575, 0.565, 1);
   background-color: $body-bg;
   opacity: .7;
