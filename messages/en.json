@@ -383,6 +383,7 @@
   "La Rosee": "La Rosee",
   "Cinder": "Cinder",
   "AHL": "AHL",
+  "Kawkab":"Kawkab",
 
   "----------Gel Category---------":"----------Gel Category---------",
   "Marj Body Gel":"Marj Body Gel",
@@ -454,6 +455,7 @@
 "Mosaic Description":" MOSAIC is a celebration of individuality, offering a unique harmony of warmth, sweetness, and floral elegance for those who seek a signature scent as multifaceted as their personality.",
 "Mystique Pink Description":"Mystique Pink exudes an aura of mystery in every 100ml.",
 "AHL Description":"Ahl is more than just a fragrance, it's a feeling of home, a scent that lingers like the embrace of loved ones, exuding warmth and refinement in every drop.",
+"Kawkab Description":"Kawkab is a sophisticated fragrance that blends radiant florals with rich, woody depths.Kawkab is a statement of elegance and timeless charm,EDP 75ml.",
 
 
 "Shay Jadeed Content": "<p>Besiege in with tickling prefusions of shay jadeed. Let go the scents beyond the Middle East. Just a trifling amount of splash, fills your essence with liveliness; as juicy citruses sums the top the note with thier zesty flavors. </p>",
@@ -491,6 +493,7 @@
 "Mosaic Content":"MOSAIC is a masterful creation that captivates the senses with its luxurious blend of contrasts. The fragrance opens with an energizing burst of coffee and almond, beautifully balanced by the zesty brightness of orange and the rich warmth of cacao. At its heart, a sophisticated bouquet of white flowers, orris, and the timeless allure of Bulgarian rose exudes elegance and romance. As it dries down, the fragrance reveals a comforting base of tonka bean, vanilla, and praline, enriched by the creamy softness of sandalwood and the sensual depth of musk. ",
 "Mystique Pink Content":"At the outset, delicate peony merges with zesty mandarin and refreshing citrus, initiating a mesmerizing journey. Unveiling its heart, osmanthus and rose intertwine, adding an air of floral sophistication. Anchored by base notes of pink pepper, patchouli, and sandalwood, its enigmatic charm persists, leaving a lasting impression. Mystique Pink transcends ordinary fragrances—it's an invitation to explore the enigmatic, a voyage into the unknown with every spritz.",
 "AHL Content":"Ahl is a name that signifies family, kinship, and a deep sense of belonging. This fragrance is a tribute to the warmth of cherished connections, enveloping you in a captivating blend of luxurious notes that evoke comfort, elegance, and sophistication.Ahl is more than just a fragrance, it's a feeling of home, a scent that lingers like the embrace of loved ones, exuding warmth and refinement in every drop.",
+"Kawkab Content":"Kawkab is a luxurious fragrance that blends radiant florals with deep, woody notes. It opens with vibrant rose, peony, saffron, and citrus, leading to a warm heart of Isparta rose, black tea, and amber. The scent settles into a rich base of musk, oud Ahmed Kinam, cedarwood, and patchouli, leaving a lasting impression of elegance and sophistication.",
 
 "Shay Jadeed Notes": "<p>Top – citrus (Lemon) <br>heart – Flower (lavender vanilla) <br>base - woody (agarwood, frankincense)</p>",
 "Saba Horoof Notes": "<p>Top - Citrus </p><p>Heart - White floral -rosy </p><p>Base - Musky - woody </p>",
@@ -526,6 +529,7 @@
 "Moonlit Notes":"<p>TOP : citrus, nectarine, apple, black currant.</p><p>HEART : gardenia, magnolia, Jasmine , fressia, Liily of the valley.</p><p>BOTTOM : patchouli, Musk, sandalwood, vanilla, amber.</p>",
 "Mosaic Notes":"<p>TOP : Coffee, Almond, Orange, Cacao. </p><p>HEART : White flowers, Orris, Bulgarian Rose.</p><p>BOTTOM : Tonka bean, , Vanilla, Praline, Sandalwood, Musk,</p>",
 "Mystique Pink Notes":"<p>Top Notes: PEONY, MANDARIN, CITRUS. </p><p>Heart Notes: OSMANTHUS, ROSE. </p><p>Base - PINK PEPPER, PATCHOULI, SANDALWOOD.</p>",
+"Kawkab Notes": "<div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://admin.ahmedalmaghribi.com/public/storage/notes/kawkab-first-notes.jpg\" alt=\"Top Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Top Notes</h3><p>It opens with a vibrant rose bouquet, complemented by peony, saffron, mango, and citrus notes, creating a fresh yet luxurious introduction.</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5 flex-column-reverse flex-lg-row\"><p class=\"order-1 order-lg-2\"><img class=\"img-fluid\" src=\"https://admin.ahmedalmaghribi.com/public/storage/notes/kawkab-heart-notes.jpg\" alt=\"first-notes-3.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5 order-2 order-lg-1\"><h3 class=\"mb-3 text-white\">Heart Notes</h3><p>The heart reveals the richness of Isparta rose, black tea, iris, and amber, adding warmth and depth.</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://admin.ahmedalmaghribi.com/public/storage/notes/kawkab-base-notes.jpg\" alt=\"Bottom Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Bottom Notes</h3><p>The fragrance settles into an elegant base of musk, oud Ahmed Kinam, cypriol, cedarwood, and patchouli, leaving a lasting and distinguished impression</p></div></div>",
 
 "----------EAU DE Parfum Single Product Page Occidental Fragrance":"----------EAU DE Parfum Single Product Page Occidental Fragrance",
 "Instance 60ML Description": "<p><span>Instance Perfume is a timeless and versatile fragrance that suits every occasion.</span></p>",
