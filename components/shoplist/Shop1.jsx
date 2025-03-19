@@ -465,7 +465,7 @@ useEffect(() => {
                 </div>
 
                 <div className="pc__info position-relative">
-                  <p className="pc__category">{elm.category_name}</p>
+                  <p className="pc__category">{t(elm.category_name)}</p>
                   <h6 className="pc__title">
                     <Link href={`/${locale}/shop/${removeSpecialCharactersAndAmp(elm.category_name).split(' ').join('-').toLowerCase()}/${isSubcategory(elm.category_name.split(' ').join('-').toLowerCase(), elm.subcategory)}/${removeSpecialCharactersAndAmp(elm.product_name).split(' ').join('-').toLowerCase()}`}>{elm?.product_name && t(he.decode(elm?.product_name))}</Link>
                   </h6>
