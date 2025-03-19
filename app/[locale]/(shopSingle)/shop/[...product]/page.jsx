@@ -124,6 +124,34 @@ const ProductSchema = ({ category, subcategory, product }) => {
       />
   );
 };
+export async function generateMetadata({ params }) {
+  const [categoryName, subCategoryName, product] = params.product;
+
+  try {
+      const data = await getProductSEO(categoryName, subCategoryName, product);
+      console.log(JSON.parse(data.meta_value)[0]);
+      return {
+          title: JSON.parse(data.meta_value)[0]?.seo_title ? `${JSON.parse(data.meta_value)[0]?.seo_title}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+          description: JSON.parse(data.meta_value)[0]?.seo_description ? JSON.parse(data.meta_value)[0]?.seo_description?.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
+          // openGraph: {
+          //     // title: data.product_name,
+          //     // description: data.description.replace(/<\/?[^>]+(>|$)/g, "").trim(),
+          //     // url: `https://ae.ahmedalmaghribi.com/en/shop/${categoryName}/${subCategoryName}/${data.product_name
+          //     //     .split(" ")
+          //     //     .join("-")
+          //     //     .toLowerCase()}`,
+          //     images: `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(data.meta_value)[0]?.seo_image}`,
+          //     // type: "product.item",
+          // }
+      };
+  } catch (error) {
+      console.error("Error generating metadata:", error);
+      return {
+          title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+          description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
+      };
+  }
+}
 
 const ProductDetailsPage16 = async({ params }) => {
   const [ categoryName, subCategoryName, product ] = params.product;
