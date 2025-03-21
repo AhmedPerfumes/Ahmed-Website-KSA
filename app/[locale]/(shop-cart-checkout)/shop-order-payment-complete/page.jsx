@@ -30,7 +30,7 @@ async function getOrderDetails(order_id) {
     body: JSON.stringify({
       order_number: order_id
     }),
-    // cache: 'no-store'
+    cache: 'no-store'
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');
