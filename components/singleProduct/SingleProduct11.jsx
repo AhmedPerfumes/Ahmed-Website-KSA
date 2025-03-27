@@ -121,29 +121,29 @@ export default function SingleProduct11({ category, subcategory, product }) {
     }
   };
 
-  useEffect(() => {
-    // Load the TabbyPromo script
-    const tabbyPromoScript = document.createElement("script");
-    tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
-    tabbyPromoScript.async = true;
-    document.body.appendChild(tabbyPromoScript);
+  // useEffect(() => {
+  //   // Load the TabbyPromo script
+  //   const tabbyPromoScript = document.createElement("script");
+  //   tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
+  //   tabbyPromoScript.async = true;
+  //   document.body.appendChild(tabbyPromoScript);
 
-    tabbyPromoScript.onload = () => {
-      new window.TabbyPromo({
-          selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
-          currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
-          price: tabbyPrice(product), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
-          lang: 'en', // Optional, en|ar only supported
-          source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
-          publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
-          merchantCode: 'assaaste'  // required
-      });
-    };
+  //   tabbyPromoScript.onload = () => {
+  //     new window.TabbyPromo({
+  //         selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
+  //         currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
+  //         price: tabbyPrice(product), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
+  //         lang: 'en', // Optional, en|ar only supported
+  //         source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
+  //         publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
+  //         merchantCode: 'assaaste'  // required
+  //     });
+  //   };
 
-    return () => {
-      document.body.removeChild(tabbyPromoScript);
-    };
-  }, []);
+  //   return () => {
+  //     document.body.removeChild(tabbyPromoScript);
+  //   };
+  // }, []);
 
   return (
     <>
@@ -166,7 +166,7 @@ export default function SingleProduct11({ category, subcategory, product }) {
             <div className="product-single__short-desc">
               <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(product.product_name)) }}></div>
             </div>
-            <div id="TabbyPromo"></div>
+            {/* <div id="TabbyPromo"></div> */}
             <h6 style={{ color: "red" }}>{error && error}</h6>
             <form onSubmit={(e) => e.preventDefault()}>
               {product.product_qty > 0 &&
