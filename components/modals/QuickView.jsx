@@ -220,7 +220,9 @@ export default function QuickView() {
                     </div>
                   </div>
                 </div> */}
-                {quickViewItem.product_qty > 0 &&
+                {quickViewItem.product_qty > 0 ? (
+                  
+                
                 <div className="product-single__addtocart">
                   <div className="qty-control position-relative">
                     <input
@@ -269,7 +271,14 @@ export default function QuickView() {
                       : "Add To Cart"}
                   </button>
                 </div>
-                }
+                ):(
+                  <div className="out-of-stock">
+                  <span className="badge fs-5 text-uppercase">Out of Stock</span>
+                  <p className="text-red mt-2">
+                    This product is currently unavailable.
+                  </p>
+                </div>
+                )}
               </form>
               <div className="product-single__addtolinks">
                 {/* <Link

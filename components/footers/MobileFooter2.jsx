@@ -61,57 +61,6 @@ export default function MobileFooter2() {
           />
         </form>
       </div>
-      <div className="footer-column footer-store-info col-12 mb-4 mb-lg-0">
-        <div className="logo d-flex justify-content-center">
-          <a href="/">
-            <Image
-              src="https://www.ahmedalmaghribi.com/wp-content/uploads/2022/01/Ahmed-logo.svg"
-              width={200}
-              height={28}
-              alt="Ahmed"
-              className="logo__image d-block"
-            />
-          </a>
-        </div>
-        {/* <!-- /.logo --> */}
-        <p className="footer-address text-white text-center">
-          Ahmed Al Maghribi Perfume Manuf L.L.C, <br />
-          Madinah Al Munawwarah <br />
-          Kingdom Of Saudi Arabia <br />
-        </p>
-
-        <p className="m-0 text-white text-center">
-          <strong className="fw-medium">info@ahmedalmaghribi.com</strong>
-        </p>
-        <p className="text-center">
-          <strong className="fw-medium text-white text-center">
-          +966 55 5073629 
-          </strong>
-        </p>
-
-        <ul className="social-links list-unstyled d-flex flex-wrap mb-0 text-white justify-content-center">
-          {socialLinks.map((link, index) => (
-            <li key={index}>
-              <a href={link.href} className="footer__social-link d-block">
-                <svg
-                  className={link.className}
-                  width={link.width}
-                  height={link.height}
-                  viewBox={link.viewBox}
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {typeof link.icon === "string" ? (
-                    <use href={link.icon} />
-                  ) : (
-                    link.icon
-                  )}
-                </svg>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
@@ -176,6 +125,58 @@ export default function MobileFooter2() {
           </ul>
         </AccordionDetails>
       </Accordion>
+      <div className="footer-column footer-store-info col-12 mb-4 mb-lg-0">
+        <div className="logo d-flex justify-content-center">
+          <a href="/">
+          <Image
+                  src="/assets/images/about/ahmed-logo.png"
+                  width={100}
+                  height={100}
+                  alt="Ahmed"
+                  className="logo__image d-block"
+                />
+          </a>
+        </div>
+        {/* <!-- /.logo --> */}
+        <p className="footer-address text-white text-center">
+          Ahmed Al Maghribi Perfume Manuf L.L.C, <br />
+          Madinah Al Munawwarah <br />
+          Kingdom Of Saudi Arabia <br />
+        </p>
+
+        <p className="m-0 text-white text-center">
+          <strong className="fw-medium">info@ahmedalmaghribi.com</strong>
+        </p>
+        <p className="text-center">
+          <strong className="fw-medium text-white text-center">
+          +966 55 5073629 
+          </strong>
+        </p>
+
+        <ul className="social-links list-unstyled d-flex flex-wrap mb-0 text-white justify-content-center">
+          {socialLinks.map((link, index) => (
+            <li key={index}>
+              <a href={link.href} className="footer__social-link d-block">
+                <svg
+                  className={link.className}
+                  width={link.width}
+                  height={link.height}
+                  viewBox={link.viewBox}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {typeof link.icon === "string" ? (
+                    <use href={link.icon} />
+                  ) : (
+                    link.icon
+                  )}
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      
       <div className="footer-bottom container text-white text-center">
         <div className="d-block d-md-flex align-items-center flex-nowrap">
           <span className="footer-copyright me-auto d-flex flex-nowrap">

@@ -63,7 +63,7 @@ export default function NewsLetter() {
             data-bs-backdrop="true"
             aria-hidden="true"
         >
-            <div className="modal-dialog newsletter-popup modal-dialog-centered">
+             <div className="modal-dialog newsletter-popup modal-dialog-centered">
                 <div className="modal-content">
                     {/* Explicit close button handling */}
                     <button
@@ -73,25 +73,30 @@ export default function NewsLetter() {
                     ></button>
                     <div className="row p-0 m-0">
                         <div className="col-md-8 p-0">
-                            <div className="newsletter-popup__bg h-100 w-100">
+                            <div className="newsletter-popup__bg w-100">
                                 <div className="d-none d-lg-block">
                                     <a
-                                        href={`/${locale}/shop/perfumes/oriental-fragrance/ahl`}
+                                        href={`/${locale}/shop/perfumes/oriental-fragrance/Kawkab`}
                                     >
-                                        <Image
+                                        {/* <Image
                                             width={550}
                                             height={650}
                                             style={{ height: "fit-content" }}
                                             loading="lazy"
-                                            src="/assets/images/home/ahl.jpg"
+                                            src="/assets/images/home/Kawkab-Web-banner.jpg"
                                             className="h-100 w-100 object-fit-cover d-block"
                                             alt="image"
-                                        />
+                                        /> */}
+                                         <VideoPanel
+                                        src="/assets/videos/KawkabPopUp.mp4"
+                                        section="hundred"
+                                    />
+
                                     </a>
                                 </div>
                                 <div className="d-sm-block d-md-none">
                                     <VideoPanel
-                                        src="/assets/videos/ahl.mp4"
+                                        src="/assets/videos/KawkabPopUp.mp4"
                                         section="hundred"
                                     />
                                 </div>
@@ -103,23 +108,18 @@ export default function NewsLetter() {
                                     className="section-title fw-normal mb-3 pb-2"
                                     style={{ color: "#cfa91a" }}
                                 >
-                                    Ahl
+                                   Kawkab
                                     {/* <span class="t-subtitle">
                                         The Essence of Belonging
                                     </span> */}
                                 </h3>
                                 <p>
-                                    A name that signifies family, kinship, and a
-                                    deep sense of belonging. This fragrance is a
-                                    tribute to the warmth of cherished
-                                    connections, enveloping you in a captivating
-                                    blend of luxurious notes that evoke comfort,
-                                    elegance, and sophistication.
+                                Kawkab is a statement of elegance and timeless charm.Kawkab is a sophisticated fragrance that blends radiant florals with rich, woody depths
                                     {/* <b className="sub-title">Don't miss out.</b> */}
                                 </p>
                                 <a
                                     className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
-                                    href={`/${locale}/shop/perfumes/oriental-fragrance/ahl`}
+                                    href={`/${locale}/shop/perfumes/oriental-fragrance/Kawkab`}
                                 >
                                     Shop Now
                                 </a>

@@ -4,7 +4,7 @@ import { slidesData3 } from "@/data/heroslides";
 import { Autoplay, EffectFade, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
-
+import { useMenu } from "../../../context/MenuContext";
 import { useLocale, useTranslations } from "next-intl";
 
 export default function Hero() {
@@ -24,19 +24,31 @@ export default function Hero() {
             clickable: true,
         },
     };
+    const {
+            homeSliders,
+            isLoading: isMenuLoading,
+            error,
+        } = useMenu();
+    
+        if (isMenuLoading) {
+            return <div>Loading...</div>;
+        }
+        if (error) {
+            return <div>{error}</div>;
+        }
     return (
         <Swiper
             className="swiper-container js-swiper-slider slideshow minh-100 swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events"
             {...swiperOptions}
         >
-            {slidesData3.map((elm, i) => (
+            {homeSliders?.map((elm, i) => (
                 <SwiperSlide key={i} className="swiper-slide">
                     <div className="overflow-hidden position-relative h-100">
                         <div className="slideshow-bg">
-                            <Link href={`${locale}/${elm.href}`}>
+                            <Link href={`${locale}/${elm.link}`}>
                                 <Image
                                     loading="lazy"
-                                    src={elm.imageSrc}
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`}
                                     width="1903"
                                     height="945"
                                     alt="image"
@@ -45,27 +57,27 @@ export default function Hero() {
                             </Link>
                         </div>
                         <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
-                            {elm.id != 4 && (
+                            {elm.title && (
                                 <h6
-                                    className={`t-subtitle text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3 ${elm.color}`}
+                                    className={`t-subtitle text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3`} style={{ 'color': elm.color}}
                                 >
                                     {t(elm.season)}
                                 </h6>
                             )}
                             <h2
-                                className={`h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5 ${elm.color}`}
+                                className={`h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5`} style={{ 'color': elm.color}}
                             >
                                 {t(elm.title)}
                             </h2>
                             <h2
-                                className={`h1 fw-bold mb-2 animate animate_fade animate_btt animate_delay-5 ${elm.color}`}
+                                className={`h1 fw-bold mb-2 animate animate_fade animate_btt animate_delay-5`} style={{ 'color': elm.color}}
                             >
-                                {t(elm.subtitle)}
+                                {t(elm.sub_title)}
                             </h2>
-                            {elm.id != 4 && (
+                            {elm.title && (
                                 <Link
-                                    href={`${locale}/${elm.href}`}
-                                    className={`btn-link btn-link_lg default-underline text-uppercase fw-medium animate animate_fade animate_btt animate_delay-7 ${elm.color}`}
+                                    href={`${locale}/${elm.link}`}
+                                    className={`btn-link btn-link_lg default-underline text-uppercase fw-medium animate animate_fade animate_btt animate_delay-7`} style={{ 'color': elm.color}}
                                 >
                                     {t("Discover More")}
                                 </Link>

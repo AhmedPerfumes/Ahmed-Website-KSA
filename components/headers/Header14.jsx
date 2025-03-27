@@ -325,10 +325,10 @@ export default function Header14() {
                                 </div>
                             </div>
                             <div className="logo">
-                                <a href="/">
+                            <a href="/">
                                     <img
-                                        src="https://www.ahmedalmaghribi.com/wp-content/uploads/2022/01/Ahmed-logo.svg"
-                                        width="200px"
+                                        src="/assets/images/about/ahmed-logo.png"
+                                        width="100px"
                                         alt="Ahmed"
                                     />
                                 </a>

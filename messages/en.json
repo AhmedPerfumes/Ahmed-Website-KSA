@@ -383,6 +383,7 @@
   "La Rosee": "La Rosee",
   "Cinder": "Cinder",
   "AHL": "AHL",
+  "Kawkab":"Kawkab",
 
   "----------Gel Category---------":"----------Gel Category---------",
   "Marj Body Gel":"Marj Body Gel",
@@ -406,6 +407,7 @@
 "Bidun esam Gift Set":"Bidun esam Gift Set",
 "Atri Gift Set":"Atri Gift Set",
 "The Dhakoon Collection":"The Dhakoon Collection",
+"Labbaik":"Labbaik",
 
 "----------Hair Mist Category":"----------Hair Mist Category",
 "Supreme Hair Mist":"Supreme Hair Mist",
@@ -453,6 +455,7 @@
 "Mosaic Description":" MOSAIC is a celebration of individuality, offering a unique harmony of warmth, sweetness, and floral elegance for those who seek a signature scent as multifaceted as their personality.",
 "Mystique Pink Description":"Mystique Pink exudes an aura of mystery in every 100ml.",
 "AHL Description":"Ahl is more than just a fragrance, it's a feeling of home, a scent that lingers like the embrace of loved ones, exuding warmth and refinement in every drop.",
+"Kawkab Description":"Kawkab is a sophisticated fragrance that blends radiant florals with rich, woody depths.Kawkab is a statement of elegance and timeless charm,EDP 75ml.",
 
 
 "Shay Jadeed Content": "<p>Besiege in with tickling prefusions of shay jadeed. Let go the scents beyond the Middle East. Just a trifling amount of splash, fills your essence with liveliness; as juicy citruses sums the top the note with thier zesty flavors. </p>",
@@ -490,6 +493,7 @@
 "Mosaic Content":"MOSAIC is a masterful creation that captivates the senses with its luxurious blend of contrasts. The fragrance opens with an energizing burst of coffee and almond, beautifully balanced by the zesty brightness of orange and the rich warmth of cacao. At its heart, a sophisticated bouquet of white flowers, orris, and the timeless allure of Bulgarian rose exudes elegance and romance. As it dries down, the fragrance reveals a comforting base of tonka bean, vanilla, and praline, enriched by the creamy softness of sandalwood and the sensual depth of musk. ",
 "Mystique Pink Content":"At the outset, delicate peony merges with zesty mandarin and refreshing citrus, initiating a mesmerizing journey. Unveiling its heart, osmanthus and rose intertwine, adding an air of floral sophistication. Anchored by base notes of pink pepper, patchouli, and sandalwood, its enigmatic charm persists, leaving a lasting impression. Mystique Pink transcends ordinary fragrances—it's an invitation to explore the enigmatic, a voyage into the unknown with every spritz.",
 "AHL Content":"Ahl is a name that signifies family, kinship, and a deep sense of belonging. This fragrance is a tribute to the warmth of cherished connections, enveloping you in a captivating blend of luxurious notes that evoke comfort, elegance, and sophistication.Ahl is more than just a fragrance, it's a feeling of home, a scent that lingers like the embrace of loved ones, exuding warmth and refinement in every drop.",
+"Kawkab Content":"Kawkab is a luxurious fragrance that blends radiant florals with deep, woody notes. It opens with vibrant rose, peony, saffron, and citrus, leading to a warm heart of Isparta rose, black tea, and amber. The scent settles into a rich base of musk, oud Ahmed Kinam, cedarwood, and patchouli, leaving a lasting impression of elegance and sophistication.",
 
 "Shay Jadeed Notes": "<p>Top – citrus (Lemon) <br>heart – Flower (lavender vanilla) <br>base - woody (agarwood, frankincense)</p>",
 "Saba Horoof Notes": "<p>Top - Citrus </p><p>Heart - White floral -rosy </p><p>Base - Musky - woody </p>",
@@ -525,6 +529,7 @@
 "Moonlit Notes":"<p>TOP : citrus, nectarine, apple, black currant.</p><p>HEART : gardenia, magnolia, Jasmine , fressia, Liily of the valley.</p><p>BOTTOM : patchouli, Musk, sandalwood, vanilla, amber.</p>",
 "Mosaic Notes":"<p>TOP : Coffee, Almond, Orange, Cacao. </p><p>HEART : White flowers, Orris, Bulgarian Rose.</p><p>BOTTOM : Tonka bean, , Vanilla, Praline, Sandalwood, Musk,</p>",
 "Mystique Pink Notes":"<p>Top Notes: PEONY, MANDARIN, CITRUS. </p><p>Heart Notes: OSMANTHUS, ROSE. </p><p>Base - PINK PEPPER, PATCHOULI, SANDALWOOD.</p>",
+"Kawkab Notes": "<div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://admin.ahmedalmaghribi.com/public/storage/notes/kawkab-first-notes.jpg\" alt=\"Top Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Top Notes</h3><p>It opens with a vibrant rose bouquet, complemented by peony, saffron, mango, and citrus notes, creating a fresh yet luxurious introduction.</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5 flex-column-reverse flex-lg-row\"><p class=\"order-1 order-lg-2\"><img class=\"img-fluid\" src=\"https://admin.ahmedalmaghribi.com/public/storage/notes/kawkab-heart-notes.jpg\" alt=\"first-notes-3.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5 order-2 order-lg-1\"><h3 class=\"mb-3 text-white\">Heart Notes</h3><p>The heart reveals the richness of Isparta rose, black tea, iris, and amber, adding warmth and depth.</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://admin.ahmedalmaghribi.com/public/storage/notes/kawkab-base-notes.jpg\" alt=\"Bottom Notes oud &amp; roses\" loading=\"lazy\"><br> </p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Bottom Notes</h3><p>The fragrance settles into an elegant base of musk, oud Ahmed Kinam, cypriol, cedarwood, and patchouli, leaving a lasting and distinguished impression</p></div></div>",
 
 "----------EAU DE Parfum Single Product Page Occidental Fragrance":"----------EAU DE Parfum Single Product Page Occidental Fragrance",
 "Instance 60ML Description": "<p><span>Instance Perfume is a timeless and versatile fragrance that suits every occasion.</span></p>",
@@ -707,7 +712,7 @@
 "Oud Classic Notes": "<p>Top - Spicy Floral ( Saffron, Roses)</p><p>Heart - Floral ( White flowers)</p><p>Base - Musky Woody ( Cambodian oud, Musk, amber.</p>",
 "Musk Roses Notes": "<p>Top - Floral -Raspberry</p><p>Heart - Roses</p><p>Bases- Musky</p>",
 "Musk Ahmed Notes": "<p>TOP : CITRUS, FLOWER</p><p>HEART : ROSES, JASMINE</p><p>BASE : MUSK, AMBER</p>",
-"Marj Notes": "<div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/second-notes.jpg\" alt=\"second-notes.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Top Notes</h3><p>The bergamot’s scintillating citrus notes have your heart a-thumpin’, while the pink pepper’s spicy bite will drive your taste on the blaze. Tangerine’s naturally uplifting sweetness and nutmeg’s spicy undertones are released harmoniously with a brisk elemi note. Adding the smokey flavour of oud and the sweet richness of honey elevates its essence.</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5 flex-column-reverse flex-lg-row\"><p class=\"order-1 order-lg-2\"><img class=\"img-fluid\" src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/first-notes-3.jpg\" alt=\"first-notes-3.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5 order-2 order-lg-1\"><h3 class=\"mb-3 text-white\">Heart Notes</h3><p>Relax and let yourself be pampered as the earthy scent of patchouli calms your emotions. You’re being welcomed further into the heart with a festive bouquet of fragrant roses, saffron, and jasmine. The vetiver in it will impart a harmonious, mystical quality to you. A jolt of cinnamon is added, which further envelops you inside the cashmere woods’ caressing warmth. Blending orange blossom’s floral-animal undertones with other clean elements to create a fresh aroma. Treat yourself to the splendor that is all around you.</p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5\"><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/third-notes-2.jpg\" alt=\"third-notes-2.jpg\"></p><div class=\"content-wrapper col-lg-7 px-lg-5\"><h3 class=\"mb-3 text-white\">Bottom Notes</h3><p>A fruity aspect amid pear notes of ambrette seeds takes over to be at the base of notes, and it is wrapped in a warm embrace of golden amber, gentle musk, and ambergris. The addition of raspberry lends an enticingly fresh and delicious sparkle to the scent. Saffron and leather give it an edge, while sandalwood and oakmoss gently soothe your nerves. The scent is capped with a delicate fusion of agarwood and violet, while ambroxan enriches the collagen. Explicitly express your sensuality and let it ooze within you.<br> </p></div></div><div class=\"d-lg-flex align-items-lg-center mb-5\"><p> </p><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/artboard-1-min.jpg\" alt=\"artboard-1-min.jpg\"></p><p> </p><div class=\"content-wrapper col-lg-4 px-lg-4\"><h4 style=\"text-align:center;\"><span style=\"color:hsl(342,28%,69%);font-size:18px;\">The Sense of Sheer Elegance and Affection</span></h4><p style=\"text-align:center;\">The casket features an amaryllis-colored velvet covering for a luxury sensation. Lifting the lid reveals a beautiful vase, the pinnacle of which has been given a distinct design. Tulip-like white wings fall down to the torso, displaying gaps in the glass and, in the middle, the name etched MARJ, A scent created to epitomise the luxuriousness.<br> </p></div><p> </p><p><img src=\"https://phpstack-667016-4904984.cloudwaysapps.com/public/storage/artboard-3-min.jpg\" alt=\"artboard-3-min.jpg\"></p></div>",
+"Marj Notes": "",
 "Little Hearts Notes": "<p>Top: Citrus-Sweet(Sweet Lime Orange).</p><p> Heart: Fruity (Mango-Pineapple,Mixed Fruits).</p><p>Base: Amber(Amber Resin-Musk,Vanilla).</p>",
 "Leen Notes": "<p>TOP : ROSE, JASMINE  </p><p><br>HEART : LILLY OF THE VALLEY,VIOLET.  </p><p><br>BOTTOM : SANDALWOOD, CEDARWOOD, VETIVER.</p>",
 "Leather Notes": "<p>Top - Saffron thyme</p><p>Base - Leather</p>",
@@ -955,6 +960,7 @@
 "Bidun Esam Gift Set Description": "<p>The Gift Set contains Bidun Esam 50ml, Bidun Esam 12ml &amp; Bidun Esam Gel</p>",
 "Atri Giftset Description": "<p>The Giftset contains ( Tanuf Oil e12 ml , Malyoon Oil e12 ml , Lamees Oil e12 ml , D\/oud AMG Oil e12 ml )</p>",
 "The Dukhoon Collection Description": "<p>The Dukhoon collection contains:</p><p>Oud Ma'attar Majalis, Mariya Oud Mubakhar 36 Grams, Bakhoor Ahmed 20 Tabs and Khashab Al Oud.</p>",
+"Labbaik Description":"The Gift Set Contains (Bidun Esam 12ml,Musk Ahmed 12ml,Cute 12ml & Leather 12ml)",
 
 "Qarnain Content": "<p>Elevate your EID festivities with our exquisite Qarnain Giftset, crafted with love and designed to capture the spirit of this joyous occasion.</p><p style=\"text-align:left;\">The Qarnain Gift Set is a trio set with Dehn Al Oud Indian Seufi 1.2ml, Dehn Al Oud Combodi 1.2ml, and Dehn Al Oud Mubakhkhar 1.2ml. Each one has a unique scent that everyone likes.</p><p>Celebrate the spirit of togetherness and generosity with our Qarnain Giftset, a token of appreciation that honors cherished traditions while embracing the spirit of modern elegance. Make this EID unforgettable with the perfect gift that speaks volumes of love, respect, and appreciation.</p><p>Experience the magic of EID with Qarnain Giftset - where tradition meets luxury. Order now and spread joy this festive season!</p>",
 "Shauque Al Shuyookh Content": "<p>This exquisite collection features the captivating Bin Shaikh Perfume, the timeless Oud Classic Perfume, and the rich Dehn Al Oudh Mubakhar. Accompanied by a beautifully crafted Mabkhar, an elegant Prayer Mat, and a traditional Masbaha, this set is the perfect gift for those who appreciate elegance and tradition.</p>",
@@ -971,6 +977,7 @@
 "Bidun Esam Gift Set Content": "<p>The Gift Set contains Bidun Esam 50ml, Bidun Esam 12ml &amp; Bidun Esam Gel</p>",
 "Atri Giftset Content": "<p>The Giftset contains ( Tanuf Oil e12 ml , Malyoon Oil e12 ml , Lamees Oil e12 ml , D/oud AMG Oil e12 ml )</p>",
 "The Dukhoon Collection Content": "<p>Enhancing leisure with a range of traditional blended Dukhoons.</p><p>The Dukhoon collection contains:</p><p>Oud Ma’attar Majalis, Mariya Oud Mubakhar 36 Grams, Bakhoor Ahmed 20 Tabs and Khashab Al Oud.</p>",
+"Labbaik Content":"The Labbaik Giftset is a luxurious collection of four exquisite fragrances, each crafted to evoke a unique sensory experience.The Gift Set Contains (Bidun Esam 12ml,Musk Ahmed 12ml,Cute 12ml & Leather 12ml presenting a bold and charismatic aroma, this set embodies sophistication and elegance. Encased in a beautifully designed package, the Labbaikh Giftset is a perfect choice for fragrance enthusiasts, making it an ideal gift or a treasured addition to any personal collection.)",
 
 "Qarnain Notes": "<p>Dehn Al Oud Indian Seufi 1.2ml<br>Dehn Al Oud Combodi 1.2ml<br>Dehn Al Oud Mubakhkhar 1.2ml</p>",
 "Shauque Al Shuyookh Notes": "<p>Bin Shaikh Perfume<br>Oud Classic Perfume<br>Dehn Al Oudh Mubakhar<br>Mabkhar<br>Prayer Mat</p>",
@@ -987,6 +994,7 @@
 "Bidun Esam Gift Set Notes": "<p>The Gift Set contains Bidun Esam 50ml, Bidun Esam 12ml &amp; Bidun Esam Gel</p>",
 "Atri Giftset Notes": "<p>The Giftset contains ( Tanuf Oil e12 ml , Malyoon Oil e12 ml , Lamees Oil e12 ml , D/oud AMG Oil e12 ml )</p>",
 "The Dukhoon Collection Notes": "<p>Oud Ma’attar Majalis, Mariya Oud Mubakhar 36 Grams, Bakhoor Ahmed 20 Tabs and Khashab Al Oud.</p>",
+"Labbaik Notes":"The Gift Set Contains (Bidun Esam 12ml,Musk Ahmed 12ml,Cute 12ml & Leather 12ml)",
 
 "----------Gel Single Product Page Body Gel":"----------Gel Single Product Page Body Gel",
 "Marj Body Gel Description": "<p>Experience pampered, refreshed skin with the elegant, multi-note fragrance of our enchanting body gel.</p>",

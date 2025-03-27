@@ -19,7 +19,7 @@ import {
 import he from 'he';
 import Slider from "rc-slider";
 
-import {useLocale} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import { useMenu } from '@/context/MenuContext';
 
 export default function Shop1({ search }) {
@@ -27,6 +27,7 @@ export default function Shop1({ search }) {
   const locale = useLocale();
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(3);
+  const t= useTranslations();
 
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
   
@@ -439,13 +440,13 @@ useEffect(() => {
                         className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
                         title="Already Added"
                       >
-                      Already Added
+                      {t("Already Added")} 
                     </button> : elm.product_qty > 0 && <button
                       className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
                       onClick={() => addProductToCart({...elm, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name})}
                       title="Add to Cart"
                     >
-                      Add To Cart
+                      {t("Add To Cart")}
                     </button>
                   }
                   {/* {elm.product_qty > 0 && <button
@@ -464,9 +465,9 @@ useEffect(() => {
                 </div>
 
                 <div className="pc__info position-relative">
-                  <p className="pc__category">{elm.category_name}</p>
+                  <p className="pc__category">{t(elm.category_name)}</p>
                   <h6 className="pc__title">
-                    <Link href={`/${locale}/shop/${removeSpecialCharactersAndAmp(elm.category_name).split(' ').join('-').toLowerCase()}/${isSubcategory(elm.category_name.split(' ').join('-').toLowerCase(), elm.subcategory)}/${removeSpecialCharactersAndAmp(elm.product_name).split(' ').join('-').toLowerCase()}`}>{elm?.product_name && he.decode(elm?.product_name)}</Link>
+                    <Link href={`/${locale}/shop/${removeSpecialCharactersAndAmp(elm.category_name).split(' ').join('-').toLowerCase()}/${isSubcategory(elm.category_name.split(' ').join('-').toLowerCase(), elm.subcategory)}/${removeSpecialCharactersAndAmp(elm.product_name).split(' ').join('-').toLowerCase()}`}>{elm?.product_name && t(he.decode(elm?.product_name))}</Link>
                   </h6>
                   <div className="product-card__price d-flex">
                     {/* {elm.price ? (
