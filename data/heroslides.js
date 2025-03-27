@@ -120,7 +120,7 @@ export const slidesData33 = [
 ];
 
 
-
+export const slidesData2=[]
 
 
 export const slideData1000 = [
