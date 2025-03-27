@@ -31,7 +31,78 @@ export const slides6 = [
   },
 ];
 
-
+export const slidesData2 = [
+  {
+    id: 1,
+    imgSrc: "/assets/images/home/demo7/slider1.jpg",
+    title: "New In",
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 2,
+    imgSrc: "/assets/images/home/demo7/slider2.jpg",
+    title: "Coats",
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 3,
+    imgSrc: "/assets/images/home/demo7/slider3.jpg",
+    title: "Shoes",
+    subMenuLinks: [
+      { text: "Trainers", link: "/shop" },
+      { text: "Sandals", link: "/shop" },
+      { text: "Heel shoes", link: "/shop" },
+      { text: "Flat shoes", link: "/shop" },
+      { text: "Special prices", link: "/shop" },
+    ],
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 4,
+    imgSrc: "/assets/images/home/demo7/slider4.jpg",
+    title: "Accessories",
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 1,
+    imgSrc: "/assets/images/home/demo7/slider1.jpg",
+    title: "New In",
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 2,
+    imgSrc: "/assets/images/home/demo7/slider2.jpg",
+    title: "Coats",
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 3,
+    imgSrc: "/assets/images/home/demo7/slider3.jpg",
+    title: "Shoes",
+    subMenuLinks: [
+      { text: "Trainers", link: "/shop" },
+      { text: "Sandals", link: "/shop" },
+      { text: "Heel shoes", link: "/shop" },
+      { text: "Flat shoes", link: "/shop" },
+      { text: "Special prices", link: "/shop" },
+    ],
+    width: 475,
+    height: 800,
+  },
+  {
+    id: 4,
+    imgSrc: "/assets/images/home/demo7/slider4.jpg",
+    title: "Accessories",
+    width: 475,
+    height: 800,
+  },
+];
 export const slidesData3 = [
   // {
   //   id: 4,
@@ -118,10 +189,195 @@ export const slidesData33 = [
   // },
 
 ];
+export const slidesData4 = [
+  {
+    id: 1,
+    imageSrc: "/assets/images/home/demo9/slider1.jpg",
+    imageAlt: "TRENDING 2023",
+    subtitle: "Interior Designs",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur elit. Odio pulvinar in ipsum amet.",
+  },
+  {
+    id: 2,
+    imageSrc: "/assets/images/home/demo9/slider1.jpg",
+    imageAlt: "TRENDING 2023",
+    subtitle: "Interior Designs",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur elit. Odio pulvinar in ipsum amet.",
+  },
+  {
+    id: 3,
+    imageSrc: "/assets/images/home/demo9/slider1.jpg",
+    imageAlt: "TRENDING 2023",
+    subtitle: "Interior Designs",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur elit. Odio pulvinar in ipsum amet.",
+  },
+  {
+    id: 4,
+    imageSrc: "/assets/images/home/demo9/slider1.jpg",
+    imageAlt: "TRENDING 2023",
+    subtitle: "Interior Designs",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Odio pulvinar in ipsum amet.",
+  },
+];
+export const slidesData5 = [
+  {
+    id: 1,
+    imgSrc: "/assets/images/home/demo10/slideshow-character1.png",
+    imgAlt: "Woman Fashion 1",
+    title: "Modern Jogger",
+    price: "399,50 TL",
+    type: "New Arrivals",
+  },
+  {
+    id: 2,
+    imgSrc: "/assets/images/home/demo10/slideshow-character1.png",
+    imgAlt: "Woman Fashion 1",
+    title: "Modern Jogger",
+    price: "399,50 TL",
+    type: "New Arrivals",
+  },
+  {
+    id: 3,
+    imgSrc: "/assets/images/home/demo10/slideshow-character1.png",
+    imgAlt: "Woman Fashion 1",
+    title: "Modern Jogger",
+    price: "399,50 TL",
+    type: "New Arrivals",
+  },
+];
+export const slideData6 = [
+  {
+    id: 1,
+    src: "/assets/images/home/demo11/slideshow-character1.png",
+    alt: "Woman Fashion 1",
+    category: "TOP SMARTPHONES",
+    price: 279,
+    feature1: "Heavy on features.",
+    feature2: "Light on price.",
+  },
+  {
+    id: 2,
+    src: "/assets/images/home/demo11/slideshow-character1.png",
+    alt: "Woman Fashion 1",
+    category: "TOP SMARTPHONES",
+    price: 279,
+    feature1: "Heavy on features.",
+    feature2: "Light on price.",
+  },
+  {
+    id: 3,
+    src: "/assets/images/home/demo11/slideshow-character1.png",
+    alt: "Woman Fashion 1",
+    category: "TOP SMARTPHONES",
+    price: 279,
+    feature1: "Heavy on features.",
+    feature2: "Light on price.",
+  },
+  {
+    id: 4,
+    src: "/assets/images/home/demo11/slideshow-character1.png",
+    alt: "Woman Fashion 1",
+    category: "TOP SMARTPHONES",
+    price: 279,
+    feature1: "Heavy on features.",
+    feature2: "Light on price.",
+  },
+];
 
+export const slidesData7 = [
+  {
+    id: 1,
+    backgroundColor: "#f5e6e0",
+    imageUrl: "/assets/images/home/demo12/slideshow-pattern.png",
+    imgUrl2: "/assets/images/home/demo12/slideshow-character1.png",
+    alt: "Pattern",
+    title: "Shop Our Freshest",
+    subtitle1: "Fresh Hand-Picked Vegetables",
+    subtitle2: "Everyday",
+  },
+  {
+    id: 1,
+    backgroundColor: "#f5e6e0",
+    imageUrl: "/assets/images/home/demo12/slideshow-pattern.png",
+    imgUrl2: "/assets/images/home/demo12/slideshow-character1.png",
+    alt: "Pattern",
+    title: "Shop Our Freshest",
+    subtitle1: "Fresh Hand-Picked Vegetables",
+    subtitle2: "Everyday",
+  },
+  {
+    id: 1,
+    backgroundColor: "#f5e6e0",
+    imageUrl: "/assets/images/home/demo12/slideshow-pattern.png",
+    imgUrl2: "/assets/images/home/demo12/slideshow-character1.png",
+    alt: "Pattern",
+    title: "Shop Our Freshest",
+    subtitle1: "Fresh Hand-Picked Vegetables",
+    subtitle2: "Everyday",
+  },
+  // Add more slide data objects as needed
+];
 
-export const slidesData2=[]
+export const slideData8 = [
+  {
+    id: 1,
+    backgroundColor: "#f5e6e0",
+    imgSrc: "/assets/images/home/demo13/slider1.jpg",
+    imgAlt: "Pattern",
+    title1: "EYEWEAR",
+    title2: "UP TO $60 OFF POLARISED",
+    title3: "SUNGLASSES",
+  },
+  {
+    id: 2,
+    backgroundColor: "#f5e6e0",
+    imgSrc: "/assets/images/home/demo13/slider1.jpg",
+    imgAlt: "Pattern",
+    title1: "EYEWEAR",
+    title2: "UP TO $60 OFF POLARISED",
+    title3: "SUNGLASSES",
+  },
+];
 
+export const slideData9 = [
+  {
+    id: 1,
+    bgImg: "/assets/images/home/demo14/slider1_bg.jpg",
+    characterImg: "/assets/images/home/demo14/slider1_character.png",
+    title: "Search Lab N95 Face Mask",
+    subtitle: "Just a few seconds to measure your body temperature.",
+    btnLink: "/shop",
+  },
+  {
+    id: 2,
+    bgImg: "/assets/images/home/demo14/slider1_bg.jpg",
+    characterImg: "/assets/images/home/demo14/slider2_character.png",
+    title: "Search Lab N95 Face Mask",
+    subtitle: "Just a few seconds to measure your body temperature.",
+    btnText: "SHOP NOW",
+  },
+];
+
+export const slideData10 = [
+  {
+    id: 1,
+    bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
+    title: "Ahmed Perfumes",
+    description:
+      "Beaux products protect, moisturize, and lubricate your skin. It smartly nourish your skin. with lotions, day creams, night creams, tinted moisturizers, and more.",
+  },
+  {
+    id: 2,
+    bgImage: "/assets/images/home/demo15/slider2_bg.jpg",
+    title: "Buy Perfumes",
+    description:
+      "Beaux products protect, moisturize, and lubricate your skin. It smartly nourish your skin. with lotions, day creams, night creams, tinted moisturizers, and more.",
+  },
+];
 
 export const slideData1000 = [
   {
