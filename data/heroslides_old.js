@@ -98,6 +98,8 @@ export const slidesData33 = [
 ];
 
 export const slideData1000 = [
+ 
+
   {
     id: 1,
     bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
