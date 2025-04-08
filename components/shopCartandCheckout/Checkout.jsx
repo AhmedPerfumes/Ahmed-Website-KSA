@@ -137,44 +137,44 @@ export default function Checkout() {
     setFinalPriceState(finalPrice);
   }, []);
 
-  // useEffect(() => {
-  //   // Load the TabbyCard script
-  //   const tabbyCardScript = document.createElement("script");
-  //   tabbyCardScript.src = "https://checkout.tabby.ai/tabby-card.js";
-  //   tabbyCardScript.async = true;
-  //   document.body.appendChild(tabbyCardScript);
+  useEffect(() => {
+    // Load the TabbyCard script
+    const tabbyCardScript = document.createElement("script");
+    tabbyCardScript.src = "https://checkout.tabby.ai/tabby-card.js";
+    tabbyCardScript.async = true;
+    document.body.appendChild(tabbyCardScript);
 
-  //   // Load the TabbyPromo script
-  //   const tabbyPromoScript = document.createElement("script");
-  //   tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
-  //   tabbyPromoScript.async = true;
-  //   document.body.appendChild(tabbyPromoScript);
+    // Load the TabbyPromo script
+    const tabbyPromoScript = document.createElement("script");
+    tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
+    tabbyPromoScript.async = true;
+    document.body.appendChild(tabbyPromoScript);
 
-  //   const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0]?.price) + totalPrice + parseFloat(shippingServiceCharges[1]?.price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1]?.price);
+    const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0]?.price) + totalPrice + parseFloat(shippingServiceCharges[1]?.price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1]?.price);
 
-  //   tabbyCardScript.onload = () => {
-  //     new window.TabbyCard({
-  //       selector: "#tabbyCard", // empty div for TabbyCard.
-  //       currency: "SAR", // required, AED|SAR|KWD only supported.
-  //       lang: "en", // Optional, language of snippet and popups.
-  //       price: finalPrice, // required, total cart amount.
-  //       size: "narrow", // required, narrow|wide supported.
-  //       theme: "black", // required, black|default supported.
-  //       header: true, // if a Payment method name is present already.
-  //     });
-  //   };
+    tabbyCardScript.onload = () => {
+      new window.TabbyCard({
+        selector: "#tabbyCard", // empty div for TabbyCard.
+        currency: "SAR", // required, AED|SAR|KWD only supported.
+        lang: "en", // Optional, language of snippet and popups.
+        price: finalPrice, // required, total cart amount.
+        size: "narrow", // required, narrow|wide supported.
+        theme: "black", // required, black|default supported.
+        header: true, // if a Payment method name is present already.
+      });
+    };
 
-  //   tabbyPromoScript.onload = () => {
-  //     new window.TabbyPromo({
-  //       // You can add any necessary configuration for TabbyPromo here if needed
-  //     });
-  //   };
+    tabbyPromoScript.onload = () => {
+      new window.TabbyPromo({
+        // You can add any necessary configuration for TabbyPromo here if needed
+      });
+    };
 
-  //   return () => {
-  //     document.body.removeChild(tabbyCardScript);
-  //     document.body.removeChild(tabbyPromoScript);
-  //   };
-  // }, [selectedOption]);
+    return () => {
+      document.body.removeChild(tabbyCardScript);
+      document.body.removeChild(tabbyPromoScript);
+    };
+  }, [selectedOption]);
 
  
   async function onOrder(event) {
@@ -311,6 +311,16 @@ export default function Checkout() {
           setError(null);
           // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
           router.push(data.redirect_url);
+      } else if (data.qtyMessage) {
+        // setSuccess();
+        setError(data.qtyMessage);
+        // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
+        // router.push(data.redirect_url);
+      } else if (data.discountMessage) {
+        // setSuccess();
+        setError(data.discountMessage);
+        // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
+        // router.push(data.redirect_url);
       } else {
         if(data.products) {
           setError(data.products);
@@ -1039,7 +1049,7 @@ export default function Checkout() {
                     </svg>
                   </label>
                 </div>
-                {/* <div className="form-check">
+                <div className="form-check">
                   <input
                     className="form-check-input form-check-input_fill"
                     type="radio"
@@ -1063,7 +1073,7 @@ export default function Checkout() {
                     <button style={{ 'border-radius': '50px', 'border': 'none' }} type="button" data-tabby-info="installments" data-tabby-price={finalPriceState && finalPriceState} data-tabby-currency="SAR">?</button>
                   </label>
                   {selectedOption == 'tabby' && <><div id="tabbyCard"></div></>}
-                </div>  */}
+                </div> 
                 <div className="policy-text">
                   Your personal data will be used to process your order, support
                   your experience throughout this website, and for other
