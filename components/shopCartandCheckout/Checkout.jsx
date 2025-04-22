@@ -223,7 +223,11 @@ export default function Checkout() {
       })
  
       if (!response.ok) {
-        throw new Error('Failed to submit the data. Please try again.');
+        setTimeout(() => {
+          localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
+          setCartProducts([]); // update the cartProducts state to an empty array
+        }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
+        throw new Error('Oops!!! Your Session has been expired. Please try again.');
       }
  
       // Handle response if necessary
