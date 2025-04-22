@@ -135,7 +135,7 @@ export default function Checkout() {
   useEffect(() => {
     const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0]?.price) + totalPrice + parseFloat(shippingServiceCharges[1]?.price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1]?.price);
     setFinalPriceState(finalPrice);
-  }, []);
+  }, [selectedOption]);
 
   useEffect(() => {
     // Load the TabbyCard script
@@ -158,7 +158,7 @@ export default function Checkout() {
         currency: "SAR", // required, AED|SAR|KWD only supported.
         lang: "en", // Optional, language of snippet and popups.
         price: finalPrice, // required, total cart amount.
-        size: "narrow", // required, narrow|wide supported.
+        size: "wide", // required, narrow|wide supported.
         theme: "black", // required, black|default supported.
         header: true, // if a Payment method name is present already.
       });
@@ -491,6 +491,9 @@ export default function Checkout() {
 
   const handleCouponChange = (e) => {
     setCouponCode(e.target.value);
+    setCouponSuccess(null);
+    setCouponData(null);
+    setCouponDataContext(null);
   };
 
   const removeCoupon = (e) => {
@@ -511,7 +514,7 @@ export default function Checkout() {
 
     let product_coupon = false;
     cartProducts.map((item) => {
-      if(item.coupon?.code == couponCode) {
+      if(item.coupon[couponCode]?.code == couponCode) {
         product_coupon = true;
       }
     });
@@ -523,11 +526,11 @@ export default function Checkout() {
       setCouponCode('');
       return;
     }
-    else if(!isOTPVerified) {
-      setCouponError('Verify Mobile Number First');
-      setCouponSuccess(null);
-      return;
-    }
+    // else if(!isOTPVerified) {
+    //   setCouponError('Verify Mobile Number First');
+    //   setCouponSuccess(null);
+    //   return;
+    // }
     try {
       // Call your backend API or validation logic for the coupon code
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/validateCoupon`, {
@@ -556,6 +559,7 @@ export default function Checkout() {
           setCouponError(data['mobile_number']);
         } else {
           setCouponError(data.message);
+          setCouponCode('');
         }
       }
     } catch (err) {
@@ -585,12 +589,26 @@ export default function Checkout() {
         return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
       }
     } else if(elm?.coupon && couponData != null && couponCode != null) {
-      console.log('else if');
-      if(new Date(current_date_time) >= new Date(elm.coupon.start_date) && new Date(current_date_time) <= new Date(elm.coupon.end_date)) {
-        return <td><span className="money price price-old">{elm?.price}{ currency.symbol }</span><span className="money price price-sale">{((elm.price - (elm.price / 100 * elm.coupon.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span></td>;
-      } else {
-        return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-      }
+      console.log('else if', elm);
+      // elm.map((item) => {
+        // return elm.coupon.map((item, ind) => {
+        //   // if() {
+        //     if(new Date(current_date_time) >= new Date(item.start_date) && new Date(current_date_time) <= new Date(item.end_date) && item.code == couponData.code) {
+        //       console.log('iffff', elm);
+        //       return <td key={elm.ind}><span className="money price price-old">{elm?.price}{ currency.symbol }</span><span className="money price price-sale">{((elm.price - (elm.price / 100 * item.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span></td>; // <td>{((elm.price - (elm.price / 100 * i.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+        //     }
+        //     else {
+        //       console.log('elseeee', elm);
+        //       return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+        //     }
+        //   // }
+        // });
+      // });
+        if(new Date(current_date_time) >= new Date(elm.coupon[couponCode]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponCode]?.end_date) && elm.coupon[couponCode].code == couponData.code) {
+          return <td><span className="money price price-old">{ currency.symbol }{elm?.price}</span><span className="money price price-sale">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponCode]?.value)) * elm.quantity).toFixed(2)}</span></td>;
+        } else {
+          return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+        }
     } else if(elm?.sale_price) {
       console.log('else if 2');
       return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
@@ -963,37 +981,47 @@ export default function Checkout() {
                   </tbody>
                 </table>
               </div>
-              {/* <div > */}
+              <div >
                 {/* <form
                   onSubmit={applyCoupon}
                   className="position-relative bg-body"
                 > */}
-                  {/* {couponError ? <div style={{ color: 'red' }}>{couponError}</div> : <div style={{ color: 'green' }}>{couponSuccess}</div>}
+                  {couponError ? (
+                      <div style={{ color: "red" }}>
+                          {couponError}
+                      </div>
+                  ) : (
+                      <div style={{ color: "green" }}>
+                          {couponSuccess}
+                      </div>
+                  )}
                   <input
-                    className="form-control"
-                    type="text"
-                    name="coupon_code"
-                    placeholder="Coupon Code"
-                    value={couponCode}
-                    onChange={handleCouponChange}
+                      className="form-control mb-1"
+                      type="text"
+                      name="coupon_code"
+                      placeholder="Coupon Code"
+                      value={couponCode}
+                      onChange={handleCouponChange}
                   />
-                  {
-                    !couponData ? <input
-                      className="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4 my-5"
-                      type="button"
-                      value="APPLY COUPON"
-                      onClick={applyCoupon}
-                    /> : <input
-                      className="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4 my-5"
-                      type="button"
-                      value="REMOVE COUPON"
-                      onClick={removeCoupon}
-                    />
-                  } */}
+                  {!couponData ? (
+                      <input
+                          className=""
+                          type="button"
+                          value="APPLY COUPON"
+                          onClick={applyCoupon}
+                      />
+                  ) : (
+                      <input
+                          className=""
+                          type="button"
+                          value="REMOVE COUPON"
+                          onClick={removeCoupon}
+                      />
+                  )}
                 {/* </form> */}
-                {/* <br/> */}
+                <br/><br/>
                 {/* <button className="btn btn-light">UPDATE CART</button> */}
-              {/* </div> */}
+              </div>
               <div className="checkout__payment-methods">
                 <div className="form-check">
                   <input
@@ -1041,13 +1069,13 @@ export default function Checkout() {
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="20" viewBox="0 0 77 16">
                       <g transform="translate(-523 -415)">
-                        <rect style={{fill: "#fff", opacity: 0}} class="a" width="77" height="16" transform="translate(523 415)"/>
-                        <path style={{fill: "#2a2a6c"}} class="b" d="M70.75,432.369l-5.76,13.746H61.23L58.4,435.145a1.522,1.522,0,0,0-.847-1.21,15.018,15.018,0,0,0-3.509-1.167l.087-.4h6.049a1.657,1.657,0,0,1,1.64,1.4l1.5,7.955,3.7-9.357H70.75m14.727,9.256c.017-3.625-5.017-3.823-4.98-5.446.009-.494.479-1.019,1.507-1.151a6.719,6.719,0,0,1,3.507.612l.624-2.912a9.55,9.55,0,0,0-3.325-.609c-3.515,0-5.989,1.869-6.009,4.543-.023,1.978,1.765,3.082,3.113,3.741,1.385.674,1.847,1.1,1.842,1.708-.008.923-1.1,1.325-2.126,1.344a7.433,7.433,0,0,1-3.654-.869l-.644,3.014a10.87,10.87,0,0,0,3.956.731c3.735,0,6.178-1.849,6.19-4.707m9.28,4.49h3.29l-2.87-13.746H92.14a1.624,1.624,0,0,0-1.514,1.007l-5.332,12.739h3.732l.741-2.053H94.33Zm-3.967-4.87,1.872-5.161,1.077,5.161Zm-14.959-8.875L72.89,446.114H69.334l2.942-13.746Z" transform="translate(470.495 -16.119)"/>
+                        <rect style={{fill: "#fff", opacity: 0}} className="a" width="77" height="16" transform="translate(523 415)"/>
+                        <path style={{fill: "#2a2a6c"}} className="b" d="M70.75,432.369l-5.76,13.746H61.23L58.4,435.145a1.522,1.522,0,0,0-.847-1.21,15.018,15.018,0,0,0-3.509-1.167l.087-.4h6.049a1.657,1.657,0,0,1,1.64,1.4l1.5,7.955,3.7-9.357H70.75m14.727,9.256c.017-3.625-5.017-3.823-4.98-5.446.009-.494.479-1.019,1.507-1.151a6.719,6.719,0,0,1,3.507.612l.624-2.912a9.55,9.55,0,0,0-3.325-.609c-3.515,0-5.989,1.869-6.009,4.543-.023,1.978,1.765,3.082,3.113,3.741,1.385.674,1.847,1.1,1.842,1.708-.008.923-1.1,1.325-2.126,1.344a7.433,7.433,0,0,1-3.654-.869l-.644,3.014a10.87,10.87,0,0,0,3.956.731c3.735,0,6.178-1.849,6.19-4.707m9.28,4.49h3.29l-2.87-13.746H92.14a1.624,1.624,0,0,0-1.514,1.007l-5.332,12.739h3.732l.741-2.053H94.33Zm-3.967-4.87,1.872-5.161,1.077,5.161Zm-14.959-8.875L72.89,446.114H69.334l2.942-13.746Z" transform="translate(470.495 -16.119)"/>
                         <g transform="translate(1.466 -18.353)">
-                          <rect style={{fill: "#ff5f00"}} class="c" width="6.84" height="11.172" transform="translate(581.019 435.873)"/>
-                          <path style={{fill: "#eb001b"}} class="d" d="M16.226,14.558A7.093,7.093,0,0,1,18.94,8.973a7.1,7.1,0,1,0,0,11.172,7.093,7.093,0,0,1-2.714-5.587Z" transform="translate(565.497 426.902)"/>
-                          <path style={{fill: "#f79e1b"}} class="e" d="M119.946,64.636v-.229h.1V64.36h-.235v.047h.093v.229Zm.456,0V64.36h-.071l-.083.2-.083-.2h-.071v.276h.051v-.209l.077.18h.053l.077-.18v.209Z" transform="translate(475.307 381.226)"/>
-                          <path style={{fill: "#f79e1b"}} class="e" d="M77.186,14.547a7.1,7.1,0,0,1-11.5,5.585,7.1,7.1,0,0,0,0-11.172,7.1,7.1,0,0,1,11.5,5.585Z" transform="translate(518.747 426.913)"/>
+                          <rect style={{fill: "#ff5f00"}} className="c" width="6.84" height="11.172" transform="translate(581.019 435.873)"/>
+                          <path style={{fill: "#eb001b"}} className="d" d="M16.226,14.558A7.093,7.093,0,0,1,18.94,8.973a7.1,7.1,0,1,0,0,11.172,7.093,7.093,0,0,1-2.714-5.587Z" transform="translate(565.497 426.902)"/>
+                          <path style={{fill: "#f79e1b"}} className="e" d="M119.946,64.636v-.229h.1V64.36h-.235v.047h.093v.229Zm.456,0V64.36h-.071l-.083.2-.083-.2h-.071v.276h.051v-.209l.077.18h.053l.077-.18v.209Z" transform="translate(475.307 381.226)"/>
+                          <path style={{fill: "#f79e1b"}} className="e" d="M77.186,14.547a7.1,7.1,0,0,1-11.5,5.585,7.1,7.1,0,0,0,0-11.172,7.1,7.1,0,0,1,11.5,5.585Z" transform="translate(518.747 426.913)"/>
                         </g>
                       </g>
                     </svg>

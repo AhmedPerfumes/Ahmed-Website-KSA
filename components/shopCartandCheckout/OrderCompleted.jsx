@@ -8,7 +8,7 @@ import Link from "next/link";
 import Pagination1 from "../common/Pagination1";
 
 export default function OrderCompleted() {
-  const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails } = useContextElement();
+  const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext } = useContextElement();
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   // console.log('...', freeShippingFlag);
   const [showDate, setShowDate] = useState(false);
@@ -45,10 +45,10 @@ export default function OrderCompleted() {
         console.log('else...');
         return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       }
-    } else if(elm?.coupon) {
+    } else if(elm?.coupon && elm.coupon[couponDataContext.code]?.code == couponDataContext.code) {
       // console.log('else if', elm);
-      if(new Date(current_date_time) >= new Date(elm.coupon.start_date) && new Date(current_date_time) <= new Date(elm.coupon.end_date)) {
-        return <td>{((elm.price - (elm.price / 100 * elm.coupon.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+      if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext.code]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext.code]?.end_date)) {
+        return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext.code]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       } else {
         return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
       }
