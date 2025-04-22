@@ -45,12 +45,12 @@ export default function OrderCompleted() {
         console.log('else...');
         return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       }
-    } else if(elm?.coupon && elm.coupon[couponDataContext.code]?.code == couponDataContext.code) {
+    } else if(elm?.coupon && elm.coupon[couponDataContext?.code]?.code == couponDataContext?.code) {
       // console.log('else if', elm);
-      if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext.code]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext.code]?.end_date)) {
-        return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext.code]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+      if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code]?.end_date)) {
+        return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       } else {
-        return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+        return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       }
     } else if(elm?.sale_price) {
         return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;

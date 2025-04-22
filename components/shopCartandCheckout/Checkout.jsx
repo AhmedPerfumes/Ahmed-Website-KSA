@@ -325,6 +325,11 @@ export default function Checkout() {
         }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
         // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
         // router.push(data.redirect_url);
+      } else if (data.couponMessage) {
+        // setSuccess();
+        setError(data.couponMessage);
+        // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
+        // router.push(data.redirect_url);
       } else {
         if(data.products) {
           setError(data.products);
