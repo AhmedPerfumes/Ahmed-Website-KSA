@@ -11,6 +11,7 @@ import he from 'he';
 // import Link from "next/link";
 import { useMenu } from '@/context/MenuContext';
 import Pagination1 from "../common/Pagination1";
+import { useTranslations } from "next-intl";
 
 export default function QuickView() {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -39,6 +40,8 @@ export default function QuickView() {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
+  const t=useTranslations();
+  
 
   const isIncludeCard = () => {
     const item = cartProducts.filter((elm) => elm.product_id == quickViewItem.product_id)[0];
@@ -78,6 +81,25 @@ export default function QuickView() {
       document.getElementById("cartDrawer").classList.add("aside_visible");
     }
   };
+  function cleanProductName(productName) {
+    // Step 1: Remove any non-alphanumeric characters except for spaces
+    const dynamicKey = productName.replace(/[^a-zA-Z0-9\s]/g, '') + ' Description';
+  
+    // Step 2: Words to remove
+    const wordsToRemove = ['&', ' &', '& ', ' & ', 'amp', ' amp', 'amp ', ' amp ', ';', ' ;', '; ', ' ; '];
+  
+    // Step 3: Remove the words from the dynamic key (case insensitive)
+    let cleanString = dynamicKey;
+    wordsToRemove.forEach(word => {
+      const regex = new RegExp(word, 'gi'); // 'gi' for global and case-insensitive replacement
+      cleanString = cleanString.replace(regex, '');
+    });
+  
+    // Step 4: Replace multiple spaces with a single space
+    cleanString = cleanString.replace(/\s+/g, ' ').trim(); // Trim to remove leading/trailing spaces
+  
+    return cleanString;
+  }
   
   const modalElement = useRef();
 
@@ -188,12 +210,12 @@ export default function QuickView() {
               </div>
             </div>
             <div className="product-single__detail">
-              <h1 className="product-single__name">{he.decode(quickViewItem.product_name)}</h1>
+            <h1 className="product-single__name">{t(he.decode(quickViewItem.product_name))}</h1>
               <div className="product-single__price">
                 { price(quickViewItem) }
               </div>
               <div className="product-single__short-desc">
-                <div dangerouslySetInnerHTML={{ __html: quickViewItem.description }}>
+                <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(quickViewItem.product_name)) }}>
                 </div>
               </div>
               <h6 style={{ color: "red" }}>{error && error}</h6>
