@@ -45,10 +45,10 @@ export default function OrderCompleted() {
         console.log('else...');
         return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       }
-    } else if(elm?.coupon && elm.coupon[couponDataContext?.code]?.code == couponDataContext?.code) {
+    } else if(elm?.coupon && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
       // console.log('else if', elm);
-      if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code]?.end_date)) {
-        return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+      if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date)) {
+        return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code.toLowerCase()]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       } else {
         return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
       }

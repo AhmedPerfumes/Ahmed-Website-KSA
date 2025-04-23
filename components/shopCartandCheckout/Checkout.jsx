@@ -523,7 +523,8 @@ export default function Checkout() {
 
     let product_coupon = false;
     cartProducts.map((item) => {
-      if(item.coupon[couponCode]?.code == couponCode) {
+      console.log(item.coupon[couponCode.toLowerCase()]?.code, couponCode.toLowerCase());
+      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase()) {
         product_coupon = true;
       }
     });
@@ -613,8 +614,8 @@ export default function Checkout() {
         //   // }
         // });
       // });
-        if(new Date(current_date_time) >= new Date(elm.coupon[couponCode]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponCode]?.end_date) && elm.coupon[couponCode].code == couponData.code) {
-          return <td><span className="money price price-old">{ currency.symbol }{elm?.price}</span><span className="money price price-sale">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponCode]?.value)) * elm.quantity).toFixed(2)}</span></td>;
+        if(new Date(current_date_time) >= new Date(elm.coupon[couponCode.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponCode.toLowerCase()]?.end_date) && elm.coupon[couponCode.toLowerCase()].code == couponData.code.toLowerCase()) {
+          return <td><span className="money price price-old">{ currency.symbol }{elm?.price}</span><span className="money price price-sale">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponCode.toLowerCase()]?.value)) * elm.quantity).toFixed(2)}</span></td>;
         } else {
           return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
         }

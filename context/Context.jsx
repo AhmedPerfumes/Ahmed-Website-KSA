@@ -27,8 +27,8 @@ export default function Context({ children }) {
           return accumulator + product.quantity * discount_price;
         }
       } else if(product?.coupon && couponDataContext != null) {
-        if(new Date(current_date_time) >= new Date(product.coupon[couponDataContext?.code]?.start_date) && new Date(current_date_time) <= new Date(product.coupon[couponDataContext?.code]?.end_date) && product.coupon[couponDataContext?.code]?.code == couponDataContext?.code) {
-          const coupon_price = (product.price - (product.price / 100 * product.coupon[couponDataContext?.code]?.value)).toFixed(2);
+        if(new Date(current_date_time) >= new Date(product.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(product.coupon[couponDataContext?.code.toLowerCase()]?.end_date) && product.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
+          const coupon_price = (product.price - (product.price / 100 * product.coupon[couponDataContext?.code.toLowerCase()]?.value)).toFixed(2);
           return accumulator + product.quantity * coupon_price;
         }
       } else if(product?.sale_price) {
