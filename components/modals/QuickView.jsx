@@ -289,8 +289,8 @@ export default function QuickView() {
                     className="btn btn-primary btn-addtocart js-open-aside"
                   >
                     {isAddedToCartProducts(quickViewItem.product_id)
-                      ? "Already Added"
-                      : "Add To Cart"}
+                      ? t("Already Added")
+                      : t("Add To Cart")}
                   </button>
                 </div>
                 ):(
