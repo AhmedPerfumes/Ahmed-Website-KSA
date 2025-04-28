@@ -265,8 +265,8 @@ export default function Footer14() {
       <div className="footer-bottom container">
         <div className="d-block d-md-flex align-items-center">
           <span className="footer-copyright me-auto">
-            © {new Date().getFullYear()} AHMED AL MAGHRIBI PERFUMES. All rights
-            reserved
+            © {new Date().getFullYear()} Ahmed Al Maghribi Perfumes. All rights
+            reserved.
           </span>
           <div className="footer-settings d-block d-md-flex align-items-center">
             <Link className="text-white" href={`/${locale}/order-tracking`}>

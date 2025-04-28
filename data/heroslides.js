@@ -144,7 +144,7 @@ export const slidesData3 = [
     href: "shop/perfumes/oriental-fragrance/ahl",
     color: "text-black"
   },
-  
+
 ];
 export const slidesData33 = [
   {
@@ -380,26 +380,28 @@ export const slideData10 = [
 ];
 
 export const slideData1000 = [
-  // {
-  //   id: 0,
-  //   bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
-  //   title: "Natural Glow",
-  //   description:
-  //     "Eid Mubarak! 🌙✨ Wishing You Joy, Peace & Blessings!",
-  // },
+  {
+    id: 0,
+    bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
+    title: "",
+    description: "Track Order",
+    btnLink: "order-tracking",
+  },
   {
     id: 1,
     bgImage: "/assets/images/home/demo15/slider1_bg.jpg",
-    title: "Natural Glow",
+    title: "",
     description:
       "Free Shipping on orders SAR 300 and above",
+    btnLink: "shop",
   },
   {
     id: 2,
     bgImage: "/assets/images/home/demo15/slider2_bg.jpg",
-    title: "Natural Glow",
+    title: "",
     description:
       "A huge selection of best fragrance",
+    btnLink: "shop",
   },
   // {
   //   id: 3,
@@ -408,9 +410,12 @@ export const slideData1000 = [
   //   description:
   //     "FOR ANY INQUIRIES, PLEASE CONTACT OUR CUSTOMER CARE TEAM AT +800 472 1828",
   // },
- 
+
 ];
 
+{/* <Link className="text-dark" href={`/${locale}/order-tracking`}>
+  Track Order{" "}
+</Link> */}
 
-  // Add more slide objects as needed
+// Add more slide objects as needed
 
