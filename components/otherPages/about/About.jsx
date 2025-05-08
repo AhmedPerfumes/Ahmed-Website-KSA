@@ -66,7 +66,7 @@ export default function About() {
           {/* Right Side - Text */}
           <div className="col-lg-6 text-center text-lg-start">
             <h4 className="fs-2">
-              {t("Celebrating 20 Years of Fragrant Excellence")}
+              {t("Celebrating 25 Years of Fragrant Excellence")}
             </h4>
             <p className="fs-5">
               {t(
