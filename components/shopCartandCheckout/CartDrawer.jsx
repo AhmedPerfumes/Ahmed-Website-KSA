@@ -112,7 +112,7 @@ export default function CartDrawer() {
                       Size: L
                     </p> */}
                     <div className="d-flex align-items-center justify-content-between mt-1">
-                      <div className="qty-control position-relative">
+                      {!elm.is_gift ? <div className="qty-control position-relative">
                         <input
                           type="number"
                           name="quantity"
@@ -138,7 +138,7 @@ export default function CartDrawer() {
                         >
                           +
                         </div>
-                      </div>
+                      </div> : 1}
 
                         {subTotalPrice(elm)}
                       

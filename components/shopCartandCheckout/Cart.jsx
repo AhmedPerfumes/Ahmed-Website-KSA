@@ -195,7 +195,7 @@ export default function Cart() {
                       
                     </td>
                     <td>
-                      <div className="qty-control position-relative">
+                      {!elm.is_gift ? <div className="qty-control position-relative">
                         <input
                           type="number"
                           name="quantity"
@@ -219,7 +219,7 @@ export default function Cart() {
                         >
                           +
                         </div>
-                      </div>
+                      </div> : 1}
                     </td>
                     <td>
                       
