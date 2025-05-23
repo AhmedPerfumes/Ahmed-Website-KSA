@@ -258,7 +258,7 @@ const FreeGiftFeature = () => {
       (threshold) => nonCollectionTotalPrice < threshold.min
     );
     if (nextThreshold) {
-      return <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend AED {(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} more to unlock a free gift!</span>;
+      return <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend SAR {(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} more to unlock a free gift!</span>;
     }
     return 'Add more items to unlock a free gift!';
   };
