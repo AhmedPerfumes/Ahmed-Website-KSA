@@ -87,14 +87,14 @@ const thresholds = [
   {
     min: 500,
     gifts: [
-      {
-        product_id: 182,
-        product_name: 'Blue Oud',
-        price: "0",
-        image: 'epdnew/blu-oud.jpg',
-        is_gift: true,
-        discount: null
-      },
+      // {
+      //   product_id: 182,
+      //   product_name: 'Blue Oud',
+      //   price: "0",
+      //   image: 'epdnew/blu-oud.jpg',
+      //   is_gift: true,
+      //   discount: null
+      // },
       {
         product_id: 180,
         product_name: 'Blue By Ahmed',
@@ -111,14 +111,14 @@ const thresholds = [
         is_gift: true,
         discount: null
       },
-      {
-        product_id: 179,
-        product_name: 'Azure Royal',
-        price: "0",
-        image: 'epdnew/azure-royal.jpg',
-        is_gift: true,
-        discount: null
-      },
+      // {
+      //   product_id: 179,
+      //   product_name: 'Azure Royal',
+      //   price: "0",
+      //   image: 'epdnew/azure-royal.jpg',
+      //   is_gift: true,
+      //   discount: null
+      // },
       {
         product_id: 257,
         product_name: 'Couture Noir',
@@ -135,14 +135,14 @@ const thresholds = [
         is_gift: true,
         discount: null
       },
-      {
-        product_id: 246,
-        product_name: 'Cinder',
-        price: "0",
-        image: 'epdnew/cinder-1.jpg',
-        is_gift: true,
-        discount: null
-      },
+      // {
+      //   product_id: 246,
+      //   product_name: 'Cinder',
+      //   price: "0",
+      //   image: 'epdnew/cinder-1.jpg',
+      //   is_gift: true,
+      //   discount: null
+      // },
       {
         product_id: 245,
         product_name: 'Moonlit',
@@ -151,14 +151,14 @@ const thresholds = [
         is_gift: true,
         discount: null
       },
-      {
-        product_id: 244,
-        product_name: 'Mosaic',
-        price: "0",
-        image: 'epdnew/mosaic-1.jpg',
-        is_gift: true,
-        discount: null
-      },
+      // {
+      //   product_id: 244,
+      //   product_name: 'Mosaic',
+      //   price: "0",
+      //   image: 'epdnew/mosaic-1.jpg',
+      //   is_gift: true,
+      //   discount: null
+      // },
     ],
   },
 ];
@@ -167,17 +167,39 @@ const FreeGiftFeature = () => {
   const { cartProducts, totalPrice, addProductToCart, setCartProducts, removeGiftFromCart } = useContextElement();
   const [selectedGift, setSelectedGift] = useState(null);
 
-  // Debug context and rendering
-  useEffect(() => {
-    console.log('FreeGiftFeature mounted', { totalPrice, cartProductsLength: cartProducts.length });
-    console.log('Context methods:', { addProductToCart, removeGiftFromCart });
-  }, []);
+  // Filter out "Collections" products
+  const nonCollectionProducts = cartProducts.filter(
+    (item) => item.category_name?.toLowerCase() !== "collections" &&
+    item.discount === null
+  );
 
-  // Find active threshold
+  // Total price of non-Collections products
+  const nonCollectionTotalPrice = nonCollectionProducts.reduce(
+    (acc, item) => acc + (parseFloat(item.price) * item.quantity),
+    0
+  );
+
+  // Debug context and rendering
+  // useEffect(() => {
+  //   console.log('FreeGiftFeature mounted', { totalPrice, cartProductsLength: cartProducts.length, hasCollectionCategory });
+  //   console.log('Context methods:', { addProductToCart, removeGiftFromCart });
+  // }, []);
+
+  // Active threshold based on non-Collection product price
   const activeThreshold = thresholds.find(
     (threshold) =>
-      totalPrice >= threshold.min && (!threshold.max || totalPrice <= threshold.max)
+      nonCollectionTotalPrice >= threshold.min &&
+      (!threshold.max || nonCollectionTotalPrice <= threshold.max)
   );
+
+  useEffect(() => {
+    console.log("Mounted with:", {
+      totalPrice,
+      nonCollectionTotalPrice,
+      cartProducts,
+      nonCollectionProducts,
+    });
+  }, []);
 
   // Log active threshold
   useEffect(() => {
@@ -225,19 +247,24 @@ const FreeGiftFeature = () => {
         }
       }
     }
-  }, [activeThreshold, cartProducts, selectedGift, removeGiftFromCart, totalPrice]);
+  }, [activeThreshold, cartProducts, selectedGift, removeGiftFromCart]);
 
   // Calculate next threshold message
   const getNextThresholdMessage = () => {
     if (activeThreshold) {
       return null;
     }
-    const nextThreshold = thresholds.find((threshold) => totalPrice < threshold.min);
+    const nextThreshold = thresholds.find(
+      (threshold) => nonCollectionTotalPrice < threshold.min
+    );
     if (nextThreshold) {
-      return <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend AED {(nextThreshold.min - totalPrice).toFixed(2)} more to unlock a free gift!</span>;
+      return <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend AED {(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} more to unlock a free gift!</span>;
     }
     return 'Add more items to unlock a free gift!';
   };
+
+  // Hide Free Gift if all products are from Collections
+  if (nonCollectionProducts.length === 0) return null;
 
   return (
     <div className="my-4 px-4">
