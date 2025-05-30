@@ -56,7 +56,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/endless-1.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       {
         product_id: 189,
@@ -64,7 +65,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/sapphire.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       {
         product_id: 185,
@@ -72,7 +74,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/xtasy.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       {
         product_id: 194,
@@ -80,7 +83,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/ruby.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
     ],
   },
@@ -101,7 +105,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/blu-by-ahmed.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       {
         product_id: 149,
@@ -109,7 +114,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/joud-100ml.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       // {
       //   product_id: 179,
@@ -125,7 +131,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/couture-noir.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       {
         product_id: 181,
@@ -133,7 +140,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/zeleny.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       // {
       //   product_id: 246,
@@ -149,7 +157,8 @@ const thresholds = [
         price: "0",
         image: 'epdnew/moonlit-1.jpg',
         is_gift: true,
-        discount: null
+        discount: null,
+        coupon: []
       },
       // {
       //   product_id: 244,
@@ -163,7 +172,7 @@ const thresholds = [
   },
 ];
 
-const FreeGiftFeature = () => {
+const FreeGiftFeature = ({ couponData }) => {
   const { cartProducts, totalPrice, addProductToCart, setCartProducts, removeGiftFromCart } = useContextElement();
   const [selectedGift, setSelectedGift] = useState(null);
 
@@ -173,9 +182,22 @@ const FreeGiftFeature = () => {
     item.discount === null
   );
 
+  const currentUTC = new Date(); // Current UTC time
+  const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
+  const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+
   // Total price of non-Collections products
   const nonCollectionTotalPrice = nonCollectionProducts.reduce(
-    (acc, item) => acc + (parseFloat(item.price) * item.quantity),
+    (acc, item) => {
+      // console.log('0000000', new Date(current_date_time), new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date), item.coupon[couponData?.code.toLowerCase()]);
+      if(couponData?.code &&new Date(current_date_time) >= new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(item.coupon[couponData?.code.toLowerCase()]?.end_date) && item.coupon[couponData?.code.toLowerCase().toLowerCase()].code == couponData?.code.toLowerCase()) {
+        // console.log('iffffffffffffffffffff');
+        return acc + (parseFloat(item.price - (item.price / 100 * item.coupon[couponData?.code.toLowerCase().toLowerCase()]?.value)) * item.quantity);
+      } else {
+        // console.log('elseeeeeeeeeeeeeeee');
+        return acc + (parseFloat(item.price) * item.quantity);
+      }
+    },
     0
   );
 
@@ -192,29 +214,29 @@ const FreeGiftFeature = () => {
       (!threshold.max || nonCollectionTotalPrice <= threshold.max)
   );
 
-  useEffect(() => {
-    console.log("Mounted with:", {
-      totalPrice,
-      nonCollectionTotalPrice,
-      cartProducts,
-      nonCollectionProducts,
-    });
-  }, []);
+  // useEffect(() => {
+  //   console.log("Mounted with:", {
+  //     totalPrice,
+  //     nonCollectionTotalPrice,
+  //     cartProducts,
+  //     nonCollectionProducts,
+  //   });
+  // }, []);
 
   // Log active threshold
-  useEffect(() => {
-    console.log('Active threshold:', activeThreshold);
-  }, [activeThreshold]);
+  // useEffect(() => {
+  //   console.log('Active threshold:', activeThreshold, nonCollectionTotalPrice);
+  // }, [activeThreshold]);
 
   // Handle gift selection with error handling
   const handleGiftSelect = (product) => {
     try {
-      console.log('Gift selected:', product.product_id, product.product_name);
+      // console.log('Gift selected:', product.product_id, product.product_name);
       removeGiftFromCart();
       addProductToCart({ ...product, quantity: 1 });
       setSelectedGift(product.product_id);
-      console.log('Cart updated, selectedGift set to:', product.product_id);
-      console.log('Updated cartProducts:', cartProducts);
+      // console.log('Cart updated, selectedGift set to:', product.product_id);
+      // console.log('Updated cartProducts:', cartProducts);
     } catch (error) {
       console.error('Error in handleGiftSelect:', error);
     }
@@ -222,9 +244,9 @@ const FreeGiftFeature = () => {
 
   // Synchronize selectedGift with cartProducts
   useEffect(() => {
-    console.log('Checking selectedGift:', selectedGift, 'Cart products:', cartProducts);
+    // console.log('Checking selectedGift:', selectedGift, 'Cart products:', cartProducts);
     if (!activeThreshold && selectedGift) {
-      console.log('No active threshold, removing gift and clearing selectedGift');
+      // console.log('No active threshold, removing gift and clearing selectedGift');
       removeGiftFromCart();
       setSelectedGift(null);
     } else if (selectedGift) {
@@ -233,7 +255,7 @@ const FreeGiftFeature = () => {
         (item) => item.is_gift && item.product_id === selectedGift
       );
       if (!giftInCart) {
-        console.log('Selected gift not in cart, clearing selectedGift');
+        // console.log('Selected gift not in cart, clearing selectedGift');
         setSelectedGift(null);
       } else if (activeThreshold) {
         // Verify the gift is valid for the current threshold
@@ -241,7 +263,7 @@ const FreeGiftFeature = () => {
           (gift) => gift.product_id === selectedGift
         );
         if (!isValidGift) {
-          console.log('Invalid gift for threshold, removing gift and clearing selectedGift');
+          // console.log('Invalid gift for threshold, removing gift and clearing selectedGift');
           removeGiftFromCart();
           setSelectedGift(null);
         }
@@ -258,7 +280,7 @@ const FreeGiftFeature = () => {
       (threshold) => nonCollectionTotalPrice < threshold.min
     );
     if (nextThreshold) {
-      return <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend AED {(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} more to unlock a free gift!</span>;
+      return <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend SAR {(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} more to unlock a free gift!</span>;
     }
     return 'Add more items to unlock a free gift!';
   };
@@ -281,7 +303,7 @@ const FreeGiftFeature = () => {
             data-settings=""
           >
             {activeThreshold.gifts.map((product, i) => {
-              console.log('Rendering gift:', product.product_id, 'selectedGift:', selectedGift);
+              // console.log('Rendering gift:', product.product_id, 'selectedGift:', selectedGift);
               return (
                 <SwiperSlide key={i} className="swiper-slide product-card">
                   <div className="pc__img-wrapper">
@@ -295,7 +317,7 @@ const FreeGiftFeature = () => {
                     />
                     <button
                       onClick={() => {
-                        console.log('Button clicked for:', product.product_id);
+                        // console.log('Button clicked for:', product.product_id);
                         handleGiftSelect(product);
                       }}
                       className={`pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside ${

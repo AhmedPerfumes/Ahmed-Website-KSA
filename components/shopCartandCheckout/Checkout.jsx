@@ -177,6 +177,10 @@ export default function Checkout() {
     };
   }, [selectedOption]);
 
+  useEffect(() => {
+   setCouponDataContext(null);
+  }, []);
+
  
   async function onOrder(event) {
     event.preventDefault();
@@ -524,8 +528,8 @@ export default function Checkout() {
 
     let product_coupon = false;
     cartProducts.map((item) => {
-      console.log(item.coupon[couponCode.toLowerCase()]?.code, couponCode.toLowerCase());
-      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase()) {
+      // console.log(item.coupon[couponCode.toLowerCase()]?.code, couponCode.toLowerCase());
+      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase() && !item.sale_price) {
         product_coupon = true;
       }
     });
@@ -602,6 +606,9 @@ export default function Checkout() {
       } else {
         return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
       }
+    } else if(elm?.sale_price) {
+      console.log('else if 2');
+      return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
     } else if(elm?.coupon && couponData != null && couponCode != null) {
       console.log('else if', elm);
       // elm.map((item) => {
@@ -623,9 +630,6 @@ export default function Checkout() {
         } else {
           return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
         }
-    } else if(elm?.sale_price) {
-      console.log('else if 2');
-      return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
     } else {
       console.log('else');
       return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
@@ -636,7 +640,7 @@ export default function Checkout() {
     <>
     {cartProducts.length ? (
       <>
-        <FreeGiftFeature />
+        <FreeGiftFeature couponData={couponData}/>
         <form onSubmit={onOrder}>
           <div className="checkout-form">
             <div className="billing-info__wrapper">
