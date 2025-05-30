@@ -23,7 +23,8 @@ async function getBlog(blogName) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      blog: blogName.split("-").join(" ").toUpperCase(),
+      // blog: blogName.split("-").join(" ").toUpperCase(),
+      blog: blogName,
     }),
     cache: 'no-store',
   });

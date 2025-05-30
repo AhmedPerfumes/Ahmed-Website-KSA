@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
     categories8,
     categories88,
+    categoriesTop,
     categoriesInfluencers,
 } from "@/data/categories";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -56,21 +57,26 @@ export default function Categories({ section }) {
     const renderSlides = (categories) =>
         categories.map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide">
-                <video
-                    loading="lazy"
-                    className="w-100 mb-3"
-                    width="330"
-                    height="400"
-                    style={{ height: "fit-content" }}
-                    muted
-                    loop
-                    onMouseOver={(event) => event.target.play()}
-                    onMouseOut={(event) => event.target.pause()}
-                    preload="none"
-                    poster={elm.imgSrc2}
+                <Link
+                    href={`${locale}${elm.link}`}
+                    className="menu-link h6 fw-medium"
                 >
-                    <source type="video/mp4" src={elm.videoSrc} />
-                </video>
+                    <video
+                        loading="lazy"
+                        className="w-100 mb-3"
+                        width="330"
+                        height="400"
+                        style={{ height: "fit-content" }}
+                        muted
+                        loop
+                        onMouseOver={(event) => event.target.play()}
+                        onMouseOut={(event) => event.target.pause()}
+                        preload="none"
+                        poster={elm.imgSrc2}
+                    >
+                        <source type="video/mp4" src={elm.videoSrc} />
+                    </video>
+                </Link>
                 <div className="text-center">
                     <Link
                         href={`${locale}${elm.link}`}
@@ -88,7 +94,7 @@ export default function Categories({ section }) {
                         href={`/${locale}${elm.btn}`}
                         className="btn-videos btn-link_lg text-uppercase fw-medium "
                     >
-                        {t("Discover Now")}
+                        {t("Shop Now")}
                     </Link>
                 </div>
             </SwiperSlide>
@@ -116,6 +122,25 @@ export default function Categories({ section }) {
                 </p>
                 <Swiper className="swiper-container" {...swiperOptions}>
                     {renderSlides(categories88)}
+                    <div className="swiper-pagination"></div>
+                    <div className="swiper-button-next"></div>
+                    <div className="swiper-button-prev"></div>
+                </Swiper>
+            </>
+        );
+    } else if (section === "sectionTop") {
+        categoryRend = (
+            <>
+                <h2 className="section-head section-title text-uppercase fs-25 fw-medium text-center mb-2">
+                    {t("Cherished by All")}
+                </h2>
+                <p className="fs-15 mb-4 pb-xl-2 mb-xl-4 text-secondary text-center section-paragraph">
+                    {t(
+                        "Long-lasting fragrance in every drop"
+                    )}
+                </p>
+                <Swiper className="swiper-container" {...swiperOptions}>
+                    {renderSlides(categoriesTop)}
                     <div className="swiper-pagination"></div>
                     <div className="swiper-button-next"></div>
                     <div className="swiper-button-prev"></div>
