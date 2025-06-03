@@ -145,7 +145,7 @@ export default function Header14() {
                         ? `header header_sticky bg-white ${
                               scrollDirection == "up"
                                   ? "header_sticky-active"
-                                  : "position-absolute"
+                                  : "position-relative"
                           } `
                         : "header header_sticky position-sticky w-100 bg-white"
                 }
