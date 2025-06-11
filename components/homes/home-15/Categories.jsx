@@ -147,7 +147,27 @@ export default function Categories({ section }) {
                 </Swiper>
             </>
         );
-    } else {
+    } 
+    else if (section === "fathersDay") {
+        categoryRend = (
+            <>
+                <h2 className="section-title text-uppercase fs-2 fw-medium text-center mb-2">
+                    {t("Father’s Day Fragrances")}
+                </h2>
+                <p className="fs-15 mb-4 pb-xl-2 mb-xl-4 text-secondary text-center section-paragraph">
+                    {t(
+                        "A Timeless Perfume for Dad"
+                    )}
+                </p>
+                <Swiper className="swiper-container" {...swiperOptions}>
+                    {renderSlides(categoriesTop)}
+                    <div className="swiper-pagination"></div>
+                    <div className="swiper-button-next"></div>
+                    <div className="swiper-button-prev"></div>
+                </Swiper>
+            </>
+        );
+    }else {
         categoryRend = (
             <>
                 <h2 className="section-title text-uppercase fs-25 fw-medium text-center mb-2">

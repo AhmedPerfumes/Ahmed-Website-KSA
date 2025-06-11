@@ -637,7 +637,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                                 href={`/${locale}/shop`}
                                 className="btn-rounded btn-link_lg  text-uppercase fw-medium text-white"
                             >
-                                {t("Discover Now")}
+                                {t("Shop Now")}
                             </Link>
                         </div>
                     </div>

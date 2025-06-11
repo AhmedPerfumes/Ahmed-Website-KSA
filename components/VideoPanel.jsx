@@ -53,7 +53,7 @@ const VideoPlayer = ({ src, section }) => {
                 section === 'hundred' ? "w-100" :
                 section === 'popup' ? "w-75" :
                 section === 'sm_popup' ? "w-50" :
-                "w-100" // Default class
+                "w-75" // Default class
             }
         >
             <source src={src} type="video/mp4" />
