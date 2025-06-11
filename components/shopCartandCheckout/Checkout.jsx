@@ -20,7 +20,7 @@ import { products1 } from "@/data/products/fashion";
 import { useRouter } from 'next/navigation';
 import { useLocale } from "next-intl";
 import Pagination1 from "../common/Pagination1";
-import FreeGiftFeature from '@/components/FreeGiftFeature';
+// import FreeGiftFeature from '@/components/FreeGiftFeature';
 
 export default function Checkout() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -640,7 +640,7 @@ export default function Checkout() {
     <>
     {cartProducts.length ? (
       <>
-        <FreeGiftFeature couponData={couponData}/>
+        {/* <FreeGiftFeature couponData={couponData}/> */}
         <form onSubmit={onOrder}>
           <div className="checkout-form">
             <div className="billing-info__wrapper">
