@@ -88,90 +88,90 @@ const thresholds = [
   //     },
   //   ],
   // },
-  {
-    min: 500,
-    gifts: [
-      // {
-      //   product_id: 182,
-      //   product_name: 'Blue Oud',
-      //   price: "0",
-      //   image: 'epdnew/blu-oud.jpg',
-      //   is_gift: true,
-      //   discount: null
-      // },
-      {
-        product_id: 46,
-        product_name: 'Leather',
-        price: "0",
-        image: 'epdnew/leather.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 55,
-        product_name: 'Oud Classic',
-        price: "0",
-        image: 'epdnew/oud-classic.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
+    {
+      min: 500,
+      gifts: [
+        // {
+        //   product_id: 182,
+        //   product_name: 'Blue Oud',
+        //   price: "0",
+        //   image: 'epdnew/blu-oud.jpg',
+        //   is_gift: true,
+        //   discount: null
+        // },
+        {
+          product_id: 46,
+          product_name: 'Leather',
+          price: "0",
+          image: 'epdnew/leather.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 55,
+          product_name: 'Oud Classic',
+          price: "0",
+          image: 'epdnew/oud-classic.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+      
+        {
+          product_id: 50,
+          product_name: 'Musk Ahmed',
+          price: "0",
+          image: 'epdnew/musk-ahmed.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 63,
+          product_name: 'Saif',
+          price: "0",
+          image: 'epdnew/saif.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
     
-      {
-        product_id: 50,
-        product_name: 'Musk Ahmed',
-        price: "0",
-        image: 'epdnew/musk-ahmed.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 63,
-        product_name: 'Saif',
-        price: "0",
-        image: 'epdnew/saif.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-   
-      {
-        product_id: 35,
-        product_name: 'Zuraique',
-        price: "0",
-        image: 'epdnew/zuraique.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 192,
-        product_name: 'Sage',
-        price: "0",
-        image: 'epdnew/sage-1.jpg',
-        is_gift: true,
-        discount: null
-      },
-      {
-        product_id: 248,
-        product_name: 'Tanuf',
-        price: "0",
-        image: 'epdnew/tanuf-1.jpg',
-        is_gift: true,
-        discount: null
-      },
-      {
-        product_id: 66,
-        product_name: 'Sheukh',
-        price: "0",
-        image: 'epdnew/sheukh.jpg',
-        is_gift: true,
-        discount: null
-      },
-    ],
-  },
+        {
+          product_id: 35,
+          product_name: 'Zuraique',
+          price: "0",
+          image: 'epdnew/zuraique.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 192,
+          product_name: 'Sage',
+          price: "0",
+          image: 'epdnew/sage-1.jpg',
+          is_gift: true,
+          discount: null
+        },
+        {
+          product_id: 248,
+          product_name: 'Tanuf',
+          price: "0",
+          image: 'epdnew/tanuf-1.jpg',
+          is_gift: true,
+          discount: null
+        },
+        {
+          product_id: 66,
+          product_name: 'Sheukh',
+          price: "0",
+          image: 'epdnew/sheukh.jpg',
+          is_gift: true,
+          discount: null
+        },
+      ],
+    },
 ];
 
 const FreeGiftFeature = ({ couponData }) => {

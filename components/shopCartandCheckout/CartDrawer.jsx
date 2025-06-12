@@ -49,7 +49,7 @@ export default function CartDrawer() {
   );
 
   const subTotalPrice = (elm) => {
-    console.log('0000', elm?.coupon, elm.coupon.length, couponDataContext);
+    // console.log('0000', elm?.coupon, elm.coupon.length, couponDataContext);
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
