@@ -529,7 +529,7 @@ export default function Checkout() {
     let product_coupon = false;
     cartProducts.map((item) => {
       // console.log(item.coupon[couponCode.toLowerCase()]?.code, couponCode.toLowerCase());
-      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase() && !item.sale_price) {
+      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase() && !item.sale_price && !item.discount) {
         product_coupon = true;
       }
     });
@@ -609,7 +609,7 @@ export default function Checkout() {
     } else if(elm?.sale_price) {
       console.log('else if 2');
       return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.coupon && couponData != null && couponCode != null) {
+    } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponData != null && couponCode != null) {
       console.log('else if', elm);
       // elm.map((item) => {
         // return elm.coupon.map((item, ind) => {
