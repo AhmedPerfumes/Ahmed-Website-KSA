@@ -51,7 +51,7 @@ function CityWalk() {
                                 </h2>
                             </div>
                             <div className="d-none d-md-block pb-3">
-                                <div className="videoarea d-flex align-items-center justify-content-center">
+                                <div className="videoarea d-flex align-items-center">
                                     <VideoPanel
                                         src="/assets/videos/multi-product.mp4"
                                         section=""
