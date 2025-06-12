@@ -20,7 +20,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/home/demo5/city-walk.jpg"
+                        src="/assets/images/campaigns/fathers-day-web-lp.jpg"
                         alt="image"
                         width={1500}
                         height={550}
@@ -30,18 +30,18 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
-                        src="/assets/images/home/demo5/mobile-city.jpg"
+                        src="/assets/images/campaigns/fathers-day-mob.jpg"
                         alt="image"
                         width={1500}
                         height={550}
                     />
                 </div>
             </div>
-            <section className="d-flex section-3">
-                <div className="">
-                    <div className="section-content">
-                        <div className="d-flex flex-column justify-content-around ">
-                            <div className="section-head pt-5 pb-5">
+            <section className="d-flex section-3 justify-content-center">
+  <div className="w-100">
+    <div className="section-content">
+      <div className="d-flex flex-column align-items-center justify-content-around">
+      <div className="section-head pt-5 pb-5">
                                 <h2 className="text-center">
                                     {"A Gift as Majestic as Your Love"}
                                     <br />
@@ -50,26 +50,42 @@ function CityWalk() {
                                     </span>
                                 </h2>
                             </div>
-                            <div className="d-none d-md-block pb-3">
-                                <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel
-                                        src="/assets/videos/multi-product.mp4"
-                                        section=""
-                                    />
-                                </div>
-                            </div>
-                            <div className="d-block d-sm-none pb-3">
-                                <div className="videoarea d-flex align-items-center">
-                                    <VideoPanel
-                                        src="/assets/videos/multi-product-mobile.mp4"
-                                        section="hundred"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+
+        {/* Desktop Video */}
+        {/* <div className="d-none d-md-block pb-3 w-100 text-center">
+          <div className="videoarea d-flex justify-content-center align-items-center">
+            <VideoPanel src="/assets/videos/multi-product.mp4" section="" />
+          </div>
+          <div className="mt-3">
+          <a
+                            className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
+                            href={`/${locale}/shop/gift-sets/gift-sets/aazz-o-azeez`}
+                        >
+                            Shop Now
+                        </a>
+          </div>
+        </div> */}
+
+        {/* Mobile Video */}
+        {/* <div className="d-block d-md-none pb-3 w-100 text-center">
+          <div className="videoarea d-flex justify-content-center align-items-center">
+            <VideoPanel
+              src="/assets/videos/multi-product-mobile.mp4"
+              section="hundred"
+            />
+          </div>
+          <a
+                            className="btn-link btn-link_lg default-underline text-uppercase fw-medium mt-3 mb-3"
+                            href={`/${locale}/shop/gift-sets/gift-sets/aazz-o-azeez`}
+                        >
+                            Shop Now
+                        </a>
+        </div> */}
+      </div>
+    </div>
+  </div>
+</section>
+
             {/* <div className="container pt-2 mt-3">
         <div className="section2 text-center">
           <h3 className="text-uppercase fs-2 mb-5">
@@ -115,7 +131,7 @@ function CityWalk() {
                             height={0}
                             sizes="100%"
                             className="img-fluid"
-                            src="/assets/images/azz-o-azeezs.jpg"
+                            src="/assets/images/campaigns/bin-shaikh.jpg"
                             alt="Wedding products display"
                             loading="lazy"
                             style={{ width: "100%", height: "auto" }}
@@ -126,22 +142,14 @@ function CityWalk() {
                     {/* Text column - shown second on mobile/tablet, first on desktop */}
                     <div className="col-md-6 text-center px-md-5 mb-2 order-2 order-md-1">
                         <p className="fs-2 text-uppercase font-weight-bold mb-3">
-                            Aazz-O-Azeez
+                            Bin Shaikh
                         </p>
                         <p className="fs-6 mb-3">
-                            Celebrate Dad with the Aazz O Azeez Gift Set — a
-                            luxurious fragrance collection that captures the
-                            essence of strength, elegance, and timeless
-                            sophistication. Thoughtfully curated with premium
-                            perfumes, each scent is crafted to perfection —
-                            making it the perfect gift for the father who
-                            deserves nothing but the finest. This Father's Day,
-                            honor him with a touch of class and a scent that
-                            lasts.
+                            Like priceless wisdom passed down over the ages, the Bin Shaikh was passed down from our forefathers, making this vintage scent a truly priceless work of art. An exotic blend of distinct aromas.
                         </p>
                         <a
                             className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
-                            href={`/${locale}/shop/gift-sets/gift-sets/aazz-o-azeez`}
+                            href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}
                         >
                             Shop Now
                         </a>
@@ -197,98 +205,7 @@ function CityWalk() {
                     </div>
                 </div>
             </section>
-            <section className="d-flex flex-column align-items-center pt-5">
-                            <span className="t-subtitle text-uppercase fs-4">
-                                {"Discover More Men Fragrances"}
-                            </span>
-                            <div className="d-flex flex-row align-items-center ">
-                                <div className="mt-4 mb-5 d-none d-md-block">
-                                    <a
-                                        href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}
-                                    >
-                                        <Image
-                                            loading="lazy"
-                                            src="/assets/images/Ihda-khas-giftset.jpg"
-                                            width="600"
-                                            height="600"
-                                            alt="Ihda-khas-giftset"
-                                            className="px-1"
-                                            style={{ objectFit: "contain" }}
-                                        />
-                                    </a>
-                                    <div className="d-flex justify-content-center pt-3">
-                                        <Link
-                                            href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}
-                                            className="btn-rounded btn-link_lg text-uppercase fw-medium "
-                                        >
-                                            {t("Shop Now")}
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="mt-4 mb-5 d-none d-md-block">
-                                    <a
-                                        href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
-                                    >
-                                        <Image
-                                            className="px-1"
-                                            src="/assets/images/Antee-05-Giftset.jpg"
-                                            width="600"
-                                            height="600"
-                                            alt="Antee"
-                                            style={{ objectFit: "contain" }}
-                                        />
-                                    </a>
-                                    <div className="d-flex justify-content-center pt-3">
-                                        <Link
-                                            href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
-                                            className="btn-rounded btn-link_lg text-uppercase fw-medium "
-                                        >
-                                            {t("Shop Now")}
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-            
-                            <div className="mt-4 mb-5 d-block d-sm-none d-flex flex-column">
-                                <a href={`/${locale}/shop/dakhoon/gift-sets`}>
-                                    <Image
-                                        loading="lazy"
-                                        src="/assets/images/Ihda-khas-giftset.jpg"
-                                        width="600"
-                                        height="600"
-                                        alt="Ihda-khas-giftset"
-                                        className="w-100 h-100 px-1"
-                                        style={{ paddingTop: "1rem", objectFit: "contain" }}
-                                    />
-                                </a>
-                                <div className="d-flex justify-content-center pt-3">
-                                    <Link
-                                        href={`/${locale}/shop/gift-sets/gift-sets/ihdaa-khaas`}
-                                        className="btn-rounded btn-link_lg text-uppercase fw-medium "
-                                    >
-                                        {t("Shop Now")}
-                                    </Link>
-                                </div>
-                                <a href={`/${locale}/shop/dakhoon/gift-sets`}>
-                                    <Image
-                                        className="w-100 h-100 px-1"
-                                        src="/assets/images/Antee-05-Giftset.jpg"
-                                        width="600"
-                                        height="600"
-                                        alt="Oud-Asateen"
-                                        style={{ paddingTop: "1rem", objectFit: "contain" }}
-                                    />
-                                </a>
-                                <div className="d-flex justify-content-center pt-3">
-                                    <Link
-                                        href={`/${locale}/shop/gift-sets/gift-sets/antee-gift-set-05`}
-                                        className="btn-rounded btn-link_lg text-uppercase fw-medium "
-                                    >
-                                        {t("Shop Now")}
-                                    </Link>
-                                </div>
-                            </div>
-                        </section>
+           
                         
 
             <Contact_campaign/>
