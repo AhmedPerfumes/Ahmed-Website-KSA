@@ -152,7 +152,8 @@ const thresholds = [
           price: "0",
           image: 'epdnew/sage-1.jpg',
           is_gift: true,
-          discount: null
+          discount: null,
+          coupon: []
         },
         {
           product_id: 248,
@@ -160,7 +161,8 @@ const thresholds = [
           price: "0",
           image: 'epdnew/tanuf-1.jpg',
           is_gift: true,
-          discount: null
+          discount: null,
+          coupon: []
         },
         {
           product_id: 66,
@@ -168,7 +170,8 @@ const thresholds = [
           price: "0",
           image: 'epdnew/sheukh.jpg',
           is_gift: true,
-          discount: null
+          discount: null,
+          coupon: []
         },
       ],
     },
