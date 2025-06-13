@@ -17,24 +17,28 @@ function CityWalk() {
             {/* Hero Section */}
             <div>
                 <div className="container-fluid p-0 pt-2">
+                <Link href={`/${locale}/shop`}>
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
                         src="/assets/images/campaigns/fathers-day-web-lp.jpg"
-                        alt="image"
+                        alt="Father's Day Web"
                         width={1500}
                         height={550}
                     />
+                </Link>
                 </div>
                 <div className="container-fluid p-0 pt-2">
+                <Link href={`/${locale}/shop`}>
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
                         src="/assets/images/campaigns/fathers-day-mob.jpg"
-                        alt="image"
+                        alt="Father's Day Mobile"
                         width={1500}
                         height={550}
                     />
+                </Link>
                 </div>
             </div>
             <section className="d-flex section-3 justify-content-center">
