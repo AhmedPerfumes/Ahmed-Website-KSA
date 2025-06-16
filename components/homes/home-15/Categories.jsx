@@ -59,7 +59,7 @@ export default function Categories({ section }) {
         categories.map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide">
                 <Link
-                    href={elm.link} locale={locale}
+                    href={`/${locale}${elm.link}`}
                     className="menu-link h6 fw-medium"
                 >
                     <video
