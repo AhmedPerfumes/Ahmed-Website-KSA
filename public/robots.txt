@@ -1,0 +1,9 @@
+# Block Amazon's Product Discovery bot
+User-agent: AmazonProductDiscovery
+Disallow: /
+
+# Allow everything else
+User-agent: *
+Disallow: 
+
+Sitemap: https://ksa.ahmedalmaghribi.com/assets/sitemap.xml
