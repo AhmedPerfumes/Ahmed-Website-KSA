@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import he from 'he';
 import Link from "next/link";
 import Pagination1 from "../common/Pagination1";
+import FeedbackForm from "../common/Feedback";
 
 export default function OrderCompleted() {
   const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext } = useContextElement();
@@ -84,6 +85,7 @@ export default function OrderCompleted() {
         <h3>Your order is completed!</h3>
         <p>Thank you. Your order has been received.</p>
       </div>
+      <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
       <div className="order-info">
         <div className="order-info__item">
           <label>Order Number</label>

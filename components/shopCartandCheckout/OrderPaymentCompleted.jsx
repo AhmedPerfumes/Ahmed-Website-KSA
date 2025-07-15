@@ -5,6 +5,7 @@ import he from 'he';
 import { useState, useEffect } from 'react';
 import { useMenu } from '@/context/MenuContext';
 import Pagination1 from "../common/Pagination1";
+import FeedbackForm from "../common/Feedback";
 
 export default function OrderPaymentCompleted({ orderDetails }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -89,6 +90,7 @@ export default function OrderPaymentCompleted({ orderDetails }) {
         {/* {orderDetails.payment_status != 'failed' ? <h3>Your order is completed!</h3> : <h3>Your order is failed!</h3>}
         {orderDetails.payment_status != 'failed' && <p>Thank you. Your order has been received.</p>} */}
         { paymentStatus() }
+        <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
       </div>
       {orderDetails.payment_status != 'failed' ? <>
       <div className="order-info">
