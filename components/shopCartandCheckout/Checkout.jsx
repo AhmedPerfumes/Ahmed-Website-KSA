@@ -284,7 +284,7 @@ export default function Checkout() {
           'amount': data.request_params.amount,
           'currency': data.request_params.currency,
           'language': data.request_params.language,
-          'order_description': data.request_params.order_description,
+          // 'order_description': data.request_params.order_description,
           'return_url': data.request_params.return_url,
           "customer_name": data.request_params.customer_name,
           'customer_email': data.request_params.customer_email,
