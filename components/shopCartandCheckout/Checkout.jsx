@@ -1106,14 +1106,14 @@ export default function Checkout() {
                       className="form-check-input form-check-input_fill"
                       type="radio"
                       name="checkout_payment_method"
-                      id="checkout_payment_method_4"
+                      id="checkout_payment_method_5"
                       value={'tabby'}
                       checked={selectedOption === 'tabby'}
                       onChange={handleRadioChange}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor="checkout_payment_method_4"
+                      htmlFor="checkout_payment_method_5"
                     >
                       Pay in 4. No interes, no fees.
                       <Image
