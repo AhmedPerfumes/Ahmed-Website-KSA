@@ -608,7 +608,16 @@ export default function Checkout() {
       }
     } else if(elm?.sale_price) {
       console.log('else if 2');
-      return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+      return <td>
+      <span className="money price price-old">
+          {currency.symbol}
+          {elm?.price}
+      </span>
+      <span className="money price price-sale">
+          {currency.symbol}
+          {(elm.sale_price * elm.quantity).toFixed(2)}
+      </span>
+  </td>;
     } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponData != null && couponCode != null) {
       console.log('else if', elm);
       // elm.map((item) => {
