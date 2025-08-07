@@ -53,7 +53,7 @@ export default function OrderCompleted() {
     } else if(elm?.sale_price) {
       console.log('SALE', elm);
       return <td>{((elm.sale_price) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.coupon && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
+    } else if(elm?.coupon && elm.coupon.length != 0 && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
       console.log('COUPON', elm);
       if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date)) {
         return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code.toLowerCase()]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
