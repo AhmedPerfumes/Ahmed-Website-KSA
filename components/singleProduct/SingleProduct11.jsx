@@ -97,8 +97,8 @@ export default function SingleProduct11({ category, subcategory, product }) {
       } else {
         return <span className="money price">{elm?.price}{ currency.symbol }</span>;
       }
-    } else if(elm?.sale_price) {
-      return <><span className="money price price-sale">{ currency.symbol }{(elm.price - (elm.price / 100 * elm.sale_price)).toFixed(2)}</span><span className="money price price-old">{ currency.symbol }{elm?.price}</span> </>;
+    }  else if(elm?.sale_price) {
+      return <><span className="money price price-sale">{ currency.symbol }{(elm.sale_price).toFixed(2)}</span><span className="money price price-old">{ currency.symbol }{elm?.price}</span> </>;
     } else {
       return <span className="money price">{elm?.price}{ currency.symbol }</span>;
     }

@@ -60,7 +60,7 @@ export default function CartDrawer() {
         return <span className="cart-drawer-item__price money price">{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
       }
     } else if(elm?.sale_price) {
-      return <span className="cart-drawer-item__price money price">{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
+      return <><span className="money price price-old">{currency.symbol}{elm?.price}</span><span className="cart-drawer-item__price money price price-sale">{((elm.sale_price) * elm.quantity).toFixed(2)}{ currency.symbol }</span></>;
     } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponDataContext?.code && couponDataContext?.code != null) {
       console.log('0000else if', elm);
         if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date) && elm.coupon[couponDataContext?.code.toLowerCase()].code == couponDataContext?.code.toLowerCase()) {

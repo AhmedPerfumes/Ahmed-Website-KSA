@@ -20,7 +20,7 @@ import { products1 } from "@/data/products/fashion";
 import { useRouter } from 'next/navigation';
 import { useLocale } from "next-intl";
 import Pagination1 from "../common/Pagination1";
-import FreeGiftFeature from '@/components/FreeGiftFeature';
+// import FreeGiftFeature from '@/components/FreeGiftFeature';
 
 export default function Checkout() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -608,7 +608,16 @@ export default function Checkout() {
       }
     } else if(elm?.sale_price) {
       console.log('else if 2');
-      return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+      return <td>
+      <span className="money price price-old">
+          {currency.symbol}
+          {elm?.price}
+      </span>
+      <span className="money price price-sale">
+          {currency.symbol}
+          {(elm.sale_price * elm.quantity).toFixed(2)}
+      </span>
+  </td>;
     } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponData != null && couponCode != null) {
       console.log('else if', elm);
       // elm.map((item) => {
@@ -640,7 +649,7 @@ export default function Checkout() {
     <>
     {cartProducts.length ? (
       <>
-        <FreeGiftFeature couponData={couponData}/>
+        {/* <FreeGiftFeature couponData={couponData}/> */}
         <form onSubmit={onOrder}>
           <div className="checkout-form">
             <div className="billing-info__wrapper">
@@ -1106,14 +1115,14 @@ export default function Checkout() {
                       className="form-check-input form-check-input_fill"
                       type="radio"
                       name="checkout_payment_method"
-                      id="checkout_payment_method_4"
+                      id="checkout_payment_method_5"
                       value={'tabby'}
                       checked={selectedOption === 'tabby'}
                       onChange={handleRadioChange}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor="checkout_payment_method_4"
+                      htmlFor="checkout_payment_method_5"
                     >
                       Pay in 4. No interes, no fees.
                       <Image
