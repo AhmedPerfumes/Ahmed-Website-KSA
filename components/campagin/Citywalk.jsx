@@ -80,7 +80,7 @@ function CityWalk() {
       {/* Shop Button */}
       <a
         className="btn-link btn-link_lg default-underline text-uppercase fw-medium mt-3"
-        href={`/${locale}/product-category/dakhoon/oud-maattar`}
+        href={`/${locale}/shop`}
       >
         Shop Now
       </a>
