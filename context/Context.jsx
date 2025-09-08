@@ -14,7 +14,7 @@ export default function Context({ children }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [freeShippingFlag, setFreeShippingFlag] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
-  const [couponDataContext, setCouponDataContext] = useState(null);
+  const [ couponDataContext, setCouponDataContext] = useState(null);
 
   useEffect(() => {
     const currentUTC = new Date(); // Current UTC time
