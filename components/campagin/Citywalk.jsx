@@ -11,6 +11,7 @@ import Contact_campaign from "../otherPages/Contact/Contact_campaign";
 import Products from "../homes/home-2/Products";
 import TopCollections from "../homes/home-5/TopCollections";
 import DiscountedProductsSlider from "../common/features/DiscountedProductsSlider";
+import DiscountGrid from "../common/features/DiscountGrid";
 
 
 function CityWalk() {
@@ -25,7 +26,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/campaigns/landing-page.jpg"
+                        src="/assets/images/campaigns/95th-saudi-national-day.jpg"
                         alt="Father's Day Web"
                         width={1500}
                         height={550}
@@ -37,7 +38,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
-                        src="/assets/images/campaigns/SummerMobile.jpg"
+                        src="/assets/images/campaigns/95th-saudi-national-day-mobile.jpg"
                         alt="Father's Day Mobile"
                         width={1500}
                         height={550}
@@ -45,11 +46,13 @@ function CityWalk() {
                 </Link>
             </div>
         </div>
-        <div className="pt-5 mt-5">
+        <div className="pt-3 mt-3">
 
-        <DiscountedProductsSlider title="Summer Vibes, Cooler Prices!" onlyDiscounted={true}/>
+        {/* <DiscountedProductsSlider title="Summer Vibes, Cooler Prices!" onlyDiscounted={true}/> */}
+        {/* <DiscountedProductsSlider title="Celebrate 95 Years with 95 SAR Deals!" onlyDiscounted={true}/> */}
+        <DiscountGrid title="Celebrate 95 Years with 95 SAR Deals!" onlyDiscounted={true} />
         </div>
-        <section className="d-flex section-3 justify-content-center">
+        {/* <section className="d-flex section-3 justify-content-center">
   <div className="section-content text-center w-100">
     <div className="section-head pt-5 pb-5 text-uppercase">
       <h2 className="text-center">
@@ -63,21 +66,21 @@ function CityWalk() {
     </div>
 
     <div className="d-flex flex-column align-items-center">
-      {/* Desktop Video */}
+
       <div className="d-none d-md-block pb-3 w-100 d-flex justify-content-center">
         <div className="videoarea">
           <VideoPanel src="/assets/videos/SummerVideo.mp4" section="" />
         </div>
       </div>
 
-      {/* Mobile Video */}
+
       <div className="d-block d-sm-none pb-3 w-100 d-flex justify-content-center">
         <div className="videoarea">
           <VideoPanel src="/assets/videos/SummerMob.mp4" section="hundred" />
         </div>
       </div>
 
-      {/* Shop Button */}
+
       <a
         className="btn-link btn-link_lg default-underline text-uppercase fw-medium mt-3"
         href={`/${locale}/shop`}
@@ -86,7 +89,7 @@ function CityWalk() {
       </a>
     </div>
   </div>
-</section>
+</section> */}
 
             {/* <DiscountedProductsGrid onlyDiscounted={true} /> */}
 
@@ -126,9 +129,10 @@ function CityWalk() {
           </div>
         </div>
       </div> */}
-            <div className="container pt-5 mt-5">
+
+{/* Summer vibes commented out */}
+            {/* <div className="container pt-5 mt-5">
                 <div className="row align-items-center">
-                    {/* Image column - shown first on mobile/tablet, second on desktop */}
                     <div className="col-md-6 order-1 order-md-2 mb-4 mb-md-0">
                         <Image
                             width={0}
@@ -142,8 +146,6 @@ function CityWalk() {
                             aria-label="Wedding products"
                         />
                     </div>
-
-                    {/* Text column - shown second on mobile/tablet, first on desktop */}
                     <div className="col-md-6 text-center px-md-5 mb-2 order-2 order-md-1">
                         <p className="fs-2 text-uppercase font-weight-bold mb-3">
                         Oud & Roses
@@ -163,7 +165,6 @@ function CityWalk() {
 
             <div className="container">
                 <div className="row align-items-center">
-                    {/* Image column - shown first on desktop, second on mobile/tablet */}
                     <div className="col-md-6 order-1 order-md-1 mb-4 mb-md-0">
                         <Image
                             width={0}
@@ -178,7 +179,6 @@ function CityWalk() {
                         />
                     </div>
 
-                    {/* Text column - shown second on desktop, first on mobile/tablet */}
                     <div className="col-md-6 text-center px-md-5 mb-2 order-2 order-md-2">
                         <p className="fs-2 text-uppercase font-weight-bold mb-3">
                         Ignite Rose
@@ -292,7 +292,10 @@ function CityWalk() {
                                     </Link>
                                 </div>
                             </div>
-                        </section>
+                        </section> */}
+{/* Summer vibes commented out */}
+
+
                         {/* <TopCollections
   categoryId={8}
   category={"perfumes"}

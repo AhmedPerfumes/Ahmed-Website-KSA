@@ -103,9 +103,12 @@ export default function DiscountedProductsSlider({
     return <span className="money price">{elm.price}{currency.symbol}</span>;
   };
 
-  const filteredProducts = products
-    .filter((p) => p.product_qty > 0)
-    .filter((p) => !onlyDiscounted || (p.discount && p.discount.value > 0));
+const filteredProducts = products
+  .filter((p) => p.product_qty > 0)
+  .filter(
+    (p) =>
+      p.sale_price !== null || (onlyDiscounted && p.discount && p.discount.value > 0)
+  );
 
   if (loading || isMenuLoading) return <Pagination1 />;
   if (isMenuError) return <div>Error loading menu</div>;
