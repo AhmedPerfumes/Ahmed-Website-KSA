@@ -38,14 +38,16 @@ export default function OrderPaymentCompleted({ orderDetails }) {
     } else if(elm?.coupon) {
         console.log('else if');
         return <td>{((elm.price - (elm.price / 100 * elm.coupon.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.sale_price) {
-        return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-    }  else {
+    }
+    // else if(elm?.sale_price) {
+    //     return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+    // } 
+    else {
       console.log('else');
-      if(elm?.product_category && elm.product_category == 'Collections') {
+      if(elm.discount_amount && elm.discount_amount != '0') {
         return <td>{ elm.gross_amount }{ currency.symbol }</td>;
       }
-      return <td>{((elm.price * 1.05) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+      return <td>{((elm.price * 1.15) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
   }
   };
 
