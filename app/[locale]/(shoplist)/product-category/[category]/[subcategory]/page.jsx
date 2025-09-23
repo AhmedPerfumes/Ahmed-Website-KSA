@@ -10,6 +10,7 @@ import MobileFooter2 from "@/components/footers/MobileFooter2";
 import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 // import Link from "next/link";
 import QuickView from "@/components/modals/QuickView";
+import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
 
 // export const metadata = {
 //   title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
@@ -117,6 +118,8 @@ const ShopPage8 = async ({ params }) => {
           <Categories description={ data.description }/>
           <div className="mb-4 pb-lg-3"></div>
           <Shop10 products={ data.products }/>
+          <div className="mb-4 pb-lg-3"></div>
+          <CollapsibleDescription description={data.description} />
         </main>
         <div className="mb-5 pb-xl-5"></div>
         <section className="d-none d-lg-block" style={{ height: "100%" }}>
