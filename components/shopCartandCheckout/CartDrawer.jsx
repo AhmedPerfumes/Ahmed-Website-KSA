@@ -206,6 +206,9 @@ export default function CartDrawer() {
                 <h4 className="success">☆ Congratulations! You qualify for free shipping!</h4>
               )}
         </div>
+        <div>
+          <p className="fw-bold mb-2 text-center mt-3"style={{ color: "#FF0000" }}>Due to ongoing offers, we are experiencing a high volume of orders. we kindly request your patience as deliveries may take 4–5 days.</p>
+        </div>
           <hr className="cart-drawer-divider" />
           <div className="d-flex justify-content-between">
             <h6 className="fs-base fw-medium">SUBTOTAL:</h6>
