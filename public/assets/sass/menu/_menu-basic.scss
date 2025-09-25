@@ -30,6 +30,7 @@
   line-height: $navigation-item-line-height;
   text-decoration: none;
   text-transform: uppercase;
+  font-family: 'SofiaProRegular';
 
   &:after {
     content: '';
@@ -73,6 +74,7 @@
 }
 
 .menu-link {
+  font-family: 'SofiaProRegular';
   display: inline-block;
   position: relative;
   padding: $menu-link-padding-y $menu-link-padding-x;
@@ -98,6 +100,7 @@
   &.menu-link_active {
     &:after {
       width: $nav-link-active-bottom-width;
+      color: #857600;
     }
   }
 }

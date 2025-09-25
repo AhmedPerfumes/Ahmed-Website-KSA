@@ -4,8 +4,10 @@ import CartLength from "./components/CartLength";
 import Nav from "./components/Nav";
 import { openCart } from "@/utlis/openCart";
 import User from "./components/User";
+import UserLoggedIn from "./components/UserLoggedIn";
 import { currencyOptions, languageOptions2 } from "@/data/footer";
 import { slideData1000 } from "@/data/heroslides";
+import Image from "next/image";
 import { Autoplay, EffectFade, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useRef, useState, useEffect } from "react";
@@ -17,41 +19,193 @@ import { useMenu } from "../../context/MenuContext";
 import { useUser } from "../../context/UserContext";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "../../i18n/routing";
+import "../HomePage.css";
 
+// Add this CSS to your stylesheet (e.g., header.module.css)
+const headerStyles = `
+    .header {
+        transition: transform 0.3s ease-in-out;
+    }
+    .header-hidden {
+        transform: translateY(-100%);
+    }
+    .header-visible {
+        transform: translateY(0);
+    }
+    .header_sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background-color: white;
+    }
+    .search-popup {
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: opacity 0.50s ease, transform 0.50s ease;
+        z-index: 1200;
+    }
+    .js-content_visible .search-popup {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .js-content_hidden .search-popup {
+        opacity: 0;
+        transform: translateY(-50px);
+        pointer-events: none;
+    }
+    .search-minimal {
+        margin-left: auto; /* pushes it to the right side */
+    }
+    .search-minimal form {
+        width: 220px; /* adjust width as needed */
+    }
+    .search-minimal .form-control {
+        border: 1px solid #e3e3e3;
+        border-bottom: 1px solid #111;
+        border-radius: 0;
+        padding: 8px 40px 8px 12px;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        box-shadow: none;
+        outline: none;
+    }
+    .search-minimal .form-control::placeholder {
+        color: #6b7280;
+        font-weight: 500;
+    }
+    .search-minimal .form-control:focus {
+        border-color: #cfcfcf;
+        border-bottom-color: #a67b30;
+        box-shadow: none;
+    }
+    .search-minimal .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #111;
+        pointer-events: none;
+    }
+
+    .search-popup__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+  z-index: 5;
+}
+.search-popup__close:hover {
+  color: #000;
+}
+`;
 export default function Header14() {
     const [scrollDirection, setScrollDirection] = useState("down");
+    const [scrollState, setScrollState] = useState("visible");
     const locale = useLocale();
     // console.log(locale);
     const t = useTranslations();
-
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isHeaderOpen, setIsHeaderOpen] = useState(false);
     const containerRef = useRef(null);
+    const lastScrollY = useRef(0);
+
+    const items = [
+        { href: "/account_dashboard", label: "My Profile" },
+        { href: "/account_orders", label: "My Purchases" },
+        { href: "/account_edit_address", label: "Addresses" },
+        { href: "/account_coupons", label: "My Coupons" },
+        { href: "/account_loyalty", label: "Loyalty Points" },
+    ];
+
+    const isActive = (href) => pathname === href || pathname.startsWith(href);
+
+    const inputRef = useRef(null);
+
     useEffect(() => {
+        if (isPopupOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+    }, [isPopupOpen]);
+
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === "Escape") setIsPopupOpen(false);
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, []);
+
+    useEffect(() => {
+        if (isPopupOpen && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isPopupOpen]);
+
+    // useEffect(() => {
+    //     const handleScroll = () => {
+    //         const currentScrollY = window.scrollY;
+
+    //         if (currentScrollY > 250) {
+    //             if (currentScrollY > lastScrollY.current) {
+    //                 // Scrolling down
+    //                 setScrollDirection("down");
+    //             } else {
+    //                 // Scrolling up
+    //                 setScrollDirection("up");
+    //             }
+    //         } else {
+    //             // Below 250px
+    //             setScrollDirection("down");
+    //         }
+
+    //         lastScrollY.current = currentScrollY;
+    //     };
+    //     const lastScrollY = { current: window.scrollY };
+
+    //     // Add scroll event listener
+    //     window.addEventListener("scroll", handleScroll);
+
+    //     // Cleanup: remove event listener when component unmounts
+    //     return () => {
+    //         window.removeEventListener("scroll", handleScroll);
+    //     };
+    // }, []);
+
+    useEffect(() => {
+        let hideThreshold = 150; // px distance before hiding
+        let lastShowY = 0; // where header was last shown
+
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
 
-            if (currentScrollY > 250) {
-                if (currentScrollY > lastScrollY.current) {
-                    // Scrolling down
-                    setScrollDirection("down");
-                } else {
-                    // Scrolling up
-                    setScrollDirection("up");
+            if (currentScrollY <= 50) {
+                // Always show at very top
+                setScrollState("visible");
+                lastShowY = currentScrollY;
+            } else if (currentScrollY > lastScrollY.current) {
+                // Scrolling down
+                if (currentScrollY - lastShowY > hideThreshold) {
+                    setScrollState("hidden");
                 }
-            } else {
-                // Below 250px
-                setScrollDirection("down");
+            } else if (currentScrollY < lastScrollY.current) {
+                // Scrolling up → show header again and reset baseline
+                setScrollState("visible");
+                lastShowY = currentScrollY;
             }
 
             lastScrollY.current = currentScrollY;
         };
-        const lastScrollY = { current: window.scrollY };
 
-        // Add scroll event listener
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScroll, { passive: true });
 
-        // Cleanup: remove event listener when component unmounts
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
@@ -59,7 +213,6 @@ export default function Header14() {
 
     const router = useRouter();
     const pathname = usePathname();
-
     const [searchKeyWord, setSearchKeyWord] = useState("");
 
     const handleChange = (event) => {
@@ -68,9 +221,14 @@ export default function Header14() {
 
     const handleLogout = (e) => {
         e.preventDefault();
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/";
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+        }
+        router.replace("/login_register");
+        setTimeout(() => {
+            window.location.reload();
+        }, 50); // give router a moment to redirect
     };
 
     const handleLangChange = (e) => {
@@ -83,8 +241,8 @@ export default function Header14() {
     const { isLoggedIn } = useUser();
 
     const {
-        top_header,
         categoriesSubCategories,
+        top_header,
         isLoading: isMenuLoading,
         error,
     } = useMenu();
@@ -139,7 +297,16 @@ export default function Header14() {
 
     return (
         <>
+            <style>{headerStyles}</style>
             <header
+                id="header"
+                className={`header header_sticky bg-white ${
+                    scrollState === "visible"
+                        ? "header-visible"
+                        : "header-hidden"
+                } ${pathname !== "/" ? "position-sticky w-100" : ""}`}
+            >
+                {/* <header
                 id="header"
                 className={
                     pathname == "/"
@@ -151,13 +318,13 @@ export default function Header14() {
                         : "header header_sticky position-sticky w-100 bg-white"
                 }
                 style={pathname == "/" ? {} : {}}
-            >
+            > */}
                 <Swiper
                     className="swiper-container js-swiper-slider slideshow type4 slideshow-navigation-white-sm swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events bg-black"
                     {...swiperOptions}
-                    style={{ height: "3rem" }}
+                    style={{ height: "2.5rem" }}
                 >
-                    {top_header.map((elm, i) => (
+                    {top_header?.map((elm, i) => (
                         <SwiperSlide
                             key={i}
                             style={{
@@ -172,12 +339,11 @@ export default function Header14() {
                                     className="animate animate_fade animate_btt animate_delay-5 lh-2rem text-white"
                                 >
                                     {t(
-                                            elm.title
+                                        elm.title
                                             .split(" ")
                                             .slice(0, 13)
                                             .join(" ")
                                     )}
-                                    
                                 </Link>
                             </div>
                         </SwiperSlide>
@@ -187,10 +353,20 @@ export default function Header14() {
                 <div
                     ref={containerRef}
                     className={`header-tools__item hover-container ${
-                        isPopupOpen ? "js-content_visible" : ""
+                        isPopupOpen ? "js-content_visible" : "js-content_hidden"
                     }`}
                 >
                     <div className="search-popup js-hidden-content">
+                        {/* Close button */}
+                        <button
+                            type="button"
+                            className="btn-close search-popup__close"
+                            aria-label="Close"
+                            onClick={() => setIsPopupOpen(false)}
+                        >
+                            ✕
+                        </button>
+
                         <form
                             onSubmit={onSearch}
                             className="search-field container"
@@ -200,6 +376,7 @@ export default function Header14() {
                             </p>
                             <div className="position-relative">
                                 <input
+                                    ref={inputRef}
                                     className="search-field__input search-popup__input w-100 fw-medium"
                                     type="text"
                                     name="search-keyword"
@@ -266,11 +443,6 @@ export default function Header14() {
                                                 {t("Bin Shaikh")}
                                             </Link>
                                         </li>
-                                        {/* <li className="sub-menu__item">
-                      <a href="/shop/perfumes/oriental-fragrance/oud-&-roses" className="menu-link menu-link_us-s">
-                        Oud &amp; Roses
-                      </a>
-                    </li> */}
                                     </ul>
                                 </div>
                                 <div className="search-result row row-cols-5"></div>
@@ -327,29 +499,75 @@ export default function Header14() {
                                 </div>
                             </div>
                             <div className="logo">
-                            <a href="/">
-                                    <img
+                                <Link href="/">
+                                    <Image
+                                        loading="lazy"
                                         src="/assets/images/about/ahmed-logo.png"
-                                        width="100px"
-                                        alt="Ahmed"
+                                        width="100"
+                                        height="100"
+                                        alt="Ahmed Al Maghribi"
                                     />
-                                </a>
+                                </Link>
                             </div>
                             <div className="header-tools d-flex align-items-center flex-1 justify-content-end me-2">
-                                <div className="header-search search-field d-none d-lg-flex  mx-4">
+                                {/* <div className="header-search search-field d-none d-lg-flex  mx-4">
                                     <form onSubmit={onSearch}>
                                         <input
                                             className="header-search__input w-100"
                                             type="text"
                                             name="search-keyword"
                                             placeholder={t("Search Products")}
-                                            onClick={() =>
-                                                setIsPopupOpen((pre) => !pre)
-                                            }
+                                            onFocus={() => setIsPopupOpen(true)} // open when active
+                                            onBlur={() => setIsPopupOpen(false)} // close when inactive
                                             value={searchKeyWord}
                                             onChange={handleChange}
                                         />
                                     </form>
+                                </div> */}
+
+                                <div className="d-none d-lg-flex search-minimal me-4">
+                                    <form
+                                        onSubmit={onSearch}
+                                        className="position-relative"
+                                    >
+                                        <input
+                                            type="text"
+                                            name="search-keyword"
+                                            placeholder="SEARCH"
+                                            value={searchKeyWord}
+                                            onChange={handleChange}
+                                            onClick={() => setIsPopupOpen(true)}
+                                            className="form-control pe-5"
+                                        />
+                                        <span className="search-icon">
+                                            <svg
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 24 24"
+                                                aria-hidden="true"
+                                            >
+                                                <circle
+                                                    cx="11"
+                                                    cy="11"
+                                                    r="6.5"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.8"
+                                                />
+                                                <line
+                                                    x1="16"
+                                                    y1="16"
+                                                    x2="21"
+                                                    y2="21"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.8"
+                                                    strokeLinecap="round"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </form>
+
+                                    <style jsx>{``}</style>
                                 </div>
 
                                 {/* <div className="header-tools__item hover-container">
@@ -361,13 +579,92 @@ export default function Header14() {
                                             <User />
                                         </Link>
                                     ) : (
-                                        <Link href="#" onClick={handleLogout}>
-                                            <FiLogOut size={20} />
+                                        <Link href="/account_dashboard">
+                                            <UserLoggedIn />
                                         </Link>
                                     )}
                                 </div> */}
-                                
-                                <Link className="header-tools__item" href={`/${locale}/store-locator`}>
+                                <div className="header-tools__item hover-account">
+                                    {!isLoggedIn ? (
+                                        <Link
+                                            href={`/${locale}/login_register`}
+                                            className="account-icon-link"
+                                        >
+                                            <User />
+                                        </Link>
+                                    ) : (
+                                        <Link
+                                            href={`/${locale}/account_dashboard`}
+                                            className="account-icon-link"
+                                            aria-haspopup="true"
+                                        >
+                                            <UserLoggedIn />
+                                        </Link>
+                                    )}
+
+                                    {/* Hover menu */}
+                                    <div
+                                        className="account-hover-menu"
+                                        role="menu"
+                                    >
+                                        {isLoggedIn ? (
+                                            <>
+                                                <div className="menu-title">
+                                                    Manage Account
+                                                </div>
+                                                <ul>
+                                                    {items.map((it) => (
+                                                        <li
+                                                            key={it.href}
+                                                            className={
+                                                                isActive(
+                                                                    it.href
+                                                                )
+                                                                    ? "active"
+                                                                    : ""
+                                                            }
+                                                        >
+                                                            <Link
+                                                                href={`/${locale}${it.href}`}
+                                                            >
+                                                                {it.label}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                    <li
+                                                        className="divider"
+                                                        aria-hidden="true"
+                                                    />
+                                                    <li className="logout">
+                                                        <a
+                                                            href="#"
+                                                            onClick={
+                                                                handleLogout
+                                                            }
+                                                        >
+                                                            Logout
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </>
+                                        ) : (
+                                            <ul>
+                                                <li>
+                                                    <Link
+                                                        href={`/${locale}/login_register`}
+                                                    >
+                                                        Login / Register
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <Link
+                                    className="header-tools__item"
+                                    href={`/${locale}/store-locator`}
+                                >
                                     <IoLocationOutline size={20} />
                                 </Link>
 
