@@ -10,6 +10,7 @@ import MobileFooter2 from "@/components/footers/MobileFooter2";
 import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 // import Link from "next/link";
 import QuickView from "@/components/modals/QuickView";
+import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
 
 // export const metadata = {
 //   title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
