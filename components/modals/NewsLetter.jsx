@@ -93,7 +93,7 @@ export default function NewsLetter() {
                         className="btn-close"
                         aria-label="Close"
                     ></button>
-                    {popUp.map((elm, i) => (
+                    {popUp?.map((elm, i) => (
                         <div className="row p-0 m-0" key={i}>
                             <div className="col-md-8 p-0">
                                 <div className="newsletter-popup__bg w-100">

@@ -63,13 +63,13 @@ export default function MyCoupons() {
   return (
     <div style={{ maxWidth: 520, margin: "40px auto", padding: 12 }}>
       <h2 style={{ textAlign: "center", fontWeight: 600, marginBottom: 30, fontSize: 23 }}>
-        My Coupons
+        My Coupons Coming Soon!
       </h2>
       {loading ? (
         <div style={{ textAlign: "center", padding: 40 }}>Loading…</div>
       ) : coupons.length === 0 ? (
         <div style={{ textAlign: "center", color: "#888", padding: 30 }}>
-          You have no coupons yet.
+          {/* You have no coupons yet. */}
         </div>
       ) : (
         <div className="d-flex flex-column gap-3">

@@ -199,7 +199,7 @@ export default function LoginRegister() {
                 localStorage.setItem("token", data.access_token);
                 localStorage.setItem("user", btoa(JSON.stringify(data.data)));
 
-                const defaultAddr = data.data.addresses.find(
+                const defaultAddr = data?.data?.addresses?.find(
                     (addr) => addr.is_default
                 );
 
