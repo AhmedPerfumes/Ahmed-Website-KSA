@@ -129,7 +129,7 @@ export default function Blog1() {
                   {/* <span className="blog-grid__item-meta__author">
                     By {elm.author}
                   </span> */}
-                  <span className="blog-grid__item-meta__date">{new Date(elm.created_at).toLocaleDateString()}</span>
+                   <span className="blog-grid__item-meta__date">{elm.post_date!=null?new Date(elm.post_date).toLocaleDateString():new Date(elm.created_at).toLocaleDateString()}</span>
                 </div>
                 <div className="blog-grid__item-title">
                   <Link href={elm.permalink ? `/${locale}/blog/${elm.permalink.key}` : `/${locale}/blog/${removeSpecialCharactersAndAmp(elm.name).split(' ').join('-').toLowerCase()}`}>{elm.name}</Link>

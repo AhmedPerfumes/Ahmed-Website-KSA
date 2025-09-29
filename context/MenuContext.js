@@ -5,10 +5,12 @@ const MenuContext = createContext();
 
 export function MenuProvider({ children }) {
   const [categoriesSubCategories, setCategoriesSubCategories] = useState([]);
+  const [top_header, setTopHeader] = useState([]);
   const [vatTax, setVatTax] = useState(0.00);
   const [shippingServiceCharges, setshippingServiceCharges] = useState([]);
   const [homeSliders, setHomeSliders] = useState([]);
   const [homeMobileSliders, setHomeMobileSliders] = useState([]);
+ const [popUp, setPopUp] = useState([]);  
   const [currency, setCurrency] = useState('ر.س');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,6 +46,20 @@ export function MenuProvider({ children }) {
             setVatTax(data.tax);
           } else {
             setVatTax(null);
+            setError(data);
+          }
+          if(data && data.pop_up) {
+            setError(null);
+            setPopUp(data.pop_up);
+          } else {
+            setPopUp(null);
+            setError(data);
+          }
+          if(data && data.top_header) {
+            setError(null);
+            setTopHeader(data.top_header);
+          } else {
+            setTopHeader(null);
             setError(data);
           }
 
@@ -93,7 +109,7 @@ export function MenuProvider({ children }) {
   }, []);
 
   return (
-    <MenuContext.Provider value={{ categoriesSubCategories, isLoading, error, vatTax, shippingServiceCharges, currency, homeSliders, homeMobileSliders }}>
+    <MenuContext.Provider value={{ categoriesSubCategories, isLoading, error, vatTax, shippingServiceCharges, currency, homeSliders, homeMobileSliders,popUp, top_header }}>
       {children}
     </MenuContext.Provider>
   );

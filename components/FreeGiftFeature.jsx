@@ -46,130 +46,135 @@ const swiperOptions = {
 
 // Sample gift products (replace with CMS or allProducts data)
 const thresholds = [
-  {
-    min: 250,
-    max: 500,
-    gifts: [
-      {
-        product_id: 190,
-        product_name: 'Endless',
-        price: "0",
-        image: 'epdnew/endless-1.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 189,
-        product_name: 'Sapphire',
-        price: "0",
-        image: 'epdnew/sapphire.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 185,
-        product_name: 'Xtasy',
-        price: "0",
-        image: 'epdnew/xtasy.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 194,
-        product_name: 'Ruby',
-        price: "0",
-        image: 'epdnew/ruby.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-    ],
-  },
-  {
-    min: 500,
-    gifts: [
-      // {
-      //   product_id: 182,
-      //   product_name: 'Blue Oud',
-      //   price: "0",
-      //   image: 'epdnew/blu-oud.jpg',
-      //   is_gift: true,
-      //   discount: null
-      // },
-      {
-        product_id: 180,
-        product_name: 'Blue By Ahmed',
-        price: "0",
-        image: 'epdnew/blu-by-ahmed.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 149,
-        product_name: 'Joud',
-        price: "0",
-        image: 'epdnew/joud-100ml.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      // {
-      //   product_id: 179,
-      //   product_name: 'Azure Royal',
-      //   price: "0",
-      //   image: 'epdnew/azure-royal.jpg',
-      //   is_gift: true,
-      //   discount: null
-      // },
-      {
-        product_id: 257,
-        product_name: 'Couture Noir',
-        price: "0",
-        image: 'epdnew/couture-noir.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      {
-        product_id: 181,
-        product_name: 'Zeleny',
-        price: "0",
-        image: 'epdnew/zeleny.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      // {
-      //   product_id: 246,
-      //   product_name: 'Cinder',
-      //   price: "0",
-      //   image: 'epdnew/cinder-1.jpg',
-      //   is_gift: true,
-      //   discount: null
-      // },
-      {
-        product_id: 245,
-        product_name: 'Moonlit',
-        price: "0",
-        image: 'epdnew/moonlit-1.jpg',
-        is_gift: true,
-        discount: null,
-        coupon: []
-      },
-      // {
-      //   product_id: 244,
-      //   product_name: 'Mosaic',
-      //   price: "0",
-      //   image: 'epdnew/mosaic-1.jpg',
-      //   is_gift: true,
-      //   discount: null
-      // },
-    ],
-  },
+  // {
+  //   min: 250,
+  //   max: 500,
+  //   gifts: [
+  //     {
+  //       product_id: 190,
+  //       product_name: 'Endless',
+  //       price: "0",
+  //       image: 'epdnew/endless-1.jpg',
+  //       is_gift: true,
+  //       discount: null,
+  //       coupon: []
+  //     },
+  //     {
+  //       product_id: 189,
+  //       product_name: 'Sapphire',
+  //       price: "0",
+  //       image: 'epdnew/sapphire.jpg',
+  //       is_gift: true,
+  //       discount: null,
+  //       coupon: []
+  //     },
+  //     {
+  //       product_id: 185,
+  //       product_name: 'Xtasy',
+  //       price: "0",
+  //       image: 'epdnew/xtasy.jpg',
+  //       is_gift: true,
+  //       discount: null,
+  //       coupon: []
+  //     },
+  //     {
+  //       product_id: 194,
+  //       product_name: 'Ruby',
+  //       price: "0",
+  //       image: 'epdnew/ruby.jpg',
+  //       is_gift: true,
+  //       discount: null,
+  //       coupon: []
+  //     },
+  //   ],
+  // },
+    {
+      min: 450,
+      gifts: [
+        // {
+        //   product_id: 182,
+        //   product_name: 'Blue Oud',
+        //   price: "0",
+        //   image: 'epdnew/blu-oud.jpg',
+        //   is_gift: true,
+        //   discount: null
+        // },
+        {
+          product_id: 46,
+          product_name: 'Leather',
+          price: "0",
+          image: 'epdnew/leather.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 55,
+          product_name: 'Oud Classic',
+          price: "0",
+          image: 'epdnew/oud-classic.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+      
+        {
+          product_id: 50,
+          product_name: 'Musk Ahmed',
+          price: "0",
+          image: 'epdnew/musk-ahmed.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 63,
+          product_name: 'Saif',
+          price: "0",
+          image: 'epdnew/saif.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+    
+        {
+          product_id: 35,
+          product_name: 'Zuraique',
+          price: "0",
+          image: 'epdnew/zuraique.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 192,
+          product_name: 'Sage',
+          price: "0",
+          image: 'epdnew/sage-1.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 248,
+          product_name: 'Tanuf',
+          price: "0",
+          image: 'epdnew/tanuf-1.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+        {
+          product_id: 66,
+          product_name: 'Sheukh',
+          price: "0",
+          image: 'epdnew/sheukh.jpg',
+          is_gift: true,
+          discount: null,
+          coupon: []
+        },
+      ],
+    },
 ];
 
 const FreeGiftFeature = ({ couponData }) => {
@@ -190,7 +195,7 @@ const FreeGiftFeature = ({ couponData }) => {
   const nonCollectionTotalPrice = nonCollectionProducts.reduce(
     (acc, item) => {
       // console.log('0000000', new Date(current_date_time), new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date), item.coupon[couponData?.code.toLowerCase()]);
-      if(couponData?.code &&new Date(current_date_time) >= new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(item.coupon[couponData?.code.toLowerCase()]?.end_date) && item.coupon[couponData?.code.toLowerCase().toLowerCase()].code == couponData?.code.toLowerCase()) {
+      if(couponData?.code && new Date(current_date_time) >= new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(item.coupon[couponData?.code.toLowerCase()]?.end_date) && item.coupon[couponData?.code.toLowerCase().toLowerCase()].code == couponData?.code.toLowerCase()) {
         // console.log('iffffffffffffffffffff');
         return acc + (parseFloat(item.price - (item.price / 100 * item.coupon[couponData?.code.toLowerCase().toLowerCase()]?.value)) * item.quantity);
       } else {
@@ -294,7 +299,7 @@ const FreeGiftFeature = ({ couponData }) => {
         <div>
           <h4 className="font-bold mb-4">
             <span className='t-subtitle' style={{ color:'#c00000',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>
-            You've Earned a Free Gift – Choose Yours Below!
+            Father's Day Special :- You've Earned a Free Gift – Choose 1 Perfume From Below!
             </span>
           </h4>
           <Swiper

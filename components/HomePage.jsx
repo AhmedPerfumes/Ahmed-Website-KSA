@@ -152,7 +152,7 @@ const ScrollSnapHorizontalBootstrap = () => {
             <section className="vh-100 hero-banner d-none d-lg-block">
                 <Hero />
             </section>
-            <div className="d-block d-lg-none">
+            <div className="d-block d-lg-none" style={{ paddingTop: '5rem' }}>
                 <Hero2 />
             </div>
 
@@ -560,23 +560,33 @@ const ScrollSnapHorizontalBootstrap = () => {
                             {t("Discover")}
                         </Link>
                     </div>
-                    <div className="inner2 mt-4 d-flex align-items-center ">
+                    <div className="inner2 mt-4 d-flex align-items-center gap-3">
                         <Link
                             href={`/${locale}/shop/dakhoon/bakhoor/bakhoor-ahmed-40-tabs`}
                         >
-                            <img
+                           <Image
+                                width={0}
+                                height={0}
+                                sizes="100%"
                                 className="w-100"
                                 src="/assets/images/bakhoor-ahmed.jpg"
-                                alt="Bakhoor Ahmed"
+                                alt="Ahmed Al Maghribi Perfumes"
+                                loading="lazy"
+                                style={{ width: "100%", height: "auto" }}
                             />
                         </Link>
                         <Link
                             href={`/${locale}/shop/dakhoon/oud-maattar/oud-kiflain`}
                         >
-                            <img
-                                className="w-100"
+                            <Image
+                                width={0}
+                                height={0}
+                                sizes="100%"
+                                className="h-auto w-100"
                                 src="/assets/images/oud-kiflain.jpg"
-                                alt="Oud Asateen"
+                                alt="Ahmed Al Maghribi Perfumes"
+                                loading="lazy"
+                                style={{ width: "100%", height: "auto" }}
                             />
                         </Link>
                     </div>
@@ -637,7 +647,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                                 href={`/${locale}/shop`}
                                 className="btn-rounded btn-link_lg  text-uppercase fw-medium text-white"
                             >
-                                {t("Discover Now")}
+                                {t("Shop Now")}
                             </Link>
                         </div>
                     </div>
@@ -696,11 +706,16 @@ const ScrollSnapHorizontalBootstrap = () => {
                         <p className="section-paragraph">{t("Steps")}</p>
                     </div>
                     <div className="order-0 order-md-1 mb-5">
-                        <img
-                            className="h-auto w-100"
-                            src="/assets/images/home/demo8/Shop.jpg"
-                            alt="image"
-                        />
+                    <Image
+                                width={0}
+                                height={0}
+                                sizes="100%"
+                                className="h-auto w-100"
+                                src="/assets/images/home/demo8/Shop.jpg"
+                                alt="Ahmed Al Maghribi Perfumes"
+                                loading="lazy"
+                                style={{ width: "100%", height: "auto" }}
+                            />
                     </div>
                 </div>
             </section>

@@ -49,7 +49,7 @@ export default function CartDrawer() {
   );
 
   const subTotalPrice = (elm) => {
-    console.log('0000', elm?.coupon, elm.coupon.length, couponDataContext);
+    // console.log('0000', elm?.coupon, elm.coupon.length, couponDataContext);
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
@@ -60,8 +60,8 @@ export default function CartDrawer() {
         return <span className="cart-drawer-item__price money price">{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
       }
     } else if(elm?.sale_price) {
-      return <span className="cart-drawer-item__price money price">{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-    } else if(elm?.coupon && couponDataContext?.code && couponDataContext?.code != null) {
+      return <><span className="money price price-old">{currency.symbol}{elm?.price}</span><span className="cart-drawer-item__price money price price-sale">{((elm.sale_price) * elm.quantity).toFixed(2)}{ currency.symbol }</span></>;
+    } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponDataContext?.code && couponDataContext?.code != null) {
       console.log('0000else if', elm);
         if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date) && elm.coupon[couponDataContext?.code.toLowerCase()].code == couponDataContext?.code.toLowerCase()) {
           return <span className="cart-drawer-item__price money price">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code.toLowerCase()]?.value)) * elm.quantity).toFixed(2)}</span>;
@@ -205,6 +205,9 @@ export default function CartDrawer() {
               ) : (
                 <h4 className="success">☆ Congratulations! You qualify for free shipping!</h4>
               )}
+        </div>
+        <div>
+          <p className="fw-bold mb-2 text-center mt-3"style={{ color: "#FF0000" }}>Due to ongoing offers, we are experiencing a high volume of orders. we kindly request your patience as deliveries may take 4–5 days.</p>
         </div>
           <hr className="cart-drawer-divider" />
           <div className="d-flex justify-content-between">

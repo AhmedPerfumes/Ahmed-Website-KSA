@@ -5,6 +5,7 @@ import he from 'he';
 import { useState, useEffect } from 'react';
 import { useMenu } from '@/context/MenuContext';
 import Pagination1 from "../common/Pagination1";
+import FeedbackForm from "../common/Feedback";
 
 export default function OrderPaymentCompleted({ orderDetails }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -74,11 +75,17 @@ export default function OrderPaymentCompleted({ orderDetails }) {
     } else if(elm?.coupon) {
         console.log('else if');
         return <td>{((elm.price - (elm.price / 100 * elm.coupon.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.sale_price) {
-        return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-    } else {
-        return <td>{((elm.price * 1.15) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
     }
+    // else if(elm?.sale_price) {
+    //     return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+    // } 
+    else {
+      console.log('else');
+      if(elm.discount_amount && elm.discount_amount != '0') {
+        return <td>{ elm.gross_amount }{ currency.symbol }</td>;
+      }
+      return <td>{((elm.price * 1.15) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+  }
   };
 
   if (isMenuLoading) {
@@ -126,6 +133,7 @@ export default function OrderPaymentCompleted({ orderDetails }) {
         {/* {orderDetails.payment_status != 'failed' ? <h3>Your order is completed!</h3> : <h3>Your order is failed!</h3>}
         {orderDetails.payment_status != 'failed' && <p>Thank you. Your order has been received.</p>} */}
         { paymentStatus() }
+        <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
       </div>
       {orderDetails.payment_status != 'failed' ? <>
       <div className="order-info">

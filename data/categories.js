@@ -347,6 +347,75 @@ export const categoriesInfluencers = [
     btn: "/product-category/dakhoon"
   },
 ];
+export const fatherDay = [
+  {
+    id: 1,
+    imgSrc: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Fmarj.jpg&w=750&q=75",
+    altText: "Marj",
+    imgSrc2: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Fmarj.jpg&w=750&q=75",
+    link: "/shop/perfumes/oriental-fragrance/marj",
+    btn: "/shop/perfumes/oriental-fragrance/marj"
+  },
+  
+  {
+    id: 2,
+    imgSrc: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Flaathani.jpg&w=750&q=75",
+    altText: "Laathani",
+    imgSrc2: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Flaathani.jpg&w=750&q=75",
+    link: "/shop/perfumes/oriental-fragrance/laathani",
+    btn: "/shop/perfumes/oriental-fragrance/laathani"
+  },
+  {
+    id: 3,
+    imgSrc: "https://eu.ahmedalmaghribi.com/wp-content/uploads/2025/04/ROSENOIR.jpg",
+    altText: "Ahl",
+    imgSrc2: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Fahl.jpg&w=750&q=75",
+    link: "/shop/perfumes/oriental-fragrance/ahl",
+    btn: "/shop/perfumes/oriental-fragrance/ahl"
+  },
+  
+  {
+    id: 4,
+    imgSrc: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Fsummer-oud.jpg&w=750&q=75",
+    altText: "Summer Oud",
+    imgSrc2: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Fsummer-oud.jpg&w=750&q=75",
+    link: "/shop/perfumes/occidental-fragrance/summer-oud",
+    btn: "/shop/perfumes/occidental-fragrance/summer-oud"
+  },
+  {
+    id: 5,
+    imgSrc: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Foud-lavender.jpg&w=750&q=75",
+    altText: "Oud Lavender",
+    imgSrc2: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Foud-lavender.jpg&w=750&q=75",
+    link: "/shop/perfumes/oriental-fragrance/oud-lavender",
+    btn: "/shop/perfumes/oriental-fragrance/oud-lavender"
+  },
+  {
+    id: 6,
+    imgSrc: "https://ae.ahmedalmaghribi.com/_next/image?url=https%3A%2F%2Fadmin.ahmedalmaghribi.com%2Fpublic%2Fstorage%2Fepdnew%2Foud-lavender.jpg&w=750&q=75",
+    altText: "Zumar",
+    imgSrc2: "https://admin.ahmedalmaghribi.com/public/storage/products/zumar.jpg",
+    link: "/shop/perfumes/oriental-fragrance/zumar",
+    btn: "/shop/perfumes/oriental-fragrance/zumar"
+  },
+  {
+    id: 7,
+    imgSrc: "https://admin.ahmedalmaghribi.com/public/storage/epdnew/kawkab-1.jpg",
+    altText: "Kawkab",
+    imgSrc2: "https://admin.ahmedalmaghribi.com/public/storage/epdnew/kawkab-1.jpg",
+    link: "/shop/perfumes/oriental-fragrance/kawkab",
+    btn: "/shop/perfumes/oriental-fragrance/kawkab"
+  },
+  
+  {
+    id: 8,
+    imgSrc: "https://admin.ahmedalmaghribi.com/public/storage/epdnew/bin-shaikh.jpg",
+    altText: "Bin Shaikh",
+    imgSrc2: "https://admin.ahmedalmaghribi.com/public/storage/epdnew/bin-shaikh.jpg",
+    link: "/shop/perfumes/oriental-fragrance/bin-shaikh",
+    btn: "/shop/perfumes/oriental-fragrance/bin-shaikh"
+  },
+];
 export const categories80 = [
   {
     id: 1,

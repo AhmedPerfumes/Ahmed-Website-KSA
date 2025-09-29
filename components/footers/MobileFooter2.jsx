@@ -149,7 +149,8 @@ export default function MobileFooter2() {
         </p>
         <p className="text-center">
           <strong className="fw-medium text-white text-center">
-          +966 55 5073629 
+          +966 55 5073629 <br />
+           +966 55 0828191
           </strong>
         </p>
 

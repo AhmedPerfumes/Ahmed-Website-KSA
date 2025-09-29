@@ -20,7 +20,7 @@ import { products1 } from "@/data/products/fashion";
 import { useRouter } from 'next/navigation';
 import { useLocale } from "next-intl";
 import Pagination1 from "../common/Pagination1";
-import FreeGiftFeature from '@/components/FreeGiftFeature';
+// import FreeGiftFeature from '@/components/FreeGiftFeature';
 
 export default function Checkout() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -284,7 +284,7 @@ export default function Checkout() {
           'amount': data.request_params.amount,
           'currency': data.request_params.currency,
           'language': data.request_params.language,
-          'order_description': data.request_params.order_description,
+          // 'order_description': data.request_params.order_description,
           'return_url': data.request_params.return_url,
           "customer_name": data.request_params.customer_name,
           'customer_email': data.request_params.customer_email,
@@ -339,6 +339,15 @@ export default function Checkout() {
         setError(data.couponMessage);
         // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
         // router.push(data.redirect_url);
+      } else if (data.duplicateOrderMessage) {
+          // setSuccess();
+          setError(data.duplicateOrderMessage);
+          // setTimeout(() => {
+          //     localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
+          //     setCartProducts([]); // update the cartProducts state to an empty array
+          // }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
+          // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
+          // router.push(data.redirect_url);
       } else {
         if(data.products) {
           setError(data.products);
@@ -529,7 +538,7 @@ export default function Checkout() {
     let product_coupon = false;
     cartProducts.map((item) => {
       // console.log(item.coupon[couponCode.toLowerCase()]?.code, couponCode.toLowerCase());
-      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase() && !item.sale_price) {
+      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase() && !item.sale_price && !item.discount) {
         product_coupon = true;
       }
     });
@@ -608,8 +617,17 @@ export default function Checkout() {
       }
     } else if(elm?.sale_price) {
       console.log('else if 2');
-      return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.coupon && couponData != null && couponCode != null) {
+      return <td>
+      <span className="money price price-old">
+          {currency.symbol}
+          {elm?.price}
+      </span>
+      <span className="money price price-sale">
+          {currency.symbol}
+          {(elm.sale_price * elm.quantity).toFixed(2)}
+      </span>
+  </td>;
+    } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponData != null && couponCode != null) {
       console.log('else if', elm);
       // elm.map((item) => {
         // return elm.coupon.map((item, ind) => {
@@ -626,7 +644,7 @@ export default function Checkout() {
         // });
       // });
         if(new Date(current_date_time) >= new Date(elm.coupon[couponCode.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponCode.toLowerCase()]?.end_date) && elm.coupon[couponCode.toLowerCase()].code == couponData.code.toLowerCase()) {
-          return <td><span className="money price price-old">{ currency.symbol }{elm?.price}</span><span className="money price price-sale">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponCode.toLowerCase()]?.value)) * elm.quantity).toFixed(2)}</span></td>;
+          return <td><span className="money price price-old">{ currency.symbol }{(elm.price * elm.quantity).toFixed(2)}</span><span className="money price price-sale">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponCode.toLowerCase()]?.value)) * elm.quantity).toFixed(2)}</span></td>;
         } else {
           return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
         }
@@ -640,7 +658,7 @@ export default function Checkout() {
     <>
     {cartProducts.length ? (
       <>
-        <FreeGiftFeature couponData={couponData}/>
+        {/* <FreeGiftFeature couponData={couponData}/> */}
         <form onSubmit={onOrder}>
           <div className="checkout-form">
             <div className="billing-info__wrapper">
@@ -1106,14 +1124,14 @@ export default function Checkout() {
                       className="form-check-input form-check-input_fill"
                       type="radio"
                       name="checkout_payment_method"
-                      id="checkout_payment_method_4"
+                      id="checkout_payment_method_5"
                       value={'tabby'}
                       checked={selectedOption === 'tabby'}
                       onChange={handleRadioChange}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor="checkout_payment_method_4"
+                      htmlFor="checkout_payment_method_5"
                     >
                       Pay in 4. No interes, no fees.
                       <Image

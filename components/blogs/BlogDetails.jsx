@@ -10,7 +10,7 @@ export default function BlogDetails({ blog }) {
         <h2 className="page-title">{blog.title}</h2>
         <div className="blog-single__item-meta">
           {/* <span className="blog-single__item-meta__author">By Admin</span> */}
-          <span className="blog-single__item-meta__date">{new Date(blog.created_at).toLocaleDateString()}</span>
+          <span className="blog-single__item-meta__date">{blog.post_date!=null?new Date(blog.post_date).toLocaleDateString():new Date(blog.created_at).toLocaleDateString()}</span>
           <span className="blog-single__item-meta__category">{blog.category_name }</span>
         </div>
       </div>

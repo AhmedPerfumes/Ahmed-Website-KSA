@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import he from 'he';
 import Link from "next/link";
 import Pagination1 from "../common/Pagination1";
+import FeedbackForm from "../common/Feedback";
 
 export default function OrderCompleted() {
   const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext } = useContextElement();
@@ -79,8 +80,8 @@ export default function OrderCompleted() {
       }
     } else if(elm?.sale_price) {
       console.log('SALE', elm);
-        return <td>{((elm.price - (elm.price / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.coupon && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
+      return <td>{((elm.sale_price) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+    } else if(elm?.coupon && elm.coupon.length != 0 && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
       console.log('COUPON', elm);
       if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date)) {
         return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code.toLowerCase()]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
@@ -112,6 +113,7 @@ export default function OrderCompleted() {
         <h3>Your order is completed!</h3>
         <p>Thank you. Your order has been received.</p>
       </div>
+      <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
       <div className="order-info">
         <div className="order-info__item">
           <label>Order Number</label>

@@ -1,58 +1,81 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react"; // No longer need useState
 import { useLocale } from "next-intl";
-import VideoPanel from "../VideoPanel";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useMenu } from "@/context/MenuContext";
 
 export default function NewsLetter() {
     const modalElement = useRef(null);
-    const [hasScrolled, setHasScrolled] = useState(false);
     const locale = useLocale();
-    let modalInstance = null;
+    const { popUp } = useMenu();
+
+    // --- NEW: Use a ref to track if the modal has been shown in this session ---
+    // This avoids the stale state issue in the event listener.
+    const hasShownThisSession = useRef(false);
+
+    // --- Configuration Constants ---
+    const POPUP_STORAGE_KEY = 'newsletterPopupLastShown';
+    // const POPUP_COOLDOWN_PERIOD = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+    const POPUP_COOLDOWN_PERIOD = 30 * 60 * 1000;
 
     useEffect(() => {
+        // --- 1. Check if the user is still in the cooldown period ---
+        const lastShownTimestamp = localStorage.getItem(POPUP_STORAGE_KEY);
+        const currentTime = new Date().getTime();
+
+        if (lastShownTimestamp) {
+            const timeSinceLastShown = currentTime - parseInt(lastShownTimestamp, 10);
+            if (timeSinceLastShown < POPUP_COOLDOWN_PERIOD) {
+                return; // Cooldown is active, so we do nothing.
+            }
+        }
+
+        // --- 2. If cooldown is over, set up the modal and listener ---
         const bootstrap = require("bootstrap");
+        let modalInstance = null;
 
-        // Initialize Bootstrap Modal
-        modalInstance = new bootstrap.Modal(modalElement.current, {
-            keyboard: false,
-        });
+        if (modalElement.current) {
+            modalInstance = new bootstrap.Modal(modalElement.current, {
+                keyboard: false,
+            });
+        } else {
+            return;
+        }
 
-        // Function to show the modal
         const showModal = () => {
-            if (!hasScrolled) {
+            if (modalInstance) {
                 modalInstance.show();
-                setHasScrolled(true);
+                // Save the current time to localStorage to start the new cooldown
+                localStorage.setItem(POPUP_STORAGE_KEY, new Date().getTime().toString());
             }
         };
 
-        // Handle scroll event
         const handleScroll = () => {
-            if (window.scrollY > 3500 && !hasScrolled) {
+            // Check scroll position AND if it has already been shown in this session
+            if (window.scrollY > 2000 && !hasShownThisSession.current) {
+                // --- CORRECTED LOGIC ---
+                // 1. Immediately set the ref to true. This is critical.
+                //    It ensures this block can never run again in this session.
+                hasShownThisSession.current = true;
+                
+                // 2. Then, show the modal.
                 showModal();
             }
         };
 
-        // Add event listener for close button
         const closeButton = modalElement.current.querySelector(".btn-close");
-        closeButton.addEventListener("click", () => {
-            modalInstance.hide(); // Programmatically hide the modal
-        });
+        const closeHandler = () => modalInstance.hide();
 
-        // Listen for scroll events
         window.addEventListener("scroll", handleScroll);
+        closeButton.addEventListener("click", closeHandler);
 
-        // Cleanup event listeners on unmount
+        // Cleanup function
         return () => {
             window.removeEventListener("scroll", handleScroll);
-            closeButton.removeEventListener("click", () =>
-                modalInstance.hide()
-            );
+            closeButton.removeEventListener("click", closeHandler);
         };
-    }, [hasScrolled]);
+    }, []); // This effect correctly runs only once on mount.
 
     return (
         <div
@@ -63,69 +86,82 @@ export default function NewsLetter() {
             data-bs-backdrop="true"
             aria-hidden="true"
         >
-             <div className="modal-dialog newsletter-popup modal-dialog-centered">
+            <div className="modal-dialog newsletter-popup modal-dialog-centered">
                 <div className="modal-content">
-                    {/* Explicit close button handling */}
                     <button
                         type="button"
                         className="btn-close"
                         aria-label="Close"
                     ></button>
-                    <div className="row p-0 m-0">
-                        <div className="col-md-8 p-0">
-                            <div className="newsletter-popup__bg w-100">
-                                <div className="d-none d-lg-block">
-                                    <a
-                                        href={`/${locale}/shop/perfumes/oriental-fragrance/Kawkab`}
-                                    >
-                                        {/* <Image
+                    {popUp.map((elm, i) => (
+                        <div className="row p-0 m-0" key={i}>
+                            <div className="col-md-8 p-0">
+                                <div className="newsletter-popup__bg w-100">
+                                    <div className="d-none d-lg-block">
+                                        <a
+                                            href={`/${locale}/shop`}
+                                            className="hover-effect"
+                                        >
+                                            <Image
+                                                width={550}
+                                                height={650}
+                                                style={{ height: "fit-content" }}
+                                                loading="lazy"
+                                                src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`}
+                                                className="h-100 w-100 object-fit-cover d-block"
+                                                alt="image"
+                                            />
+                                        </a>
+                                    </div>
+                                    <div className="d-sm-block d-md-none">
+                                        <Image
                                             width={550}
                                             height={650}
                                             style={{ height: "fit-content" }}
                                             loading="lazy"
-                                            src="/assets/images/home/Kawkab-Web-banner.jpg"
-                                            className="h-100 w-100 object-fit-cover d-block"
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`}
+                                            className="h-100 w-100 object-fit-cover d-block hover-effect"
                                             alt="image"
-                                        /> */}
-                                         <VideoPanel
-                                        src="/assets/videos/KawkabPopUp.mp4"
-                                        section="hundred"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-4 p-0 d-flex align-items-center text-center">
+                                <div className="block-newsletter w-100 px-3 py-4">
+                                    <h3
+                                        className="section-title fw-normal mb-3"
+                                        style={{ color: "#5c6137" }}
+                                    >
+                                        {elm.name}
+                                    </h3>
+
+                                    <p
+                                        className="mb-3"
+                                        style={{ fontSize: "1rem", color: "#333" }}
+                                    >
+                                        {elm.description}
+                                    </p>
+
+                                    <div
+                                        className="mb-4"
+                                        style={{ fontSize: "0.95rem", color: "#555" }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: elm.content?.replace(/<\/?p>/g, ""),
+                                        }}
                                     />
 
-                                    </a>
-                                </div>
-                                <div className="d-sm-block d-md-none">
-                                    <VideoPanel
-                                        src="/assets/videos/KawkabPopUp.mp4"
-                                        section="hundred"
-                                    />
+                                    <div className="d-flex justify-content-center">
+                                        <a
+                                            className="btn-rounded btn-link_lg text-uppercase fw-medium hover-effect"
+                                            href={`/${locale}/shop`}
+                                        >
+                                            Shop Now
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-4 p-0 d-flex align-items-center text-center">
-                            <div className="block-newsletter w-100">
-                                <h3
-                                    className="section-title fw-normal mb-3 pb-2"
-                                    style={{ color: "#cfa91a" }}
-                                >
-                                   Kawkab
-                                    {/* <span class="t-subtitle">
-                                        The Essence of Belonging
-                                    </span> */}
-                                </h3>
-                                <p>
-                                Kawkab is a statement of elegance and timeless charm.Kawkab is a sophisticated fragrance that blends radiant florals with rich, woody depths
-                                    {/* <b className="sub-title">Don't miss out.</b> */}
-                                </p>
-                                <a
-                                    className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
-                                    href={`/${locale}/shop/perfumes/oriental-fragrance/Kawkab`}
-                                >
-                                    Shop Now
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>

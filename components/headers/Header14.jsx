@@ -83,6 +83,7 @@ export default function Header14() {
     const { isLoggedIn } = useUser();
 
     const {
+        top_header,
         categoriesSubCategories,
         isLoading: isMenuLoading,
         error,
@@ -145,7 +146,7 @@ export default function Header14() {
                         ? `header header_sticky bg-white ${
                               scrollDirection == "up"
                                   ? "header_sticky-active"
-                                  : "position-absolute"
+                                  : "position-relative"
                           } `
                         : "header header_sticky position-sticky w-100 bg-white"
                 }
@@ -156,7 +157,7 @@ export default function Header14() {
                     {...swiperOptions}
                     style={{ height: "3rem" }}
                 >
-                    {slideData1000.map((elm, i) => (
+                    {top_header.map((elm, i) => (
                         <SwiperSlide
                             key={i}
                             style={{
@@ -167,11 +168,11 @@ export default function Header14() {
                         >
                             <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
                                 <Link
-                                    href={`/${locale}/${elm.btnLink}`}
+                                    href={`/${locale}/${elm.color}`}
                                     className="animate animate_fade animate_btt animate_delay-5 lh-2rem text-white"
                                 >
                                     {t(
-                                        elm.description
+                                            elm.title
                                             .split(" ")
                                             .slice(0, 13)
                                             .join(" ")
