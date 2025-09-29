@@ -10,7 +10,7 @@ export function MenuProvider({ children }) {
   const [shippingServiceCharges, setshippingServiceCharges] = useState([]);
   const [homeSliders, setHomeSliders] = useState([]);
   const [homeMobileSliders, setHomeMobileSliders] = useState([]);
-  const [popUp, setPopUp] = useState([]);
+ const [popUp, setPopUp] = useState([]);  
   const [currency, setCurrency] = useState('ر.س');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

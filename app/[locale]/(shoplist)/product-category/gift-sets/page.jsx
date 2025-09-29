@@ -11,6 +11,7 @@ import Shop5 from "@/components/shoplist/Shop5";
 import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 
 import QuickView from "@/components/modals/QuickView";
+import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
 
 export const metadata = {
   title: "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -51,6 +52,8 @@ async function getCategorySubCategory(categoryName) {
         <main>
           <Shop5 />
           <Shop10 products={ data.products }/>
+          <CollapsibleDescription description={ data.description }/>
+
         </main>
 
         <section className=" d-none d-lg-block" style={{ height: "100%" }}>
