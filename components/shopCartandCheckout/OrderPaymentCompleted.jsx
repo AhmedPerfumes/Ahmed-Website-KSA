@@ -28,9 +28,9 @@ export default function OrderPaymentCompleted({ orderDetails }) {
             event: "purchase",
             ecommerce: {
               transaction_id: orderDetails.order_id, // unique order ID
-              affiliation: "Ahmed Al Maghribi Perfumes Online",
+              affiliation: "Ahmed Al Maghribi Perfumes KSA",
               value: parseFloat(orderDetails.total), // order total (after discounts, including shipping/tax)
-              currency: currency?.code || "AED",
+              currency: currency?.code || "SAR",
               items: orderDetails.products.map((item) => ({
                 item_id: item.product_id?.toString(), // or SKU if available
                 item_name: he.decode(item.product_name),
@@ -47,7 +47,7 @@ export default function OrderPaymentCompleted({ orderDetails }) {
               content_name: he.decode(item.product_name),
                 })),
                 value: parseFloat(orderDetails.total),
-                currency: currency?.code || "AED",
+                currency: currency?.code || "SAR",
               });
             }
   }
