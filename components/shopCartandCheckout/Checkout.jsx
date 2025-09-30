@@ -21,6 +21,8 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from "next-intl";
 import Pagination1 from "../common/Pagination1";
 // import FreeGiftFeature from '@/components/FreeGiftFeature';
+// import BogoFeature from "@/components/BogoFeature";
+// import { bogoProducts } from "@/components/BogoFeature";
 
 export default function Checkout() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -73,11 +75,106 @@ export default function Checkout() {
   const [isOTPButton, setIsOTPButton] = useState(true);
   const [isOTPVerified, setIsOTPVerified] = useState(false);
 
-  const [couponCode, setCouponCode] = useState("");
+  const [coupons, setCoupons] = useState([]);
+  const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState(null);
   const [couponSuccess, setCouponSuccess] = useState(null);
   const [couponData, setCouponData] = useState(null);
   const [finalPriceState, setFinalPriceState] = useState(null);
+
+    useEffect(() => {
+    try {
+      let customer_id = -1;
+      let firstName = "";
+      let lastName = "";
+      let email = "";
+      let mobile = "";
+      let area = "";
+      let building = "";
+      let province = "";
+
+      if (isLoggedIn) {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const user = JSON.parse(atob(userStr));
+          email = user.email || "";
+          mobile = user.phone || user.mobile || "";
+          customer_id = user.id || -1;
+
+          if (user.name) {
+            const [f, ...lArr] = user.name.split(" ");
+            firstName = f || "";
+            lastName = lArr.join(" ") || "";
+          }
+        } else {
+          console.warn("No user data found in localStorage");
+        }
+
+        const addrStr = localStorage.getItem("address");
+        if (addrStr) {
+          const addr = JSON.parse(atob(addrStr));
+          area = addr.city || "";
+          building = addr.address || "";
+          province = addr.state || "";
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          billingAddress: {
+            ...prev.billingAddress,
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            mobile,
+            area,
+            building,
+            province,
+          },
+          shippingAddress: {
+            ...prev.shippingAddress,
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            mobile,
+            area,
+            building,
+            province,
+          },
+        }));
+      }
+
+      setCouponLoading(true);
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}api/customerCouponDetails`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((json) => {
+          console.log("Coupon API response:", json);
+          setCoupons(json.coupons || []);
+          setCouponDataContext(json.coupons || []);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch coupons:", err);
+          setCoupons([]);
+          setCouponDataContext([]);
+        })
+        .finally(() => setCouponLoading(false));
+    } catch (err) {
+      console.error("Error in useEffect:", err);
+      setCoupons([]);
+      setCouponDataContext([]);
+      setCouponLoading(false);
+    }
+  }, [isLoggedIn]);
+
+  const [couponCode, setCouponCode] = useState("");
 
   const handleRadioChange = (event) => {
     setSelectedOption(event.target.value);

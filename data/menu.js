@@ -224,13 +224,23 @@ export const dashboardMenuItems = [
   {
     id: 1,
     href: "/account_dashboard",
-    title: "Dashboard",
+    title: "Account Overview",
   },
   {
     id: 2,
     href: "/account_orders",
-    title: "Orders",
+    title: "My Purchases",
   },
+  // {
+  //   id: 3,
+  //   href: "/account_orders_history",
+  //   title: "My Purchases",
+  // },
+  // {
+  //   id: 4,
+  //   href: "/account_edit",
+  //   title: "Account Details",
+  // },
   {
     id: 3,
     href: "/account_edit_address",
@@ -238,13 +248,13 @@ export const dashboardMenuItems = [
   },
   {
     id: 4,
-    href: "/account_edit",
-    title: "Account Details",
+    href: "/account_coupons",
+    title: "My Coupons",
   },
   {
     id: 5,
-    href: "/account_wishlist",
-    title: "Wishlist",
+    href: "/account_loyalty",
+    title: "Loyalty Points",
   },
   {
     id: 6,
