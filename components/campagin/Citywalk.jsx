@@ -26,7 +26,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/campaigns/95th-saudi-national-day.jpg"
+                        src="/assets/images/campaigns/Saudi_Eos.jpg"
                         alt="Father's Day Web"
                         width={1500}
                         height={550}
@@ -38,7 +38,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
-                        src="/assets/images/campaigns/95th-saudi-national-day-mobile.jpg"
+                        src="/assets/images/campaigns/Saudi_Mob.jpg"
                         alt="Father's Day Mobile"
                         width={1500}
                         height={550}
@@ -50,7 +50,7 @@ function CityWalk() {
 
         {/* <DiscountedProductsSlider title="Summer Vibes, Cooler Prices!" onlyDiscounted={true}/> */}
         {/* <DiscountedProductsSlider title="Celebrate 95 Years with 95 SAR Deals!" onlyDiscounted={true}/> */}
-        <DiscountGrid title="Celebrate 95 Years with 95 SAR Deals!" onlyDiscounted={true} />
+        <DiscountGrid title="Celebrate End of Season Deals!" onlyDiscounted={true} />
         </div>
         {/* <section className="d-flex section-3 justify-content-center">
   <div className="section-content text-center w-100">
