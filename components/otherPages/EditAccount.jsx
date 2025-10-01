@@ -40,11 +40,11 @@ export default function EditAccount() {
                   <input
                     type="text"
                     className="form-control"
-                    id="account_display_name"
-                    placeholder="Display Name"
+                    id="Mobile"
+                    placeholder="Mobile"
                     required
                   />
-                  <label htmlFor="account_display_name">Display Name</label>
+                  <label htmlFor="account_display_name">Mobile</label>
                 </div>
               </div>
               <div className="col-md-12">
