@@ -206,6 +206,87 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                 `}
             </Script>
 
+            <Script id="snapchat-pixel" strategy="afterInteractive">
+                {`
+                (function(e,t,n){
+                    if(e.snaptr) return;
+                    var a=e.snaptr=function(){
+                    a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)
+                    };
+                    a.queue=[];
+                    var s='script';
+                    var r=t.createElement(s);
+                    r.async=!0;
+                    r.src=n;
+                    var u=t.getElementsByTagName(s)[0];
+                    u.parentNode.insertBefore(r,u);
+                })(window,document,'https://sc-static.net/scevent.min.js');
+
+                snaptr('init', '849fbb5a-bd08-474b-81fc-dfc5dade871e');
+                snaptr('track', 'PAGE_VIEW');
+                `}
+            </Script>
+
+            <Script id="snapchat-listener" strategy="afterInteractive">
+                {`
+                (function(){
+                    const originalPush = window.dataLayer.push;
+                    window.dataLayer.push = function(){
+                    const args = Array.from(arguments);
+                    originalPush.apply(window.dataLayer, args);
+
+                    const eventObj = args[0];
+                    if(eventObj && eventObj.event){
+                        const ecommerce = eventObj.ecommerce || {};
+                        const items = ecommerce.items || [];
+
+                        switch(eventObj.event){
+                        case "view_item":
+                            window.snaptr && snaptr('track', 'VIEW_CONTENT', {
+                            price: ecommerce.value,
+                            currency: ecommerce.currency || "SAR",
+                            item_ids: items.map(i => i.item_id),
+                            item_category: "perfume"
+                            });
+                            break;
+
+                        case "add_to_cart":
+                            window.snaptr && snaptr('track', 'ADD_CART', {
+                            price: ecommerce.value,
+                            currency: ecommerce.currency || "SAR",
+                            item_ids: items.map(i => i.item_id),
+                            item_category: "perfume",
+                            number_items: items.length
+                            });
+                            break;
+
+                        case "begin_checkout":
+                            window.snaptr && snaptr('track', 'START_CHECKOUT', {
+                            price: ecommerce.value,
+                            currency: ecommerce.currency || "SAR",
+                            item_ids: items.map(i => i.item_id),
+                            item_category: "perfume",
+                            number_items: items.length
+                            });
+                            break;
+
+                        case "purchase":
+                            window.snaptr && snaptr('track', 'PURCHASE', {
+                            price: ecommerce.value,
+                            currency: ecommerce.currency || "SAR",
+                            transaction_id: ecommerce.transaction_id,
+                            item_ids: items.map(i => i.item_id),
+                            item_category: "perfume",
+                            number_items: items.length
+                            });
+                            break;
+                        }
+                    }
+                    }
+                })();
+                `}
+            </Script>
+
             <noscript>
                 <iframe
                     src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

@@ -15,43 +15,53 @@ export default function OrderCompleted() {
   const [showDate, setShowDate] = useState(false);
   const [orderData, setorderData] = useState(null);
   useEffect(() => {
-    setShowDate(true);
-    localStorage.setItem('cartList', []);
-    setCartProducts([]);
-    // if(localStorage.getItem('orderData').length > 0) {
-    //   setOrderDetails(JSON.parse(atob(localStorage.getItem('orderData'))));
-    //   // localStorage.setItem('orderData', '');
-    // }
-    // console.log('...', localStorage.getItem('orderData').length);
-    if (orderDetails && orderDetails.order_id) {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "purchase",
-        ecommerce: {
-          transaction_id: orderDetails.order_id, // unique order ID
-          affiliation: "Ahmed Al Maghribi Perfumes KSA",
-          value: parseFloat(orderDetails.total), // order total (after discounts, including shipping/tax)
-          currency: currency?.code || "SAR",
-          items: orderDetails.products.map((item) => ({
-            item_id: item.product_id?.toString(), // or SKU if available
-            item_name: he.decode(item.name),
-            price: parseFloat(item.price),
-            quantity: item.qty,
-          })),
-        },
-      }); 
-      // ---- TikTok Pixel ----
-      window.ttq?.track("Purchase", {
-        contents: orderDetails.products.map((item) => ({
-          content_id: item.product_id?.toString(),
-          content_type: "product",
-          content_name: he.decode(item.name),
-            })),
-            value: parseFloat(orderDetails.total),
-            currency: currency?.code || "SAR",
-          });
-        }
-  }, [orderDetails]);
+  setShowDate(true);
+  localStorage.setItem('cartList', []);
+  setCartProducts([]);
+
+  if (orderDetails && orderDetails.order_id) {
+    // ---- GA4 Purchase ----
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "purchase",
+      ecommerce: {
+        transaction_id: orderDetails.order_id,
+        affiliation: "Ahmed Al Maghribi Perfumes KSA",
+        value: parseFloat(orderDetails.total),
+        currency: currency?.code || "SAR",
+        items: orderDetails.products.map((item) => ({
+          item_id: item.product_id?.toString(),
+          item_name: he.decode(item.name),
+          price: parseFloat(item.price),
+          quantity: item.qty,
+        })),
+      },
+    });
+
+    // ---- TikTok Pixel ----
+    window.ttq?.track("Purchase", {
+      contents: orderDetails.products.map((item) => ({
+        content_id: item.product_id?.toString(),
+        content_type: "product",
+        content_name: he.decode(item.name),
+      })),
+      value: parseFloat(orderDetails.total),
+      currency: currency?.code || "SAR",
+    });
+
+    // ---- Snapchat Pixel ----
+    if (window.snaptr) {
+      window.snaptr('track', 'PURCHASE', {
+        transaction_id: orderDetails.order_id,
+        price: parseFloat(orderDetails.total),
+        currency: currency?.code || "SAR",
+        item_ids: orderDetails.products.map((item) => item.product_id?.toString()),
+        item_category: "perfume",
+        number_items: orderDetails.products.length,
+      });
+    }
+  }
+}, [orderDetails]);
 
   if (isMenuLoading) {
     return <div><Pagination1 /></div>;
