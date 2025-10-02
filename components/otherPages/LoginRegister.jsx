@@ -16,9 +16,9 @@ export default function LoginRegister() {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-    const [registerStep, setRegisterStep] = useState(1);
-    const [otp, setOtp] = useState("");
-    const [customerId, setCustomerId] = useState(null);
+    // const [registerStep, setRegisterStep] = useState(1);
+    // const [otp, setOtp] = useState("");
+    // const [customerId, setCustomerId] = useState(null);
 
     const [regName, setRegName] = useState("");
     const [regEmail, setRegEmail] = useState("");
@@ -98,10 +98,49 @@ export default function LoginRegister() {
                 setError(data.message);
                 setSuccess(null);
             } else {
-                setSuccess(data.message);
-                setError(null);
-                setCustomerId(data?.data?.id || null);
-                setRegisterStep(2); // move to OTP step
+                // setSuccess(data.message);
+                // setError(null);
+                // setCustomerId(data?.data?.id || null);
+                // setRegisterStep(2); // move to OTP step
+
+                // --- OTP BYPASS START ---
+                // Instead of moving to step 2, we now directly call the verifyOTP endpoint
+                // with a hardcoded OTP. This effectively bypasses the user-facing verification step.
+                // NOTE: This assumes your backend accepts a default OTP like "123456" for development/testing.
+                setSuccess("Registration successful, logging you in...");
+
+                const verifyResponse = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}api/verifyOTP`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            name: regName.trim(),
+                            email: regEmail.trim(),
+                            mobile: regMobile.trim(),
+                            password: regPassword.trim(),
+                            otp: "123456", // Hardcoded OTP for bypass
+                            flag: "signup",
+                        }),
+                    }
+                );
+                
+                const verifyData = await verifyResponse.json();
+
+                if (!verifyResponse.ok || !verifyData.message?.toLowerCase().includes("customer")) {
+                    throw new Error(verifyData.message || "Auto-verification failed. Your account may have been created. Please try to log in.");
+                }
+                
+                // If verification is successful, log the user in
+                setSuccess("Account created and verified successfully. Redirecting...");
+                localStorage.setItem("token", verifyData.access_token);
+                localStorage.setItem("user", btoa(JSON.stringify(verifyData.data)));
+                setTimeout(
+                    () =>
+                        (window.location.href = `/${locale}/account_dashboard`),
+                    1000
+                );
+                // --- OTP BYPASS END ---
             }
         } catch (error) {
             setError(error.message);
@@ -111,49 +150,49 @@ export default function LoginRegister() {
         }
     }
 
-    async function onVerifyOtp(event) {
-        event.preventDefault();
-        setIsLoading(true);
-        setError(null);
-        setSuccess(null);
+    // async function onVerifyOtp(event) {
+    //     event.preventDefault();
+    //     setIsLoading(true);
+    //     setError(null);
+    //     setSuccess(null);
 
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}api/verifyOTP`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        name: regName.trim(),
-                        email: regEmail.trim(),
-                        mobile: regMobile.trim(),
-                        password: regPassword.trim(),
-                        otp: otp.trim(),
-                        flag: "signup",
-                    }),
-                }
-            );
+    //     try {
+    //         const response = await fetch(
+    //             `${process.env.NEXT_PUBLIC_API_URL}api/verifyOTP`,
+    //             {
+    //                 method: "POST",
+    //                 headers: { "Content-Type": "application/json" },
+    //                 body: JSON.stringify({
+    //                     name: regName.trim(),
+    //                     email: regEmail.trim(),
+    //                     mobile: regMobile.trim(),
+    //                     password: regPassword.trim(),
+    //                     otp: otp.trim(),
+    //                     flag: "signup",
+    //                 }),
+    //             }
+    //         );
 
-            const data = await response.json();
-            if (!data.message?.toLowerCase().includes("customer")) {
-                setError(data.message || "Invalid OTP");
-                setSuccess(null);
-            } else {
-                setSuccess("Account verified successfully.");
-                localStorage.setItem("token", data.access_token);
-                localStorage.setItem("user", btoa(JSON.stringify(data.data)));
-                setTimeout(
-                    () =>
-                        (window.location.href = `/${locale}/account_dashboard`),
-                    1000
-                );
-            }
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    //         const data = await response.json();
+    //         if (!data.message?.toLowerCase().includes("customer")) {
+    //             setError(data.message || "Invalid OTP");
+    //             setSuccess(null);
+    //         } else {
+    //             setSuccess("Account verified successfully.");
+    //             localStorage.setItem("token", data.access_token);
+    //             localStorage.setItem("user", btoa(JSON.stringify(data.data)));
+    //             setTimeout(
+    //                 () =>
+    //                     (window.location.href = `/${locale}/account_dashboard`),
+    //                 1000
+    //             );
+    //         }
+    //     } catch (error) {
+    //         setError(error.message);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // }
 
     async function onLogin(event) {
         event.preventDefault();
@@ -306,7 +345,7 @@ export default function LoginRegister() {
                                 placeholder="********"
                                 required
                             />
-                            <label>Password (Default: 123456)</label>
+                            <label>Password* (Default: 123456)</label>
                         </div>
 
                         <button
@@ -366,7 +405,7 @@ export default function LoginRegister() {
                     )}
                     <div className="pb-3"></div>
 
-                    {registerStep === 1 && (
+                    {/* {registerStep === 1 && ( */}
                         <form
                             onSubmit={onRegister}
                             className="needs-validation"
@@ -444,9 +483,9 @@ export default function LoginRegister() {
                                 {isLoading ? "Sending OTP..." : "Register"}
                             </button>
                         </form>
-                    )}
+                    {/* )} */}
 
-                    {registerStep === 2 && (
+                    {/* {registerStep === 2 && (
                         <form onSubmit={onVerifyOtp}>
                             <div className="form-floating mb-3">
                                 <input
@@ -479,7 +518,7 @@ export default function LoginRegister() {
                                 </button>
                             </div>
                         </form>
-                    )}
+                    )} */}
                 </div>
             </div>
         </section>
