@@ -9,6 +9,7 @@ import Pagination1 from "../Pagination1";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
 import Link from "next/link";
+import zIndex from "@mui/material/styles/zIndex";
 
 function DiscountGrid({ title, onlyDiscounted = false }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -102,12 +103,9 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
   };
 
   // ✅ Filter discounted/in-stock products
-const filteredProducts = products
-  .filter((p) => p.product_qty > 0)
-  .filter(
-    (p) =>
-      p.sale_price !== null || (onlyDiscounted && p.discount && p.discount.value > 0)
-  );
+ const filteredProducts = products
+    .filter((p) => p.product_qty > 0)
+    .filter((p) => !onlyDiscounted || (p.discount && p.discount.value > 0));
 
   const totalPages = Math.ceil(filteredProducts.length / perPage);
   const currentProducts = filteredProducts.slice((page - 1) * perPage, page * perPage);
