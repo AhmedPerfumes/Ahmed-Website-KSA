@@ -40,7 +40,7 @@ export default function OrderPaymentCompleted({ orderDetails }) {
             },
           }); 
           // ---- TikTok Pixel ----
-          window.ttq?.track("CompletePayment", {
+          window.ttq?.track("Purchase", {
             contents: orderDetails.products.map((item) => ({
               content_id: item.product_id?.toString(),
               content_type: "product",

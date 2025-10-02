@@ -11,7 +11,7 @@ import FeedbackForm from "../common/Feedback";
 export default function OrderCompleted() {
   const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext } = useContextElement();
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
-  // console.log('...', freeShippingFlag);
+  
   const [showDate, setShowDate] = useState(false);
   const [orderData, setorderData] = useState(null);
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function OrderCompleted() {
         },
       }); 
       // ---- TikTok Pixel ----
-      window.ttq?.track("CompletePayment", {
+      window.ttq?.track("Purchase", {
         contents: orderDetails.products.map((item) => ({
           content_id: item.product_id?.toString(),
           content_type: "product",
