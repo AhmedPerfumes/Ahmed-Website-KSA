@@ -13,6 +13,9 @@ import { useContextElement } from "@/context/Context";
 import he from 'he';
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from '@/context/MenuContext';
+import Base from "./New/base";
+import ProductInfoTabs from "./New/ProductInfoTabs/ProductInfoTabs";
+import ItemFamilySlider from "./New/ItemFamilySlider";
 
 export default function SingleProduct11({ category, subcategory, product }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -147,7 +150,10 @@ export default function SingleProduct11({ category, subcategory, product }) {
 
   return (
     <>
-      {Object.keys(product).length > 0 ? <><section className="product-single container product-single__type-9">
+      {Object.keys(product).length > 0 ? 
+      <>
+      
+      {/* <section className="product-single container product-single__type-9">
         <div className="row">
           <div className="col-lg-7">
             <Slider4 product={ product }/>
@@ -157,7 +163,6 @@ export default function SingleProduct11({ category, subcategory, product }) {
               <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
                 <BreadCumb category={ category } subcategory={ subcategory }/>
               </div>
-              {/* <!-- /.breadcrumb --> */}
             </div>
             <h1 className="product-single__name">{product?.product_name && t(he.decode(product?.product_name))}</h1>
             <div className="product-single__price">
@@ -208,7 +213,6 @@ export default function SingleProduct11({ category, subcategory, product }) {
                     +
                   </div>
                 </div>
-                {/* <!-- .qty-control --> */}
                 <button
                   type="submit"
                   className="btn btn-primary btn-addtocart js-open-aside"
@@ -231,10 +235,6 @@ export default function SingleProduct11({ category, subcategory, product }) {
               <ShareComponent title={product.product_name} />
             </div>
             <div className="product-single__meta-info">
-              {/* <div className="meta-item">
-                <label>SKU:</label>
-                <span> {product.sku && product.sku}</span>
-              </div> */}
               <div className="meta-item">
                 <label>{t("Estimated delivery:")}</label>
                 <span> {t("3 to 5 days")}</span>
@@ -263,7 +263,15 @@ export default function SingleProduct11({ category, subcategory, product }) {
             <AdditionalInfo product_name={ product.product_name } video={ product.video && JSON.parse(product.video)[0][0].value } title={ product.video[0][1] && JSON.parse(product.video)[0][1].value }/>
           </div>
         </div>
-      </section></> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>}
+      </section> */}
+      <div  style={{ backgroundColor: "#FAF9F7" }} >
+        <Base product={{...product, category, subcategory}} />
+      </div>
+      <div style={{ backgroundColor: "#121212" }}>
+        <ProductInfoTabs product={product} category={category} subcategory={subcategory} />
+      </div>
+      <ItemFamilySlider product={product} itemFamilyProds={product.item_family} />
+      </> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>}
     </>
   );
 }
