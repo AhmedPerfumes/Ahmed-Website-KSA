@@ -129,7 +129,7 @@ export default function MobileFooter2() {
         <div className="logo d-flex justify-content-center">
           <a href="/">
           <Image
-                  src="/assets/images/about/ahmed-logo.png"
+                  src="/assets/images/about/AhmedLogo.png"
                   width={100}
                   height={100}
                   alt="Ahmed"
