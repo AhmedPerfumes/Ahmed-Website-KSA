@@ -21,27 +21,27 @@ function CityWalk() {
         <>
             {/* Hero Section */}
             <div>
-            <div className="container-fluid p-0 pt-2">
+            <div className="container p-0 pt-2">
                 <Link href={`/${locale}/shop`}>
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/campaigns/Saudi_Eos.jpg"
-                        alt="Father's Day Web"
+                        src="/assets/images/campaigns/desktop-sale.jpg"
+                        alt="desktop-sale"
                         width={1500}
-                        height={550}
+                        height={50}
                     />
                 </Link>
             </div>
-            <div className="container-fluid p-0 pt-2">
+            <div className="container p-0 pt-5">
                 <Link href={`/${locale}/shop`}>
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
-                        src="/assets/images/campaigns/Saudi_Mob.jpg"
-                        alt="Father's Day Mobile"
+                        src="/assets/images/campaigns/desktop-sale.jpg"
+                        alt="desktop-sale"
                         width={1500}
-                        height={550}
+                        height={50}
                     />
                 </Link>
             </div>
@@ -50,7 +50,7 @@ function CityWalk() {
 
         {/* <DiscountedProductsSlider title="Summer Vibes, Cooler Prices!" onlyDiscounted={true}/> */}
         {/* <DiscountedProductsSlider title="Celebrate 95 Years with 95 SAR Deals!" onlyDiscounted={true}/> */}
-        <DiscountGrid title="Celebrate End of Season Deals!" onlyDiscounted={true} />
+        <DiscountGrid title="Celebrate Silver Jubilee Sale!" onlyDiscounted={true} />
         </div>
         {/* <section className="d-flex section-3 justify-content-center">
   <div className="section-content text-center w-100">
