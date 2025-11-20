@@ -26,7 +26,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/campaigns/desktop-sale.jpg"
+                        src="/assets/images/campaigns/desktop-sale-new.jpg"
                         alt="desktop-sale"
                         width={1500}
                         height={50}
@@ -38,7 +38,7 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
-                        src="/assets/images/campaigns/desktop-sale.jpg"
+                        src="/assets/images/campaigns/desktop-sale-new.jpg"
                         alt="desktop-sale"
                         width={1500}
                         height={50}
