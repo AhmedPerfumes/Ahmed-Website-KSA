@@ -19,15 +19,15 @@ function CityWalk() {
     const t = useTranslations();
     return (
         <>
-        {/* Hero Section */}
-        <div>
+            {/* Hero Section */}
+            <div>
             <div className="container p-0 pt-2">
                 <Link href={`/${locale}/shop`}>
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/campaigns/Silver-jubilee-sale-desktop.jpg"
-                        alt="Silver Jubilee Sale"
+                        src="/assets/images/campaigns/Silver-Jubilee.jpg"
+                        alt="Silver Jubilee banner"
                         width={1500}
                         height={50}
                     />
@@ -38,8 +38,8 @@ function CityWalk() {
                     <Image
                         loading="lazy"
                         className="w-100 h-auto d-lg-none"
-                        src="/assets/images/campaigns/Silver-jubilee-sale-desktop.jpg"
-                        alt="Silver Jubilee Sale"
+                        src="/assets/images/campaigns/Silver-Jubilee.jpg"
+                        alt="Silver Jubilee banner"
                         width={1500}
                         height={50}
                     />

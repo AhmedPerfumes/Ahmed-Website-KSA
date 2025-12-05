@@ -502,9 +502,9 @@ export default function Header14() {
                                 <Link href="/">
                                     <Image
                                         loading="lazy"
-                                        src="/assets/images/about/ahmed-logo.png"
-                                        width="100"
-                                        height="100"
+                                        src="/assets/images/about/AhmedLogo.png"
+                                        width="110"
+                                        height="110"
                                         alt="Ahmed Al Maghribi"
                                     />
                                 </Link>

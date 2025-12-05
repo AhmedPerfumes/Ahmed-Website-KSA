@@ -77,6 +77,8 @@ export default function Checkout() {
 
   const [coupons, setCoupons] = useState([]);
   const [couponLoading, setCouponLoading] = useState(false);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
   const [couponError, setCouponError] = useState(null);
   const [couponSuccess, setCouponSuccess] = useState(null);
   const [couponData, setCouponData] = useState(null);
@@ -143,36 +145,114 @@ export default function Checkout() {
         }));
       }
 
-      setCouponLoading(true);
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}api/customerCouponDetails`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id }),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then((json) => {
-          console.log("Coupon API response:", json);
-          setCoupons(json.coupons || []);
-          setCouponDataContext(json.coupons || []);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch coupons:", err);
-          setCoupons([]);
-          setCouponDataContext([]);
-        })
-        .finally(() => setCouponLoading(false));
-    } catch (err) {
+    //   setCouponLoading(true);
+    //   fetch(`${process.env.NEXT_PUBLIC_API_URL}api/customerCouponDetails`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ customer_id }),
+    //   })
+    //     .then((res) => {
+    //       if (!res.ok) {
+    //         throw new Error(`HTTP error! Status: ${res.status}`);
+    //       }
+    //       return res.json();
+    //     })
+    //     .then((json) => {
+    //       console.log("Coupon API response:", json);
+    //       setCoupons(json.coupons || []);
+    //       setCouponDataContext(json.coupons || []);
+    //     })
+    //     .catch((err) => {
+    //       console.error("Failed to fetch coupons:", err);
+    //       setCoupons([]);
+    //       setCouponDataContext([]);
+    //     })
+    //     .finally(() => setCouponLoading(false));
+    }
+    //  catch (err) {
+    //   console.error("Error in useEffect:", err);
+    //   setCoupons([]);
+    //   setCouponDataContext([]);
+    //   setCouponLoading(false);
+    // }
+    catch (err) {
       console.error("Error in useEffect:", err);
-      setCoupons([]);
-      setCouponDataContext([]);
-      setCouponLoading(false);
     }
   }, [isLoggedIn]);
+
+  // NEW: useEffect to fetch coupons from SmartView API
+  useEffect(() => {
+    // Helper function to map new API response
+    const transformCouponData = (apiCoupons) => {
+      if (!Array.isArray(apiCoupons)) {
+        return [];
+      }
+      return apiCoupons
+        .filter(coupon => coupon.active === true) // Filter for active coupons
+        .map((coupon) => ({
+          id: coupon.couponCode,
+          code: coupon.couponCode,
+          title: coupon.promotionName,
+          description: `Get ${coupon.value}${coupon.baseOn === "Percent" ? "%" : " SAR"} off`,
+          value: coupon.value,
+          coupon_type: coupon.baseOn ? coupon.baseOn.toLowerCase() : 'percent',
+          type: "customer",
+          end_date: coupon.validTo,
+          start_date: coupon.registrationDate,
+          couponRegistrationId: coupon.couponRegistrationId,
+          couponId: coupon.couponId,
+          salesType: coupon.salesType,
+          company: coupon.company,
+          whsCode: coupon.whsCode
+        }));
+    };
+
+    const fetchCoupons = async () => {
+      const { email, mobile } = formData.billingAddress;
+
+      // Only fetch if email and a valid mobile number are available
+      if (!email || !/^\d{10}$/.test(mobile)) {
+        setCoupons([]);
+        return;
+      }
+
+      setCouponLoading(true);
+      try {
+        const apiUrl = `${process.env.NEXT_PUBLIC_SMARTVIEW_API_URL}Coupon/ActiveCoupons`;
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            salesType: "EComm",
+            company: "KSA", // <-- The required change for KSA
+            mobileNo: mobile,
+            email: email,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API Error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const transformedData = transformCouponData(data.data);
+        
+        setCoupons(transformedData);
+        // setCouponDataContext(transformedData); // This context is used by FreeGiftFeature
+
+      } catch (err) {
+        console.error("Failed to fetch coupons:", err);
+        setCoupons([]);
+      } finally {
+        setCouponLoading(false);
+      }
+    };
+
+    fetchCoupons();
+    // This effect now runs when user details change in the form
+  }, [formData.billingAddress.email, formData.billingAddress.mobile, setCouponDataContext]);
 
   const [couponCode, setCouponCode] = useState("");
 
@@ -311,7 +391,8 @@ export default function Checkout() {
       finalPrice,
       customer_id: userJson ? userJson.id : null,
       locale,
-      couponCode
+      couponCode,
+      couponData
     }
  
     try {
@@ -326,8 +407,8 @@ export default function Checkout() {
  
       if (!response.ok) {
         setTimeout(() => {
-          localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
-          setCartProducts([]); // update the cartProducts state to an empty array
+          // localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
+          // setCartProducts([]); // update the cartProducts state to an empty array
         }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
         throw new Error('Oops!!! Your Session has been expired. Please try again.');
       }
@@ -613,82 +694,161 @@ export default function Checkout() {
     setCouponCode(e.target.value);
     setCouponSuccess(null);
     setCouponData(null);
-    setCouponDataContext(null);
+    setCouponDataContext(null); // Clear coupon from context
+
+    // Clean coupon data from cart products
+    const cleanedCart = cartProducts.map((item) => {
+      const { is_coupon, value, ...rest } = item;
+      return rest;
+    });
+    setCartProducts(cleanedCart);
   };
 
   const removeCoupon = (e) => {
-    setCouponCode('');
+    setCouponCode("");
     setCouponSuccess(null);
     setCouponData(null);
-    setCouponDataContext(null);
+    setCouponDataContext(null); // Clear coupon from context
+
+    // Clean coupon data from cart products
+    const cleanedCart = cartProducts.map((item) => {
+      const { is_coupon, value, ...rest } = item;
+      return rest;
+    });
+    setCartProducts(cleanedCart);
   };
 
-  const applyCoupon = async (e) => {
+ const applyCoupon = async (e) => {
     e.preventDefault();
-    if(couponCode == '') {
-      setCouponError('Coupon Code is Required');
-      setCouponSuccess(null);
-      setCouponDataContext(null);
+
+    const user = isLoggedIn ? JSON.parse(atob(localStorage.getItem("user"))) : null;
+
+    if (!couponCode.trim()) {
+      setCouponError("Coupon Code is Required");
       return;
     }
 
-    let product_coupon = false;
-    cartProducts.map((item) => {
-      // console.log(item.coupon[couponCode.toLowerCase()]?.code, couponCode.toLowerCase());
-      if(item.coupon[couponCode.toLowerCase()]?.code == couponCode.toLowerCase() && !item.sale_price && !item.discount) {
-        product_coupon = true;
-      }
+    // Note: The KSA file had OTP logic commented out. This new logic assumes
+    // you need to verify OTP if not logged in.
+      // if (!isLoggedIn ) {
+      //   setCouponError("Please verify your mobile number first.");
+      //   return;
+      // }
+
+    const code = couponCode.toLowerCase();
+
+    // Find all items eligible for a coupon
+    const eligibleItems = cartProducts.filter((item) => {
+      // Assuming BOGO/promotions are not yet in KSA, but adding this for future-proofing
+      const isBogoProduct = false; // promotionsContext.some(...)
+      return !item.discount && !isBogoProduct && !item.is_gift;
     });
 
-    if(!product_coupon) {
-      setCouponError('Invalid Coupon Code for this products');
-      setCouponSuccess(null);
-      setCouponDataContext(null);
-      setCouponCode('');
+    if (eligibleItems.length === 0) {
+      setCouponError("This coupon is not applicable to the items in your cart.");
+      setCouponCode("");
       return;
     }
-    // else if(!isOTPVerified) {
-    //   setCouponError('Verify Mobile Number First');
-    //   setCouponSuccess(null);
-    //   return;
-    // }
-    try {
-      // Call your backend API or validation logic for the coupon code
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/validateCoupon`, {
+
+    // Find the coupon from the state (fetched from the new API)
+    const validCoupon = coupons.find((c) => c.code.toLowerCase() === code);
+
+    let payload = {
+      company: "KSA", // <-- The required change for KSA
+      salesType: "EComm",
+      couponRegistrationId: validCoupon ? validCoupon.couponRegistrationId : 0,
+      couponCode: validCoupon ? "" : couponCode.trim(),
+      mobileNo: user?.phone || formData.billingAddress.mobile,
+      email: user?.email || formData.billingAddress.email,
+    };
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SMARTVIEW_API_URL}Coupon/ActiveCoupons`,
+      {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ couponCode, mobile_number: formData.billingAddress.mobile }),
-      });
-
-      const data = await res.json();
-
-      if(data.message && data.message.split(' ')[0] == 'Details') {
-        setCouponError(null);
-        setCouponData(data.coupon);
-        setCouponDataContext(data.coupon);
-        setCouponSuccess(`Applied Coupon: ${data.coupon.code} - Discount: ${data.coupon.value}%`);
-      } else {
-        setCouponSuccess(null);
-        setCouponData(null);
-        setCouponDataContext(null);
-        console.log(data);
-        if(data['couponCode']) {
-          setCouponError(data['couponCode']);
-        } else if(data['mobile_number']) {
-          setCouponError(data['mobile_number']);
-        } else {
-          setCouponError(data.message);
-          setCouponCode('');
-        }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       }
-    } catch (err) {
-      setCouponSuccess(null);
-      setCouponData(null);
-      setCouponDataContext(null);
-      setCouponError("An error occurred. Please try again.");
+    );
+
+    if (!res.ok) {
+      setCouponError("Invalid or expired coupon code.");
+      setCouponCode("");
+      return;
     }
+
+    const data = await res.json();
+    let apiCoupon = data.data && data.data[0];
+
+    // Normalize API coupon if it wasn't in our pre-fetched list
+    if (apiCoupon && !validCoupon) {
+      apiCoupon = {
+        id: apiCoupon.couponCode,
+        code: apiCoupon.couponCode,
+        title: apiCoupon.promotionName,
+        description: apiCoupon.promotionName,
+        value: apiCoupon.value,
+        coupon_type: apiCoupon.baseOn === "P" ? "percent" : "amount",
+        type: "customer",
+        end_date: apiCoupon.validTo,
+        start_date: apiCoupon.registrationDate,
+        couponRegistrationId: apiCoupon.couponRegistrationId,
+        salesType: apiCoupon.salesType,
+        company: apiCoupon.company,
+        whsCode: apiCoupon.whsCode,
+      };
+    }
+
+    const couponToApply = validCoupon || apiCoupon;
+
+    if (!couponToApply) {
+      setCouponError("Invalid or expired coupon code.");
+      setCouponCode("");
+      return;
+    }
+
+    // Apply coupon to eligible items by updating cart state
+    const updatedCartProducts = cartProducts.map((item) => {
+      const isBogoProduct = false; // promotionsContext.some(...)
+      const isEligible = !item.discount && !isBogoProduct && !item.is_gift;
+      return {
+        ...item,
+        ...(isEligible
+          ? {
+              is_coupon: true,
+              value: couponToApply.value,
+              coupon_type: couponToApply.coupon_type,
+            }
+          : {}),
+      };
+    });
+
+    setCartProducts(updatedCartProducts);
+    setCouponError(null);
+    setCouponData(couponToApply);
+    setCouponDataContext(couponToApply); // Update context
+    setCouponSuccess(
+      `Applied Coupon: ${couponToApply.code} - ${couponToApply.title}`
+    );
+  };
+  
+  // Add these new helper functions for the modal
+  const isExpired = (end_date) => {
+    return new Date(end_date) < new Date();
+  };
+
+  const handleSelectCoupon = async (code, id) => {
+    setCouponData(null);
+    setCouponCode(code);
+    setCopiedId(id);
+    setShowCouponModal(false);
+    setTimeout(() => setCopiedId(null), 1400); // For "Applied!" message
+  };
+
+  const handleCopy = (code, id) => {
+    navigator.clipboard.writeText(code);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1400); // For "Copied!" message
   };
 
   if (isMenuLoading) {
@@ -705,6 +865,7 @@ export default function Checkout() {
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+    let itemPrice = elm.price;
     if(elm?.discount) {
       console.log('if');
       if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
@@ -724,27 +885,28 @@ export default function Checkout() {
           {(elm.sale_price * elm.quantity).toFixed(2)}
       </span>
   </td>;
-    } else if(elm?.coupon && !Array.isArray(elm.coupon) && couponData != null && couponCode != null) {
-      console.log('else if', elm);
-      // elm.map((item) => {
-        // return elm.coupon.map((item, ind) => {
-        //   // if() {
-        //     if(new Date(current_date_time) >= new Date(item.start_date) && new Date(current_date_time) <= new Date(item.end_date) && item.code == couponData.code) {
-        //       console.log('iffff', elm);
-        //       return <td key={elm.ind}><span className="money price price-old">{elm?.price}{ currency.symbol }</span><span className="money price price-sale">{((elm.price - (elm.price / 100 * item.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span></td>; // <td>{((elm.price - (elm.price / 100 * i.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-        //     }
-        //     else {
-        //       console.log('elseeee', elm);
-        //       return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-        //     }
-        //   // }
-        // });
-      // });
-        if(new Date(current_date_time) >= new Date(elm.coupon[couponCode.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponCode.toLowerCase()]?.end_date) && elm.coupon[couponCode.toLowerCase()].code == couponData.code.toLowerCase()) {
-          return <td><span className="money price price-old">{ currency.symbol }{(elm.price * elm.quantity).toFixed(2)}</span><span className="money price price-sale">{ currency.symbol }{((elm.price - (elm.price / 100 * elm.coupon[couponCode.toLowerCase()]?.value)) * elm.quantity).toFixed(2)}</span></td>;
-        } else {
-          return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-        }
+    } else if (
+      couponData &&
+      couponData.type === "customer" &&
+      elm.is_coupon // Check the flag we set in applyCoupon
+    ) {
+      if (couponData.coupon_type == "percent") {
+        itemPrice = elm.price - (elm.price / 100) * couponData.value;
+      } else if (couponData.coupon_type == "amount") {
+        itemPrice = elm.price - couponData.value;
+      }
+      return (
+        <td>
+          <span className="money price price-sale">
+            {currency.symbol}
+            {(itemPrice * elm.quantity).toFixed(2)}
+          </span>
+          <span className="money price price-old">
+            {currency.symbol}
+            {(elm.price * elm.quantity).toFixed(2)}
+          </span>
+        </td>
+      );
     } else {
       console.log('else');
       return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
@@ -1130,14 +1292,42 @@ export default function Checkout() {
                             {couponSuccess}
                         </div>
                     )}
-                    <input
+
+                   <div style={{ position: "relative" }}>
+                      <input
                         className="form-control mb-1"
                         type="text"
                         name="coupon_code"
                         placeholder="Coupon Code"
                         value={couponCode}
                         onChange={handleCouponChange}
-                    />
+                        style={{ paddingRight: "100px" }}
+                      />
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          right: "12px",
+                          transform: "translateY(-50%)",
+                          fontSize: 14,
+                          color: "#a67b30",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                        onClick={() => setShowCouponModal(true)}
+                      >
+                        View Coupons
+                      </span>
+                    </div>
+ 
+                    {/* <input
+                        className="form-control mb-1"
+                        type="text"
+                        name="coupon_code"
+                        placeholder="Coupon Code"
+                        value={couponCode}
+                        onChange={handleCouponChange}
+                    /> */}
                     {!couponData ? (
                         <input
                             className=""
@@ -1155,8 +1345,278 @@ export default function Checkout() {
                     )}
                   {/* </form> */}
                   <br/><br/>
+                   {showCouponModal && (
+                      <div
+                        className="coupon-modal-overlay"
+                        onClick={() => setShowCouponModal(false)}
+                      >
+                        <div
+                          className="coupon-modal"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="coupon-header">
+                            <h3>Available Offers</h3>
+                            <button
+                              className="close-btn"
+                              onClick={() => setShowCouponModal(false)}
+                            >
+                              &times;
+                            </button>
+                          </div>
+                          <div className="coupon-subheader border-bottom">
+                            <h3>Coupon Offers</h3>
+                          </div>
+
+                          {couponLoading ? (
+                            <div className="coupon-loading">Loading…</div>
+                          ) : coupons.length === 0 ? (
+                            <div className="coupon-empty">
+                              You have no coupons yet.
+                            </div>
+                          ) : (
+                            <div className="coupon-body">
+                              {coupons.map((c, idx) => {
+                                const expired = isExpired(c.end_date);
+                                return (
+                                  <div
+                                    key={c.id || `coupon-${idx}`}
+                                    className={`coupon-ticket ${
+                                      expired ? "expired" : ""
+                                    }`}
+                                  >
+                                    <div className="coupon-left">
+                                      <div className="coupon-title">
+                                        {c.title || "Special Offer"}
+                                      </div>
+                                      <div className="coupon-desc">
+                                        <h5>
+                                          {c.description ||
+                                            (c.coupon_type === "percent"
+                                              ? `${c.value}% OFF`
+                                              : `AED${c.value} OFF`)}
+                                        </h5>
+                                      </div>
+                                      <div className="coupon-validity">
+                                        {expired
+                                          ? `Expired: ${c.end_date?.slice(
+                                              0,
+                                              10
+                                            )}`
+                                          : `Valid until: ${c.end_date?.slice(
+                                              0,
+                                              10
+                                            )}`}
+                                      </div>
+                                    </div>
+
+                                    <div className="coupon-right">
+                                      <div
+                                        className={`coupon-code-box ${
+                                          copiedId ===
+                                          (c.id || `coupon-${idx}`)
+                                            ? "copied"
+                                            : ""
+                                        }`}
+                                        onClick={() =>
+                                          !expired &&
+                                          handleCopy(
+                                            c.code,
+                                            c.id || `coupon-${idx}`
+                                          )
+                                        }
+                                      >
+                                        <span className="coupon-code">
+                                          {c.code}
+                                        </span>
+                                      </div>
+
+                                      {!expired && (
+                                        <button
+                                          className={`apply-btn ${
+                                            copiedId ===
+                                            (c.id || `coupon-${idx}`)
+                                              ? "applied"
+                                              : ""
+                                          }`}
+                                          onClick={() =>
+                                            handleSelectCoupon(
+                                              c.code,
+                                              c.id || `coupon-${idx}`
+                                            )
+                                          }
+                                        >
+                                          {copiedId ===
+                                          (c.id || `coupon-${idx}`)
+                                            ? "Applied!"
+                                            : "Click to Apply"}
+                                        </button>
+                                      )}
+
+                                      {expired && (
+                                        <div className="coupon-expired-badge">
+                                          Expired
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   {/* <button className="btn btn-light">UPDATE CART</button> */}
                 </div>
+                 <style jsx>{`
+                    .coupon-modal-overlay {
+                      position: fixed;
+                      inset: 0;
+                      background: rgba(0, 0, 0, 0.5);
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      z-index: 999;
+                    }
+
+                    .coupon-modal {
+                      background: #fff;
+                      border-radius: 12px;
+                      width: 500px;
+                      max-width: 90%;
+                      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                      overflow: hidden;
+                      font-family: "Inter", sans-serif;
+                    }
+
+                    .coupon-header {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      padding: 14px 18px;
+                      border-bottom: 1px solid #f0f0f0;
+                    }
+                    .coupon-header h3 {
+                      margin: 0;
+                      font-size: 20px;
+                      font-weight: 600;
+                      color: #222;
+                    }
+                    .coupon-subheader {
+                      padding: 10px 18px;
+                      border-bottom: 1px solid #f0f0f0;
+                    }
+                    .coupon-subheader h3 {
+                      margin: 0;
+                      font-size: 16px;
+                      font-weight: 600;
+                      color: #a67b30;
+                      background: #fffaf2ff;
+                    }
+                    .close-btn {
+                      background: none;
+                      border: none;
+                      font-size: 20px;
+                      color: #666;
+                      cursor: pointer;
+                    }
+
+                    .coupon-body {
+                      display: flex;
+                      flex-direction: column;
+                      gap: 12px;
+                      padding: 16px;
+                    }
+
+                    .coupon-ticket {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      border: 1px solid #e5e5e5;
+                      border-radius: 12px;
+                      background: #fff;
+                      padding: 14px 16px;
+                      position: relative;
+                      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+                      overflow: hidden;
+                    }
+
+                    .coupon-ticket::before,
+                    .coupon-ticket::after {
+                      content: "";
+                      position: absolute;
+                      top: 50%;
+                      width: 20px;
+                      height: 20px;
+                      background: #f5f5f5;
+                      border: 1.5px solid #dbdbdb;
+                      border-radius: 50%;
+                      transform: translateY(-50%);
+                      z-index: 2;
+                    }
+                    .coupon-ticket::before {
+                      left: -10px;
+                    }
+                    .coupon-ticket::after {
+                      right: -10px;
+                    }
+
+                    .coupon-left {
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+                    }
+                    .coupon-title {
+                      font-size: 14px;
+                      font-weight: 600;
+                      color: #222;
+                    }
+                    .coupon-desc {
+                      font-size: 12px;
+                      color: #555;
+                    }
+
+                    .coupon-right {
+                      display: flex;
+                      flex-direction: column;
+                      align-items: flex-end;
+                      gap: 6px;
+                    }
+                    .coupon-code {
+                      background: #f0fdf4;
+                      color: #198754;
+                      font-size: 13px;
+                      font-weight: 600;
+                      padding: 4px 10px;
+                      border-radius: 6px;
+                    }
+
+                    .apply-btn {
+                      background: none;
+                      border: none;
+                      color: #a67b30;
+                      font-size: 12px;
+                      font-weight: 600;
+                      cursor: pointer;
+                      padding: 0;
+                      text-transform: uppercase;
+                    }
+                    .apply-btn:hover {
+                      text-decoration: underline;
+                    }
+
+                    .coupon-ticket.expired {
+                      opacity: 0.6;
+                    }
+
+                    .coupon-loading,
+                    .coupon-empty {
+                      text-align: center;
+                      padding: 30px;
+                      color: #777;
+                      font-size: 13px;
+                    }
+                  `}</style>
                 <div className="checkout__payment-methods">
                   <div className="form-check">
                     <input

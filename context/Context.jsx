@@ -16,31 +16,80 @@ export default function Context({ children }) {
   const [orderDetails, setOrderDetails] = useState({});
   const [ couponDataContext, setCouponDataContext] = useState(null);
 
-  useEffect(() => {
-    const currentUTC = new Date(); // Current UTC time
-    const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
-    const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-    const subtotal = cartProducts.reduce((accumulator, product) => {
-      if(product?.discount) {
-        if(new Date(current_date_time) >= new Date(product.discount.start_date) && new Date(current_date_time) <= new Date(product.discount.end_date)) {
-          const discount_price = (product.price - (product.price / 100 * product.discount.value)).toFixed(2);
-          return accumulator + product.quantity * discount_price;
-        }
-      } else if(product?.sale_price) {
-        const sale_price = (product.sale_price).toFixed(2);
-        return accumulator + product.quantity * sale_price;
-      } else if(product?.coupon && !Array.isArray(product.coupon) && couponDataContext != null) {
-        if(new Date(current_date_time) >= new Date(product.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(product.coupon[couponDataContext?.code.toLowerCase()]?.end_date) && product.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
-          const coupon_price = (product.price - (product.price / 100 * product.coupon[couponDataContext?.code.toLowerCase()]?.value)).toFixed(2);
-          return accumulator + product.quantity * coupon_price;
-        }
-      }
-      return accumulator + product.quantity * product.price;
-    }, 0);
-    setTotalPrice(subtotal);
-    setFreeShippingFlag((subtotal).toFixed(2) >= 300 ? true : false);
-  }, [cartProducts, couponDataContext]);
+  // useEffect(() => {
+  //   const currentUTC = new Date(); // Current UTC time
+  //   const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
+  //   const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+  //   const subtotal = cartProducts.reduce((accumulator, product) => {
+  //     if(product?.discount) {
+  //       if(new Date(current_date_time) >= new Date(product.discount.start_date) && new Date(current_date_time) <= new Date(product.discount.end_date)) {
+  //         const discount_price = (product.price - (product.price / 100 * product.discount.value)).toFixed(2);
+  //         return accumulator + product.quantity * discount_price;
+  //       }
+  //     } else if(product?.sale_price) {
+  //       const sale_price = (product.sale_price).toFixed(2);
+  //       return accumulator + product.quantity * sale_price;
+  //     } else if(product?.coupon && !Array.isArray(product.coupon) && couponDataContext != null) {
+  //       if(new Date(current_date_time) >= new Date(product.coupon[couponDataContext?.code?.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(product.coupon[couponDataContext?.code?.toLowerCase()]?.end_date) && product.coupon[couponDataContext?.code?.toLowerCase()]?.code == couponDataContext?.code?.toLowerCase()) {
+  //         const coupon_price = (product.price - (product.price / 100 * product.coupon[couponDataContext?.code?.toLowerCase()]?.value)).toFixed(2);
+  //         return accumulator + product.quantity * coupon_price;
+  //       }
+  //     }
+  //     return accumulator + product.quantity * product.price;
+  //   }, 0);
+  //   setTotalPrice(subtotal);
+  //   setFreeShippingFlag((subtotal).toFixed(2) >= 300 ? true : false);
+  // }, [cartProducts, couponDataContext]);
 
+  useEffect(() => {
+  const currentUTC = new Date();
+  const currentGST = new Date(currentUTC.getTime() + 4 * 60 * 60 * 1000);
+  const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+
+  const subtotal = cartProducts.reduce((accumulator, product) => {
+    // Ensure all prices are numbers, not strings
+    let finalPrice = parseFloat(product.price);
+
+    if (product.is_gift) {
+      return accumulator; // Free gifts add 0 to the total
+    }
+
+    // 1. Check for active discounts
+    // (This matches your KSA file's discount logic, which only handles percent)
+    if (product?.discount) {
+      if (
+        new Date(current_date_time) >= new Date(product.discount.start_date) &&
+        new Date(current_date_time) <= new Date(product.discount.end_date)
+      ) {
+        finalPrice = product.price - (product.price / 100 * product.discount.value);
+      }
+    }
+    
+    // 2. Check for sale price (if no discount)
+    else if (product?.sale_price) {
+      finalPrice = parseFloat(product.sale_price);
+    } 
+    
+    // 3. Check for applied coupon (if no discount and no sale price)
+    // This uses the NEW logic
+    else if (product.is_coupon && couponDataContext != null) {
+      if (couponDataContext.coupon_type === 'percent') {
+        finalPrice = product.price - (product.price / 100 * couponDataContext.value);
+      } else if (couponDataContext.coupon_type === 'amount') {
+        // Assumes value is the total discount, not per-unit, so we divide by quantity
+        // If this is wrong, use: finalPrice = product.price - couponDataContext.value;
+        finalPrice = product.price - (couponDataContext.value / product.quantity);
+      }
+    }
+
+    // Add the calculated price * quantity to the total
+    return accumulator + (product.quantity * finalPrice);
+  }, 0);
+
+  setTotalPrice(subtotal);
+  setFreeShippingFlag(subtotal >= 300); // No need for .toFixed() in a boolean check
+
+}, [cartProducts, couponDataContext]);
   const addProductToQuickView = (product) => {
     setQuickViewItem(product);
   };

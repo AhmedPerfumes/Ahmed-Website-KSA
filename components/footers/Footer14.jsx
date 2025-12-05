@@ -126,7 +126,7 @@ export default function Footer14() {
             <div className="logo">
               <a href="/">
               <Image
-                  src="/assets/images/about/ahmed-logo.png"
+                  src="/assets/images/about/AhmedLogo.png"
                   width={100}
                   height={100}
                   alt="Ahmed"
