@@ -12,40 +12,144 @@ import Products from "../homes/home-2/Products";
 import TopCollections from "../homes/home-5/TopCollections";
 import DiscountedProductsSlider from "../common/features/DiscountedProductsSlider";
 import DiscountGrid from "../common/features/DiscountGrid";
+import { useMenu } from "../../context/MenuContext";
 
 
 function CityWalk() {
     const locale = useLocale();
     const t = useTranslations();
+    const { homeSliders, homeMobileSliders } = useMenu();
+    const isSaleLink = (link) => {
+        if (!link) return false;
+        const s = String(link).toLowerCase();
+        return s === 'sale' || s === '/sale' || s.includes('/sale');
+    };
+    const saleDesktop = Array.isArray(homeSliders)
+        ? homeSliders.find((s) => isSaleLink(s.link))
+        : null;
+    const saleMobile = Array.isArray(homeMobileSliders)
+        ? homeMobileSliders.find((s) => isSaleLink(s.link))
+        : null;
     return (
         <>
             {/* Hero Section */}
             <div>
-            <div className="container p-0 pt-2">
-                <Link href={`/${locale}/shop`}>
-                    <Image
-                        loading="lazy"
-                        className="w-100 h-auto d-none d-lg-block"
-                        src="/assets/images/campaigns/Silver-Jubilee.jpg"
-                        alt="Silver Jubilee banner"
-                        width={1500}
-                        height={50}
-                    />
-                </Link>
+                {/* Desktop Banner (centered, polished card) */}
+                <div className="container-fluid pt-4 d-none d-lg-block px-3 px-xl-4">
+                    <div className="d-flex justify-content-center">
+                        <div className="w-100" style={{ maxWidth: 1680 }}>
+                            {saleDesktop ? (
+                                (() => {
+                                    const elm = saleDesktop;
+                                    return (
+                                        <Link href={`/${locale}/${elm.link || "shop"}`} className="d-block">
+                                            <div
+                                                style={{
+                                                    position: "relative",
+                                                    aspectRatio: "21 / 11",
+                                                    width: "100%",
+                                                    borderRadius: 16,
+                                                    overflow: "hidden",
+                                                    boxShadow: "0 12px 30px rgba(0,0,0,.12)",
+                                                }}
+                                            >
+                                                <Image
+                                                    loading="lazy"
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`}
+                                                    alt={elm?.title || "Home Slider"}
+                                                    fill
+                                                    sizes="(min-width: 1680px) 1680px, 100vw"
+                                                    style={{ objectFit: "cover" }}
+                                                />
+                                            </div>
+                                        </Link>
+                                    );
+                                })()
+                            ) : (
+                                <div style={{display:'none'}}>
+                                    <div
+                                        style={{
+                                            position: "relative",
+                                            aspectRatio: "21 / 11",
+                                            width: "100%",
+                                            borderRadius: 16,
+                                            overflow: "hidden",
+                                            boxShadow: "0 12px 30px rgba(0,0,0,.12)",
+                                        }}
+                                    >
+                                        <Image
+                                            loading="lazy"
+                                            src="/assets/images/campaigns/eos_desktop.jpg"
+                                            alt="Campaign Desktop"
+                                            fill
+                                            sizes="(min-width: 1680px) 1680px, 100vw"
+                                            style={{ objectFit: "cover" }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mobile Banner (centered, polished card) */}
+                <div className="container-fluid pt-3 d-lg-none px-3">
+                    <div className="d-flex justify-content-center">
+                        <div className="w-100" style={{ maxWidth: 980 }}>
+                            {saleMobile ? (
+                                (() => {
+                                    const elm = saleMobile;
+                                    return (
+                                        <Link href={`/${locale}/${elm.link || "shop"}`} className="d-block">
+                                            <div
+                                                style={{
+                                                    position: "relative",
+                                                    aspectRatio: "6 / 10.5",
+                                                    width: "100%",
+                                                    borderRadius: 14,
+                                                    overflow: "hidden",
+                                                    boxShadow: "0 10px 24px rgba(0,0,0,.12)",
+                                                }}
+                                            >
+                                                <Image
+                                                    loading="lazy"
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`}
+                                                    alt={elm?.title || "Home Slider Mobile"}
+                                                    fill
+                                                    sizes="(max-width: 980px) 100vw, 980px"
+                                                    style={{ objectFit: "cover" }}
+                                                />
+                                            </div>
+                                        </Link>
+                                    );
+                                })()
+                            ) : (
+                                <div style={{display:'none'}}>
+                                    <div
+                                        style={{
+                                            position: "relative",
+                                            aspectRatio: "6/ 10.5",
+                                            width: "100%",
+                                            borderRadius: 14,
+                                            overflow: "hidden",
+                                            boxShadow: "0 10px 24px rgba(0,0,0,.12)",
+                                        }}
+                                    >
+                                        <Image
+                                            loading="lazy"
+                                            src="/assets/images/campaigns/eos_mobile.jpg"
+                                            alt="Campaign Mobile"
+                                            fill
+                                            sizes="(max-width: 980px) 100vw, 980px"
+                                            style={{ objectFit: "cover" }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="container p-0 pt-5">
-                <Link href={`/${locale}/shop`}>
-                    <Image
-                        loading="lazy"
-                        className="w-100 h-auto d-lg-none"
-                        src="/assets/images/campaigns/Silver-Jubilee.jpg"
-                        alt="Silver Jubilee banner"
-                        width={1500}
-                        height={50}
-                    />
-                </Link>
-            </div>
-        </div>
         <div className="pt-3 mt-3">
 
         {/* <DiscountedProductsSlider title="Summer Vibes, Cooler Prices!" onlyDiscounted={true}/> */}
