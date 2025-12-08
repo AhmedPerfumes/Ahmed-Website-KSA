@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Hero from "../homes/home-2/Hero";
 import Image from "next/image";
 import Link from "next/link";
@@ -154,7 +154,7 @@ function CityWalk() {
 
         {/* <DiscountedProductsSlider title="Summer Vibes, Cooler Prices!" onlyDiscounted={true}/> */}
         {/* <DiscountedProductsSlider title="Celebrate 95 Years with 95 SAR Deals!" onlyDiscounted={true}/> */}
-        <DiscountGrid title="Celebrate Silver Jubilee Sale!" onlyDiscounted={true} />
+        <DiscountGrid title={saleDesktop?.title} onlyDiscounted={true} />
         </div>
         {/* <section className="d-flex section-3 justify-content-center">
   <div className="section-content text-center w-100">
