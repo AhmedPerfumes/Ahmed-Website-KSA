@@ -17,8 +17,8 @@ const TamaraWidget = ({ amount, inlineType, inlineVariant, locale }) => {
         };
 
         const script = document.createElement("script");
-        script.src = "https://cdn-sandbox.tamara.co/widget-v2/tamara-widget.js";
-        // script.src = "https://cdn.tamara.co/widget-v2/tamara-widget.js";
+        // script.src = "https://cdn-sandbox.tamara.co/widget-v2/tamara-widget.js";
+        script.src = "https://cdn.tamara.co/widget-v2/tamara-widget.js";
         script.async = true;
         script.onload = () => {
             scriptLoadedRef.current = true;

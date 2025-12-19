@@ -374,7 +374,7 @@ export default function Cart() {
                 </tbody>
               </table>
               <div id="TabbyPromo" className="mb-2"></div>
-              <TamaraWidget inlineType="5" inlineVariant='outlined' locale={locale}/>
+              <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
             </div>
             <div className="mobile_fixed-btn_wrapper">
               <div className="button-wrapper container">

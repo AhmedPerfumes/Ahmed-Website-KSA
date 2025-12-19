@@ -170,7 +170,7 @@ export default function SingleProduct11({ category, subcategory, product }) {
               <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(product.product_name)) }}></div>
             </div>
             <div id="TabbyPromo" className="mb-2"></div>
-            <TamaraWidget inlineType="5" inlineVariant='outlined' locale={locale}/>
+            <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
             <h6 style={{ color: "red" }}>{error && error}</h6>
             <form onSubmit={(e) => e.preventDefault()}>
               {product.product_qty > 0 ? (
