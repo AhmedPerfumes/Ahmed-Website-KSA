@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useLocale } from "next-intl";
 import { useMenu } from '../../context/MenuContext';
 import Pagination1 from "../common/Pagination1";
+import TamaraWidget from "../TamaraWidget";
 
 export default function Cart() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -372,7 +373,8 @@ export default function Cart() {
                   </tr>
                 </tbody>
               </table>
-              <div id="TabbyPromo"></div>
+              <div id="TabbyPromo" className="mb-2"></div>
+              <TamaraWidget inlineType="5" inlineVariant='outlined' locale={locale}/>
             </div>
             <div className="mobile_fixed-btn_wrapper">
               <div className="button-wrapper container">

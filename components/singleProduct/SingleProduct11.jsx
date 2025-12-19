@@ -13,7 +13,7 @@ import { useContextElement } from "@/context/Context";
 import he from 'he';
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from '@/context/MenuContext';
-// import TamaraWidget from "../TamaraWidget";
+import TamaraWidget from "../TamaraWidget";
 
 export default function SingleProduct11({ category, subcategory, product }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -169,8 +169,8 @@ export default function SingleProduct11({ category, subcategory, product }) {
             <div className="product-single__short-desc">
               <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(product.product_name)) }}></div>
             </div>
-            <div id="TabbyPromo"></div>
-            {/* <TamaraWidget inlineType="5" inlineVariant='outlined'/> */}
+            <div id="TabbyPromo" className="mb-2"></div>
+            <TamaraWidget inlineType="5" inlineVariant='outlined' locale={locale}/>
             <h6 style={{ color: "red" }}>{error && error}</h6>
             <form onSubmit={(e) => e.preventDefault()}>
               {product.product_qty > 0 ? (

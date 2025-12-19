@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const TamaraWidget = ({ amount, inlineType, inlineVariant }) => {
+const TamaraWidget = ({ amount, inlineType, inlineVariant, locale }) => {
     const [isClient, setIsClient] = useState(false);
     const scriptLoadedRef = useRef(false);
     const widgetKey = `tamara-widget-${amount}`;
@@ -11,7 +11,7 @@ const TamaraWidget = ({ amount, inlineType, inlineVariant }) => {
         if (scriptLoadedRef.current) return;
 
         window.tamaraWidgetConfig = {
-            lang: "en",
+            lang: locale || "en",
             country: "SA",
             publicKey: process.env.NEXT_PUBLIC_TAMARA_PUBLIC_KEY,
         };
