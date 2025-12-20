@@ -26,7 +26,10 @@ async function getBlog(blogName) {
       // blog: blogName.split("-").join(" ").toUpperCase(),
       blog: blogName,
     }),
-    cache: 'no-store',
+    next: {
+      tags: ["blogs"],
+      revalidate: 604800 // 7 days
+    },
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -55,7 +58,10 @@ async function getBlogSEO(blogName) {
           body: JSON.stringify({
             blog: blogName.split("-").join(" ").toUpperCase(),
           }),
-          cache: "no-store",
+          next: {
+            tags: ["blogSEO"],
+            revalidate: 604800 // 7 days
+          },
       }
   );
   
