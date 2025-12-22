@@ -1679,7 +1679,7 @@ export default function Checkout() {
                       </span> */}
                     </label>
                   </div>
-                  <div className="form-check">
+                  {/* <div className="form-check">
                     <input
                       className="form-check-input form-check-input_fill"
                       type="radio"
@@ -1713,7 +1713,7 @@ export default function Checkout() {
                         </g>
                       </svg>
                     </label>
-                  </div>
+                  </div> */}
 
                   <div className="form-check">
                     <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_5" value={'tamara'} checked={selectedOption === 'tamara'} onChange={handleRadioChange} />

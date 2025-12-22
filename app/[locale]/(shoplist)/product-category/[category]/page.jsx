@@ -38,7 +38,10 @@ async function getCategorySubCategory(categoryName) {
     body: JSON.stringify({
       category: categoryName.split("-").join(" ").toUpperCase(),
     }),
-    cache: 'no-store'
+    next: {
+      tags: ["categories"],
+      revalidate: 604800 // 7 days
+    },
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -69,7 +72,10 @@ async function getProductCategorySEO(categoryName) {
               // subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
               // product: product.split("-").join(" ").toUpperCase(),
           }),
-          cache: "no-store",
+          next: {
+            tags: ["categorySEO"],
+            revalidate: 604800 // 7 days
+          },
       }
   );
   
