@@ -21,6 +21,8 @@ import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription
 // };
 
 async function getCategorySubCategory(categoryName, subCategoryName) {
+  const catSlug = categoryName.toLowerCase();
+  const subSlug = subCategoryName.toLowerCase();
   // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products?category=${categoryName.split("-").join(" ").toUpperCase()}&subCategory=${subCategoryName.split("-").join(" ").toUpperCase()}`);
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
     method: 'POST',
@@ -32,7 +34,7 @@ async function getCategorySubCategory(categoryName, subCategoryName) {
       subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
     }),
     next: {
-      tags: ["subCategories"],
+      tags: ["subCategories", `category-${catSlug}`, `subcategory-${subSlug}`],
       revalidate: 604800 // 7 days
     },
   });

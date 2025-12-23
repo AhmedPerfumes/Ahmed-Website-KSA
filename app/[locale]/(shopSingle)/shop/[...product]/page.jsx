@@ -39,7 +39,7 @@ async function getproduct(categoryName, subCategoryName, product) {
       product: product.split("-").join(" ").toUpperCase(),
     }),
     next: {
-      tags: ["products"],
+      tags: ["products", `product-${product}`],
       revalidate: 604800 // 7 days
     },
   });

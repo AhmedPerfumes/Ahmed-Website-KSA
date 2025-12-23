@@ -86,6 +86,7 @@ export default function Categories({ params, subCategories }) {
     },
   };
 
+  // "WARNING: If you change this logic, update the corresponding PHP/JS file."
   function removeSpecialCharactersAndAmp(str) {
     // Remove the specific word "&amp;"
     let cleanedStr = str.replace(/&amp;/g, '');
