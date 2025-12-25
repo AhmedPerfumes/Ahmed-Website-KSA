@@ -81,7 +81,7 @@ const productSlider = ({ prodSlide }) => {
                                             data-v-7aa9e1a2=""
                                         >
                                             <span data-v-7aa9e1a2="">
-                                                Discover
+                                                {t("Discover")}
                                             </span>
                                         </button>
                                     </Link>
@@ -145,7 +145,7 @@ const productSlider = ({ prodSlide }) => {
                                     data-v-8967c2b9=""
                                     className="btn-classic"
                                 >
-                                    <span data-v-7aa9e1a2="">Discover</span>
+                                    <span data-v-7aa9e1a2="">{t("Discover")}</span>
                                 </button>
                             </Link>
                         </div>
@@ -218,7 +218,7 @@ const productSlider = ({ prodSlide }) => {
                                             data-v-7aa9e1a2=""
                                         >
                                             <span data-v-7aa9e1a2="">
-                                                Discover
+                                                {t("Discover")}
                                             </span>
                                         </button>
                                     </Link>
@@ -280,7 +280,7 @@ const productSlider = ({ prodSlide }) => {
                                     data-v-8967c2b9=""
                                     className="btn-classic"
                                 >
-                                    <span data-v-7aa9e1a2="">Discover</span>
+                                    <span data-v-7aa9e1a2="">{t("Discover")}</span>
                                 </button>
                             </Link>
                         </div>
@@ -353,7 +353,7 @@ const productSlider = ({ prodSlide }) => {
                                             data-v-7aa9e1a2=""
                                         >
                                             <span data-v-7aa9e1a2="">
-                                                Discover
+                                                {t("Discover")}
                                             </span>
                                         </button>
                                     </Link>
@@ -417,7 +417,7 @@ const productSlider = ({ prodSlide }) => {
                                     data-v-8967c2b9=""
                                     className="btn-classic"
                                 >
-                                    <span data-v-7aa9e1a2="">Discover</span>
+                                    <span data-v-7aa9e1a2="">{t("Discover")}</span>
                                 </button>
                             </Link>
                         </div>
@@ -490,7 +490,7 @@ const productSlider = ({ prodSlide }) => {
                                             data-v-7aa9e1a2=""
                                         >
                                             <span data-v-7aa9e1a2="">
-                                                Discover
+                                                {t("Discover")}
                                             </span>
                                         </button>
                                     </Link>
@@ -554,7 +554,7 @@ const productSlider = ({ prodSlide }) => {
                                     data-v-8967c2b9=""
                                     className="btn-classic"
                                 >
-                                    <span data-v-7aa9e1a2="">Discover</span>
+                                    <span data-v-7aa9e1a2="">{t("Discover")}</span>
                                 </button>
                             </Link>
                         </div>
@@ -627,7 +627,7 @@ const productSlider = ({ prodSlide }) => {
                                             data-v-7aa9e1a2=""
                                         >
                                             <span data-v-7aa9e1a2="">
-                                                Discover
+                                                {t("Discover")}
                                             </span>
                                         </button>
                                     </Link>
@@ -689,7 +689,7 @@ const productSlider = ({ prodSlide }) => {
                                     data-v-8967c2b9=""
                                     className="btn-classic"
                                 >
-                                    <span data-v-7aa9e1a2="">Discover</span>
+                                    <span data-v-7aa9e1a2="">{t("Discover")}</span>
                                 </button>
                             </Link>
                         </div>
@@ -762,7 +762,7 @@ const productSlider = ({ prodSlide }) => {
                                             data-v-7aa9e1a2=""
                                         >
                                             <span data-v-7aa9e1a2="">
-                                                Discover
+                                                {t("Discover")}
                                             </span>
                                         </button>
                                     </Link>
@@ -826,7 +826,7 @@ const productSlider = ({ prodSlide }) => {
                                     data-v-8967c2b9=""
                                     className="btn-classic"
                                 >
-                                    <span data-v-7aa9e1a2="">Discover</span>
+                                    <span data-v-7aa9e1a2="">{t("Discover")}</span>
                                 </button>
                             </Link>
                         </div>
@@ -914,7 +914,7 @@ const productSlider = ({ prodSlide }) => {
                                 data-v-8967c2b9=""
                                 className="btn-classic"
                             >
-                                <span data-v-7aa9e1a2="">Discover</span>
+                                <span data-v-7aa9e1a2="">{t("Discover")}</span>
                             </button>
                         </div>
                     </div>
@@ -982,7 +982,7 @@ const productSlider = ({ prodSlide }) => {
                                 data-v-8967c2b9=""
                                 className="btn-classic"
                             >
-                                <span data-v-7aa9e1a2="">Discover</span>
+                                <span data-v-7aa9e1a2="">{t("Discover")}</span>
                             </button>
                         </div>
                     </div>
@@ -1049,7 +1049,7 @@ const productSlider = ({ prodSlide }) => {
                                 data-v-8967c2b9=""
                                 className="btn-classic"
                             >
-                                <span data-v-7aa9e1a2="">Discover</span>
+                                <span data-v-7aa9e1a2="">{t("Discover")}</span>
                             </button>
                         </div>
                     </div>
@@ -1118,7 +1118,7 @@ const productSlider = ({ prodSlide }) => {
                                 data-v-8967c2b9=""
                                 className="btn-classic"
                             >
-                                <span data-v-7aa9e1a2="">Discover</span>
+                                <span data-v-7aa9e1a2="">{t("Discover")}</span>
                             </button>
                         </div>
                     </div>
@@ -1187,7 +1187,7 @@ const productSlider = ({ prodSlide }) => {
                                 data-v-8967c2b9=""
                                 className="btn-classic"
                             >
-                                <span data-v-7aa9e1a2="">Discover</span>
+                                <span data-v-7aa9e1a2="">{t("Discover")}</span>
                             </button>
                         </div>
                     </div>
@@ -1256,7 +1256,7 @@ const productSlider = ({ prodSlide }) => {
                                 data-v-8967c2b9=""
                                 className="btn-classic"
                             >
-                                <span data-v-7aa9e1a2="">Discover</span>
+                                <span data-v-7aa9e1a2="">{t("Discover")}</span>
                             </button>
                         </div>
                     </div>

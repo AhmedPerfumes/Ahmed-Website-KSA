@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react"; // No longer need useState
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
 
 export default function NewsLetter() {
     const modalElement = useRef(null);
     const locale = useLocale();
     const { popUp } = useMenu();
+    const t = useTranslations();
 
     // --- NEW: Use a ref to track if the modal has been shown in this session ---
     // This avoids the stale state issue in the event listener.
@@ -132,14 +133,14 @@ export default function NewsLetter() {
                                         className="section-title fw-normal mb-3"
                                         style={{ color: "#5c6137" }}
                                     >
-                                        {elm.name}
+                                        {t(elm.name)}
                                     </h3>
 
                                     <p
                                         className="mb-3"
                                         style={{ fontSize: "1rem", color: "#333" }}
                                     >
-                                        {elm.description}
+                                        {t(elm.description)}
                                     </p>
 
                                     <div
@@ -155,7 +156,7 @@ export default function NewsLetter() {
                                             className="btn-rounded btn-link_lg text-uppercase fw-medium hover-effect"
                                             href={`/${locale}/shop`}
                                         >
-                                            Shop Now
+                                            {t("Shop Now")}
                                         </a>
                                     </div>
                                 </div>
