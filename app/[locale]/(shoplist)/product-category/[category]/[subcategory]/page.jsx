@@ -35,7 +35,7 @@ async function getCategorySubCategory(categoryName, subCategoryName) {
     }),
     next: {
       tags: ["subCategories", `category-${catSlug}`, `subcategory-${subSlug}`],
-      revalidate: 604800 // 7 days
+      revalidate: 600 // 7 days
     },
   });
   if (!response.ok) {

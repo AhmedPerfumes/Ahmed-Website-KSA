@@ -33,7 +33,7 @@ async function getCategorySubCategory(categoryName) {
     }),
     next: {
       tags: ["categories", `category-${slug}`],
-      revalidate: 604800 // 7 days
+      revalidate: 600 // 7 days
     },
   });
   if (!response.ok) {

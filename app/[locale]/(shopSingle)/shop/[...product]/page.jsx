@@ -40,7 +40,7 @@ async function getproduct(categoryName, subCategoryName, product) {
     }),
     next: {
       tags: ["products", `product-${product}`],
-      revalidate: 604800 // 7 days
+      revalidate: 600 // 7 days
     },
   });
   if (!response.ok) {
