@@ -30,6 +30,7 @@ async function getCategorySubCategory(categoryName) {
   //     category: categoryName.split("-").join(" ").toUpperCase(),
   //   })
   // });
+  const slug = categoryName.toLowerCase();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, { 
     method: 'POST',
     headers: {
@@ -38,7 +39,10 @@ async function getCategorySubCategory(categoryName) {
     body: JSON.stringify({
       category: categoryName.split("-").join(" ").toUpperCase(),
     }),
-    cache: 'no-store'
+    next: {
+      tags: ["categories", `category-${slug}`],
+      revalidate: 600 // 7 days
+    },
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -69,7 +73,10 @@ async function getProductCategorySEO(categoryName) {
               // subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
               // product: product.split("-").join(" ").toUpperCase(),
           }),
-          cache: "no-store",
+          next: {
+            tags: ["categorySEO"],
+            revalidate: 604800 // 7 days
+          },
       }
   );
   

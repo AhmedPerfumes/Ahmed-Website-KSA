@@ -1,4 +1,172 @@
 {
+  "Reviews": {
+    "loading": "Loading reviews...",
+    "basedOn": "{count, plural, =0 {No reviews yet} =1 {Based on 1 review} other {Based on # reviews}}",
+    "beFirst": "Be the first to review this product!",
+    "selectRatingAlert": "Please select a star rating.",
+    "successMessage": "Thank you! Your review has been submitted for approval.",
+    "networkError": "A network error occurred. Please try again.",
+    "writeReviewTitle": "Write a Review",
+    "yourRatingLabel": "Your Rating",
+    "yourNameLabel": "Your Name",
+    "yourEmailLabel": "Your Email",
+    "yourReviewLabel": "Your Review",
+    "reviewPlaceholder": "Write your review here (more than 10 characters required)...",
+    "submitting": "Submitting...",
+    "submit": "Submit Review",
+    "reviewsFor": "Reviews for {name}"
+  },
+  "ProductDetails": {
+    "topNotes": "Top Notes",
+    "heartNotes": "Heart Notes",
+    "baseNotes": "Base Notes",
+    "notesAccords": "Notes/Accords",
+    "readMore": "...Read more",
+    "showLess": "Show less",
+    "addToCart": "Add to Cart",
+    "alreadyAdded": "Added",
+    "addToCartLabel": "Add {name} to cart",
+    "loadingProductInfo": "Loading product information...",
+    "fragranceTimelineTab": "Fragrance Timeline",
+    "customerReviewsTab": "Customer Reviews",
+    "discoverMore": "Discover More from <bold>{familyName}</bold>",
+    "notes": {
+      "mainTitle": "FRAGRANCE NOTES",
+      "subtitle": "Fragrance Notes reveal the essence of a perfume, breaking down its scent journey from the first impression to the lingering aroma, helping you understand its personality and character.",
+      "openingLabel": "Opening",
+      "openingScriptTitle": "The First Impression",
+      "heartLabel": "Heart",
+      "heartScriptTitle": "The Core Character",
+      "legacyLabel": "Legacy",
+      "legacyScriptTitle": "The Lasting Memory",
+      "signatureLabel": "SIGNATURE",
+      "signatureScriptTitle": "The Signature Scent"
+    },
+    "accordion": {
+      "whatIsIncluded": "What's Included",
+      "fragranceProfile": "Fragrance Profile",
+      "productOverview": "Product Overview",
+      "keyHighlights": "Key Highlights",
+      "usageApplication": "Usage & Application",
+      "craftedWithIntention": "Crafted with Intention",
+      "deliveryInformation": "Delivery Information"
+    },
+    "overview": {
+      "sizeVolume": "Size / Volume",
+      "fragranceType": "Fragrance Type",
+      "fragranceCategory": "Fragrance Category",
+      "dispenserType": "Dispenser Type"
+    },
+    "summary": {
+      "olfactoryFamily": "Olfactory Family",
+      "sillage": "Sillage"
+    },
+    "highlights": {
+      "longevity": "Longevity",
+      "occasion": "Occasion",
+      "other": "Other"
+    },
+    "delivery": {
+      "shipping": "Swift & Complimentary Shipping",
+      "shippingText": "Free delivery on orders over AED {price} in the UAE.",
+      "payment": "Secure Payment Solutions",
+      "paymentText": "Your payments are safe with our secure online system.",
+      "track": "Track Your Order",
+      "trackText": "Easily track your order status online anytime.",
+      "expectedDelivery": "Expected Delivery",
+      "expectedDeliveryText": "Your order is expected to arrive within 3-5 business days."
+    },
+    "usage": {
+      "howToApply": "How to Apply",
+      "summary": "Summary"
+    },
+    "fragranceTypes": {
+      "parfum": "Extrait de Parfum / Parfum",
+      "edp": "Eau de Parfum (EDP)",
+      "edt": "Eau de Toilette (EDT)",
+      "edc": "Eau de Cologne (EDC)",
+      "concentrated_oil": "Concentrated Oil",
+      "dehn_al_oud": "Dehn al Oud",
+      "hair_mist": "Hair Mist",
+      "body_gel": "Body Gel",
+      "bakhoor": "Bakhoor",
+      "oud_maattar": "Oud Maattar",
+      "air_freshener": "Air Freshener",
+      "other": "Other"
+    },
+    "dispenserTypes": {
+      "spray": "Spray / Atomizer (for Perfumes, Mists)",
+      "pump": "Pump (for Gels, Lotions)",
+      "roll_on": "Roll-on / Rollerball (for Oils)",
+      "dabber_stick": "Dabber / Stick Applicator (for Oils)",
+      "solid_incense": "Solid / Incense (for Bakhoor, Maattar)",
+      "jar": "Jar / Pot (for Gels, Bakhoor)",
+      "tube": "Tube (for Gels)",
+      "reed_diffuser": "Reed Diffuser (for Air Fresheners)",
+      "dropper": "Dropper",
+      "other": "Other"
+    },
+    "howToApply": {
+      "default": {
+        "text": [
+          "Apply the perfume directly to your pulse points — wrists, neck, and behind the ears.",
+          "Spray after moisturizing to help lock in the scent. Avoid rubbing after application."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "hair_mist": {
+        "text": [
+          "Spray the hair mist lightly onto your hair, holding the bottle 20–25 cm away. Focus on the mid-lengths and ends.",
+          "Apply on clean, dry hair. Avoid rubbing or brushing immediately after spraying."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "body_gel": {
+        "text": [
+          "Apply a small amount of body gel evenly onto clean skin. Massage gently until fully absorbed.",
+          "For optimal results, use after showering. Avoid applying on irritated or broken skin."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "concentrated_oil": {
+        "text": [
+          "Apply a small drop of concentrated oil directly to pulse points — such as wrists, neck, and behind the ears.",
+          "Avoid rubbing after application. A single drop is enough for a long-lasting scent."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "dehn_al_oud": {
+        "text": [
+          "Dab a small amount of Dehn Al Oud oil on your pulse points. Let it absorb naturally.",
+          "Avoid rubbing, as it can alter the fragrance. Use sparingly for a long-lasting effect."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "bakhoor": {
+        "text": [
+          "Place a piece of bakhoor on a hot charcoal or electric incense burner. Let the smoke fill your space.",
+          "Avoid leaving unattended. For best results, use in a well-ventilated area."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-2.png"
+      },
+      "oud_maattar": {
+        "text": [
+          "Apply a small amount of Oud Ma’Attar on clothing or use in a diffuser. Let the fragrance evolve naturally.",
+          "Use sparingly to avoid overpowering for a rich and sophisticated scent."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-2.png"
+      },
+      "air_freshener": {
+        "text": [
+          "Spray the air freshener evenly around the room from a distance of 30 cm.",
+          "Avoid spraying directly onto delicate surfaces that may be sensitive to moisture."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      }
+    }
+  },
+  "noProductFound": "No Product Found",
+  "Fragrance Profile": "Fragrance Profile",
   "Grace":"Grace",
   "Exude effortless allure":"Exude effortless allure",
   "Allure":"Allure",
@@ -181,8 +349,8 @@
   "Experience the heritage of Arabic Dakhoon made from natural ingredients Enjoy rich long lasting aromas that bring warmth and tradition to your home": "Experience the heritage of Arabic Dakhoon, made from natural ingredients. Enjoy rich, long-lasting aromas that bring warmth and tradition to your home.",
   "Your Journey Begins with a Scent": "Your Journey Begins with a Scent",
   "At Ahmed Al Maghribi Perfumes each fragrance tells your story Our luxurious scents evoke memories and emotions becoming a lasting part of who you are": "At Ahmed Al Maghribi Perfumes, each fragrance tells your story. Our luxurious scents evoke memories and emotions, becoming a lasting part of who you are. Discover the aroma that captures your essence, defines your elegance, and creates unforgettable moments",
-  "Quality Crafted Through Expertise 20 plus Years of Mastery": "20+ Years of Mastery",
-  "For over 20 years Ahmed Al Maghribi Perfumes has been dedicated to creating luxurious timeless scents Using only the finest natural ingredients we ensure every fragrance is crafted with precision and excellence offering lasting quality": "For over 20 years, Ahmed Al Maghribi Perfumes has been dedicated to creating luxurious, timeless scents. Using only the finest natural ingredients, we ensure every fragrance is crafted with precision and excellence, offering lasting quality.",
+  "Quality Crafted Through Expertise 20 plus Years of Mastery": "25+ Years of Mastery",
+  "For over 20 years Ahmed Al Maghribi Perfumes has been dedicated to creating luxurious timeless scents Using only the finest natural ingredients we ensure every fragrance is crafted with precision and excellence offering lasting quality": "For over 25 years, Ahmed Al Maghribi Perfumes has been dedicated to creating luxurious, timeless scents. Using only the finest natural ingredients, we ensure every fragrance is crafted with precision and excellence, offering lasting quality.",
   "The Company": "The Company",
   "Steps": "Step into olfactory elegance with Ahmed Al Maghribi Perfumes, where each composition is a symphony of rare absolutes and precious accords. Our meticulously curated essences evoke sophistication, crafting sillage that lingers in timeless harmony. Experience the alchemy of fragrance at its finest.",
   "Swift Complimentary Shipping": "SWIFT & COMPLIMENTARY SHIPPING:",

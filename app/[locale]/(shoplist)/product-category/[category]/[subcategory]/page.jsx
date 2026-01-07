@@ -21,6 +21,8 @@ import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription
 // };
 
 async function getCategorySubCategory(categoryName, subCategoryName) {
+  const catSlug = categoryName.toLowerCase();
+  const subSlug = subCategoryName.toLowerCase();
   // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products?category=${categoryName.split("-").join(" ").toUpperCase()}&subCategory=${subCategoryName.split("-").join(" ").toUpperCase()}`);
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
     method: 'POST',
@@ -31,7 +33,10 @@ async function getCategorySubCategory(categoryName, subCategoryName) {
       category: categoryName.split("-").join(" ").toUpperCase(),
       subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
     }),
-    cache: 'no-store',
+    next: {
+      tags: ["subCategories", `category-${catSlug}`, `subcategory-${subSlug}`],
+      revalidate: 600 // 7 days
+    },
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -62,7 +67,10 @@ async function getProductCategorySEO(categoryName, subCategoryName) {
               subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
               // product: product.split("-").join(" ").toUpperCase(),
           }),
-          cache: "no-store",
+          next: {
+            tags: ["subcategorySEO"],
+            revalidate: 604800 // 7 days
+          },
       }
   );
   

@@ -22,6 +22,7 @@ export const metadata = {
 };
 
 async function getCategorySubCategory(categoryName) {
+  const slug = categoryName.toLowerCase();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, { 
     method: 'POST',
     headers: {
@@ -30,7 +31,10 @@ async function getCategorySubCategory(categoryName) {
     body: JSON.stringify({
       category: categoryName.split("-").join(" ").toUpperCase(),
     }),
-    cache: 'no-store',
+    next: {
+      tags: ["categories", `category-${slug}`],
+      revalidate: 600 // 7 days
+    },
   });
   if (!response.ok) {
     throw new Error('Network response was not ok');

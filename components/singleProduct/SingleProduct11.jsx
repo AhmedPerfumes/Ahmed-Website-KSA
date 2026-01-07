@@ -13,6 +13,7 @@ import { useContextElement } from "@/context/Context";
 import he from 'he';
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from '@/context/MenuContext';
+import TamaraWidget from "../TamaraWidget";
 
 export default function SingleProduct11({ category, subcategory, product }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -26,27 +27,68 @@ export default function SingleProduct11({ category, subcategory, product }) {
     const item = cartProducts.filter((elm) => elm.product_id == product.product_id)[0];
     return item;
   };
-  const setQuantityCartItem = (id, quantity) => {
+  // const setQuantityCartItem = (id, quantity) => {
+  //   if (isIncludeCard()) {
+  //     if (quantity >= 1 && quantity <= product.product_qty) {
+  //       setError(null);
+  //       const item = cartProducts.filter((elm) => elm.product_id == id)[0];
+  //       const items = [...cartProducts];
+  //       const itemIndex = items.indexOf(item);
+  //       item.quantity = quantity;
+  //       items[itemIndex] = item;
+  //       setCartProducts(items);
+  //     } else {
+  //       setError("Quantity is more than available quantity");
+  //     }
+  //   } else {
+  //     setQuantity((quantity <= product.product_qty && quantity >= 1) ? quantity : product.product_qty);
+  //     setError(null);
+  //     if(quantity > product.product_qty) {
+  //       setError("Quantity is more than available quantity");
+  //     } else {
+  //       setError(null);
+  //     }
+  //   }
+  // };
+
+  const setQuantityCartItem = (id, quantity, maxOrderQty) => {
+    // Prevent decrement below 1
+    if (quantity < 1) {
+      setError(null); // or keep previous error
+      return;
+    }
+    // Determine dynamic max allowed per product
+    const MAX_LIMIT =
+      maxOrderQty && maxOrderQty > 0
+        ? maxOrderQty
+        : product.product_qty; // fallback to stock
+
+    if (quantity > product.product_qty) {
+      setError("Quantity is more than available quantity");
+      return;
+    }
+
+    if (quantity > MAX_LIMIT) {
+      setError(`Maximum allowed quantity is ${MAX_LIMIT}`);
+      return;
+    }
+
+    setError(null);
+
     if (isIncludeCard()) {
-      if (quantity >= 1 && quantity <= product.product_qty) {
-        setError(null);
-        const item = cartProducts.filter((elm) => elm.product_id == id)[0];
-        const items = [...cartProducts];
-        const itemIndex = items.indexOf(item);
-        item.quantity = quantity;
-        items[itemIndex] = item;
-        setCartProducts(items);
-      } else {
-        setError("Quantity is more than available quantity");
+      const items = [...cartProducts];
+      const itemIndex = items.findIndex(elm => elm.product_id == id);
+
+      if (itemIndex !== -1) {
+        items[itemIndex] = {
+          ...items[itemIndex],
+          quantity
+        };
       }
+
+      setCartProducts(items);
     } else {
-      setQuantity((quantity <= product.product_qty && quantity >= 1) ? quantity : product.product_qty);
-      setError(null);
-      if(quantity > product.product_qty) {
-        setError("Quantity is more than available quantity");
-      } else {
-        setError(null);
-      }
+      setQuantity(quantity);
     }
   };
   const addToCart = () => {
@@ -147,7 +189,10 @@ export default function SingleProduct11({ category, subcategory, product }) {
 
   return (
     <>
-      {Object.keys(product).length > 0 ? <><section className="product-single container product-single__type-9">
+      {Object.keys(product).length > 0 ? 
+      <>
+      
+      <section className="product-single container product-single__type-9">
         <div className="row">
           <div className="col-lg-7">
             <Slider4 product={ product }/>
@@ -157,7 +202,6 @@ export default function SingleProduct11({ category, subcategory, product }) {
               <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
                 <BreadCumb category={ category } subcategory={ subcategory }/>
               </div>
-              {/* <!-- /.breadcrumb --> */}
             </div>
             <h1 className="product-single__name">{product?.product_name && t(he.decode(product?.product_name))}</h1>
             <div className="product-single__price">
@@ -166,7 +210,8 @@ export default function SingleProduct11({ category, subcategory, product }) {
             <div className="product-single__short-desc">
               <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(product.product_name)) }}></div>
             </div>
-            <div id="TabbyPromo"></div>
+            <div id="TabbyPromo" className="mb-2"></div>
+            <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
             <h6 style={{ color: "red" }}>{error && error}</h6>
             <form onSubmit={(e) => e.preventDefault()}>
               {product.product_qty > 0 ? (
@@ -180,7 +225,7 @@ export default function SingleProduct11({ category, subcategory, product }) {
                     }
                     min="1"
                     onChange={(e) =>
-                      setQuantityCartItem(product.product_id, e.target.value)
+                      setQuantityCartItem(product.product_id, e.target.value, product?.maximum_order_quantity)
                     }
                     className="qty-control__number text-center"
                     readOnly
@@ -189,7 +234,8 @@ export default function SingleProduct11({ category, subcategory, product }) {
                     onClick={() =>
                       setQuantityCartItem(
                         product.product_id,
-                        isIncludeCard()?.quantity - 1 || quantity - 1
+                        isIncludeCard()?.quantity - 1 || quantity - 1,
+                        product?.maximum_order_quantity
                       )
                     }
                     className="qty-control__reduce"
@@ -200,7 +246,8 @@ export default function SingleProduct11({ category, subcategory, product }) {
                     onClick={() =>
                       setQuantityCartItem(
                         product.product_id,
-                        isIncludeCard()?.quantity + 1 || quantity + 1
+                        isIncludeCard()?.quantity + 1 || quantity + 1,
+                        product?.maximum_order_quantity
                       )
                     }
                     className="qty-control__increase"
@@ -208,7 +255,6 @@ export default function SingleProduct11({ category, subcategory, product }) {
                     +
                   </div>
                 </div>
-                {/* <!-- .qty-control --> */}
                 <button
                   type="submit"
                   className="btn btn-primary btn-addtocart js-open-aside"
@@ -231,10 +277,6 @@ export default function SingleProduct11({ category, subcategory, product }) {
               <ShareComponent title={product.product_name} />
             </div>
             <div className="product-single__meta-info">
-              {/* <div className="meta-item">
-                <label>SKU:</label>
-                <span> {product.sku && product.sku}</span>
-              </div> */}
               <div className="meta-item">
                 <label>{t("Estimated delivery:")}</label>
                 <span> {t("3 to 5 days")}</span>
@@ -263,7 +305,16 @@ export default function SingleProduct11({ category, subcategory, product }) {
             <AdditionalInfo product_name={ product.product_name } video={ product.video && JSON.parse(product.video)[0][0].value } title={ product.video[0][1] && JSON.parse(product.video)[0][1].value }/>
           </div>
         </div>
-      </section></> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>}
+      </section>
+      {/* <div  style={{ backgroundColor: "#FAF9F7" }} >
+        <Base product={{...product, category, subcategory}} />
+      </div> */}
+      {/* <div style={{ backgroundColor: "#121212" }}>
+        <ProductInfoTabs product={product} category={category} subcategory={subcategory} />
+      </div> */}
+      {/* <ItemFamilySlider product={product} itemFamilyProds={product.item_family} /> */}
+      </> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>
+      }
     </>
   );
 }

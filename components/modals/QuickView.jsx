@@ -47,30 +47,84 @@ export default function QuickView() {
     const item = cartProducts.filter((elm) => elm.product_id == quickViewItem.product_id)[0];
     return item;
   };
+  // const setQuantityCartItem = (id, quantity) => {
+  //   if (isIncludeCard()) {
+  //     if (quantity >= 1 && quantity <= quickViewItem.product_qty) {
+  //       setError(null);
+  //       const item = cartProducts.filter((elm) => elm.product_id == id)[0];
+  //       const items = [...cartProducts];
+  //       const itemIndex = items.indexOf(item);
+  //       item.quantity = quantity;
+  //       items[itemIndex] = item;
+  //       setCartProducts(items);
+  //     } else {
+  //       setError("Quantity is more than available quantity");
+  //     }
+  //   } else {
+  //     setQuantity((quantity <= quickViewItem.product_qty && quantity >= 1) ? quantity : quickViewItem.product_qty);
+  //     setError(null);
+  //     if(quantity > quickViewItem.product_qty) {
+  //       setError("Quantity is more than available quantity");
+  //     } else {
+  //       setError(null);
+  //     }
+  //   }
+  // };
+
   const setQuantityCartItem = (id, quantity) => {
+    const MAX_LIMIT =
+      quickViewItem?.maximum_order_quantity && quickViewItem.maximum_order_quantity > 0
+        ? quickViewItem.maximum_order_quantity
+        : quickViewItem.product_qty; // fallback to stock qty
+
+    // Ensure quantity stays within valid range
+    const validQuantity = Math.max(1, Math.min(quantity, MAX_LIMIT));
+
     if (isIncludeCard()) {
-      if (quantity >= 1 && quantity <= quickViewItem.product_qty) {
+      if (quantity >= 1 && quantity <= MAX_LIMIT) {
         setError(null);
-        const item = cartProducts.filter((elm) => elm.product_id == id)[0];
+
         const items = [...cartProducts];
-        const itemIndex = items.indexOf(item);
-        item.quantity = quantity;
-        items[itemIndex] = item;
-        setCartProducts(items);
+        const itemIndex = items.findIndex(elm => elm.product_id == id);
+
+        if (itemIndex !== -1) {
+          items[itemIndex] = {
+            ...items[itemIndex],
+            quantity: validQuantity,
+          };
+          setCartProducts(items);
+        }
       } else {
-        setError("Quantity is more than available quantity");
+        setError(`Maximum allowed quantity is ${MAX_LIMIT}`);
       }
     } else {
-      setQuantity((quantity <= quickViewItem.product_qty && quantity >= 1) ? quantity : quickViewItem.product_qty);
-      setError(null);
-      if(quantity > quickViewItem.product_qty) {
-        setError("Quantity is more than available quantity");
+      setQuantity(validQuantity);
+
+      if (quantity > MAX_LIMIT) {
+        setError(`Maximum allowed quantity is ${MAX_LIMIT}`);
       } else {
         setError(null);
       }
     }
   };
+  // const addToCart = () => {
+  //   if (!isIncludeCard()) {
+  //     const item = {...quickViewItem, category_name: capitalizeEachWord(quickViewItem.category_name.split('-').join(' ')), subcategory_name: capitalizeEachWord(quickViewItem.subcategory_name.split('-').join(' '))};
+  //     item.quantity = quantity;
+  //     setCartProducts((pre) => [...pre, item]);
+  //     document
+  //     .getElementById("cartDrawerOverlay")
+  //     .classList.add("page-overlay_visible");
+  //     document.getElementById("cartDrawer").classList.add("aside_visible");
+  //   }
+  // };
+
   const addToCart = () => {
+    // Determine max quantity allowed
+    const MAX_LIMIT =
+      quickViewItem?.maximum_order_quantity && quickViewItem.maximum_order_quantity > 0
+        ? quickViewItem.maximum_order_quantity
+        : quickViewItem.quantity; // fallback to stock qty
     if (!isIncludeCard()) {
       const item = {...quickViewItem, category_name: capitalizeEachWord(quickViewItem.category_name.split('-').join(' ')), subcategory_name: capitalizeEachWord(quickViewItem.subcategory_name.split('-').join(' '))};
       item.quantity = quantity;
@@ -79,6 +133,33 @@ export default function QuickView() {
       .getElementById("cartDrawerOverlay")
       .classList.add("page-overlay_visible");
       document.getElementById("cartDrawer").classList.add("aside_visible");
+      // --- ALREADY IN CART ---
+    } else {
+      let maxReached = false;
+
+      const updatedCart = cartProducts.map((cartItem) => {
+        if (cartItem.product_id === quickViewItem.product_id) {
+          const newQty = Math.min(cartItem.quantity + 1, MAX_LIMIT);
+
+          if (cartItem.quantity >= MAX_LIMIT) {
+            maxReached = true;
+          }
+
+          return {
+            ...cartItem,
+            quantity: newQty,
+          };
+        }
+        return cartItem;
+      });
+
+      if (maxReached) {
+        setError(`Maximum allowed quantity is ${MAX_LIMIT}`);
+      } else {
+        setError(null);
+      }
+
+      setCartProducts(updatedCart);
     }
   };
   function cleanProductName(productName) {

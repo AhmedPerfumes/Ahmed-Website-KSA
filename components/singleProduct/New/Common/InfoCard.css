@@ -1,0 +1,95 @@
+/* --- The Solution: Updated InfoCard.css --- */
+
+.info-card {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem; /* Adjusted padding slightly for the new text styles */
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 160px;
+    width: 100%;
+    max-width: 350px;
+    flex: 1 1 280px;
+}
+
+/* --- LAYOUT MODES --- */
+.info-card.column {
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-card.row {
+    flex-direction: row;
+    text-align: left;
+}
+
+/* --- ICON STYLING --- */
+.info-card-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 0.75rem;
+}
+
+.info-card.row .info-card-icon {
+    margin-bottom: 0;
+    margin-right: 12px;
+}
+
+/* --- TEXT STYLING (UPDATED) --- */
+.info-card-title {
+    /* --- Styles changed to match .scent-summary-label --- */
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin: 0 0 0.1rem 0;
+    text-transform: uppercase; /* Key change */
+}
+
+.info-card-desc {
+    /* --- Styles changed to match .scent-summary-desc --- */
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Cinzel', serif; /* Key change */
+    color: #222; /* Changed from grey to primary text color */
+    margin: 0;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* --- INTERACTIVITY --- */
+.info-card.clickable {
+    cursor: pointer;
+}
+
+.info-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* --- MOBILE & SMALL SCREEN ADJUSTMENTS (UPDATED) --- */
+@media (max-width: 768px) {
+    .info-card {
+        min-height: 140px;
+        padding: 1rem;
+    }
+    .info-card-icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 0.6rem;
+    }
+    .info-card-title {
+        /* Adjusted to scale down the new style */
+        font-size: 0.75rem;
+    }
+    .info-card-desc {
+        /* Adjusted to scale down the new style */
+        font-size: 0.85rem;
+    }
+}

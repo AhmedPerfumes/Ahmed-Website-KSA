@@ -38,6 +38,7 @@ export default function Style2({ category, subcategory, products }) {
               .join(' '); // Join the words back into a sentence
   }
 
+  // "WARNING: If you change this logic, update the corresponding PHP/JS file."
   function removeSpecialCharactersAndAmp(str) {
     // Remove the specific word "&amp;"
     let cleanedStr = str?.replace(/&amp;/g, "");

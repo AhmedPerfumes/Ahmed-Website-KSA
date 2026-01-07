@@ -23,6 +23,7 @@ import Pagination1 from "../common/Pagination1";
 // import FreeGiftFeature from '@/components/FreeGiftFeature';
 // import BogoFeature from "@/components/BogoFeature";
 // import { bogoProducts } from "@/components/BogoFeature";
+import TamaraWidget from "@/components/TamaraWidget";
 
 export default function Checkout() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -497,6 +498,10 @@ export default function Checkout() {
           setSuccess(data.message);
           setError(null);
           // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
+          router.push(data.redirect_url);
+      } else if(data.message && data.message == 'Redirecting to Tamara...') {
+          setSuccess(data.message);
+          setError(null);
           router.push(data.redirect_url);
       } else if (data.qtyMessage) {
         // setSuccess();
@@ -1277,6 +1282,7 @@ export default function Checkout() {
                       </tr>
                     </tbody>
                   </table>
+                  <TamaraWidget amount={!freeShippingFlag ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) : (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)} inlineType='2' inlineVariant='outlined' locale={locale}/>
                 </div>
                 <div >
                   {/* <form
@@ -1329,19 +1335,19 @@ export default function Checkout() {
                         onChange={handleCouponChange}
                     /> */}
                     {!couponData ? (
-                        <input
-                            className=""
-                            type="button"
-                            value="APPLY COUPON"
-                            onClick={applyCoupon}
-                        />
+                      <input
+                        className="coupon-action-btn"
+                        type="button"
+                        value="APPLY COUPON"
+                        onClick={applyCoupon}
+                      />
                     ) : (
-                        <input
-                            className=""
-                            type="button"
-                            value="REMOVE COUPON"
-                            onClick={removeCoupon}
-                        />
+                      <input
+                        className="coupon-action-btn remove"
+                        type="button"
+                        value="REMOVE COUPON"
+                        onClick={removeCoupon}
+                      />
                     )}
                   {/* </form> */}
                   <br/><br/>
@@ -1616,6 +1622,38 @@ export default function Checkout() {
                       color: #777;
                       font-size: 13px;
                     }
+                    .coupon-action-btn {
+                      width: 100%;
+                      padding: 12px;
+                      background-color: #222; /* Dark background for contrast */
+                      color: #fff;
+                      border: 1px solid #222;
+                      border-radius: 4px;
+                      font-size: 13px;
+                      font-weight: 600;
+                      letter-spacing: 0.5px;
+                      text-transform: uppercase;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      margin-top: 8px;
+                    }
+
+                    .coupon-action-btn:hover {
+                      background-color: #000;
+                      border-color: #000;
+                    }
+
+                    /* Specific style for the Remove button */
+                    .coupon-action-btn.remove {
+                      background-color: transparent;
+                      color: #dc3545; /* Red color */
+                      border: 1px solid #dc3545;
+                    }
+
+                    .coupon-action-btn.remove:hover {
+                      background-color: #dc3545;
+                      color: #fff;
+                    }
                   `}</style>
                 <div className="checkout__payment-methods">
                   <div className="form-check">
@@ -1641,7 +1679,7 @@ export default function Checkout() {
                       </span> */}
                     </label>
                   </div>
-                  <div className="form-check">
+                  {/* <div className="form-check">
                     <input
                       className="form-check-input form-check-input_fill"
                       type="radio"
@@ -1675,45 +1713,94 @@ export default function Checkout() {
                         </g>
                       </svg>
                     </label>
+                  </div> */}
+
+                  <div className="form-check">
+                    <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_5" value={'tamara'} checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
+                    <label className="form-check-label" htmlFor="checkout_payment_method_5" style={{display: "inline-flex"}} >
+                      Tamara - No interest, No fees. 
+                      <TamaraWidget inlineType='4' inlineVariant='text' locale={locale}/>
+                    </label>
                   </div>
+
                   <div className="form-check">
                     <input
                       className="form-check-input form-check-input_fill"
                       type="radio"
                       name="checkout_payment_method"
-                      id="checkout_payment_method_5"
+                      id="checkout_payment_method_6"
                       value={'tabby'}
                       checked={selectedOption === 'tabby'}
                       onChange={handleRadioChange}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor="checkout_payment_method_5"
+                      htmlFor="checkout_payment_method_6"
                     >
-                      Pay in 4. No interes, no fees.
                       <Image
-                        src="/assets/images/paymentGateway/tabby.svg"
+                        src="/assets/images/paymentGateway/Tabby.png"
                         width="60"
-                        height="50"
+                        height="25"
                         alt="Cropped Faux leather Jacket"
                       />
-                      <button style={{ 'border-radius': '50px', 'border': 'none' }} type="button" data-tabby-info="installments" data-tabby-price={finalPriceState && finalPriceState} data-tabby-currency="SAR">?</button>
+                      <span style={{marginLeft: "0.5rem"}}>Pay later with Tabby. <sup><strong>ⓘ</strong></sup></span><br/>Use any card.
+                      {/* <button style={{ 'border-radius': '50px', 'border': 'none' }} type="button" data-tabby-info="installments" data-tabby-price={finalPriceState && finalPriceState} data-tabby-currency="AED">?</button> */}
                     </label>
                     {selectedOption == 'tabby' && <><div id="tabbyCard"></div></>}
                   </div> 
-                  <div className="policy-text">
-                    Your personal data will be used to process your order, support
-                    your experience throughout this website, and for other
-                    purposes described in our
-                    <Link href={`/${locale}/privacy`} target="_blank">
-                      privacy policy
-                    </Link>
-                    .
-                  </div><br/>
-                  <input type="checkbox" required/>&nbsp;&nbsp;
-                    <span>I have read and agree to the website <Link href="https://www.ahmedalmaghribi.com/terms-and-condition/" target="_blank">terms and conditions</Link> </span>*
+                  <div className="policy-wrapper mt-3">
+                      {/* Privacy Notice Text */}
+                      <p className="small text-muted mb-3" style={{ lineHeight: '1.5' }}>
+                        {locale === 'ar'
+                          ? "سيتم استخدام بياناتك الشخصية لمعالجة طلبك، ودعم تجربتك في هذا الموقع، ولأغراض أخرى موصوفة في "
+                          : "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our "
+                        }
+                        <Link 
+                          href={`/${locale}/privacy`} 
+                          className="text-dark text-decoration-underline fw-medium" 
+                          target="_blank"
+                        >
+                          {locale === 'ar' ? "سياسة الخصوصية." : "privacy policy."}
+                        </Link>
+                      </p>
+
+                      {/* Interactive Checkbox */}
+                      <div className="form-check d-flex align-items-start p-0">
+                        <input
+                          className="form-check-input border-secondary"
+                          type="checkbox"
+                          id="terms-agreement"
+                          required
+                          style={{ 
+                            marginTop: '0.25rem', 
+                            width: '1.1em', 
+                            height: '1.1em', 
+                            cursor: 'pointer',
+                            // Logic: Add margin to the correct side based on direction
+                            marginLeft: locale === 'ar' ? '0.5rem' : '0',
+                            marginRight: locale === 'ar' ? '0' : '0.5rem'
+                          }}
+                        />
+                        <label 
+                          htmlFor="terms-agreement" 
+                          className="form-check-label small" 
+                          style={{ cursor: 'pointer', userSelect: 'none' }}
+                        >
+                          {locale === 'ar' ? "لقد قرأت ووافقت على " : "I have read and agree to the website "}
+                          <Link 
+                            href={`/${locale}/terms`} 
+                            className="text-primary text-decoration-underline" 
+                            target="_blank"
+                          >
+                            {locale === 'ar' ? "شروط وأحكام الموقع" : "terms and conditions"}
+                          </Link>
+                          <span className="text-danger fw-bold mx-1">*</span>
+                        </label>
+                      </div>
+                    </div>
                 </div>
-                {error ? <div style={{ color: 'red' }}>{error}</div> : <div style={{ color: 'green' }}>{success}</div>}
+                {error ? ( <div style={{ backgroundColor: "#ffebe9", color: "#cf1e1e", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {error} </div> ) 
+                : success ? ( <div style={{ backgroundColor: "#e8f5e9", color: "#2e7d32", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {success} </div> ) : null}
                 <button
                   className="btn btn-primary w-100 text-uppercase"
                   type="submit"

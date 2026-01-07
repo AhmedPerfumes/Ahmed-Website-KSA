@@ -146,9 +146,8 @@ export default function Footer14() {
               <strong className="fw-medium">info@ahmedalmaghribi.com</strong>
             </p>
             <p>
-              <strong className="fw-medium">
-              +966 55 5073629 <br />
-              +966 55 0828191
+              <strong className="fw-medium" dir="ltr" style={{ display: 'inline-block' }}>
+              {t("+966 55 5073629 / +966 55 0828191")} 
               </strong>
             </p>
 
@@ -245,15 +244,20 @@ export default function Footer14() {
               className="footer-newsletter__form position-relative bg-body"
             >
               <input
-                className="form-control border-white"
+                className="form-control border-white shadow-none"
                 type="email"
                 name="email"
-                placeholder="Your email address"
+                placeholder={locale === 'ar' ? "عنوان البريد الإلكتروني" : "Your email address"}
+                style={{
+                  // Adds padding to the side where the button sits to prevent text overlap
+                  paddingRight: locale === 'ar' ? '0.75rem' : '5rem', 
+                  paddingLeft: locale === 'ar' ? '5rem' : '0.75rem' 
+                }}
               />
               <input
-                className="btn-link fw-medium bg-white position-absolute top-0 end-0 h-100"
+                className="btn btn-link fw-medium bg-white position-absolute top-0 end-0 h-100 px-4 text-decoration-none text-dark"
                 type="submit"
-                defaultValue="JOIN"
+                value={locale === 'ar' ? "اشترك" : "JOIN"}
               />
             </form>
           </div>
@@ -263,30 +267,38 @@ export default function Footer14() {
       </div>
       {/* <!-- /.footer-middle container --> */}
 
-      <div className="footer-bottom container">
-        <div className="d-block d-md-flex align-items-center">
-          <span className="footer-copyright me-auto">
-            © {new Date().getFullYear()} Ahmed Al Maghribi Perfumes. All rights
-            reserved.
+            <div 
+        className="footer-bottom container py-3" 
+        style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
+      >
+        <div className="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+          
+          {/* Copyright Section */}
+          <span className="footer-copyright text-white-50 small text-center text-md-start">
+            {/* © {new Date().getFullYear()} AHMED AL MAGHRIBI PERFUMES. All rights reserved */}
+            {locale === 'ar' ? `© ${new Date().getFullYear().toLocaleString('ar-EG', { useGrouping: false })} عطور أحمد المغربي. جميع الحقوق محفوظة` : `© ${new Date().getFullYear()} AHMED AL MAGHRIBI PERFUMES. All rights reserved`}
           </span>
-          <div className="footer-settings d-block d-md-flex align-items-center">
-            <Link className="text-white" href={`/${locale}/order-tracking`}>
-              Track Order{" "}
+
+          {/* Settings Section */}
+          <div className="footer-settings d-flex align-items-center gap-3">
+            <Link 
+              className="text-white text-decoration-none fw-medium" 
+              href={`/${locale}/order-tracking`}
+              style={{ fontSize: '0.9rem', whiteSpace: 'nowrap' }}
+            >
+              {locale === 'ar' ? "تتبّع طلبك" : "Track Order"}
             </Link>
-            <div className="d-flex align-items-center">
-              {/* <label
-                htmlFor="footerSettingsLanguage"
-                className="me-2 text-white"
-              >
-                Language
-              </label>  */}
+
+            {/* Language Selector */}
+            <div className="d-flex align-items-center border-start border-white-50 ps-3" style={{ height: '20px' }}>
               <select
                 id="footerSettingsLanguage"
-                className="form-select form-select-sm bg-transparent border-0"
-                aria-label="Default select example"
+                className="form-select form-select-sm bg-transparent border-0 text-white shadow-none"
+                aria-label="Language selector"
                 name="store-language"
                 value={locale}
                 onChange={handleLangChange}
+                style={{ cursor: 'pointer', minWidth: 'auto', paddingRight: '2rem' }}
               >
                 {languageOptions2.map((option, index) => (
                   <option
@@ -300,19 +312,15 @@ export default function Footer14() {
               </select>
             </div>
 
+            {/* Currency Selector */}
             <div className="d-flex align-items-center">
-              {/* <label
-                htmlFor="footerSettingsCurrency"
-                className="ms-md-3 me-2 text-white"
-              >
-                Currency
-              </label> */}
               <select
                 id="footerSettingsCurrency"
-                className="form-select form-select-sm bg-transparent border-0"
-                aria-label="Default select example"
-                name="store-language"
+                className="form-select form-select-sm bg-transparent border-0 text-white shadow-none"
+                aria-label="Currency selector"
+                name="store-currency"
                 onChange={(e) => window.open(e.target.value, "_blank")}
+                style={{ cursor: 'pointer', minWidth: 'auto' }}
               >
                 {currencyOptions.map((option, index) => (
                   <option
@@ -320,15 +328,15 @@ export default function Footer14() {
                     className="footer-select__option"
                     value={option.link}
                   >
-                    {option.text}
+                    {t(option.text)}
                   </option>
                 ))}
               </select>
             </div>
           </div>
-          {/* <!-- /.footer-settings --> */}
+          {/* */}
         </div>
-        {/* <!-- /.d-flex --> */}
+        {/* */}
       </div>
       {/* <!-- /.footer-bottom container --> */}
     </footer>

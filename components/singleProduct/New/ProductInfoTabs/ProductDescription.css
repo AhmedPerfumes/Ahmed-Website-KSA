@@ -1,0 +1,592 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500&display=swap"); */
+
+/* Styles for the Timeline */
+.timeline-wrapper {
+    width: 100%;
+    background: #111;
+    overflow: hidden;
+}
+.timeline-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px;
+    display: flex;
+    flex-direction: column;
+}
+.timeline-svg {
+    position: absolute; /* Changed from fixed to be contained */
+    top: 0;
+    left: 50%;
+    height: 100%; /* Changed from 100vh */
+    transform: translateX(-50%);
+    width: 2px;
+    z-index: 0;
+}
+.note-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 120px;
+    width: 50%;
+    padding: 0 50px;
+}
+.note-section::before {
+    content: attr(data-number);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    color: #111;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'SofiaProRegular';
+    font-weight: bold;
+    font-size: 16px;
+    z-index: 1;
+    flex-shrink: 0;
+}
+.note-section--left {
+    align-self: flex-start;
+    padding-right: 90px;
+}
+.note-section--left::before {
+    right: -20px;
+}
+.note-section--right {
+    align-self: flex-end;
+    padding-left: 90px;
+}
+.note-section--right::before {
+    left: -20px;
+}
+.note-content {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.note-content__image-wrapper {
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.note-content__image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+.note-content__title {
+    font-family: 'SofiaProRegular';
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+.note-content__text {
+    font-family: 'SofiaProRegular';
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+}
+
+/* Styles for the Tabs and Reviews */
+.product-tabs-container {
+    width: 100%;
+    background: #111;
+    color: #fff;
+    font-family: 'SofiaProRegular';
+}
+.tab-headers {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+.tab-header {
+    padding: 15px 30px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+}
+.tab-header:hover {
+    color: #fff;
+}
+.tab-header.active {
+    color: #fff;
+}
+.tab-header.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #fff;
+}
+/* --- Base Styling for the Container --- */
+.pd-container {
+    background-color: #121212;
+    color: #e0e0e0;
+    padding: 80px 20px;
+    font-family: 'SofiaProRegular';
+    overflow: hidden; /* Prevents horizontal scrollbars */
+}
+/* --- Header Section (Titles & Subtitle) --- */
+.pd-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.pd-main-title {
+    font-size: 1.5rem;
+    font-weight: 300;
+     color: #c5a47e;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin: 10px 0 20px 0;
+}
+
+.pd-subtitle {
+    font-size: 0.9rem;
+    color: #888;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* --- Timeline Header (TOP, MID, BOTTOM) --- */
+
+.pd-timeline {
+    position: relative;
+    display: flex;
+    /* CHANGED: This will center the items (1, 2, or 3) perfectly. */
+    justify-content: center;
+    /* ADDED: This creates space between the points when there are multiple. */
+    gap: 80px; 
+    max-width: 1200px;
+    margin: 0 auto 65px;
+    padding: 0 40px;
+    height: 150px;
+}
+
+.pd-timeline-line {
+    position: absolute;
+    top: 50%;
+    /* These values are now relative to the centered group, not the full container */
+    left: 80px;
+    right: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        rgba(197, 164, 126, 0.2),
+        rgba(197, 164, 126, 0.8),
+        rgba(197, 164, 126, 0.2)
+    );
+    z-index: 1;
+}
+
+.pd-timeline-point {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    width: 33.33%;
+}
+
+.pd-timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.pd-timeline-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: #c5a47e;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.pd-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #c5a47e;
+    border: 3px solid #1a1a1a;
+    box-shadow: 0 0 0 2px #c5a47e;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.pd-connector {
+    width: 2px;
+    height: 75px;
+    background: linear-gradient(180deg, #c5a47e 0%, rgba(197, 164, 126, 0.2) 100%);
+    margin-top: 5px;
+}
+
+/* --- Notes Grid Section --- */
+.pd-notes-grid {
+    /* CHANGED: Switched from Grid to Flexbox for better centering control. */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Allows cards to wrap on smaller screens */
+    gap: 40px;
+    max-width: 1200px;
+    margin: -60px auto 0;
+    padding: 0 40px;
+}
+
+/* --- Individual Note Card Styling (UPDATED) --- */
+.pd-note-card {
+    /* ... existing styles ... */
+    width: 340px; /* Give the card a defined width */
+    max-width: 100%; /* Ensures it shrinks on very small screens */
+    position: relative;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+/* --- Hover State for ALL cards (NEW) --- */
+.pd-note-card:hover {
+    transform: translateY(-10px);
+    border-color: #c5a47e;
+    box-shadow: 0 10px 30px rgba(197, 164, 126, 0.1);
+    z-index: 10; /* Ensures the hovered card is on top of others */
+}
+
+/* The .pd-note-card-mid class has been removed as it's no longer needed. */
+
+/* --- Card Content --- */
+
+.pd-image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.pd-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.pd-note-card:hover .pd-image {
+    transform: scale(1.05);
+}
+
+.pd-card-script-title {
+    color: #c5a47e;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 400;
+}
+
+.pd-card-content {
+    padding: 0 20px;
+    
+}
+
+.pd-card-title {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 15px;
+    font-weight: 400;
+}
+
+.pd-card-text {
+    font-size: 0.9rem;
+    color: #aaa;
+    line-height: 1.7;
+    text-align: justify;
+    text-align-last: center;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) {
+    .pd-notes-grid {
+        /* grid-template-columns: 1fr; */
+        gap: 50px;
+    }
+
+    .pd-timeline {
+        display: none;
+    }
+}
+
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .timeline-container {
+        padding: 80px 20px;
+    }
+    .timeline-svg {
+        left: 40px;
+        transform: translateX(0);
+    }
+    .note-section {
+        width: 100%;
+        max-width: 450px;
+        padding: 0;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 60px;
+        align-self: center !important;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    .note-section::before {
+        position: static;
+        transform: none;
+        margin-top: 10px;
+    }
+    .note-section--left,
+    .note-section--right {
+        padding: 0;
+    }
+    .note-content__title {
+        font-size: 2rem;
+    }
+}
+
+
+/* Review styling */
+
+/* === Main Container & Title (from your original styles) === */
+.reviews-container {
+    max-width: 1100px; /* A bit wider for the side-by-side layout */
+    margin: 0 auto;
+    padding: 80px 40px;
+    color: #fff;
+    font-family: 'SofiaProRegular'; /* A more readable font for UI text */
+}
+.reviews-title {
+    font-family: 'SofiaProRegular';
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+/* === NEW: Side-by-Side Layout === */
+.reviews-layout-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 60px; /* Space between the two columns */
+}
+.review-list-column {
+    flex: 1; /* Each column takes up 50% of the space */
+    min-width: 0;
+}
+.reviews-scrollable {
+  max-height: 550px; /* adjust as needed */
+  overflow-y: auto;
+  margin-top: 1rem;
+  padding-right: 10px; /* prevent text hiding under scrollbar */
+}
+
+.review-form-column {
+    flex: 1;
+    min-width: 0;
+    position: sticky; /* Makes the form stick on the screen as you scroll the reviews */
+    top: 20px;
+}
+
+/* === NEW: Review Summary Section === */
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+.reviews-summary .average-rating {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+.reviews-summary .rating-stars {
+    color: #f0e68c;
+    font-size: 1.2rem;
+}
+.reviews-summary .total-reviews {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* === Review List & Cards (refined from your styles) === */
+.review {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+.review-author {
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin: 0 0 5px 0;
+}
+.review-rating {
+    color: #f0e68c;
+    font-size: 1.1rem;
+}
+.review-text {
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* === NEW: Review Form Styling === */
+.review-form-container {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 30px;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #f0e68c;
+}
+.form-group .error-message {
+    color: #ff8a8a;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+.submit-button:hover {
+    background-color: #f0e68c;
+}
+.submit-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+/* NEW: Interactive Stars Styling */
+.interactive-stars {
+    display: flex;
+    gap: 5px;
+    font-size: 2rem;
+    color: #555; /* Default color for empty stars */
+    justify-content: space-around;
+}
+.interactive-stars .star {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.interactive-stars .star.highlighted {
+    color: #f0e68c; /* Color for selected/hovered stars */
+}
+.success-message {
+    padding: 20px;
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+    border-radius: 8px;
+    text-align: center;
+    color: #28a745;
+    font-weight: bold;
+}
+
+
+/* === Responsive Adjustments === */
+@media (max-width: 992px) {
+    .reviews-container {
+        padding: 60px 20px;
+    }
+    .reviews-title {
+        font-size: 2.5rem;
+    }
+    .reviews-layout-wrapper {
+        flex-direction: column; /* Stacks the columns vertically */
+        gap: 60px;
+    }
+    .review-form-column {
+        position: static; /* Unstick the form on mobile */
+    }
+}
+@media (max-width: 576px) {
+    .tab-header {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+    .pd-container {
+        padding: 30px 10px;
+    }
+    .pd-header {
+        margin-bottom: 100px;
+    }
+    .reviews-title {
+        font-size: 2rem;
+    }
+    .reviews-summary .average-rating {
+        font-size: 2rem;
+    }
+    .reviews-summary {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0px;
+        padding: 15px;
+    }
+}
