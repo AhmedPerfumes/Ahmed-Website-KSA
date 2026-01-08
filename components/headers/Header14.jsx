@@ -103,10 +103,96 @@ const headerStyles = `
 .search-popup__close:hover {
   color: #000;
 }
+  .search-popup__results {
+    max-height: 450px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-top: 15px;
+}
+    .search-results__footer {
+    padding: 12px;
+    background-color: #fcfcfc;
+    border-top: 1px solid #eee;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+.view-all-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #111; /* Or your brand primary color */
+    color: #fff !important;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background-color: #a67b30; /* Your gold/accent color */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.suggestion-item {
+    transition: background 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 20px;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #f9f9f9;
+}
+
+.suggestion-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.suggestion-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.suggestion-price {
+    font-size: 13px;
+    color: #a67b30; /* Your gold/theme color */
+    font-weight: 600;
+}
+
+.search-suggestion-title {
+    padding: 15px 20px 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #999;
+    letter-spacing: 1px;
+}
 `;
 export default function Header14() {
     const [scrollDirection, setScrollDirection] = useState("down");
     const [scrollState, setScrollState] = useState("visible");
+    const [searchSuggestions, setSearchSuggestions] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+     const [searchKeyWord, setSearchKeyWord] = useState("");
+    
+
     const locale = useLocale();
     // console.log(locale);
     const t = useTranslations();
@@ -126,6 +212,34 @@ export default function Header14() {
     const isActive = (href) => pathname === href || pathname.startsWith(href);
 
     const inputRef = useRef(null);
+
+     useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (searchKeyWord.trim().length < 2) {
+                setSearchSuggestions([]);
+                return;
+            }
+
+            setIsSearching(true);
+            try {
+                // Your new Laravel GET endpoint
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${searchKeyWord}`
+                );
+                const result = await response.json();
+                if (result.success) {
+                    setSearchSuggestions(result.data);
+                }
+            } catch (err) {
+                console.error("Search suggestion error:", err);
+            } finally {
+                setIsSearching(false);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchSuggestions, 300); // 300ms Debounce
+        return () => clearTimeout(timeoutId);
+    }, [searchKeyWord]);
 
     useEffect(() => {
         if (isPopupOpen) {
@@ -213,7 +327,7 @@ export default function Header14() {
 
     const router = useRouter();
     const pathname = usePathname();
-    const [searchKeyWord, setSearchKeyWord] = useState("");
+   
 
     const handleChange = (event) => {
         setSearchKeyWord(event.target.value);
@@ -383,10 +497,25 @@ export default function Header14() {
                                     placeholder={t("Search Products")}
                                     value={searchKeyWord}
                                     onChange={handleChange}
+                                    style={{
+                                        paddingLeft:
+                                            locale === "ar" ? "3rem" : "1rem",
+                                        paddingRight:
+                                            locale === "ar" ? "1rem" : "3rem",
+                                        textAlign:
+                                            locale === "ar" ? "right" : "left",
+                                    }}
                                 />
                                 <button
                                     className="btn-icon search-popup__submit"
                                     type="submit"
+                                    style={{
+                                        right: locale === "ar" ? "auto" : "0",
+                                        left: locale === "ar" ? "0" : "auto",
+                                        position: "absolute",
+                                        top: "0",
+                                        height: "100%",
+                                    }}
                                 >
                                     <svg
                                         className="d-block"
@@ -394,7 +523,6 @@ export default function Header14() {
                                         height="20"
                                         viewBox="0 0 20 20"
                                         fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
                                     >
                                         <use href="#icon_search" />
                                     </svg>
@@ -404,48 +532,152 @@ export default function Header14() {
                                     type="reset"
                                 ></button>
                             </div>
-
                             <div className="search-popup__results">
-                                <div className="sub-menu search-suggestion">
-                                    <h6 className="sub-menu__title fs-base">
-                                        {t("Quicklinks")}
-                                    </h6>
-                                    <ul className="sub-menu__list list-unstyled">
-                                        <li className="sub-menu__item">
-                                            <Link
-                                                href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}
-                                                className="menu-link menu-link_us-s"
-                                            >
-                                                {t("Zumar")}
-                                            </Link>
-                                        </li>
-                                        <li className="sub-menu__item">
-                                            <Link
-                                                href={`/${locale}/shop/perfumes/oriental-fragrance/marj`}
-                                                className="menu-link menu-link_us-s"
-                                            >
-                                                {t("Marj")}
-                                            </Link>
-                                        </li>
-                                        <li className="sub-menu__item">
-                                            <Link
-                                                href={`/${locale}/shop/perfumes/occidental-fragrance/oud-roses`}
-                                                className="menu-link menu-link_us-s"
-                                            >
-                                                {t("Oud & Roses")}
-                                            </Link>
-                                        </li>
-                                        <li className="sub-menu__item">
-                                            <Link
-                                                href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}
-                                                className="menu-link menu-link_us-s"
-                                            >
-                                                {t("Bin Shaikh")}
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="search-result row row-cols-5"></div>
+                                {/* Show Loading State */}
+                                {isSearching && (
+                                    <div className="p-4 text-center">
+                                        <div
+                                            className="spinner-border spinner-border-sm text-dark me-2"
+                                            role="status"
+                                        ></div>
+                                        <span className="fs-14">
+                                            {t("Searching...")}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Show Results */}
+                                {!isSearching &&
+                                    searchSuggestions.length > 0 && (
+                                        <div className="search-suggestion">
+                                            <h6 className="search-suggestion-title">
+                                                {t("Product Results")}
+                                            </h6>
+                                            <ul className="list-unstyled mb-0">
+                                                {searchSuggestions.map(
+                                                    (item, index) => (
+                                                        <li
+                                                            key={index}
+                                                            className="suggestion-item"
+                                                        >
+                                                            <Link
+                                                                href={`/${locale}${item.url_path}`}
+                                                                className="d-flex align-items-center gap-3 text-decoration-none"
+                                                                onClick={() =>
+                                                                    setIsPopupOpen(
+                                                                        false
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={`${process.env.NEXT_PUBLIC_API_URL}storage/${item.image}`}
+                                                                    alt={
+                                                                        item.name
+                                                                    }
+                                                                    className="suggestion-image"
+                                                                    onError={(
+                                                                        e
+                                                                    ) => {
+                                                                        e.target.src =
+                                                                            "/assets/images/placeholder.png";
+                                                                    }}
+                                                                />
+                                                                <div className="flex-grow-1">
+                                                                    <span className="suggestion-name">
+                                                                        {
+                                                                            item.name
+                                                                        }
+                                                                    </span>
+                                                                    <span className="suggestion-price">
+                                                                        {
+                                                                            item.price
+                                                                        }{" "}
+                                                                        {t(
+                                                                            "AED"
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="text-secondary">
+                                                                    <svg
+                                                                        width="12"
+                                                                        height="12"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                    >
+                                                                        <path d="M9 18l6-6-6-6" />
+                                                                    </svg>
+                                                                </div>
+                                                            </Link>
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ul>
+                                            <div className="search-results__footer">
+            <Link
+                href={`/${locale}/shop?q=${searchKeyWord}`}
+                className="view-all-btn"
+                onClick={() => setIsPopupOpen(false)}
+            >
+                {t("View All Results")} ({searchSuggestions.length}+)
+            </Link>
+        </div>
+                                        </div>
+                                    )}
+
+                                {/* Show No Results Found */}
+                                {!isSearching &&
+                                    searchKeyWord.length > 2 &&
+                                    searchSuggestions.length === 0 && (
+                                        <div className="p-4 text-center text-muted fs-14">
+                                            {t("No products found for")} "
+                                            {searchKeyWord}"
+                                        </div>
+                                    )}
+
+                                {/* Default Quicklinks (only show when input is empty) */}
+                                {searchKeyWord.length === 0 && (
+                                    <div className="p-4">
+                                        <h6 className="sub-menu__title fs-base">
+                                            {t("Quicklinks")}
+                                        </h6>
+                                        <ul className="sub-menu__list list-unstyled">
+                                            <li className="sub-menu__item">
+                                                <Link
+                                                    href={`/${locale}/shop/perfumes/oriental-fragrance/zumar`}
+                                                    className="menu-link menu-link_us-s"
+                                                >
+                                                    {t("Zumar")}
+                                                </Link>
+                                            </li>
+                                            <li className="sub-menu__item">
+                                                <Link
+                                                    href={`/${locale}/shop/perfumes/oriental-fragrance/marj`}
+                                                    className="menu-link menu-link_us-s"
+                                                >
+                                                    {t("Marj")}
+                                                </Link>
+                                            </li>
+                                            <li className="sub-menu__item">
+                                                <Link
+                                                    href={`/${locale}/shop/perfumes/occidental-fragrance/oud-roses`}
+                                                    className="menu-link menu-link_us-s"
+                                                >
+                                                    {t("Oud & Roses")}
+                                                </Link>
+                                            </li>
+                                            <li className="sub-menu__item">
+                                                <Link
+                                                    href={`/${locale}/shop/perfumes/oriental-fragrance/bin-shaikh`}
+                                                    className="menu-link menu-link_us-s"
+                                                >
+                                                    {t("Bin Shaikh")}
+                                                </Link>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         </form>
                     </div>

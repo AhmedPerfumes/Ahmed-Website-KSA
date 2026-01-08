@@ -10,17 +10,48 @@ import MobileNav from "./components/MobileNav";
 import Image from "next/image";
 import Link from "next/link";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "../../i18n/routing";
 export default function MobileHeader() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations();
 
   const [scrollDirection, setScrollDirection] = useState("down");
 
   const [searchKeyWord, setSearchKeyWord] = useState("");
 
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+        if (searchKeyWord.trim().length < 2) {
+            setSearchSuggestions([]);
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${searchKeyWord}`
+            );
+            const result = await response.json();
+            if (result.success) {
+                setSearchSuggestions(result.data);
+            }
+        } catch (err) {
+            console.error("Mobile search error:", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const timeoutId = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timeoutId);
+}, [searchKeyWord]);
   const handleChange = (event) => {
     setSearchKeyWord(event.target.value);
   };
@@ -90,6 +121,64 @@ export default function MobileHeader() {
         scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
       } `}
     >
+       <style jsx global>{`
+        @keyframes marquee-ltr {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-rtl {
+          0% { transform: translateX(-50%); } 
+          100% { transform: translateX(0); }
+        }
+          .mobile-search-results {
+    background: white;
+    width: 100%;
+    max-height: 70vh; /* Don't cover the whole screen, let them see the context */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f5f5f5;
+    text-decoration: none !important;
+}
+
+.mobile-suggestion-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.mobile-suggestion-info {
+    flex-grow: 1;
+    margin: 0 12px;
+    overflow: hidden;
+}
+
+.mobile-suggestion-name {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+.mobile-suggestion-price {
+    font-size: 13px;
+    color: #a67b30;
+    font-weight: 600;
+}
+      `}</style>
       <div className="container d-flex align-items-center h-100">
         <Link className="mobile-nav-activator d-block position-relative" href="#">
           <svg
@@ -177,6 +266,55 @@ export default function MobileHeader() {
             <div className="position-absolute start-0 top-100 m-0 w-100">
               <div className="search-result"></div>
             </div>
+             {(isSearching || searchSuggestions.length > 0) && (
+        <div className="mobile-search-results position-absolute start-0 top-100 w-100" style={{ zIndex: 999 }}>
+            {isSearching && (
+                <div className="p-3 text-center fs-13 text-muted">
+                    <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                    {t("Searching...")}
+                </div>
+            )}
+
+            {!isSearching && searchSuggestions.map((item, index) => (
+                <Link 
+                    key={index}
+                    href={`/${locale}${item.url_path}`}
+                    className="mobile-suggestion-item"
+                    onClick={() => {
+                        setSearchKeyWord("");
+                        setSearchSuggestions([]);
+                    }}
+                >
+                    <img 
+                        src={`${process.env.NEXT_PUBLIC_API_URL}storage/${item.image}`} 
+                        alt={item.name}
+                        className="mobile-suggestion-img"
+                    />
+                    <div className="mobile-suggestion-info">
+                        <span className="mobile-suggestion-name">{item.name}</span>
+                        <span className="mobile-suggestion-price">{item.price} {t("AED")}</span>
+                    </div>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2">
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
+                </Link>
+            ))}
+
+            {/* "View All" Link for Mobile */}
+            {!isSearching && searchSuggestions.length > 0 && (
+                <Link 
+                    href={`/${locale}/shop?q=${searchKeyWord}`}
+                    className="d-block text-center p-3 fs-13 fw-bold text-uppercase border-top bg-light text-dark"
+                    onClick={() => {
+                        setSearchKeyWord("");
+                        setSearchSuggestions([]);
+                    }}
+                >
+                    {t("View All Results")}
+                </Link>
+            )}
+        </div>
+    )}
           </form>
           {/* <!-- /.header-search --> */}
         </div>
