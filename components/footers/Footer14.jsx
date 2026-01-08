@@ -147,7 +147,7 @@ export default function Footer14() {
             </p>
             <p>
               <strong className="fw-medium" dir="ltr" style={{ display: 'inline-block' }}>
-              {t("+966 55 5073629 / +966 55 0828191")} 
+              {t("+966 55 5073629 / +966 53 6654399")} 
               </strong>
             </p>
 
