@@ -77,7 +77,7 @@ export async function generateMetadata({ params }) {
 
   try {
       const data = await getBlogSEO(blogName);
-      console.log(JSON.parse(data.meta_value)[0]);
+      // console.log(JSON.parse(data.meta_value)[0]);
       return {
           title: JSON.parse(data.meta_value)[0]?.seo_title ? `${JSON.parse(data.meta_value)[0]?.seo_title}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
           description: JSON.parse(data.meta_value)[0]?.seo_description ? JSON.parse(data.meta_value)[0]?.seo_description?.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."

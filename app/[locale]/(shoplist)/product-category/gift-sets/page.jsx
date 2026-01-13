@@ -33,7 +33,7 @@ async function getCategorySubCategory(categoryName) {
     }),
     next: {
       tags: ["categories", `category-${slug}`],
-      revalidate: 600 // 7 days
+      revalidate: 604800 // 7 days
     },
   });
   if (!response.ok) {
@@ -45,10 +45,10 @@ async function getCategorySubCategory(categoryName) {
 // export default function ShopPage5() {
   const ShopPage5 = async () => {
     const category = 'gift-sets';
-    console.log(category);
+    // console.log(category);
     try {
       const data = await getCategorySubCategory(category);
-      console.log(data);
+      // console.log(data);
       return data && (
       <>
         <QuickView />
