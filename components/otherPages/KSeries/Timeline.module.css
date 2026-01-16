@@ -1,0 +1,160 @@
+.timelineContainer {
+  background: linear-gradient(to bottom, #0b0b0b, #111);
+  min-height: 100vh;
+  padding: 4rem 0;
+  position: relative;
+}
+
+.timelineLine {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.timelineLine::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  background: rgba(255,215,0,0.05);
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.timelineItem {
+  padding: 2rem 0;
+  position: relative;
+  min-height: 400px;
+}
+
+.timelineFill {
+  position: fixed; /* Changed from absolute to fixed for smooth effect */
+  width: 4px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,215,0,1) 0%,
+    rgba(255,183,0,0.8) 50%,
+    rgba(255,140,0,0.6) 100%
+  );
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  z-index: 1;
+  border-radius: 4px;
+  box-shadow: 
+    0 0 20px rgba(255,215,0,0.3),
+    0 0 40px rgba(255,215,0,0.2),
+    0 0 60px rgba(255,215,0,0.1);
+  filter: brightness(1.2);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.reverse .content {
+  direction: rtl;
+}
+
+.textContent {
+  direction: ltr;
+  padding: 2rem;
+}
+
+.year {
+  font-size: 1.5rem;
+  color: #FFD700;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.description {
+  color: #e0e0e0;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.preRegisterBtn {
+  background: transparent;
+  border: 2px solid #FFD700;
+  color: #FFD700;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.preRegisterBtn:hover {
+  background: rgba(255,215,0,0.1);
+  box-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+
+.imageContainer {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.imageContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.imageContainer:hover img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .timelineLine::before {
+    left: 20px;
+    width: 4px;
+  }
+  
+  .timelineFill {
+    position: fixed;
+    left: 20px;
+    width: 4px;
+  }
+  
+  .reverse .content {
+    direction: ltr;
+  }
+}
+
+.intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 60px;
+  padding: 0 20px;
+}
+
+.introText {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #333;
+  font-weight: 300;
+}

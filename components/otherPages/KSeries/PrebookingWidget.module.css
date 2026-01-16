@@ -1,0 +1,130 @@
+/* components/common/PrebookingWidget.module.css */
+
+/* --- Widget Positioning (Sticky Bottom Left) --- */
+.widgetContainer {
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    z-index: 1000; /* High z-index to ensure visibility */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    cursor: pointer;
+}
+
+/* --- Dialogue Bubble Styling --- */
+.dialogueBubble {
+    background-color: #f7e7ce; /* Champagne color for elegance */
+    color: #121212;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    max-width: 200px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* Arrow pointing down-right towards the button */
+    position: relative;
+}
+
+.dialogueBubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; /* Position below the box */
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #f7e7ce; /* Matches bubble background */
+}
+
+/* --- Button Styling (Using Gold Theme) --- */
+.widgetButton {
+    background-color: #D4AF37; /* Gold */
+    color: #121212;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: none;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.2s ease;
+}
+
+.widgetButton:hover {
+    background-color: #E6C25E; /* Lighter gold on hover */
+}
+
+/* --- Modal Styling for Luxury Look --- */
+.customModal .modalHeader {
+    background-color: #1a1a1a;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    color: #f7e7ce;
+}
+
+.customModal .modalTitle {
+    color: #D4AF37; /* Gold Title */
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.customModal .modalBody {
+    background-color: #121212;
+    color: #f7e7ce;
+}
+
+.customModal .form-label {
+    color: #f7e7ce;
+    font-weight: 500;
+}
+
+.submitButton {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #121212;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+    background-color: #E6C25E;
+    border-color: #E6C25E;
+}
+
+/* --- Custom Checkbox Styling for Dark/Gold Theme --- */
+.customCheckbox label {
+    color: #f7e7ce !important; /* Champagne text color */
+    padding-left: 0.5rem;
+}
+
+.customCheckbox input[type="checkbox"] {
+    /* Style the checkbox control itself */
+    background-color: transparent;
+    border: 1px solid #D4AF37; /* Gold border */
+    border-radius: 3px;
+    appearance: none; /* Hide default browser styles */
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.customCheckbox input[type="checkbox"]:checked {
+    /* Style when checked */
+    background-color: #D4AF37; /* Gold background when checked */
+    border-color: #D4AF37;
+}
+
+.customCheckbox input[type="checkbox"]:checked::before {
+    /* Checkmark styling (optional, using unicode checkmark) */
+    content: '✓';
+    display: block;
+    color: #121212; /* Dark checkmark */
+    font-size: 12px;
+    text-align: center;
+    line-height: 16px; /* Center the checkmark */
+}
