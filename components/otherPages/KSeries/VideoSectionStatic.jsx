@@ -74,22 +74,22 @@ function VideoSectionStatic() {
             overflow: "hidden",
           }}
         >
-          <iframe
-            src="https://www.youtube.com/embed/SYCOHX2Ni_4?rel=0&modestbranding=1&showinfo=0&autoplay=0&mute=1&loop=1"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              border: "0",
-            }}
-            title="The Chronicles Of Ahmed Al Maghribi"
-            frameborder="0"
-            allow="picture-in-picture;"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
+         <iframe
+  src="https://www.youtube.com/embed/gf0kYWgy-58?rel=0&modestbranding=1&showinfo=0&autoplay=0&mute=1&loop=1"
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "0",
+  }}
+  title="The Scent of Legacy: 25 Years of Ahmed Al Maghribi Perfumes"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerPolicy="strict-origin-when-cross-origin"
+  allowFullScreen
+/>
         </div>
       </motion.div>
     </section>
