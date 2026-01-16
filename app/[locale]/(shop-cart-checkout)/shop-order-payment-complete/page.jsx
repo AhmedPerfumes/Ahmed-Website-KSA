@@ -13,15 +13,15 @@ export const metadata = {
 };
 
 async function getOrderDetails(order_id) {
-  console.log(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      order_number: order_id
-    })
-  });
+  // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     order_number: order_id
+  //   })
+  // });
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
     method: 'POST',
     headers: {
@@ -40,10 +40,10 @@ async function getOrderDetails(order_id) {
 
 const ShopOrderPaymentComplete = async ({ searchParams  }) => {
   const { q } = searchParams;
-  console.log(q);
+  // console.log(q);
   try {
     const data = await getOrderDetails(q && atob(q));
-    console.log(data);
+    // console.log(data);
       return data && (
         <>
           <Header14 />

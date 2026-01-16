@@ -1,102 +1,80 @@
 "use client";
-const countries = [
-  "Abu Dhabi",
-  "Ajman",
-  "Al Ain",
-  "Dubai",
-  "Fujairah",
-  "Ras Al Khaymah",
-  "Sharjah",
-  "Umm Al Quwain",
-];
+
 import { useContextElement } from "@/context/Context";
 import { useUser } from "@/context/UserContext";
 import { useMenu } from '@/context/MenuContext';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import he from 'he';
 import { products1 } from "@/data/products/fashion";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from "next-intl";
 import Pagination1 from "../common/Pagination1";
+import TamaraWidget from "@/components/TamaraWidget";
 // import FreeGiftFeature from '@/components/FreeGiftFeature';
 // import BogoFeature from "@/components/BogoFeature";
 // import { bogoProducts } from "@/components/BogoFeature";
-import TamaraWidget from "@/components/TamaraWidget";
 
 export default function Checkout() {
-  const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
-  const router = useRouter();
-  const locale = useLocale();
-
-  const { cartProducts, totalPrice, freeShippingFlag, setOrderDetails, setCouponDataContext, setCartProducts } = useContextElement();
-  const { isLoggedIn } = useUser();
-  // const [selectedRegion, setSelectedRegion] = useState("");
+  // STATES
+  const [coupons, setCoupons] = useState([]);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [idDDActive, setIdDDActive] = useState(false);
-  // const [shippingAdd, setShippingAdd] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOption, setSelectedOption] = useState('cod');
-  const [formData, setFormData] = useState({
-    shippingAddress: {
-      first_name: '',
-      last_name: '',
-      mobile: '',
-      email: '',
-      country: 'KSA',
-      area: '',
-      building: '',
-      province: ''
-    },
-    billingAddress: {
-      first_name: '',
-      last_name: '',
-      mobile: '',
-      email: '',
-      country: 'KSA',
-      area: '',
-      building: '',
-      province: ''
-    },
-    shippingAdd: false,
-    note: '',
-    password: '',
-    otp: ''
-  });
   const [createAccount, setCreateAccount] = useState(false);
-
+  const [finalPriceState, setFinalPriceState] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [OTPError, setOTPError] = useState(null);
   const [OTPSuccess, setOTPSuccess] = useState(null);
-
   const [isSendOTPLoading, setIsSendOTPLoading] = useState(false);
   const [isOTPButton, setIsOTPButton] = useState(true);
   const [isOTPVerified, setIsOTPVerified] = useState(false);
-
-  const [coupons, setCoupons] = useState([]);
-  const [couponLoading, setCouponLoading] = useState(false);
-  const [showCouponModal, setShowCouponModal] = useState(false);
-  const [copiedId, setCopiedId] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState(null);
   const [couponSuccess, setCouponSuccess] = useState(null);
   const [couponData, setCouponData] = useState(null);
-  const [finalPriceState, setFinalPriceState] = useState(null);
+  const [formData, setFormData] = useState({
+    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: ''},
+    billingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '' },
+    shippingAdd: false,
+    note: '',
+    password: '',
+    otp: ''
+  });
+  // const [selectedRegion, setSelectedRegion] = useState("");
+  // const [shippingAdd, setShippingAdd] = useState(false);
 
-    useEffect(() => {
-    try {
-      let customer_id = -1;
-      let firstName = "";
-      let lastName = "";
-      let email = "";
-      let mobile = "";
-      let area = "";
-      let building = "";
-      let province = "";
+  // CONTEXT & HOOKS
+  const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
+  const { cartProducts, totalPrice, freeShippingFlag, setOrderDetails, setCouponDataContext, setCartProducts } = useContextElement();
+  const router = useRouter();
+  const locale = useLocale();
+  const { isLoggedIn } = useUser();
+  const hasCleaned = useRef(false);
+  const hasFetchedRef = useRef(false);
+  const searchParams = useSearchParams();
+  const disablePlaceOrder = isLoading || (!isLoggedIn && !isOTPVerified) || (isLoggedIn && formData.shippingAdd && !isOTPVerified); 
+  
+  // USE EFFECTS
 
+  useEffect(() => {
       if (isLoggedIn) {
+        let customer_id = -1;
+        let firstName = "";
+        let lastName = "";
+        let email = "";
+        let mobile = "";
+        let area = "";
+        let building = "";
+        let province = "";
         const userStr = localStorage.getItem("user");
         if (userStr) {
           const user = JSON.parse(atob(userStr));
@@ -109,8 +87,6 @@ export default function Checkout() {
             firstName = f || "";
             lastName = lArr.join(" ") || "";
           }
-        } else {
-          console.warn("No user data found in localStorage");
         }
 
         const addrStr = localStorage.getItem("address");
@@ -121,121 +97,64 @@ export default function Checkout() {
           province = addr.state || "";
         }
 
-        setFormData((prev) => ({
-          ...prev,
-          billingAddress: {
-            ...prev.billingAddress,
-            first_name: firstName,
-            last_name: lastName,
-            email,
-            mobile,
-            area,
-            building,
-            province,
-          },
-          shippingAddress: {
-            ...prev.shippingAddress,
-            first_name: firstName,
-            last_name: lastName,
-            email,
-            mobile,
-            area,
-            building,
-            province,
-          },
-        }));
+        setFormData((prev) => ({ 
+          ...prev, 
+          billingAddress: { ...prev.billingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, }, 
+          shippingAddress: { ...prev.shippingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, }, }));
       }
 
-    //   setCouponLoading(true);
-    //   fetch(`${process.env.NEXT_PUBLIC_API_URL}api/customerCouponDetails`, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ customer_id }),
-    //   })
-    //     .then((res) => {
-    //       if (!res.ok) {
-    //         throw new Error(`HTTP error! Status: ${res.status}`);
-    //       }
-    //       return res.json();
-    //     })
-    //     .then((json) => {
-    //       console.log("Coupon API response:", json);
-    //       setCoupons(json.coupons || []);
-    //       setCouponDataContext(json.coupons || []);
-    //     })
-    //     .catch((err) => {
-    //       console.error("Failed to fetch coupons:", err);
-    //       setCoupons([]);
-    //       setCouponDataContext([]);
-    //     })
-    //     .finally(() => setCouponLoading(false));
-    }
-    //  catch (err) {
-    //   console.error("Error in useEffect:", err);
-    //   setCoupons([]);
-    //   setCouponDataContext([]);
-    //   setCouponLoading(false);
-    // }
-    catch (err) {
-      console.error("Error in useEffect:", err);
-    }
+      // setCouponLoading(true);
+      // fetch(`${process.env.NEXT_PUBLIC_API_URL}api/customerCouponDetails`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ customer_id }),
+      // })
+      //   .then((res) => {
+      //     if (!res.ok) {
+      //       throw new Error(`HTTP error! Status: ${res.status}`);
+      //     }
+      //     return res.json();
+      //   })
+      //   .then((json) => {
+      //     console.log("Coupon API response:", json);
+      //     setCoupons(json.coupons || []);
+      //     setCouponDataContext(json.coupons || []);
+      //   })
+      //   .catch((err) => {
+      //     console.error("Failed to fetch coupons:", err);
+      //     setCoupons([]);
+      //     setCouponDataContext([]);
+      //   })
+      //   .finally(() => setCouponLoading(false));
   }, [isLoggedIn]);
 
   // NEW: useEffect to fetch coupons from SmartView API
   useEffect(() => {
-    // Helper function to map new API response
+    const { mobile, email } = formData.billingAddress;
+    if (hasFetchedRef.current) return;
+    if (!/^\d{10}$/.test(mobile)) return;
+    hasFetchedRef.current = true;
+
     const transformCouponData = (apiCoupons) => {
-      if (!Array.isArray(apiCoupons)) {
-        return [];
-      }
-      return apiCoupons
-        .filter(coupon => coupon.active === true) // Filter for active coupons
-        .map((coupon) => ({
-          id: coupon.couponCode,
-          code: coupon.couponCode,
-          title: coupon.promotionName,
-          description: `Get ${coupon.value}${coupon.baseOn === "Percent" ? "%" : " SAR"} off`,
-          value: coupon.value,
-          coupon_type: coupon.baseOn ? coupon.baseOn.toLowerCase() : 'percent',
-          type: "customer",
-          end_date: coupon.validTo,
-          start_date: coupon.registrationDate,
-          couponRegistrationId: coupon.couponRegistrationId,
-          couponId: coupon.couponId,
-          salesType: coupon.salesType,
-          company: coupon.company,
-          whsCode: coupon.whsCode
-        }));
+      if (!Array.isArray(apiCoupons)) { return []; }
+
+      return apiCoupons.filter(coupon => coupon.active === true).map((coupon) => ({ id: coupon.couponCode, code: coupon.couponCode, title: coupon.promotionName, description: `Get ${coupon.value}${coupon.baseOn === "Percent" ? "%" : " SAR"} off`, value: coupon.value, coupon_type: coupon.baseOn ? coupon.baseOn.toLowerCase() : 'percent', type: "customer", end_date: coupon.validTo, start_date: coupon.registrationDate, couponRegistrationId: coupon.couponRegistrationId, couponId: coupon.couponId, salesType: coupon.salesType, company: coupon.company, whsCode: coupon.whsCode }));
     };
 
     const fetchCoupons = async () => {
-      const { email, mobile } = formData.billingAddress;
-
-      // Only fetch if email and a valid mobile number are available
-      if (!email || !/^\d{10}$/.test(mobile)) {
-        setCoupons([]);
-        return;
-      }
+      // const { email, mobile } = formData.billingAddress;
+      if (!email || !/^\d{10}$/.test(mobile)) { setCoupons([]); return; }
 
       setCouponLoading(true);
       try {
         const apiUrl = `${process.env.NEXT_PUBLIC_SMARTVIEW_API_URL}Coupon/ActiveCoupons`;
         const response = await fetch(apiUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            salesType: "EComm",
-            company: "KSA", // <-- The required change for KSA
-            mobileNo: mobile,
-            email: email,
-          }),
+          headers: { "Content-Type": "application/json", },
+          body: JSON.stringify({ salesType: "EComm", company: "KSA", mobileNo: mobile, email: email, }),
         });
 
-        if (!response.ok) {
-          throw new Error(`API Error! Status: ${response.status}`);
-        }
+        if (!response.ok) { throw new Error(`API Error! Status: ${response.status}`); }
 
         const data = await response.json();
         const transformedData = transformCouponData(data.data);
@@ -255,69 +174,12 @@ export default function Checkout() {
     // This effect now runs when user details change in the form
   }, [formData.billingAddress.email, formData.billingAddress.mobile, setCouponDataContext]);
 
-  const [couponCode, setCouponCode] = useState("");
-
-  const handleRadioChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    if (name.startsWith('shipping') || name.startsWith('billing')) {
-      const addressField = name.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
-      const fieldName = name.split('.')[1]; // Get the specific field (e.g., street, city)
-      setFormData((prevData) => ({
-        ...prevData,
-        [addressField]: {
-          ...prevData[addressField],
-          [fieldName]: value,
-        },
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleCheckboxChange = () => {
-    setFormData((prevData) => {
-      const newSameAsShipping = !prevData.shippingAdd;
-      return {
-        ...prevData,
-        shippingAdd: newSameAsShipping,
-        shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' }
-      }
-    });
-  };
-
-  // const handleEmiratesChange = (event, emirates) => {
-  //   const { id } = event.target;
-  //   // console.log(id, emirates);
-  //   if (id.startsWith('shipping') || id.startsWith('billing')) {
-  //     const addressField = id.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
-  //     const fieldName = id.split('.')[1]; // Get the specific field (e.g., street, city)
-  //     setFormData((prevData) => {
-  //       return {
-  //         ...prevData,
-  //         [addressField]: {
-  //           ...prevData[addressField],
-  //           [fieldName]: emirates,
-  //         },
-  //       };
-  //     });
-  //   }
-  // };
-
   useEffect(() => {
     const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0]?.price) + totalPrice + parseFloat(shippingServiceCharges[1]?.price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1]?.price);
     setFinalPriceState(finalPrice);
   }, [selectedOption]);
 
   useEffect(() => {
-    // Load the TabbyCard script
     const tabbyCardScript = document.createElement("script");
     tabbyCardScript.src = "https://checkout.tabby.ai/tabby-card.js";
     tabbyCardScript.async = true;
@@ -355,14 +217,228 @@ export default function Checkout() {
     };
   }, [selectedOption]);
 
-  useEffect(() => {
-   setCouponDataContext(null);
-  }, []);
+  useEffect(() => { setCouponDataContext(null); }, []);
 
+  const handleRadioChange = (event) => { setSelectedOption(event.target.value); };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    if (name.startsWith('shipping') || name.startsWith('billing')) {
+      const addressField = name.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
+      const fieldName = name.split('.')[1]; // Get the specific field (e.g., street, city)
+      setFormData((prevData) => ({ ...prevData, [addressField]: { ...prevData[addressField], [fieldName]: value, }, }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, [name]: value, }));
+    }
+  };
+
+  const handleCheckboxChange = () => {
+    setFormData((prevData) => {
+      const newSameAsShipping = !prevData.shippingAdd;
+      return {
+        ...prevData,
+        shippingAdd: newSameAsShipping,
+        shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' }
+      }
+    });
+  };
+
+  // const handleEmiratesChange = (event, emirates) => {
+  //   const { id } = event.target;
+  //   // console.log(id, emirates);
+  //   if (id.startsWith('shipping') || id.startsWith('billing')) {
+  //     const addressField = id.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
+  //     const fieldName = id.split('.')[1]; // Get the specific field (e.g., street, city)
+  //     setFormData((prevData) => {
+  //       return {
+  //         ...prevData,
+  //         [addressField]: {
+  //           ...prevData[addressField],
+  //           [fieldName]: emirates,
+  //         },
+  //       };
+  //     });
+  //   }
+  // };
+
+  const handleCouponChange = (e) => {
+    setCouponCode(e.target.value);
+    setCouponSuccess(null);
+    setCouponData(null);
+    setCouponDataContext(null); // Clear coupon from context
+
+    // Clean coupon data from cart products
+    const cleanedCart = cartProducts.map((item) => {
+      const { is_coupon, value, ...rest } = item;
+      return rest;
+    });
+    setCartProducts(cleanedCart);
+  };
+
+  const handleSelectCoupon = async (code, id) => {
+    setCouponData(null);
+    setCouponCode(code);
+    setCopiedId(id);
+    setShowCouponModal(false);
+    setTimeout(() => setCopiedId(null), 1400); // For "Applied!" message
+  };
+
+  const handleCopy = (code, id) => {
+    navigator.clipboard.writeText(code);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1400); // For "Copied!" message
+  };
+
+  const removeCoupon = (e) => {
+    setCouponCode("");
+    setCouponSuccess(null);
+    setCouponData(null);
+    setCouponDataContext(null); // Clear coupon from context
+
+    // Clean coupon data from cart products
+    const cleanedCart = cartProducts.map((item) => {
+      const { is_coupon, value, ...rest } = item;
+      return rest;
+    });
+    setCartProducts(cleanedCart);
+  };
+
+  const applyCoupon = async (e) => {
+    e.preventDefault();
+
+    const user = isLoggedIn ? JSON.parse(atob(localStorage.getItem("user"))) : null;
+    const code = couponCode.toLowerCase();
+
+    if (!couponCode.trim()) {
+      setCouponError("Coupon Code is Required");
+      return;
+    }
+
+    if (!isOTPVerified && !isLoggedIn) {
+      setCouponError("Please verify your mobile number first.");
+      return;
+    }
+
+    // Find all items eligible for a coupon
+    const eligibleItems = cartProducts.filter((item) => {
+      // Assuming BOGO/promotions are not yet in KSA, but adding this for future-proofing
+      const isBogoProduct = false; // promotionsContext.some(...)
+      return !item.discount && !isBogoProduct && !item.is_gift;
+    });
+    // const eligibleItems = cartProducts.filter((item) => {
+    //   const isBogoProduct = promotionsContext.some((promo) => promo.buy_products.some((buyItem) => buyItem.product_id === item.product_id));
+    //   return !item.discount && !isBogoProduct && !item.is_gift && !item.collection_name;
+    // });
+
+    if (eligibleItems.length === 0) {
+      setCouponError("This coupon is not applicable to the items in your cart.");
+      setCouponCode("");
+      return;
+    }
+
+    // Find the coupon from the state (fetched from the new API)
+    const validCoupon = coupons.find((c) => c.code.toLowerCase() === code);
+
+    let payload = {
+      company: "KSA", // <-- The required change for KSA
+      salesType: "EComm",
+      couponRegistrationId: validCoupon ? validCoupon.couponRegistrationId : 0,
+      couponCode: validCoupon ? "" : couponCode.trim(),
+      mobileNo: user?.phone || formData.billingAddress.mobile,
+      email: user?.email || formData.billingAddress.email,
+    };
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SMARTVIEW_API_URL}Coupon/ActiveCoupons`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!res.ok) {
+      setCouponError("Invalid or expired coupon code.");
+      setCouponCode("");
+      return;
+    }
+
+    const data = await res.json();
+    let apiCoupon = data.data && data.data[0];
+
+    // Normalize API coupon if it wasn't in our pre-fetched list
+    if (apiCoupon && !validCoupon) {
+      apiCoupon = { id: apiCoupon.couponCode, code: apiCoupon.couponCode, title: apiCoupon.promotionName, description: apiCoupon.promotionName, value: apiCoupon.value, coupon_type: apiCoupon.baseOn === "P" ? "percent" : "amount", type: "customer", end_date: apiCoupon.validTo, start_date: apiCoupon.registrationDate, couponRegistrationId: apiCoupon.couponRegistrationId, salesType: apiCoupon.salesType, company: apiCoupon.company, whsCode: apiCoupon.whsCode, };
+    }
+
+    const couponToApply = validCoupon || apiCoupon;
+
+    if (!couponToApply) {
+      setCouponError("Invalid or expired coupon code.");
+      setCouponCode("");
+      return;
+    }
+
+    // Apply coupon to eligible items by updating cart state
+    const updatedCartProducts = cartProducts.map((item) => {
+      const isBogoProduct = false; // promotionsContext.some(...)
+      const isEligible = !item.discount && !isBogoProduct && !item.is_gift;
+      return { ...item, ...(isEligible ? { is_coupon: true, value: couponToApply.value, coupon_type: couponToApply.coupon_type, } : {}), };
+    });
+    // const updatedCartProducts = cartProducts.map((item) => {
+    //   const isBogoProduct = promotionsContext.some((promo) => promo.buy_products.some((buyItem) => buyItem.product_id === item.product_id));
+    //   const isEligible = !item.discount && !isBogoProduct && !item.is_gift;
+    //   return { ...item, ...(isEligible ? { is_coupon: true, value: couponToApply.value, coupon_type: couponToApply.coupon_type, } : {}), };
+    // });
+
+    setCartProducts(updatedCartProducts);
+    setCouponError(null);
+    setCouponData(couponToApply);
+    setCouponDataContext(couponToApply); // Update context
+    setCouponSuccess(`Applied Coupon: ${couponToApply.code} - ${couponToApply.title}`);
+  };
+
+  const subTotalPrice = (elm) => {
+    if (elm.is_gift) { return <td>0.00{currency.symbol} (Free Gift)</td>; }
+    const currentUTC = new Date(); // Current UTC time
+    const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
+    const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+    let itemPrice = elm.price;
+    if(elm?.discount) {
+      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
+        return <td>{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+      } else {
+        return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+      }
+    } else if(elm?.sale_price) {
+      console.log('else if 2');
+      return (
+        <td>
+          <span className="money price price-old">{currency.symbol}{elm?.price}</span>
+          <span className="money price price-sale">{currency.symbol}{(elm.sale_price * elm.quantity).toFixed(2)}</span>
+        </td>
+      )
+    } else if (couponData && couponData.type === "customer" && elm.is_coupon) {
+      if (couponData.coupon_type == "percent") { 
+        itemPrice = elm.price - (elm.price / 100) * couponData.value;
+      } else if (couponData.coupon_type == "amount") {
+        itemPrice = elm.price - couponData.value;
+      }
+      return (
+        <td>
+          <span className="money price price-sale">{currency.symbol}{(itemPrice * elm.quantity).toFixed(2)}</span>
+          <span className="money price price-old">{currency.symbol}{(elm.price * elm.quantity).toFixed(2)}</span>
+        </td>
+      );
+    } else {
+      return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+    }
+  };
+
+  const isExpired = (end_date) => { return new Date(end_date) < new Date(); };
  
   async function onOrder(event) {
     event.preventDefault();
-    // console.log('Order submitted:', formData);
     setIsLoading(true);
     setError(null);
     setSuccess(null);
@@ -379,67 +455,33 @@ export default function Checkout() {
       userJson = JSON.parse(user);
     }
 
-    const additionalFields = {
-      ...formData,
-      products : cartProducts,
-      payment_method: selectedOption,
-      shippingPrice,
-      shippingPriceVat,
-      servicePrice,
-      servicePriceVat,
-      vatTax: vatTax.percentage,
-      totalPrice,
-      finalPrice,
-      customer_id: userJson ? userJson.id : null,
-      locale,
-      couponCode,
-      couponData
-    }
+    const additionalFields = { ...formData, products : cartProducts, payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData }
  
     try {
       // const formDataa = new FormData(additionalFields);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/storeOrder`, {
         method: 'POST',
         body: JSON.stringify(additionalFields),
-        headers: {
-          'content-type': 'application/json'
-        }
+        headers: { 'content-type': 'application/json' }
       })
  
       if (!response.ok) {
         setTimeout(() => {
           // localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
           // setCartProducts([]); // update the cartProducts state to an empty array
-        }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
+        }, 2000);
         throw new Error('Oops!!! Your Session has been expired. Please try again.');
       }
  
       // Handle response if necessary
       const data = await response.json();
-      // console.log(data);
       if(data.message && data.message.split(' ')[0] == 'Order') {
         setSuccess(data.message);
         setError(null);
         setOrderDetails(data);
         setFormData({
-          shippingAddress: {
-            first_name: '',
-            last_name: '',
-            mobile: '',
-            email: '',
-            area: '',
-            building: '',
-            province: ''
-          },
-          billingAddress: {
-            first_name: '',
-            last_name: '',
-            mobile: '',
-            email: '',
-            area: '',
-            building: '',
-            province: ''
-          },
+          shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' },
+          billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' },
           shippingAdd: false,
         });
         setTimeout(() => router.push(`/${locale}/shop-order-complete`), 1000);
@@ -478,8 +520,6 @@ export default function Checkout() {
           "shipping_country": data.request_params.shipping_country,
           "signature": data.request_params.signature
         };
-
-        console.log(JSON.stringify(params));
 
         Object.entries(params).forEach(([key, value]) => {
           const input = document.createElement("input");
@@ -572,16 +612,16 @@ export default function Checkout() {
 
   async function sendOTP(e) {
     e.preventDefault();
-    // console.log('Mobile:', formData.billingAddress.mobile);
-    // return;
     setIsSendOTPLoading(true);
+
+    const regex = /^\d{10}$/;
+
     if(formData.billingAddress.mobile == '') {
       setOTPError('Mobile Number is Required');
       setOTPSuccess(null);
       setIsSendOTPLoading(false);
       return;
     }
-    const regex = /^\d{10}$/;
     if(!regex.test(formData.billingAddress.mobile)) {
       setOTPError('Invalid Mobile Number');
       setOTPSuccess(null);
@@ -597,32 +637,22 @@ export default function Checkout() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/sendOTP`, {
         method: 'POST',
         body: JSON.stringify({mobile}),
-        headers: {
-          'Content-Type': 'application/json', // Specify the content type
-        }
+        headers: { 'Content-Type': 'application/json', }
       })
  
-      if (!response.ok) {
-        throw new Error('Failed to submit the data. Please try again.');
-      }
+      if (!response.ok) { throw new Error('Failed to submit the data. Please try again.'); }
  
-      // Handle response if necessary
       const data = await response.json();
       if(data.message && data.message.split(' ')[0] == 'OTP') {
         setOTPSuccess(data.message);
         setOTPError(null);
         setIsOTPButton(false);
       } else {
-        if(data['mobile']) {
-          setOTPSuccess(data['mobile']);
-        }
+        if(data['mobile']) { setOTPSuccess(data['mobile']); }
         setOTPSuccess(null);
       }
-      // console.log(data);
     } catch (error) {
-      // Capture the error message to display to the user
       setOTPSuccess(error.message);
-      console.error(error);
     } finally {
       setIsSendOTPLoading(false);
     }
@@ -630,17 +660,16 @@ export default function Checkout() {
 
   async function verifyOTP(e) {
     e.preventDefault();
-    // console.log('Mobile:', formData.billingAddress.mobile);
-    // console.log('OTP:', formData.otp);
-    // return;
     setIsSendOTPLoading(true);
+    
+    const regex = /^\d+$/;
+
     if(formData.otp == '') {
       setOTPError('OTP is Required');
       setOTPSuccess(null);
       setIsSendOTPLoading(false);
       return;
     }
-    const regex = /^\d+$/;
     if(!regex.test(formData.otp)) {
       setOTPError('Invalid OTP');
       setOTPSuccess(null);
@@ -657,14 +686,10 @@ export default function Checkout() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/verifyOTP`, {
         method: 'POST',
         body: JSON.stringify({mobile, otp, flag: 'checkout'}),
-        headers: {
-          'Content-Type': 'application/json', // Specify the content type
-        }
+        headers: { 'Content-Type': 'application/json', }
       })
  
-      if (!response.ok) {
-        throw new Error('Failed to submit the data. Please try again.');
-      }
+      if (!response.ok) { throw new Error('Failed to submit the data. Please try again.'); }
  
       // Handle response if necessary
       const data = await response.json();
@@ -677,12 +702,8 @@ export default function Checkout() {
         setIsDisabled(false);
         setOTPError(null);
       } else {
-        if(data['mobile']) {
-          setOTPError(data['mobile']);
-        }
-        if(data['otp']) {
-          setOTPError(data['otp']);
-        }
+        if(data['mobile']) { setOTPError(data['mobile']); }
+        if(data['otp']) { setOTPError(data['otp']); }
         setOTPSuccess(null);
       }
       // console.log(data);
@@ -694,229 +715,9 @@ export default function Checkout() {
       setIsSendOTPLoading(false);
     }
   }
-
-  const handleCouponChange = (e) => {
-    setCouponCode(e.target.value);
-    setCouponSuccess(null);
-    setCouponData(null);
-    setCouponDataContext(null); // Clear coupon from context
-
-    // Clean coupon data from cart products
-    const cleanedCart = cartProducts.map((item) => {
-      const { is_coupon, value, ...rest } = item;
-      return rest;
-    });
-    setCartProducts(cleanedCart);
-  };
-
-  const removeCoupon = (e) => {
-    setCouponCode("");
-    setCouponSuccess(null);
-    setCouponData(null);
-    setCouponDataContext(null); // Clear coupon from context
-
-    // Clean coupon data from cart products
-    const cleanedCart = cartProducts.map((item) => {
-      const { is_coupon, value, ...rest } = item;
-      return rest;
-    });
-    setCartProducts(cleanedCart);
-  };
-
- const applyCoupon = async (e) => {
-    e.preventDefault();
-
-    const user = isLoggedIn ? JSON.parse(atob(localStorage.getItem("user"))) : null;
-
-    if (!couponCode.trim()) {
-      setCouponError("Coupon Code is Required");
-      return;
-    }
-
-    // Note: The KSA file had OTP logic commented out. This new logic assumes
-    // you need to verify OTP if not logged in.
-      // if (!isLoggedIn ) {
-      //   setCouponError("Please verify your mobile number first.");
-      //   return;
-      // }
-
-    const code = couponCode.toLowerCase();
-
-    // Find all items eligible for a coupon
-    const eligibleItems = cartProducts.filter((item) => {
-      // Assuming BOGO/promotions are not yet in KSA, but adding this for future-proofing
-      const isBogoProduct = false; // promotionsContext.some(...)
-      return !item.discount && !isBogoProduct && !item.is_gift;
-    });
-
-    if (eligibleItems.length === 0) {
-      setCouponError("This coupon is not applicable to the items in your cart.");
-      setCouponCode("");
-      return;
-    }
-
-    // Find the coupon from the state (fetched from the new API)
-    const validCoupon = coupons.find((c) => c.code.toLowerCase() === code);
-
-    let payload = {
-      company: "KSA", // <-- The required change for KSA
-      salesType: "EComm",
-      couponRegistrationId: validCoupon ? validCoupon.couponRegistrationId : 0,
-      couponCode: validCoupon ? "" : couponCode.trim(),
-      mobileNo: user?.phone || formData.billingAddress.mobile,
-      email: user?.email || formData.billingAddress.email,
-    };
-
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SMARTVIEW_API_URL}Coupon/ActiveCoupons`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (!res.ok) {
-      setCouponError("Invalid or expired coupon code.");
-      setCouponCode("");
-      return;
-    }
-
-    const data = await res.json();
-    let apiCoupon = data.data && data.data[0];
-
-    // Normalize API coupon if it wasn't in our pre-fetched list
-    if (apiCoupon && !validCoupon) {
-      apiCoupon = {
-        id: apiCoupon.couponCode,
-        code: apiCoupon.couponCode,
-        title: apiCoupon.promotionName,
-        description: apiCoupon.promotionName,
-        value: apiCoupon.value,
-        coupon_type: apiCoupon.baseOn === "P" ? "percent" : "amount",
-        type: "customer",
-        end_date: apiCoupon.validTo,
-        start_date: apiCoupon.registrationDate,
-        couponRegistrationId: apiCoupon.couponRegistrationId,
-        salesType: apiCoupon.salesType,
-        company: apiCoupon.company,
-        whsCode: apiCoupon.whsCode,
-      };
-    }
-
-    const couponToApply = validCoupon || apiCoupon;
-
-    if (!couponToApply) {
-      setCouponError("Invalid or expired coupon code.");
-      setCouponCode("");
-      return;
-    }
-
-    // Apply coupon to eligible items by updating cart state
-    const updatedCartProducts = cartProducts.map((item) => {
-      const isBogoProduct = false; // promotionsContext.some(...)
-      const isEligible = !item.discount && !isBogoProduct && !item.is_gift;
-      return {
-        ...item,
-        ...(isEligible
-          ? {
-              is_coupon: true,
-              value: couponToApply.value,
-              coupon_type: couponToApply.coupon_type,
-            }
-          : {}),
-      };
-    });
-
-    setCartProducts(updatedCartProducts);
-    setCouponError(null);
-    setCouponData(couponToApply);
-    setCouponDataContext(couponToApply); // Update context
-    setCouponSuccess(
-      `Applied Coupon: ${couponToApply.code} - ${couponToApply.title}`
-    );
-  };
   
-  // Add these new helper functions for the modal
-  const isExpired = (end_date) => {
-    return new Date(end_date) < new Date();
-  };
-
-  const handleSelectCoupon = async (code, id) => {
-    setCouponData(null);
-    setCouponCode(code);
-    setCopiedId(id);
-    setShowCouponModal(false);
-    setTimeout(() => setCopiedId(null), 1400); // For "Applied!" message
-  };
-
-  const handleCopy = (code, id) => {
-    navigator.clipboard.writeText(code);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 1400); // For "Copied!" message
-  };
-
-  if (isMenuLoading) {
-    return <div><Pagination1 /></div>;
-  }
-  if (isMenuError) {
-    return <div>{ isMenuError }</div>;
-  }
-
-  const subTotalPrice = (elm) => {
-    if (elm.is_gift) {
-      return <td>0.00{currency.symbol} (Free Gift)</td>;
-    }
-    const currentUTC = new Date(); // Current UTC time
-    const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
-    const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-    let itemPrice = elm.price;
-    if(elm?.discount) {
-      console.log('if');
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        return <td>{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-      } else {
-        return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-      }
-    } else if(elm?.sale_price) {
-      console.log('else if 2');
-      return <td>
-      <span className="money price price-old">
-          {currency.symbol}
-          {elm?.price}
-      </span>
-      <span className="money price price-sale">
-          {currency.symbol}
-          {(elm.sale_price * elm.quantity).toFixed(2)}
-      </span>
-  </td>;
-    } else if (
-      couponData &&
-      couponData.type === "customer" &&
-      elm.is_coupon // Check the flag we set in applyCoupon
-    ) {
-      if (couponData.coupon_type == "percent") {
-        itemPrice = elm.price - (elm.price / 100) * couponData.value;
-      } else if (couponData.coupon_type == "amount") {
-        itemPrice = elm.price - couponData.value;
-      }
-      return (
-        <td>
-          <span className="money price price-sale">
-            {currency.symbol}
-            {(itemPrice * elm.quantity).toFixed(2)}
-          </span>
-          <span className="money price price-old">
-            {currency.symbol}
-            {(elm.price * elm.quantity).toFixed(2)}
-          </span>
-        </td>
-      );
-    } else {
-      console.log('else');
-      return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-    }
-  };
+  if (isMenuLoading) { return <div><Pagination1 /></div>; }
+  if (isMenuError) { return <div>{ isMenuError }</div>; }
 
   return (
     <>
@@ -930,142 +731,54 @@ export default function Checkout() {
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="checkout_first_name"
-                      placeholder="First Name"
-                      name="billingAddress.first_name"
-                      value={formData.billingAddress.first_name}
-                      onChange={handleChange}
-                      required
-                    />
+                    <input type="text" className="form-control" id="checkout_first_name" placeholder="First Name" name="billingAddress.first_name" value={formData.billingAddress.first_name} onChange={handleChange} required />
                     <label htmlFor="checkout_first_name">First Name</label>
+                    {fieldErrors.first_name && ( <div style={{ color: "red", fontSize: "0.85rem" }}> {fieldErrors.first_name} </div> )}
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="checkout_last_name"
-                      placeholder="Last Name"
-                      name="billingAddress.last_name"
-                      value={formData.billingAddress.last_name}
-                      onChange={handleChange}
-                      required
-                    />
+                    <input type="text" className="form-control" id="checkout_last_name" placeholder="Last Name" name="billingAddress.last_name" value={formData.billingAddress.last_name} onChange={handleChange} required />
                     <label htmlFor="checkout_last_name">Last Name</label>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="search-field my-3">
-                    <div
-                      className={`form-label-fixed hover-container ${
-                        idDDActive ? "js-content_visible" : ""
-                      }`}
-                    >
-                      <label htmlFor="country" className="form-label">
-                        Country / Region*
-                      </label>
+                    <div className={`form-label-fixed hover-container ${idDDActive ? "js-content_visible" : ""}`}>
+                      <label htmlFor="country" className="form-label">Country / Region*</label>
                       <div className="js-hover__open">
-                        <input
-                          type="text"
-                          className="form-control form-control-lg search-field__actor"
-                          id="country"
-                          name="billingAddress.country"
-                          value="Saudi Arabia"
-                          readOnly
-                          placeholder="Saudi Arabia"
-                        />
+                        <input type="text" className="form-control form-control-lg search-field__actor" id="country" name="billingAddress.country" value="Saudi Arabia" readOnly placeholder="Saudi Arabia" />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="form-floating mt-3 mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="checkout_street_address"
-                      placeholder="Area / Mantaqa *"
-                      name="billingAddress.area"
-                      value={formData.billingAddress.area}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="checkout_company_name">
-                      Area / Mantaqa *
-                    </label>
+                    <input type="text" className="form-control" id="checkout_street_address" placeholder="Area / Mantaqa *"  readOnly={isLoggedIn} name="billingAddress.area" value={formData.billingAddress.area} onChange={handleChange} required />
+                    <label htmlFor="checkout_company_name">Area / Mantaqa *</label>
+                    {fieldErrors.area && ( <div style={{ color: "red", fontSize: "0.85rem" }}> {fieldErrors.area} </div> )}
                   </div>
                   <div className="form-floating mt-3 mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="checkout_street_address_2"
-                      placeholder="Building / Villa / Apartment"
-                      name="billingAddress.building"
-                      value={formData.billingAddress.building}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="checkout_company_name">
-                      Building / Villa / Apartment
-                    </label>
+                    <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" readOnly={isLoggedIn} name="billingAddress.building" value={formData.billingAddress.building} onChange={handleChange} required />
+                    <label htmlFor="checkout_company_name">Building / Villa / Apartment</label>
+                    {fieldErrors.building && ( <div style={{ color: "red", fontSize: "0.85rem" }}> {fieldErrors.building} </div> )}
                   </div>
                 </div>
 
                 {/* <div className="col-md-12">
                   <div className="search-field my-3">
-                    <div
-                      className={`form-label-fixed hover-container ${
-                        idDDActive ? "js-content_visible" : ""
-                      }`}
-                    >
-                      <label htmlFor="search-dropdown" className="form-label">
-                        Province*
-                      </label>
+                    <div className={`form-label-fixed hover-container ${idDDActive ? "js-content_visible" : ""}`}>
+                      <label htmlFor="search-dropdown" className="form-label">Province*</label>
                       <div className="js-hover__open">
-                        <input
-                          type="text"
-                          className="form-control form-control-lg search-field__actor search-field__arrow-down"
-                          id="search-dropdown"
-                          name="billingAddress.emirates"
-                          value={formData.billingAddress.emirates}
-                          readOnly
-                          placeholder="Select Emirate..."
-                          onClick={() => setIdDDActive((pre) => !pre)}
-                          required
-                        />
+                        <input type="text" className="form-control form-control-lg search-field__actor search-field__arrow-down" id="search-dropdown" name="billingAddress.emirates" value={formData.billingAddress.emirates} readOnly placeholder="Select Emirate..." onClick={() => setIdDDActive((pre) => !pre)} required />
                       </div>
                       <div className="filters-container js-hidden-content mt-2">
                         <div className="search-field__input-wrapper">
-                          <input
-                            type="text"
-                            className="search-field__input form-control form-control-sm bg-lighter border-lighter"
-                            placeholder="Search"
-                            onChange={(e) => {
-                              setSearchQuery(e.target.value);
-                            }}
-                          />
+                          <input type="text" className="search-field__input form-control form-control-sm bg-lighter border-lighter" placeholder="Search" onChange={(e) => { setSearchQuery(e.target.value); }} />
                         </div>
                         <ul className="search-suggestion list-unstyled">
-                          {countries
-                            .filter((elm) =>
-                              elm
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase())
-                            )
-                            .map((elm, i) => (
-                              <li
-                                id="billingAddress.emirates"
-                                onClick={(e) => {
-                                  handleEmiratesChange(e, elm);
-                                  setIdDDActive(false);
-                                }}
-                                key={i}
-                                className="search-suggestion__item js-search-select"
-                              >
+                          {countries.filter((elm) => elm.toLowerCase().includes(searchQuery.toLowerCase())).map((elm, i) => (
+                              <li id="billingAddress.emirates" onClick={(e) => { handleEmiratesChange(e, elm); setIdDDActive(false); }} key={i} className="search-suggestion__item js-search-select" > 
                                 {elm}
                               </li>
                             ))}
@@ -1077,154 +790,66 @@ export default function Checkout() {
 
                 <div className="col-md-12">
                   <div className="form-floating mt-3 mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="checkout_province"
-                      placeholder="Province *"
-                      name="billingAddress.province"
-                      value={formData.billingAddress.province}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="checkout_province">
-                      Province *
-                    </label>
+                    <input type="text" className="form-control" id="checkout_province" placeholder="Province *" readOnly={isLoggedIn} name="billingAddress.province" value={formData.billingAddress.province} onChange={handleChange} required />
+                    <label htmlFor="checkout_province"> Province * </label>
                   </div>
                   {/* <div className="form-floating mt-3 mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="checkout_street_address_2"
-                      placeholder="Building / Villa / Apartment"
-                      name="billingAddress.building"
-                      value={formData.billingAddress.building}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="checkout_company_name">
-                      Building / Villa / Apartment
-                    </label>
+                    <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" name="billingAddress.building" value={formData.billingAddress.building} onChange={handleChange} required />
+                    <label htmlFor="checkout_company_name"> Building / Villa / Apartment </label>
                   </div> */}
                 </div>
-
+                {isLoggedIn && ( <Link className="btn-link btn-link_lg text-center fw-bold text-danger p-2" href={`/${locale}/account_edit_address`} target="_blank" > - Click to Edit Address - </Link> )}
                 <div className="col-md-12">
                   <div className="form-floating my-3">
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="billingAddress.email"
-                      placeholder="Your Mail *"
-                      name="billingAddress.email"
-                      value={formData.billingAddress.email}
-                      onChange={handleChange}
-                      required
-                    />
+                    <input type="email" className="form-control" id="billingAddress.email" placeholder="Your Mail *" name="billingAddress.email" value={formData.billingAddress.email} onChange={handleChange} required />
                     <label htmlFor="checkout_email">Email Address *</label>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      pattern="^\d{10}$"
-                      title="Only positive integers allowed"
-                      className="form-control"
-                      id="checkout_otp"
-                      placeholder="Eg. 0500000000 *"
-                      name="billingAddress.mobile"
-                      value={formData.billingAddress.mobile}
-                      onChange={handleChange}
-                      required
-                    />
+                    <input type="text" pattern="^\d{10}$" title="Only positive integers allowed" className="form-control" id="checkout_otp" placeholder="Eg. 0500000000 *" name="billingAddress.mobile" value={formData.billingAddress.mobile} onChange={handleChange} required />
                     <label htmlFor="checkout_phone">Mobile Number (Eg. 0500000000)*</label>
                   </div>
-                    {/* {OTPError ? <div style={{ color: 'red' }}>{OTPError}</div> : <div style={{ color: 'green' }}>{OTPSuccess}</div>}
-                    {isOTPButton ? <button
-                      className="btn btn-primary w-100 text-uppercase"
-                      type="button"
-                      disabled={isSendOTPLoading}
-                      onClick={sendOTP}
-                    >
-                    {isSendOTPLoading ? 'Loading...' : 'Send OTP'}
-                    </button> : <>{!isOTPVerified && <><div className="form-floating my-3">
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="otp"
-                        placeholder="Eg. 1234 *"
-                        name="otp"
-                        value={formData.otp}
-                        onChange={handleChange}
-                      />
-                      <label htmlFor="checkout_otp">OTP (Eg. 1234)*</label>
-                    </div>
-                    <button
-                      className="btn btn-primary w-100 text-uppercase"
-                      type="button"
-                      disabled={isSendOTPLoading}
-                      onClick={verifyOTP}
-                    >
-                  {isSendOTPLoading ? 'Loading...' : 'Verify OTP'}
-                  </button></>}</>} */}
                 </div>
+                {!isLoggedIn && (
+                    <div className="col-md-12">
+                      {OTPError ? ( <div style={{ color: "red" }}>{OTPError}</div> ) : ( <div style={{ color: "green" }}>{OTPSuccess}</div> )}
+                      {isOTPButton ? ( <button className="btn btn-primary w-100 text-uppercase" type="button" disabled={isSendOTPLoading} onClick={sendOTP} > {isSendOTPLoading ? "Loading..." : "Send OTP"} </button> ) : ( 
+                        <>
+                        {!isOTPVerified && ( 
+                          <>
+                            <div className="form-floating my-3">
+                              <input type="number" className="form-control" id="billing_otp" placeholder="Eg. 1234 *" name="otp" value={formData.otp} onChange={handleChange} />
+                              <label htmlFor="billing_otp"> OTP (Eg. 1234)* </label>
+                            </div>
+                            <button className="btn btn-primary w-100 text-uppercase" type="button" disabled={isSendOTPLoading} onClick={verifyOTP} >
+                              {isSendOTPLoading ? "Loading..." : "Verify OTP"} 
+                            </button>
+                          </>
+                        )}
+                        </>
+                      )}
+                    </div>
+                  )}
                 <div className="col-md-12">
                   {!isLoggedIn && <div className="form-check mt-3">
-                    <input
-                      className="form-check-input form-check-input_fill"
-                      type="checkbox"
-                      defaultValue=""
-                      id="create_account"
-                      onClick={(prev) => setCreateAccount(!createAccount)}
-                      name="create_account"
-                    />
-                    <label className="form-check-label" htmlFor="create_account">
-                      CREATE AN ACCOUNT?
-                    </label>
+                    <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue="" id="create_account" onClick={(prev) => setCreateAccount(!createAccount)} name="create_account" />
+                    <label className="form-check-label" htmlFor="create_account"> CREATE AN ACCOUNT? </label>
                   </div>}
                   <div className="form-check mb-3">
-                    <input
-                      className="form-check-input form-check-input_fill"
-                      type="checkbox"
-                      defaultValue=""
-                      id="ship_different_address"
-                      onClick={handleCheckboxChange}
-                      name="shipping"
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="ship_different_address"
-                    >
-                      SHIP TO A DIFFERENT ADDRESS?
-                    </label>
+                    <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue="" id="ship_different_address" onClick={handleCheckboxChange} name="shipping" />
+                    <label className="form-check-label" htmlFor="ship_different_address" > SHIP TO A DIFFERENT ADDRESS? </label>
                   </div>
                 </div>
               </div>
               <div className="col-md-12">
                 <div className="mt-3 mb-3">
-                  <textarea
-                    className="form-control form-control_gray"
-                    placeholder="Order Notes (optional)"
-                    cols="30"
-                    rows="8"
-                    name="note"
-                    onChange={handleChange}
-                    value={ formData.note }
-                  ></textarea>
+                  <textarea className="form-control form-control_gray" placeholder="Order Notes (optional)" cols="30" rows="8" name="note" onChange={handleChange} value={ formData.note } ></textarea>
                 </div>
               </div>
               {createAccount && <div className="col-md-12">
                 <div className="form-floating my-3">
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    placeholder="Password *"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
+                  <input type="password" className="form-control" id="password" placeholder="Password *" name="password" value={formData.password} onChange={handleChange} required />
                   <label htmlFor="checkout_email">Password *</label>
                 </div>
               </div>}
@@ -1300,28 +925,8 @@ export default function Checkout() {
                     )}
 
                    <div style={{ position: "relative" }}>
-                      <input
-                        className="form-control mb-1"
-                        type="text"
-                        name="coupon_code"
-                        placeholder="Coupon Code"
-                        value={couponCode}
-                        onChange={handleCouponChange}
-                        style={{ paddingRight: "100px" }}
-                      />
-                      <span
-                        style={{
-                          position: "absolute",
-                          top: "50%",
-                          right: "12px",
-                          transform: "translateY(-50%)",
-                          fontSize: 14,
-                          color: "#a67b30",
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                        }}
-                        onClick={() => setShowCouponModal(true)}
-                      >
+                      <input className="form-control mb-1" type="text" name="coupon_code" placeholder="Coupon Code" value={couponCode} onChange={handleCouponChange} style={{ paddingRight: "100px" }} />
+                      <span style={{ position: "absolute", top: "50%", right: "12px", transform: "translateY(-50%)", fontSize: 14, color: "#a67b30", cursor: "pointer", textDecoration: "underline",}} onClick={() => setShowCouponModal(true)} >
                         View Coupons
                       </span>
                     </div>
@@ -1335,37 +940,18 @@ export default function Checkout() {
                         onChange={handleCouponChange}
                     /> */}
                     {!couponData ? (
-                      <input
-                        className="coupon-action-btn"
-                        type="button"
-                        value="APPLY COUPON"
-                        onClick={applyCoupon}
-                      />
+                      <input className="coupon-action-btn" type="button" value="APPLY COUPON" onClick={applyCoupon} />
                     ) : (
-                      <input
-                        className="coupon-action-btn remove"
-                        type="button"
-                        value="REMOVE COUPON"
-                        onClick={removeCoupon}
-                      />
+                      <input className="coupon-action-btn remove" type="button" value="REMOVE COUPON" onClick={removeCoupon} />
                     )}
                   {/* </form> */}
                   <br/><br/>
                    {showCouponModal && (
-                      <div
-                        className="coupon-modal-overlay"
-                        onClick={() => setShowCouponModal(false)}
-                      >
-                        <div
-                          className="coupon-modal"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                      <div className="coupon-modal-overlay" onClick={() => setShowCouponModal(false)} >
+                        <div className="coupon-modal" onClick={(e) => e.stopPropagation()} >
                           <div className="coupon-header">
                             <h3>Available Offers</h3>
-                            <button
-                              className="close-btn"
-                              onClick={() => setShowCouponModal(false)}
-                            >
+                            <button className="close-btn" onClick={() => setShowCouponModal(false)} >
                               &times;
                             </button>
                           </div>
@@ -1384,85 +970,36 @@ export default function Checkout() {
                               {coupons.map((c, idx) => {
                                 const expired = isExpired(c.end_date);
                                 return (
-                                  <div
-                                    key={c.id || `coupon-${idx}`}
-                                    className={`coupon-ticket ${
-                                      expired ? "expired" : ""
-                                    }`}
-                                  >
+                                  <div key={c.id || `coupon-${idx}`} className={`coupon-ticket ${ expired ? "expired" : "" }`} >
                                     <div className="coupon-left">
                                       <div className="coupon-title">
                                         {c.title || "Special Offer"}
                                       </div>
                                       <div className="coupon-desc">
                                         <h5>
-                                          {c.description ||
-                                            (c.coupon_type === "percent"
-                                              ? `${c.value}% OFF`
-                                              : `AED${c.value} OFF`)}
+                                          {c.description || (c.coupon_type === "percent" ? `${c.value}% OFF` : `AED${c.value} OFF`)}
                                         </h5>
                                       </div>
                                       <div className="coupon-validity">
-                                        {expired
-                                          ? `Expired: ${c.end_date?.slice(
-                                              0,
-                                              10
-                                            )}`
-                                          : `Valid until: ${c.end_date?.slice(
-                                              0,
-                                              10
-                                            )}`}
+                                        {expired ? `Expired: ${c.end_date?.slice(0, 10)}` : `Valid until: ${c.end_date?.slice(0, 10 )}`}
                                       </div>
                                     </div>
 
                                     <div className="coupon-right">
-                                      <div
-                                        className={`coupon-code-box ${
-                                          copiedId ===
-                                          (c.id || `coupon-${idx}`)
-                                            ? "copied"
-                                            : ""
-                                        }`}
-                                        onClick={() =>
-                                          !expired &&
-                                          handleCopy(
-                                            c.code,
-                                            c.id || `coupon-${idx}`
-                                          )
-                                        }
-                                      >
+                                      <div className={`coupon-code-box ${copiedId === (c.id || `coupon-${idx}`) ? "copied" : "" }`} onClick={() => !expired && handleCopy(c.code, c.id || `coupon-${idx}`)}>
                                         <span className="coupon-code">
                                           {c.code}
                                         </span>
                                       </div>
 
                                       {!expired && (
-                                        <button
-                                          className={`apply-btn ${
-                                            copiedId ===
-                                            (c.id || `coupon-${idx}`)
-                                              ? "applied"
-                                              : ""
-                                          }`}
-                                          onClick={() =>
-                                            handleSelectCoupon(
-                                              c.code,
-                                              c.id || `coupon-${idx}`
-                                            )
-                                          }
-                                        >
-                                          {copiedId ===
-                                          (c.id || `coupon-${idx}`)
-                                            ? "Applied!"
-                                            : "Click to Apply"}
+                                        <button className={`apply-btn ${copiedId === (c.id || `coupon-${idx}`) ? "applied" : "" }`}
+                                          onClick={() => handleSelectCoupon(c.code, c.id || `coupon-${idx}`)}>
+                                          {copiedId === (c.id || `coupon-${idx}`) ? "Applied!" : "Click to Apply"} 
                                         </button>
                                       )}
 
-                                      {expired && (
-                                        <div className="coupon-expired-badge">
-                                          Expired
-                                        </div>
-                                      )}
+                                      {expired && ( <div className="coupon-expired-badge">Expired</div> )}
                                     </div>
                                   </div>
                                 );
@@ -1474,202 +1011,38 @@ export default function Checkout() {
                     )}
                   {/* <button className="btn btn-light">UPDATE CART</button> */}
                 </div>
-                 <style jsx>{`
-                    .coupon-modal-overlay {
-                      position: fixed;
-                      inset: 0;
-                      background: rgba(0, 0, 0, 0.5);
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      z-index: 999;
-                    }
-
-                    .coupon-modal {
-                      background: #fff;
-                      border-radius: 12px;
-                      width: 500px;
-                      max-width: 90%;
-                      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-                      overflow: hidden;
-                      font-family: "Inter", sans-serif;
-                    }
-
-                    .coupon-header {
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      padding: 14px 18px;
-                      border-bottom: 1px solid #f0f0f0;
-                    }
-                    .coupon-header h3 {
-                      margin: 0;
-                      font-size: 20px;
-                      font-weight: 600;
-                      color: #222;
-                    }
-                    .coupon-subheader {
-                      padding: 10px 18px;
-                      border-bottom: 1px solid #f0f0f0;
-                    }
-                    .coupon-subheader h3 {
-                      margin: 0;
-                      font-size: 16px;
-                      font-weight: 600;
-                      color: #a67b30;
-                      background: #fffaf2ff;
-                    }
-                    .close-btn {
-                      background: none;
-                      border: none;
-                      font-size: 20px;
-                      color: #666;
-                      cursor: pointer;
-                    }
-
-                    .coupon-body {
-                      display: flex;
-                      flex-direction: column;
-                      gap: 12px;
-                      padding: 16px;
-                    }
-
-                    .coupon-ticket {
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      border: 1px solid #e5e5e5;
-                      border-radius: 12px;
-                      background: #fff;
-                      padding: 14px 16px;
-                      position: relative;
-                      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-                      overflow: hidden;
-                    }
-
-                    .coupon-ticket::before,
-                    .coupon-ticket::after {
-                      content: "";
-                      position: absolute;
-                      top: 50%;
-                      width: 20px;
-                      height: 20px;
-                      background: #f5f5f5;
-                      border: 1.5px solid #dbdbdb;
-                      border-radius: 50%;
-                      transform: translateY(-50%);
-                      z-index: 2;
-                    }
-                    .coupon-ticket::before {
-                      left: -10px;
-                    }
-                    .coupon-ticket::after {
-                      right: -10px;
-                    }
-
-                    .coupon-left {
-                      display: flex;
-                      flex-direction: column;
-                      gap: 4px;
-                    }
-                    .coupon-title {
-                      font-size: 14px;
-                      font-weight: 600;
-                      color: #222;
-                    }
-                    .coupon-desc {
-                      font-size: 12px;
-                      color: #555;
-                    }
-
-                    .coupon-right {
-                      display: flex;
-                      flex-direction: column;
-                      align-items: flex-end;
-                      gap: 6px;
-                    }
-                    .coupon-code {
-                      background: #f0fdf4;
-                      color: #198754;
-                      font-size: 13px;
-                      font-weight: 600;
-                      padding: 4px 10px;
-                      border-radius: 6px;
-                    }
-
-                    .apply-btn {
-                      background: none;
-                      border: none;
-                      color: #a67b30;
-                      font-size: 12px;
-                      font-weight: 600;
-                      cursor: pointer;
-                      padding: 0;
-                      text-transform: uppercase;
-                    }
-                    .apply-btn:hover {
-                      text-decoration: underline;
-                    }
-
-                    .coupon-ticket.expired {
-                      opacity: 0.6;
-                    }
-
-                    .coupon-loading,
-                    .coupon-empty {
-                      text-align: center;
-                      padding: 30px;
-                      color: #777;
-                      font-size: 13px;
-                    }
-                    .coupon-action-btn {
-                      width: 100%;
-                      padding: 12px;
-                      background-color: #222; /* Dark background for contrast */
-                      color: #fff;
-                      border: 1px solid #222;
-                      border-radius: 4px;
-                      font-size: 13px;
-                      font-weight: 600;
-                      letter-spacing: 0.5px;
-                      text-transform: uppercase;
-                      cursor: pointer;
-                      transition: all 0.3s ease;
-                      margin-top: 8px;
-                    }
-
-                    .coupon-action-btn:hover {
-                      background-color: #000;
-                      border-color: #000;
-                    }
-
-                    /* Specific style for the Remove button */
-                    .coupon-action-btn.remove {
-                      background-color: transparent;
-                      color: #dc3545; /* Red color */
-                      border: 1px solid #dc3545;
-                    }
-
-                    .coupon-action-btn.remove:hover {
-                      background-color: #dc3545;
-                      color: #fff;
-                    }
-                  `}</style>
+                <style jsx>{`
+                    .coupon-modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 999; }
+                    .coupon-modal { background: #fff; border-radius: 12px; width: 500px; max-width: 90%; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); overflow:  hidden; font-family: "Inter", sans-serif; }
+                    .coupon-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #f0f0f0; }
+                    .coupon-header h3 { margin: 0; font-size: 20px; font-weight: 600; color: #222; }
+                    .coupon-subheader { padding: 10px 18px; border-bottom: 1px solid #f0f0f0; }
+                    .coupon-subheader h3 { margin: 0; font-size: 16px; font-weight: 600; color: #a67b30; background: #fffaf2ff; }
+                    .close-btn { background: none; border: none; font-size: 20px; color: #666; cursor: pointer; }
+                    .coupon-body { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+                    .coupon-ticket { display: flex; justify-content: space-between; align-items: center; border: 1px solid #e5e5e5; border-radius: 12px; background: #fff; padding: 14px 16px; position: relative; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); overflow: hidden; }
+                    .coupon-ticket::before, .coupon-ticket::after { content: ""; position: absolute; top: 50%; width: 20px; height: 20px; background: #f5f5f5; border: 1.5px solid #dbdbdb; border-radius: 50%; transform: translateY(-50%); z-index: 2; }
+                    .coupon-ticket::before { left: -10px; }
+                    .coupon-ticket::after { right: -10px; }
+                    .coupon-left { display: flex; flex-direction: column; gap: 4px; }
+                    .coupon-title { font-size: 14px; font-weight: 600; color: #222; }
+                    .coupon-desc { font-size: 12px; color: #555; }
+                    .coupon-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; } 
+                    .coupon-code { background: #f0fdf4; color: #198754; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
+                    .apply-btn { background: none; border: none; color: #a67b30; font-size: 12px; font-weight: 600; cursor: pointer; padding: 0; text-transform: uppercase; }
+                    .apply-btn:hover { text-decoration: underline; }
+                    .coupon-ticket.expired { opacity: 0.6; }
+                    .coupon-loading, .coupon-empty { text-align: center; padding: 30px; color: #777; font-size: 13px; }
+                    .coupon-action-btn { width: 100%; padding: 12px; background-color: #222; color: #fff; border: 1px solid #222; border-radius: 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; margin-top: 8px; }
+                    .coupon-action-btn:hover { background-color: #000; border-color: #000; }
+                    .coupon-action-btn.remove { background-color: transparent; color: #dc3545; border: 1px solid #dc3545; 
+                    .coupon-action-btn.remove:hover { background-color: #dc3545; color: #fff; }
+                  `}
+                </style>
                 <div className="checkout__payment-methods">
                   <div className="form-check">
-                    <input
-                      className="form-check-input form-check-input_fill"
-                      type="radio"
-                      name="checkout_payment_method"
-                      id="checkout_payment_method_3"
-                      value={'cod'}
-                      checked={selectedOption === 'cod'}
-                      onChange={handleRadioChange}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="checkout_payment_method_3"
-                    >
+                    <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_3" value={'cod'} checked={selectedOption === 'cod'} onChange={handleRadioChange} />
+                    <label className="form-check-label" htmlFor="checkout_payment_method_3" >
                       Cash on delivery
                       {/* <span className="option-detail d-block">
                         Phasellus sed volutpat orci. Fusce eget lore mauris
@@ -1724,25 +1097,9 @@ export default function Checkout() {
                   </div>
 
                   <div className="form-check">
-                    <input
-                      className="form-check-input form-check-input_fill"
-                      type="radio"
-                      name="checkout_payment_method"
-                      id="checkout_payment_method_6"
-                      value={'tabby'}
-                      checked={selectedOption === 'tabby'}
-                      onChange={handleRadioChange}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="checkout_payment_method_6"
-                    >
-                      <Image
-                        src="/assets/images/paymentGateway/Tabby.png"
-                        width="60"
-                        height="25"
-                        alt="Cropped Faux leather Jacket"
-                      />
+                    <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_6" value={'tabby'} checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
+                    <label className="form-check-label" htmlFor="checkout_payment_method_6" >
+                      <Image src="/assets/images/paymentGateway/Tabby.png" width="60" height="25" alt="Cropped Faux leather Jacket" />
                       <span style={{marginLeft: "0.5rem"}}>Pay later with Tabby. <sup><strong>ⓘ</strong></sup></span><br/>Use any card.
                       {/* <button style={{ 'border-radius': '50px', 'border': 'none' }} type="button" data-tabby-info="installments" data-tabby-price={finalPriceState && finalPriceState} data-tabby-currency="AED">?</button> */}
                     </label>
@@ -1751,47 +1108,18 @@ export default function Checkout() {
                   <div className="policy-wrapper mt-3">
                       {/* Privacy Notice Text */}
                       <p className="small text-muted mb-3" style={{ lineHeight: '1.5' }}>
-                        {locale === 'ar'
-                          ? "سيتم استخدام بياناتك الشخصية لمعالجة طلبك، ودعم تجربتك في هذا الموقع، ولأغراض أخرى موصوفة في "
-                          : "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our "
-                        }
-                        <Link 
-                          href={`/${locale}/privacy`} 
-                          className="text-dark text-decoration-underline fw-medium" 
-                          target="_blank"
-                        >
+                        {locale === 'ar' ? "سيتم استخدام بياناتك الشخصية لمعالجة طلبك، ودعم تجربتك في هذا الموقع، ولأغراض أخرى موصوفة في " : "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our "}
+                        <Link href={`/${locale}/privacy`} className="text-dark text-decoration-underline fw-medium" target="_blank" >
                           {locale === 'ar' ? "سياسة الخصوصية." : "privacy policy."}
                         </Link>
                       </p>
 
                       {/* Interactive Checkbox */}
                       <div className="form-check d-flex align-items-start p-0">
-                        <input
-                          className="form-check-input border-secondary"
-                          type="checkbox"
-                          id="terms-agreement"
-                          required
-                          style={{ 
-                            marginTop: '0.25rem', 
-                            width: '1.1em', 
-                            height: '1.1em', 
-                            cursor: 'pointer',
-                            // Logic: Add margin to the correct side based on direction
-                            marginLeft: locale === 'ar' ? '0.5rem' : '0',
-                            marginRight: locale === 'ar' ? '0' : '0.5rem'
-                          }}
-                        />
-                        <label 
-                          htmlFor="terms-agreement" 
-                          className="form-check-label small" 
-                          style={{ cursor: 'pointer', userSelect: 'none' }}
-                        >
+                        <input className="form-check-input border-secondary" type="checkbox" id="terms-agreement" required style={{ marginTop: '0.25rem', width: '1.1em', height: '1.1em', cursor: 'pointer', marginLeft: locale === 'ar' ? '0.5rem' : '0', marginRight: locale === 'ar' ? '0' : '0.5rem' }} />
+                        <label  htmlFor="terms-agreement"  className="form-check-label small"  style={{ cursor: 'pointer', userSelect: 'none' }} >
                           {locale === 'ar' ? "لقد قرأت ووافقت على " : "I have read and agree to the website "}
-                          <Link 
-                            href={`/${locale}/terms`} 
-                            className="text-primary text-decoration-underline" 
-                            target="_blank"
-                          >
+                          <Link  href={`/${locale}/terms`}  className="text-primary text-decoration-underline"  target="_blank" >
                             {locale === 'ar' ? "شروط وأحكام الموقع" : "terms and conditions"}
                           </Link>
                           <span className="text-danger fw-bold mx-1">*</span>
@@ -1801,11 +1129,7 @@ export default function Checkout() {
                 </div>
                 {error ? ( <div style={{ backgroundColor: "#ffebe9", color: "#cf1e1e", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {error} </div> ) 
                 : success ? ( <div style={{ backgroundColor: "#e8f5e9", color: "#2e7d32", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {success} </div> ) : null}
-                <button
-                  className="btn btn-primary w-100 text-uppercase"
-                  type="submit"
-                  disabled={isLoading}
-                >
+                <button className="btn btn-primary w-100 text-uppercase" type="submit" disabled={isLoading} >
                   {isLoading ? 'Loading...' : 'Place Order'}
                 </button>
               </div>
@@ -1821,142 +1145,51 @@ export default function Checkout() {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-floating my-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="checkout_first_name"
-                        placeholder="First Name"
-                        name="shippingAddress.first_name"
-                        value={formData.shippingAddress.first_name}
-                        onChange={handleChange}
-                        required
-                      />
+                      <input type="text" className="form-control" id="checkout_first_name" placeholder="First Name" name="shippingAddress.first_name" value={formData.shippingAddress.first_name} onChange={handleChange} required />
                       <label htmlFor="checkout_first_name">First Name</label>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="form-floating my-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="checkout_last_name"
-                        placeholder="Last Name"
-                        name="shippingAddress.last_name"
-                        value={formData.shippingAddress.last_name}
-                        onChange={handleChange}
-                        required
-                      />
+                      <input type="text" className="form-control" id="checkout_last_name" placeholder="Last Name" name="shippingAddress.last_name" value={formData.shippingAddress.last_name} onChange={handleChange} required />
                       <label htmlFor="checkout_last_name">Last Name</label>
                     </div>
                   </div>
                   <div className="col-md-12">
                     <div className="search-field my-3">
-                      <div
-                        className={`form-label-fixed hover-container ${
-                          idDDActive ? "js-content_visible" : ""
-                        }`}
-                      >
-                        <label htmlFor="country" className="form-label">
-                          Country / Region*
-                        </label>
+                      <div className={`form-label-fixed hover-container ${idDDActive ? "js-content_visible" : "" }`} >
+                        <label htmlFor="country" className="form-label"> Country / Region* </label>
                         <div className="js-hover__open">
-                          <input
-                            type="text"
-                            className="form-control form-control-lg search-field__actor"
-                            id="country"
-                            name="shippingAddress.country"
-                            value="Saudi Arabia"
-                            readOnly
-                            placeholder="Saudi Arabia"
-                          />
+                          <input type="text" className="form-control form-control-lg search-field__actor" id="country" name="shippingAddress.country" value="Saudi Arabia" readOnly placeholder="Saudi Arabia" />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="col-md-12">
                     <div className="form-floating mt-3 mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="checkout_street_address"
-                        placeholder="Address *"
-                        name="shippingAddress.area"
-                        value={formData.shippingAddress.area}
-                        onChange={handleChange}
-                        required
-                      />
-                      <label htmlFor="checkout_company_name">
-                        Area / Mantaqa *
-                      </label>
+                      <input type="text" className="form-control" id="checkout_street_address" placeholder="Address *" name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required />
+                      <label htmlFor="checkout_company_name"> Area / Mantaqa * </label>
                     </div>
                     <div className="form-floating mt-3 mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="checkout_street_address_2"
-                        placeholder="Building / Villa / Apartment"
-                        name="shippingAddress.building"
-                        value={formData.shippingAddress.building}
-                        onChange={handleChange}
-                        required
-                      />
-                      <label htmlFor="checkout_company_name">
-                        Building / Villa / Apartment
-                      </label>
+                      <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
+                      <label htmlFor="checkout_company_name"> Building / Villa / Apartment </label>
                     </div>
                   </div>
 
                   {/* <div className="col-md-12">
                     <div className="search-field my-3">
-                      <div
-                        className={`form-label-fixed hover-container ${
-                          idDDActive ? "js-content_visible" : ""
-                        }`}
-                      >
-                        <label htmlFor="search-dropdown" className="form-label">
-                          Emirates*
-                        </label>
+                      <div className={`form-label-fixed hover-container ${idDDActive ? "js-content_visible" : "" }`}>
+                        <label htmlFor="search-dropdown" className="form-label">Emirates*</label>
                         <div className="js-hover__open">
-                          <input
-                            type="text"
-                            className="form-control form-control-lg search-field__actor search-field__arrow-down"
-                            id="search-dropdown"
-                            name="shippingAddress.emirates"
-                            value={formData.shippingAddress.emirates}
-                            readOnly
-                            placeholder="Select Emirate..."
-                            onClick={() => setIdDDActive((pre) => !pre)}
-                            required
-                          />
+                          <input type="text" className="form-control form-control-lg search-field__actor search-field__arrow-down" id="search-dropdown" name="shippingAddress.emirates" value={formData.shippingAddress.emirates} readOnly placeholder="Select Emirate..." onClick={() => setIdDDActive((pre) => !pre)} required />
                         </div>
                         <div className="filters-container js-hidden-content mt-2">
                           <div className="search-field__input-wrapper">
-                            <input
-                              type="text"
-                              className="search-field__input form-control form-control-sm bg-lighter border-lighter"
-                              placeholder="Search"
-                              onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                              }}
-                            />
+                            <input type="text" className="search-field__input form-control form-control-sm bg-lighter border-lighter" placeholder="Search" onChange={(e) => { setSearchQuery(e.target.value); }} />
                           </div>
                           <ul className="search-suggestion list-unstyled">
-                            {countries
-                              .filter((elm) =>
-                                elm
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase())
-                              )
-                              .map((elm, i) => (
-                                <li
-                                id="shippingAddress.emirates"
-                                  onClick={(e) => {
-                                    handleEmiratesChange(e, elm);
-                                    setIdDDActive(false);
-                                  }}
-                                  key={i}
-                                  className="search-suggestion__item js-search-select"
-                                >
+                            {countries.filter((elm) => elm.toLowerCase().includes(searchQuery.toLowerCase())).map((elm, i) => (
+                                <li id="shippingAddress.emirates" onClick={(e) => { handleEmiratesChange(e, elm); setIdDDActive(false); }} key={i} className="search-suggestion__item js-search-select" >
                                   {elm}
                                 </li>
                               ))}
@@ -1968,66 +1201,24 @@ export default function Checkout() {
 
                   <div className="col-md-12">
                     <div className="form-floating mt-3 mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="checkout_province"
-                        placeholder="Province *"
-                        name="shippingAddress.province"
-                        value={formData.shippingAddress.province}
-                        onChange={handleChange}
-                        required
-                      />
-                      <label htmlFor="checkout_province">
-                        Province *
-                      </label>
+                      <input type="text" className="form-control" id="checkout_province" placeholder="Province *" name="shippingAddress.province" value={formData.shippingAddress.province} onChange={handleChange} required />
+                      <label htmlFor="checkout_province">Province *</label>
                     </div>
                     {/* <div className="form-floating mt-3 mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="checkout_street_address_2"
-                        placeholder="Building / Villa / Apartment"
-                        name="shippingAddress.building"
-                        value={formData.shippingAddress.building}
-                        onChange={handleChange}
-                        required
-                      />
-                      <label htmlFor="checkout_company_name">
-                        Building / Villa / Apartment
-                      </label>
+                      <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
+                      <label htmlFor="checkout_company_name"> Building / Villa / Apartment </label>
                     </div> */}
                   </div>
 
                   <div className="col-md-12">
                     <div className="form-floating my-3">
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="checkout_email"
-                        placeholder="Your Mail *"
-                        name="shippingAddress.email"
-                        value={formData.shippingAddress.email}
-                        onChange={handleChange}
-                        required
-                      />
+                      <input type="email" className="form-control" id="checkout_email" placeholder="Your Mail *" name="shippingAddress.email" value={formData.shippingAddress.email} onChange={handleChange} required />
                       <label htmlFor="checkout_email">Email Address *</label>
                     </div>
                   </div>
                   <div className="col-md-12">
                     <div className="form-floating my-3">
-                      <input
-                        type="text"
-                        pattern="^\d{10}$"
-                        title="Only positive integers allowed"
-                        className="form-control"
-                        id="checkout_phone"
-                        placeholder="Eg. 0500000000 *"
-                        name="shippingAddress.mobile"
-                        value={formData.shippingAddress.mobile}
-                        onChange={handleChange}
-                        required
-                      />
+                      <input type="text" pattern="^\d{10}$" title="Only positive integers allowed" className="form-control" id="checkout_phone" placeholder="Eg. 0500000000 *" name="shippingAddress.mobile" value={formData.shippingAddress.mobile} onChange={handleChange} required />
                       <label htmlFor="checkout_phone">Phone (Eg. 0500000000)*</label>
                     </div>
                   </div>

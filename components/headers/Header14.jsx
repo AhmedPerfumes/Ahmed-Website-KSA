@@ -198,6 +198,8 @@ export default function Header14() {
     const t = useTranslations();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isHeaderOpen, setIsHeaderOpen] = useState(false);
+    const [couponCount, setCouponCount] = useState(0);
+    
     const containerRef = useRef(null);
     const lastScrollY = useRef(0);
 

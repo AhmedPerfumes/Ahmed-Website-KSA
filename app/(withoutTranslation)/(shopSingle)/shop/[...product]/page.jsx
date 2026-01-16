@@ -49,10 +49,10 @@ async function getproduct(categoryName, subCategoryName, product) {
 }
 const ProductDetailsPage16 = async({ params }) => {
   const [ categoryName, subCategoryName, product ] = params.product;
-  console.log(categoryName, subCategoryName, product);
+  // console.log(categoryName, subCategoryName, product);
   try {
     const data = await getproduct(categoryName, subCategoryName, product);
-    console.log(data);
+    // console.log(data);
     return (
       <>
         <HeaderWithoutTrans />

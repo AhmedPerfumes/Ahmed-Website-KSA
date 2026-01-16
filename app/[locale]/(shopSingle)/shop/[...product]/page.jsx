@@ -40,7 +40,7 @@ async function getproduct(categoryName, subCategoryName, product) {
     }),
     next: {
       tags: ["products", `product-${product}`],
-      revalidate: 600 // 7 days
+      revalidate: 604800 // 7 days
     },
   });
   if (!response.ok) {
@@ -135,7 +135,7 @@ export async function generateMetadata({ params }) {
 
   try {
       const data = await getProductSEO(categoryName, subCategoryName, product);
-      console.log(JSON.parse(data.meta_value)[0]);
+      // console.log(JSON.parse(data.meta_value)[0]);
       return {
           title: JSON.parse(data.meta_value)[0]?.seo_title ? `${JSON.parse(data.meta_value)[0]?.seo_title}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
           description: JSON.parse(data.meta_value)[0]?.seo_description ? JSON.parse(data.meta_value)[0]?.seo_description?.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
@@ -164,7 +164,7 @@ const ProductDetailsPage16 = async({ params }) => {
   // console.log(categoryName, subCategoryName, product);
   try {
     const data = await getproduct(categoryName, subCategoryName, product);
-    console.log(data);
+    // console.log(data);
     return (
       <>
         <Head>
