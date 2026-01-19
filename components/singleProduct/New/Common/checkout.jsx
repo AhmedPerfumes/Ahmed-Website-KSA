@@ -260,12 +260,12 @@ const Checkout = ({ product }) => {
 
                     new window.TabbyPromo({
                         selector: "#TabbyPromo",
-                        currency: "AED",
+                        currency: "SAR",
                         price: totalPrice,
                         lang: locale,
                         source: "product",
-                        publicKey: process.env.NEXT_PUBLIC_TABBY_PUBLIC_KEY,
-                        merchantCode: "APM",
+                        publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118',
+                        merchantCode: "assaaste",
                     });
                 } catch (err) {
                     console.error("Tabby Widget Error:", err);
@@ -530,7 +530,7 @@ const Checkout = ({ product }) => {
                 )}
 
                 <div className="my-3" id="TabbyPromo"></div>
-                <TamaraWidget className="mt-3" inlineType="5" inlineVariant='outlined'/>
+                <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
             </div>
         </div>
     );
