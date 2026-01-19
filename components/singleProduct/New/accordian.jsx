@@ -663,7 +663,7 @@ const ProductAccordion = ({ product }) => {
                             {/* The title now introduces the steps below the image */}
                             <h4>{t("usage.howToApply")}</h4>
                             <ol className="usage-steps">
-                                {usageInfo?.text?.map((step, i) => (
+                                {usageInfo.text.map((step, i) => (
                                     <li key={i}>{step}</li>
                                 ))}
                             </ol>

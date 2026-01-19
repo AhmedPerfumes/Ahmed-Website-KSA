@@ -57,7 +57,6 @@ const ProductInfoTabs = ({ product, category, subcategory }) => {
                         className={`tab-header ${activeTab === 'reviews' ? 'active' : ''}`} 
                         onClick={() => setActiveTab('reviews')}
                     >
-                        {/* 5. Use the t() function for the tab title */}
                         {t('customerReviewsTab')}
                     </button>
                 </div>

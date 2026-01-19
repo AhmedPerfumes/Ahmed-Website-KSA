@@ -1,6 +1,193 @@
 {
+  "Tabby": {
+    "CheckoutTitle": "ادفع لاحقًا عبر تابي",
+    "CheckoutDescription": "استخدم أي بطاقة"
+  },
+  "UAE": "الإمارات",
+  "OMAN": "عُمان",
+  "KSA": "السعودية",
+  "BAHRAIN": "البحرين",
+  "KUWAIT": "الكويت",
+  "QATAR": "قطر",
+  "INDIA": "الهند",
+  "+971 67420602 / 67422496 / 67446076": "+۹۷۱ ٦۷٤۲۰٦۰۲ / ٦۷٤۲۲٤۹٦ / ٦۷٤٤٦۰۷٦",
+  "The founder's signature collection": "مجموعة توقيع المؤسس.",
+  "Pre-Book": "ما قبل الكتاب",
+  "The K-Series": "سلسلة K",
+  "K-Series: Pre-Book Now!": "اكتشف الـ K-Series الجديدة كليًا",
+  "Language": "اللغة",
+  "Country": "البلد",
+  "Find a store": "اعثر على متجر",
+  "Reviews": {
+    "loading": "جار تحميل المراجعات...",
+    "basedOn": "{count, plural, =0 {لا توجد مراجعات بعد} =1 {بناءً على مراجعة واحدة} other {بناءً على # مراجعات}}",
+    "beFirst": "كن أول من يراجع هذا المنتج!",
+    "selectRatingAlert": "يرجى تحديد تقييم بالنجوم.",
+    "successMessage": "شكرًا لك! تم إرسال مراجعتك للموافقة عليها.",
+    "networkError": "حدث خطأ في الشبكة. الرجاء معاودة المحاولة.",
+    "writeReviewTitle": "اكتب مراجعة",
+    "yourRatingLabel": "تقييمك",
+    "yourNameLabel": "اسمك",
+    "yourEmailLabel": "بريدك الإلكتروني",
+    "yourReviewLabel": "مراجعتك",
+    "reviewPlaceholder": "اكتب مراجعتك هنا (مطلوب أكثر من 10 أحرف)...",
+    "submitting": "جار الإرسال...",
+    "submit": "إرسال المراجعة",
+    "reviewsFor": "مراجعات لـ {name}"
+  },
+  "ProductDetails": {
+    "topNotes": "المكونات العليا",
+    "heartNotes": "المكونات الوسطى",
+    "baseNotes": "المكونات الأساسية",
+    "notesAccords": "النوتات/الإتفاقات",
+    "readMore": "...اقرأ المزيد",
+    "showLess": "عرض أقل",
+    "addToCart": "أضف إلى السلة",
+    "alreadyAdded": "تمت الإضافة",
+    "addToCartLabel": "أضف {name} إلى السلة",
+    "loadingProductInfo": "جار تحميل معلومات المنتج...",
+    "fragranceTimelineTab": "الخط الزمني للعطر",
+    "customerReviewsTab": "مراجعات العملاء",
+    "discoverMore": "اكتشف المزيد من <bold>{familyName}</bold>",
+    "outOfStock": "غير متوفر",
+    "notes": {
+      "mainTitle": "مكونات العطر",
+      "subtitle": "تكشف مكونات العطر عن جوهر العطر، وتقسم رحلة رائحته من الانطباع الأول إلى الرائحة العالقة، مما يساعدك على فهم شخصيته وطابعه.",
+      "openingLabel": "الافتتاحية",
+      "openingScriptTitle": "الانطباع الأول",
+      "heartLabel": "القلب",
+      "heartScriptTitle": "الشخصية الأساسية",
+      "legacyLabel": "الأثر",
+      "legacyScriptTitle": "الذاكرة الخالدة",
+      "signatureLabel": "النوتة المميزة",
+      "signatureScriptTitle": "الرائحة المميزة"
+    },
+    "accordion": {
+      "whatIsIncluded": "ماذا يتضمن؟",
+      "fragranceProfile": "ملف العطر",
+      "productOverview": "نظرة عامة على المنتج",
+      "keyHighlights": "الميزات الرئيسية",
+      "usageApplication": "الاستخدام والتطبيق",
+      "craftedWithIntention": "صُنع بعناية",
+      "deliveryInformation": "معلومات التوصيل"
+    },
+    "overview": {
+      "sizeVolume": "الحجم",
+      "fragranceType": "نوع العطر",
+      "fragranceCategory": "فئة العطر",
+      "dispenserType": "نوع الموزع"
+    },
+    "summary": {
+      "olfactoryFamily": "العائلة العطرية",
+      "sillage": "الفوحان"
+    },
+    "highlights": {
+      "longevity": "الثبات",
+      "occasion": "المناسبة",
+      "other": "أخرى"
+    },
+    "delivery": {
+      "shipping": "شحن سريع ومجاني",
+      "shippingText": "توصيل مجاني للطلبات التي تزيد عن {price} درهم في الإمارات.",
+      "payment": "حلول دفع آمنة",
+      "paymentText": "مدفوعاتك آمنة مع نظامنا الآمن عبر الإنترنت.",
+      "track": "تتبع طلبك",
+      "trackText": "تتبع حالة طلبك بسهولة عبر الإنترنت في أي وقت.",
+      "expectedDelivery": "التوصيل المتوقع",
+      "expectedDeliveryText": "من المتوقع وصول طلبك خلال 3-5 أيام عمل."
+    },
+    "usage": {
+      "howToApply": "كيفية الاستخدام",
+      "summary": "ملخص"
+    },
+    "fragranceTypes": {
+      "parfum": "Extrait de Parfum / عطر خالص",
+      "edp": "Eau de Parfum (EDP) / أو دو بارفان",
+      "edt": "Eau de Toilette (EDT) / أو دو تواليت",
+      "edc": "Eau de Cologne (EDC) / أو دو كولونيا",
+      "concentrated_oil": "زيت عطري مركز",
+      "dehn_al_oud": "دهن العود",
+      "hair_mist": "عطر الشعر",
+      "body_gel": "جل الجسم",
+      "bakhoor": "بخور",
+      "oud_maattar": "عود معطر",
+      "air_freshener": "معطر جو",
+      "other": "أخرى"
+    },
+    "dispenserTypes": {
+      "spray": "بخاخ / رذاذ (للعطور والرذاذ)",
+      "pump": "مضخة ( للجل والمستحضرات)",
+      "roll_on": "رول أون / كرة دوارة (للزيوت)",
+      "dabber_stick": "أداة تطبيق / عصا (للزيوت)",
+      "solid_incense": "صلب / بخور (للبخور والمعطر)",
+      "jar": "جرة / وعاء (للجل، البخور)",
+      "tube": "أنبوب (للجل)",
+      "reed_diffuser": "موزع أعواد (لمعطرات الجو)",
+      "dropper": "قطارة",
+      "serum": "مكبس السيروم (للجل واللوشن)",
+      "other": "أخرى"
+    },
+    "howToApply": {
+      "default": {
+        "text": [
+          "ضع العطر مباشرة على نقاط النبض - المعصمين والعنق وخلف الأذنين.",
+          "رش بعد الترطيب للمساعدة في تثبيت الرائحة. تجنب فرك العطر بعد التطبيق."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "hair_mist": {
+        "text": [
+          "رش عطر الشعر بخفة على شعرك، ممسكًا بالزجاجة على بعد 20-25 سم. ركز على منتصف الشعر والأطراف.",
+          "ضعه على شعر نظيف وجاف. تجنب الفرك أو التمشيط مباشرة بعد الرش."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "body_gel": {
+        "text": [
+          "ضع كمية صغيرة من جل الجسم بالتساوي على بشرة نظيفة. دلك بلطف حتى يتم امتصاصه بالكامل.",
+          "للحصول على أفضل النتائج، استخدمه بعد الاستحمام. تجنب وضعه على بشرة متهيجة."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "concentrated_oil": {
+        "text": [
+          "ضع قطرة صغيرة من الزيت المركز مباشرة على نقاط النبض - مثل المعصمين والعنق وخلف الأذنين.",
+          "تجنب الفرك بعد التطبيق. قطرة واحدة تكفي لرائحة تدوم طويلاً."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "dehn_al_oud": {
+        "text": [
+          "ضع كمية صغيرة من زيت دهن العود على نقاط النبض. دعه يمتص بشكل طبيعي.",
+          "تجنب الفرك، لأنه يمكن أن يغير العطر. استخدمه باعتدال لتأثير يدوم طويلاً."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      },
+      "bakhoor": {
+        "text": [
+          "ضع قطعة من البخور على فحم ساخن أو مبخرة كهربائية. دع الدخان يملأ المكان.",
+          "تجنب ترك المبخرة دون رقابة. للحصول على أفضل النتائج، استخدمها في منطقة جيدة التهوية."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-2.png"
+      },
+      "oud_maattar": {
+        "text": [
+          "ضع كمية صغيرة من العود المعطر على الملابس أو استخدمه في موزع. دع العطر يتطور بشكل طبيعي.",
+          "استخدمه باعتدال لتجنب أن تكون الرائحة قوية جداً للحصول على رائحة غنية ومتطورة."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-2.png"
+      },
+      "air_freshener": {
+        "text": [
+          "رش معطر الجو بالتساوي في جميع أنحاء الغرفة من مسافة 30 سم.",
+          "تجنب الرش مباشرة على الأسطح الحساسة التي قد تتأثر بالرطوبة."
+        ],
+        "imgSrc": "/assets/images/musk-roses-test/perfume-1.png"
+      }
+    }
+  },
   "Ahl": "أهل",
-    "Cherished by All": "مقدَّر من الجميع",
+  "Cherished by All": "مقدَّر من الجميع",
   "Long-lasting fragrance in every drop": "رائحة تدوم طويلاً في كل قطرة",
   "Crafted for those who embrace elegance": "صُنِعَ لمن يتقنون فنّ الأناقة",
   "concocted in royalty and lavishness": "ممزوجٌ بعبق الملوكيّة والفخامة",
@@ -13,12 +200,6 @@
   "Luxury Delight": "لذة الفخامة",
   "Discover": "اكتشف",
   "A gracious invitation to experience our boutique": "دعوة كريمة لتجربة بوتيكنا",
-  "OMAN": "عُمان",
-  "KSA": "السعودية",
-  "BAHRAIN": "البحرين",
-  "KUWAIT": "الكويت",
-  "QATAR": "قطر",
-  "INDIA": "الهند",
   "+966 55 5073629 / +966 53 6654399": "(+) ۹۶۶ ۵۵ ۵۰۷۳۶۲۹ / (+) ۹۶۶ ۵۳ ٦٦٥٤٣٩٩",
   "Niswah is a silky, refreshing fragrance blending fruity spice, rich florals, and warm oud with musk for a timeless feminine allure": "عطر نسوة هو عبير ناعم ومنعش يمزج بين التوابل الفاكهية، الزهور الغنية، والعود الدافئ مع المسك، ليمنحك جاذبية أنثوية خالدة.",
   "Niswah": "نسوة",
@@ -91,7 +272,6 @@
   "The perfect gift for every occasion":"الهدية المثالية لكل مناسبة",
   "Iconic Indulgence": "ترف أيقوني",
   "Ajman":" صندوق بريد عجمان 3850",
-  "UAE": "إ . ع . م",
   "Shop Now": "تسوق الان",
   "Dakhoon": "دخون",
   "Gift Sets": "أطقم هدايا",

@@ -14,6 +14,9 @@ import he from 'he';
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from '@/context/MenuContext';
 import TamaraWidget from "../TamaraWidget";
+import ProductInfoTabs from "./New/ProductInfoTabs/ProductInfoTabs";
+import ItemFamilySlider from "./New/ItemFamilySlider";
+import Base from "./New/base";
 
 export default function SingleProduct11({ category, subcategory, product: initialProduct }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -230,127 +233,127 @@ export default function SingleProduct11({ category, subcategory, product: initia
       {Object.keys(product).length > 0 ? 
       <>
       
-      <section className="product-single container product-single__type-9">
-        <div className="row">
-          <div className="col-lg-7">
-            <Slider4 product={ product }/>
-          </div>
-          <div className="col-lg-5">
-            <div className="d-flex justify-content-between mb-4 pb-md-2">
-              <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
-                <BreadCumb category={ category } subcategory={ subcategory }/>
-              </div>
+        {/* <section className="product-single container product-single__type-9">
+          <div className="row">
+            <div className="col-lg-7">
+              <Slider4 product={ product }/>
             </div>
-            <h1 className="product-single__name">{product?.product_name && t(he.decode(product?.product_name))}</h1>
-            <div className="product-single__price">
-              { price(product) }
-            </div>
-            <div className="product-single__short-desc">
-              <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(product.product_name)) }}></div>
-            </div>
-            <div id="TabbyPromo" className="mb-2"></div>
-            <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
-            <h6 style={{ color: "red" }}>{error && error}</h6>
-            <form onSubmit={(e) => e.preventDefault()}>
-              {product.product_qty > 0 ? (
-              <div className="product-single__addtocart">
-                <div className="qty-control position-relative">
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={
-                      isIncludeCard() ? isIncludeCard().quantity : quantity
-                    }
-                    min="1"
-                    onChange={(e) =>
-                      setQuantityCartItem(product.product_id, e.target.value, product?.maximum_order_quantity)
-                    }
-                    className="qty-control__number text-center"
-                    readOnly
-                  />
-                  <div
-                    onClick={() =>
-                      setQuantityCartItem(
-                        product.product_id,
-                        isIncludeCard()?.quantity - 1 || quantity - 1,
-                        product?.maximum_order_quantity
-                      )
-                    }
-                    className="qty-control__reduce"
-                  >
-                    -
-                  </div>
-                  <div
-                    onClick={() =>
-                      setQuantityCartItem(
-                        product.product_id,
-                        isIncludeCard()?.quantity + 1 || quantity + 1,
-                        product?.maximum_order_quantity
-                      )
-                    }
-                    className="qty-control__increase"
-                  >
-                    +
-                  </div>
+            <div className="col-lg-5">
+              <div className="d-flex justify-content-between mb-4 pb-md-2">
+                <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
+                  <BreadCumb category={ category } subcategory={ subcategory }/>
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-addtocart js-open-aside"
-                  onClick={() => addToCart()}
-                >
-                  {isIncludeCard() ? t("Already Added") : t("Add to Cart")}
-                </button>
               </div>
-              ):(
-              <div className="out-of-stock">
-  <span className="badge fs-5 text-uppercase">Out of Stock</span>
-  <p className="text-red mt-2">
-    This product is currently unavailable.
-  </p>
- 
-</div>
-              )}
-            </form>
-            <div className="product-single__addtolinks">
-              <ShareComponent title={product.product_name} />
-            </div>
-            <div className="product-single__meta-info">
-              <div className="meta-item">
-                <label>{t("Estimated delivery:")}</label>
-                <span> {t("3 to 5 days")}</span>
+              <h1 className="product-single__name">{product?.product_name && t(he.decode(product?.product_name))}</h1>
+              <div className="product-single__price">
+                { price(product) }
               </div>
-              <div className="meta-item">
-                <label>{t("Categories")}: </label>
-                <span>{ t(capitalizeEachWord(category.split('-').join(' '))) }, { t(capitalizeEachWord(subcategory.split('-').join(' '))) }</span>
+              <div className="product-single__short-desc">
+                <div dangerouslySetInnerHTML={{ __html: t.raw(cleanProductName(product.product_name)) }}></div>
+              </div>
+              <div id="TabbyPromo" className="mb-2"></div>
+              <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
+              <h6 style={{ color: "red" }}>{error && error}</h6>
+              <form onSubmit={(e) => e.preventDefault()}>
+                {product.product_qty > 0 ? (
+                <div className="product-single__addtocart">
+                  <div className="qty-control position-relative">
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={
+                        isIncludeCard() ? isIncludeCard().quantity : quantity
+                      }
+                      min="1"
+                      onChange={(e) =>
+                        setQuantityCartItem(product.product_id, e.target.value, product?.maximum_order_quantity)
+                      }
+                      className="qty-control__number text-center"
+                      readOnly
+                    />
+                    <div
+                      onClick={() =>
+                        setQuantityCartItem(
+                          product.product_id,
+                          isIncludeCard()?.quantity - 1 || quantity - 1,
+                          product?.maximum_order_quantity
+                        )
+                      }
+                      className="qty-control__reduce"
+                    >
+                      -
+                    </div>
+                    <div
+                      onClick={() =>
+                        setQuantityCartItem(
+                          product.product_id,
+                          isIncludeCard()?.quantity + 1 || quantity + 1,
+                          product?.maximum_order_quantity
+                        )
+                      }
+                      className="qty-control__increase"
+                    >
+                      +
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-addtocart js-open-aside"
+                    onClick={() => addToCart()}
+                  >
+                    {isIncludeCard() ? t("Already Added") : t("Add to Cart")}
+                  </button>
+                </div>
+                ):(
+                <div className="out-of-stock">
+    <span className="badge fs-5 text-uppercase">Out of Stock</span>
+    <p className="text-red mt-2">
+      This product is currently unavailable.
+    </p>
+  
+  </div>
+                )}
+              </form>
+              <div className="product-single__addtolinks">
+                <ShareComponent title={product.product_name} />
+              </div>
+              <div className="product-single__meta-info">
+                <div className="meta-item">
+                  <label>{t("Estimated delivery:")}</label>
+                  <span> {t("3 to 5 days")}</span>
+                </div>
+                <div className="meta-item">
+                  <label>{t("Categories")}: </label>
+                  <span>{ t(capitalizeEachWord(category.split('-').join(' '))) }, { t(capitalizeEachWord(subcategory.split('-').join(' '))) }</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="product-single product-single__type-9 bg-dark text-white d-flex align-items-center justify-content-center p-5">
-        <div className="product-single__details-list">
-          <h2 className="product-single__details-list__title text-white">
-            Description
-          </h2>
-          <div className="product-single__details-list__content text-white">
-            <Description product_name={ product.product_name }/>
+        <section className="product-single product-single__type-9 bg-dark text-white d-flex align-items-center justify-content-center p-5">
+          <div className="product-single__details-list">
+            <h2 className="product-single__details-list__title text-white">
+              Description
+            </h2>
+            <div className="product-single__details-list__content text-white">
+              <Description product_name={ product.product_name }/>
+            </div>
+            <h2 className="product-single__details-list__title text-white">
+            {category === "gift-sets" ? "Gift Set Contains" : "Fragrance Notes"}
+            </h2>
+            <div className="product-single__details-list__content text-white">
+              <AdditionalInfo product_name={ product.product_name } video={ product.video && JSON.parse(product.video)[0][0].value } title={ product.video[0][1] && JSON.parse(product.video)[0][1].value }/>
+            </div>
           </div>
-          <h2 className="product-single__details-list__title text-white">
-           {category === "gift-sets" ? "Gift Set Contains" : "Fragrance Notes"}
-          </h2>
-          <div className="product-single__details-list__content text-white">
-            <AdditionalInfo product_name={ product.product_name } video={ product.video && JSON.parse(product.video)[0][0].value } title={ product.video[0][1] && JSON.parse(product.video)[0][1].value }/>
-          </div>
-        </div>
-      </section>
-      {/* <div  style={{ backgroundColor: "#FAF9F7" }} >
+        </section> */}
+      <div  style={{ backgroundColor: "#FAF9F7" }} >
         <Base product={{...product, category, subcategory}} />
-      </div> */}
-      {/* <div style={{ backgroundColor: "#121212" }}>
+      </div>
+      <div style={{ backgroundColor: "#121212" }}>
         <ProductInfoTabs product={product} category={category} subcategory={subcategory} />
-      </div> */}
-      {/* <ItemFamilySlider product={product} itemFamilyProds={product.item_family} /> */}
+      </div>
+      <ItemFamilySlider product={product} itemFamilyProds={product.item_family} />
       </> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>
       }
     </>

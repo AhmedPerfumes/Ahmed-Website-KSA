@@ -9,26 +9,33 @@ import "./base.css"
 import Sticky from './sticky';
 import { useEffect } from 'react';
 import he from 'he';
+import dynamic from 'next/dynamic'
 
 
 const Base = ({product}) => {
     const cleanName = he.decode(product?.product_name || "Default");
     const [activeIndex, setActiveIndex] = useState(0);
 
-    console.log(product, "product in base");
+    // console.log(product, "product in base");
 
     const images = product?.images ? JSON.parse(product.images) : [];
     useEffect(() => {
         require("bootstrap");
     }, [])
 
+    // Dynamically import the 3D viewer, and explicitly disable SSR.
+    // const PerfumeViewer = dynamic(
+    // () => import('./3D/PerfumeViewer'),
+    // { 
+    //     ssr: false,
+    //     loading: () => <div style={{height: '600px', background: '#f0f0f0'}} /> 
+    // }
+    // )
+
     return (
-        <div className="App py-5" >
+        <div className="App lg:py-5" >
             <div className="head-container container">
-                <div
-                    className="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 gap-lg-4 "
-                    // style={{ minHeight: "100vh" }}
-                >
+                <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 gap-lg-4 ">
                     <div className="info-container order-2 order-lg-1">
                         <InfoBase
                             images={images}
@@ -51,6 +58,10 @@ const Base = ({product}) => {
                         <ProductAccordion product={product}/>
                     </div>
                 </div>
+
+                {/* <div className="product-media">
+                    <PerfumeViewer />
+                </div> */}
 
                 <Sticky image={images[0]} name={cleanName} price={product?.price || "0.00"} product={product} />
             </div>
