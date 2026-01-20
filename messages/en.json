@@ -1,4 +1,25 @@
 {
+  "Tabby": {
+    "CheckoutTitle": "Pay later with Tabby.",
+    "CheckoutDescription": "Use any card."
+  },
+  "UAE": "UAE",
+  "OMAN": "OMAN",
+  "KSA": "KSA",
+  "BAHRAIN": "BAHRAIN",
+  "KUWAIT": "KUWAIT",
+  "QATAR": "QATAR",
+  "INDIA": "INDIA",
+  "+971 67420602 / 67422496 / 67446076": "+971 67420602 / 67422496 / 67446076",
+  "The founder's signature collection": "The founder's signature collection.",
+  "Long-lasting fragrance in every drop": "Long-lasting fragrance in every drop",
+  "Cherished by All": "Cherished by All",
+  "Pre-Book": "Pre-Book",
+  "The K-Series": "The K-Series",
+  "K-Series: Pre-Book Now!": "Discover the All-New K - Series",
+  "Language": "Language",
+  "Country": "Country",
+  "Find a store": "Find a store",
   "Reviews": {
     "loading": "Loading reviews...",
     "basedOn": "{count, plural, =0 {No reviews yet} =1 {Based on 1 review} other {Based on # reviews}}",
@@ -30,6 +51,7 @@
     "fragranceTimelineTab": "Fragrance Timeline",
     "customerReviewsTab": "Customer Reviews",
     "discoverMore": "Discover More from <bold>{familyName}</bold>",
+    "outOfStock": "Out of Stock",
     "notes": {
       "mainTitle": "FRAGRANCE NOTES",
       "subtitle": "Fragrance Notes reveal the essence of a perfume, breaking down its scent journey from the first impression to the lingering aroma, helping you understand its personality and character.",
@@ -104,6 +126,7 @@
       "tube": "Tube (for Gels)",
       "reed_diffuser": "Reed Diffuser (for Air Fresheners)",
       "dropper": "Dropper",
+      "serum": "Serum Press (for Gels, Lotions)",
       "other": "Other"
     },
     "howToApply": {
@@ -189,7 +212,6 @@
   "Refund Policy":"Refund Policy",
   "Ajman":"Ajman P.O BOX 3850",
   "Add To Cart":"Add To Cart",
-  "UAE":"UAE",
   "Scroll to discover":"Scroll to discover",
   "Perfumes":"Perfumes",
   "View Cart":"View Cart",
