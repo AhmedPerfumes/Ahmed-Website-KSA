@@ -12,8 +12,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from "next-intl";
 import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "@/components/TamaraWidget";
-// import FreeGiftFeature from '@/components/FreeGiftFeature';
-// import BogoFeature from "@/components/BogoFeature";
+import FreeGiftFeature from '@/components/FreeGiftFeature';
+import BogoFeature from "@/components/BogoFeature";
 // import { bogoProducts } from "@/components/BogoFeature";
 
 export default function Checkout() {
@@ -404,21 +404,26 @@ export default function Checkout() {
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
     let itemPrice = elm.price;
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        return <td>{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-      } else {
-        return <td>{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
-      }
-    } else if(elm?.sale_price) {
-      console.log('else if 2');
+     if ( elm?.discount && new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
+      if (elm.discount.discount_type == "percent") { itemPrice = elm.price - (elm.price / 100) * elm.discount.value; } 
+      else if (elm.discount.discount_type == "amount") { itemPrice = elm.discount.final_price; }
       return (
         <td>
-          <span className="money price price-old">{currency.symbol}{elm?.price}</span>
-          <span className="money price price-sale">{currency.symbol}{(elm.sale_price * elm.quantity).toFixed(2)}</span>
+          <span className="money price price-sale"> {currency.symbol} {(itemPrice * elm.quantity).toFixed(2)} </span>
+          <span className="money price price-old"> {currency.symbol} {(elm.price * elm.quantity).toFixed(2)} </span>
         </td>
-      )
-    } else if (couponData && couponData.type === "customer" && elm.is_coupon) {
+      );
+    }
+    // else if(elm?.sale_price) {
+    //   console.log('else if 2');
+    //   return (
+    //     <td>
+    //       <span className="money price price-old">{currency.symbol}{elm?.price}</span>
+    //       <span className="money price price-sale">{currency.symbol}{(elm.sale_price * elm.quantity).toFixed(2)}</span>
+    //     </td>
+    //   )
+    // }
+     else if (couponData && couponData.type === "customer" && elm.is_coupon) {
       if (couponData.coupon_type == "percent") { 
         itemPrice = elm.price - (elm.price / 100) * couponData.value;
       } else if (couponData.coupon_type == "amount") {
@@ -723,7 +728,8 @@ export default function Checkout() {
     <>
     {cartProducts.length ? (
       <>
-        {/* <FreeGiftFeature couponData={couponData}/> */}
+        <FreeGiftFeature couponData={couponData}/>
+        <BogoFeature/>
         <form onSubmit={onOrder}>
           <div className="checkout-form">
             <div className="billing-info__wrapper">

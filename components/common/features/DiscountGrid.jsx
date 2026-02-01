@@ -72,22 +72,56 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
     const start = new Date(elm?.discount?.start_date);
     const end = new Date(elm?.discount?.end_date);
 
-    if (elm?.discount && now >= start && now <= end) {
-      const discounted = (
-        elm.price -
-        (elm.price * elm.discount.value) / 100
-      ).toFixed(2);
-      return (
-        <>
-          <span className="money price price-old">
-            {elm.price}{currency.symbol}
-          </span>
-          <span className="money price price-sale">
-            {discounted}{currency.symbol}
-          </span>
-        </>
-      );
-    } else if (elm?.sale_price) {
+    if (elm?.discount) {
+      if (
+        new Date(currentDateTime) >= new Date(elm.discount.start_date) &&
+        new Date(currentDateTime) <= new Date(elm.discount.end_date)
+      ) {
+        if (elm.discount.discount_type === "percent") {
+          const discounted = (elm.price - (elm.price * elm.discount.value) / 100).toFixed(2);
+          return (
+            <>
+              <span className="money price price-old">
+                {elm.price}
+                {currency.symbol}
+              </span>
+              <span className="money price price-sale">
+                {discounted}
+                {currency.symbol}
+              </span>
+            </>
+          );
+        } else if (elm.discount.discount_type === "amount") {
+          const discounted = elm.price - elm.discount.value;
+          return (
+            <>
+              <span className="money price price-old">
+                {elm.price}
+                {currency.symbol}
+              </span>
+              <span className="money price price-sale">
+                {discounted}
+                {currency.symbol}
+              </span>
+            </>
+          );
+        }
+        // const discounted = (elm.price - (elm.price * elm.discount.value) / 100).toFixed(2);
+        // return (
+        //   <>
+        //     <span className="money price price-old">
+        //       {elm.price}
+        //       {currency.symbol}
+        //     </span>
+        //     <span className="money price price-sale">
+        //       {discounted}
+        //       {currency.symbol}
+        //     </span>
+        //   </>
+        // );
+      }
+    }
+    else if (elm?.sale_price) {
       return (
         <>
           <span className="money price price-old">

@@ -192,15 +192,27 @@ useEffect(() => {
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}{ currency.symbol }</span></>;
-      } else {
-        return <span className="money price">{elm?.price}{ currency.symbol }</span>;
-      }
-    } else if(elm?.sale_price) {
-      return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {(elm.sale_price).toFixed(2)}{ currency.symbol }</span></>;
-    } else {
+    if(elm.discount.discount_type == "percent") {
+        const sale = base - (base * Number(elm.discount.value || 0)) / 100;
+        return (
+          <>
+            <span className="money price price-old">{fmt(base)}</span>{" "}
+            <span className="money price price-sale">{fmt(sale)}</span>
+          </>
+        );
+      } else if(elm.discount.discount_type == "amount") {
+        const sale = base - Number(elm.discount.value || 0);
+        return (
+          <>
+            <span className="money price price-old">{fmt(base)}</span>{" "}
+            <span className="money price price-sale">{fmt(sale)}</span>
+          </>
+        );
+      } 
+    //   else if(elm?.sale_price) {
+    //   return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {(elm.sale_price).toFixed(2)}{ currency.symbol }</span></>;
+    // } 
+    else {
       return <span className="money price">{elm?.price}{ currency.symbol }</span>;
     }
   };
@@ -400,13 +412,39 @@ useEffect(() => {
                           <div style={{ backgroundColor: '#dc3545' }} className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2">
                             Out Of Stock
                           </div>
-                        ) : (
-                          elm.discount && (
-                            <div style={{ backgroundColor: '#198754' }} className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2">
-                              Sale {elm.discount.value}%
+                        ) :  (
+                        (elm.discount) && (() => {
+                          let discountPercent = null;
+
+                          if (elm?.discount?.value) {
+                            if(elm.discount.discount_type == "percent") {
+                              discountPercent = Number(elm.discount.value);
+                            } else if(elm.discount.discount_type == "amount") {
+                              const base = Number(elm.price);
+                              const sale = base - Number(elm.discount.value || 0);
+                              if (base > 0 && sale < base) {
+                                discountPercent = sale;
+                              }
+                            }
+                          }
+                          // else if (elm.sale_price) {
+                          //   const base = Number(elm.price);
+                          //   const sale = Number(elm.sale_price);
+                          //   if (base > 0 && sale < base) {
+                          //     discountPercent = Math.round(((base - sale) / base) * 100);
+                          //   }
+                          // }
+
+                          return discountPercent !== null && elm.discount.discount_type == "percent" ? (
+                            <div
+                              className="product-label text-uppercase text-white top-0 start-0 mt-2 mx-2"
+                              style={{ backgroundColor: "#198754" }}
+                            >
+                              {`SALE ${discountPercent}%`}
                             </div>
-                          )
-                        )}
+                          ) : null;
+                        })()
+                      )}
                       </SwiperSlide>
                     {/* ))} */}
 

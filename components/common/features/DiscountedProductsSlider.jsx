@@ -83,22 +83,40 @@ export default function DiscountedProductsSlider({
       const start = new Date(elm.discount.start_date);
       const end = new Date(elm.discount.end_date);
       if (currentGST >= start && currentGST <= end) {
-        const discounted = (elm.price - (elm.price * elm.discount.value) / 100).toFixed(2);
-        return (
-          <>
-            <span className="money price price-old">{elm.price}{currency.symbol}</span>
-            <span className="money price price-sale">{discounted}{currency.symbol}</span>
-          </>
-        );
+        if (elm.discount.discount_type == "percent") {
+          const discounted = (elm.price - (elm.price * elm.discount.value) / 100).toFixed(2);
+          return (
+            <>
+              <span className="money price price-old">{elm.price}{currency.symbol}</span>
+              <span className="money price price-sale">{discounted}{currency.symbol}</span>
+            </>
+          );
+        } else if (elm.discount.discount_type == "amount") {
+          const discounted = (elm.price - elm.discount.value).toFixed(2);
+          return (
+            <>
+              <span className="money price price-old">{elm.price}{currency.symbol}</span>
+              <span className="money price price-sale">{discounted}{currency.symbol}</span>
+            </>
+          );
+        }
+        // const discounted = (elm.price - (elm.price * elm.discount.value) / 100).toFixed(2);
+        // return (
+        //   <>
+        //     <span className="money price price-old">{elm.price}{currency.symbol}</span>
+        //     <span className="money price price-sale">{discounted}{currency.symbol}</span>
+        //   </>
+        // );
       }
-    } else if (elm?.sale_price) {
-      return (
-        <>
-          <span className="money price price-old">{elm.price}{currency.symbol}</span>
-          <span className="money price price-sale">{elm.sale_price.toFixed(2)}{currency.symbol}</span>
-        </>
-      );
     }
+    // else if (elm?.sale_price) {
+    //   return (
+    //     <>
+    //       <span className="money price price-old">{elm.price}{currency.symbol}</span>
+    //       <span className="money price price-sale">{elm.sale_price.toFixed(2)}{currency.symbol}</span>
+    //     </>
+    //   );
+    // }
 
     return <span className="money price">{elm.price}{currency.symbol}</span>;
   };
@@ -177,7 +195,7 @@ const filteredProducts = products
                 <div className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2" style={{ backgroundColor: "#dc3545" }}>
                   Out Of Stock
                 </div>
-              ) : elm.discount && (
+              ) : elm.discount && elm.discount.discount_type == "percent" && (
                 <div className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2" style={{ backgroundColor: "#198754" }}>
                   Sale {elm.discount.value}%
                 </div>

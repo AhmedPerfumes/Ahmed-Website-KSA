@@ -128,13 +128,19 @@ export default function Style2({ category, subcategory, products: initialProduct
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
     if(elm?.discount) {
       if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}{ currency.symbol }</span></>;
+        if(elm.discount.discount_type == "percent") {
+          return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}{ currency.symbol }</span></>;
+        } else if(elm.discount.discount_type == "amount") {
+          return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {(elm.price - elm.discount.value).toFixed(2)}{ currency.symbol }</span></>;
+        }
       } else {
         return <span className="money price">{elm?.price}{ currency.symbol }</span>;
       }
-    } else if(elm?.sale_price) {
-      return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {((elm.sale_price)).toFixed(2)}{ currency.symbol }</span></>;
-    } else {
+    } 
+    // else if(elm?.sale_price) {
+    //   return <><span className="money price price-old">{elm?.price}{ currency.symbol }</span> <span className="money price price-sale"> {((elm.sale_price)).toFixed(2)}{ currency.symbol }</span></>;
+    // } 
+    else {
       return <span className="money price">{elm?.price}{ currency.symbol }</span>;
     }
   };
@@ -209,7 +215,7 @@ export default function Style2({ category, subcategory, products: initialProduct
                           {t("Out Of Stock")}
                         </div>
                       ) : (
-                        elm.discount && (
+                       elm.discount && elm. discount.discount_type == 'percent' && (
                           <div style={{ backgroundColor: '#198754' }} className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2">
                             Sale {elm.discount.value}%
                           </div>

@@ -1,8 +1,9 @@
 "use client";
 import { allProducts } from "@/data/products";
-import React, { useEffect } from "react";
-import { useContext, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
+
 const dataContext = React.createContext();
+
 export const useContextElement = () => {
   return useContext(dataContext);
 };
@@ -14,85 +15,49 @@ export default function Context({ children }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [freeShippingFlag, setFreeShippingFlag] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
-  const [ couponDataContext, setCouponDataContext] = useState(null);
+  const [couponDataContext, setCouponDataContext] = useState(null);
 
-  // useEffect(() => {
-  //   const currentUTC = new Date(); // Current UTC time
-  //   const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
-  //   const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-  //   const subtotal = cartProducts.reduce((accumulator, product) => {
-  //     if(product?.discount) {
-  //       if(new Date(current_date_time) >= new Date(product.discount.start_date) && new Date(current_date_time) <= new Date(product.discount.end_date)) {
-  //         const discount_price = (product.price - (product.price / 100 * product.discount.value)).toFixed(2);
-  //         return accumulator + product.quantity * discount_price;
-  //       }
-  //     } else if(product?.sale_price) {
-  //       const sale_price = (product.sale_price).toFixed(2);
-  //       return accumulator + product.quantity * sale_price;
-  //     } else if(product?.coupon && !Array.isArray(product.coupon) && couponDataContext != null) {
-  //       if(new Date(current_date_time) >= new Date(product.coupon[couponDataContext?.code?.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(product.coupon[couponDataContext?.code?.toLowerCase()]?.end_date) && product.coupon[couponDataContext?.code?.toLowerCase()]?.code == couponDataContext?.code?.toLowerCase()) {
-  //         const coupon_price = (product.price - (product.price / 100 * product.coupon[couponDataContext?.code?.toLowerCase()]?.value)).toFixed(2);
-  //         return accumulator + product.quantity * coupon_price;
-  //       }
-  //     }
-  //     return accumulator + product.quantity * product.price;
-  //   }, 0);
-  //   setTotalPrice(subtotal);
-  //   setFreeShippingFlag((subtotal).toFixed(2) >= 300 ? true : false);
-  // }, [cartProducts, couponDataContext]);
+  // --- ADDED FOR FREE GIFT FEATURE ---
+  const [promotionsContext, setPromotionsContext] = useState([]); 
 
   useEffect(() => {
-  const currentUTC = new Date();
-  const currentGST = new Date(currentUTC.getTime() + 4 * 60 * 60 * 1000);
-  const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+    const currentUTC = new Date();
+    const currentGST = new Date(currentUTC.getTime() + 4 * 60 * 60 * 1000);
+    const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
 
-  const subtotal = cartProducts.reduce((accumulator, product) => {
-    // Ensure all prices are numbers, not strings
-    let finalPrice = parseFloat(product.price);
+    const subtotal = cartProducts.reduce((accumulator, product) => {
+      let finalPrice = parseFloat(product.price);
 
-    if (product.is_gift) {
-      return accumulator; // Free gifts add 0 to the total
-    }
-
-    // 1. Check for active discounts
-    // (This matches your KSA file's discount logic, which only handles percent)
-    if (product?.discount) {
-      if (
-        new Date(current_date_time) >= new Date(product.discount.start_date) &&
-        new Date(current_date_time) <= new Date(product.discount.end_date)
-      ) {
-        finalPrice = product.price - (product.price / 100 * product.discount.value);
+      if (product.is_gift) {
+        return accumulator; 
       }
-    }
-    
-    // 2. Check for sale price (if no discount)
-    else if (product?.sale_price) {
-      finalPrice = parseFloat(product.sale_price);
-    } 
-    
-    // 3. Check for applied coupon (if no discount and no sale price)
-    // This uses the NEW logic
-    else if (product.is_coupon && couponDataContext != null) {
-      if (couponDataContext.coupon_type === 'percent') {
-        finalPrice = product.price - (product.price / 100 * couponDataContext.value);
-      } else if (couponDataContext.coupon_type === 'amount') {
-        // Assumes value is the total discount, not per-unit, so we divide by quantity
-        // If this is wrong, use: finalPrice = product.price - couponDataContext.value;
-        finalPrice = product.price - (couponDataContext.value / product.quantity);
+
+      if(product?.discount) {
+        if(new Date(current_date_time) >= new Date(product.discount.start_date) && new Date(current_date_time) <= new Date(product.discount.end_date)) {
+          if(product.discount.discount_type == 'percent') {
+            const discount_price = (product.price - (product.price / 100 * product.discount.value)).toFixed(2);
+            return accumulator + product.quantity * discount_price;
+          } else if(product.discount.discount_type == 'amount') {
+            const discount_price = (product.price - product.discount.value).toFixed(2);
+            return accumulator + product.quantity * discount_price;
+          }
+        }
       }
-    }
+      else if (product.is_coupon && couponDataContext != null) {
+        if (couponDataContext.coupon_type === 'percent') {
+          finalPrice = product.price - (product.price / 100 * couponDataContext.value);
+        } else if (couponDataContext.coupon_type === 'amount') {
+          finalPrice = product.price - (couponDataContext.value / product.quantity);
+        }
+      }
 
-    // Add the calculated price * quantity to the total
-    return accumulator + (product.quantity * finalPrice);
-  }, 0);
+      return accumulator + (product.quantity * finalPrice);
+    }, 0);
 
-  setTotalPrice(subtotal);
-  setFreeShippingFlag(subtotal >= 300); // No need for .toFixed() in a boolean check
+    setTotalPrice(subtotal);
+    setFreeShippingFlag(subtotal >= 300); 
 
-}, [cartProducts, couponDataContext]);
-  const addProductToQuickView = (product) => {
-    setQuickViewItem(product);
-  };
+  }, [cartProducts, couponDataContext]);
 
   const addProductToCart = (product) => {
     const item = {
@@ -101,31 +66,22 @@ export default function Context({ children }) {
     };
     setCartProducts((prevCart) => [...prevCart, item]);
 
-    document
-      .getElementById("cartDrawerOverlay")
-      .classList.add("page-overlay_visible");
-    document.getElementById("cartDrawer").classList.add("aside_visible");
+    document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
+    document.getElementById("cartDrawer")?.classList.add("aside_visible");
   };
+
   const isAddedToCartProducts = (id) => {
-    if (cartProducts.filter((elm) => elm.product_id == id)[0]) {
-      return true;
-    }
-    return false;
+    return cartProducts.some((elm) => elm.product_id == id);
   };
 
   const toggleWishlist = (id) => {
-    if (wishList.includes(id)) {
-      setWishList((pre) => [...pre.filter((elm) => elm != id)]);
-    } else {
-      setWishList((pre) => [...pre, id]);
-    }
+    setWishList((prev) => prev.includes(id) ? prev.filter((elm) => elm != id) : [...prev, id]);
   };
+
   const isAddedtoWishlist = (id) => {
-    if (wishList.includes(id)) {
-      return true;
-    }
-    return false;
+    return wishList.includes(id);
   };
+
   useEffect(() => {
     const items = localStorage.getItem("cartList") && JSON.parse(localStorage.getItem("cartList"));
     if (items?.length) {
@@ -136,21 +92,22 @@ export default function Context({ children }) {
   useEffect(() => {
     localStorage.setItem("cartList", JSON.stringify(cartProducts));
   }, [cartProducts]);
-  useEffect(() => {
-    const items = JSON.parse(localStorage.getItem("wishlist"));
-    if (items?.length) {
-      setWishList(items);
-    }
-  }, []);
 
-  useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishList));
-  }, [wishList]);
-
-  const removeGiftFromCart = () => {
-    const updatedCart = cartProducts.filter((item) => !item.is_gift);
-    setCartProducts(updatedCart);
-    localStorage.setItem('cartList', JSON.stringify(updatedCart));
+  // --- UPDATED REMOVE GIFT LOGIC ---
+  const removeGiftFromCart = (productId = null, campaign = null) => {
+    setCartProducts((prevCart) => 
+      prevCart.filter((item) => {
+        // If it's not a gift, keep it
+        if (!item.is_gift) return true;
+        // If campaign is provided, remove only gifts from that campaign
+        if (campaign && item.campaign === campaign) return false;
+        // If specific product ID is provided, remove it
+        if (productId && item.product_id === productId) return false;
+        // Default: remove all gifts if no params provided
+        if (!productId && !campaign) return false;
+        return true;
+      })
+    );
   };
 
   const contextElement = {
@@ -164,14 +121,18 @@ export default function Context({ children }) {
     quickViewItem,
     wishList,
     setQuickViewItem,
-    addProductToQuickView,
+    addProductToQuickView: (product) => setQuickViewItem(product),
     freeShippingFlag,
     setOrderDetails,
     orderDetails,
     couponDataContext,
     setCouponDataContext,
-    removeGiftFromCart
+    removeGiftFromCart,
+    // --- ADDED THESE EXPORTS ---
+    promotionsContext,
+    setPromotionsContext
   };
+
   return (
     <dataContext.Provider value={contextElement}>
       {children}
