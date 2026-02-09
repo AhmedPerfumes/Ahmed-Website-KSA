@@ -595,7 +595,7 @@ export default function Header14() {
                                                                             item.price
                                                                         }{" "}
                                                                         {t(
-                                                                            "AED"
+                                                                            "ر.س"
                                                                         )}
                                                                     </span>
                                                                 </div>

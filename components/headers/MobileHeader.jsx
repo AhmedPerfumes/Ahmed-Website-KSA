@@ -292,7 +292,7 @@ export default function MobileHeader() {
                     />
                     <div className="mobile-suggestion-info">
                         <span className="mobile-suggestion-name">{item.name}</span>
-                        <span className="mobile-suggestion-price">{item.price} {t("AED")}</span>
+                        <span className="mobile-suggestion-price">{item.price} {t("ر.س")}</span>
                     </div>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2">
                         <path d="M9 18l6-6-6-6" />
