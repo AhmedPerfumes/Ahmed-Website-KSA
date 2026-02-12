@@ -36,7 +36,7 @@ export default function LoginRegister() {
 
     useEffect(() => {
         if (!hasMounted) return;
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("user");
         if (token) {
             router.replace(`/${locale}/account_dashboard`);
         }

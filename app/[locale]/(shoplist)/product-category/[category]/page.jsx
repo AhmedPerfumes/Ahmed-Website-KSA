@@ -11,6 +11,7 @@ import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 // import Link from "next/link";
 import QuickView from "@/components/modals/QuickView";
 import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
+import { headers } from 'next/headers';
 
 // export const metadata = {
 //   title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
@@ -19,6 +20,19 @@ import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription
 //     icon: "https://www.ahmedalmaghribi.com/wp-content/uploads/2021/08/Ahmed-Logo-e1631552829722-100x100.png",
 //   },
 // };
+
+function getRequestOrigin() {
+  const headersList = headers();
+  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
+  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
+  
+  // if (!host) {
+  //   // Fallback for local development or edge cases
+  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
+  // }
+
+  return `${protocol}://${host}`;
+}
 
 async function getCategorySubCategory(categoryName) {
   // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products`, { 
@@ -30,11 +44,13 @@ async function getCategorySubCategory(categoryName) {
   //     category: categoryName.split("-").join(" ").toUpperCase(),
   //   })
   // });
+  const origin = getRequestOrigin();
   const slug = categoryName.toLowerCase();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, { 
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'origin': origin,
     },
     body: JSON.stringify({
       category: categoryName.split("-").join(" ").toUpperCase(),
@@ -61,12 +77,14 @@ async function getProductCategorySEO(categoryName) {
   //     product: product.split("-").join(" ").toUpperCase(),
   //   })
   // });
+  const origin = getRequestOrigin();
   const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}api/productCategorySEO`,
       {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
+              'origin': origin,
           },
           body: JSON.stringify({
               category: categoryName.split("-").join(" ").toUpperCase(),

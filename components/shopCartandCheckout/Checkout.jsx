@@ -436,6 +436,21 @@ export default function Checkout() {
   };
 
   const isExpired = (end_date) => { return new Date(end_date) < new Date(); };
+
+  const mapProductsFromFormData = (products) =>
+    products.map((item) => ({
+      product_id: item.product_id,
+      product_name: item.product_name,
+      quantity: item.quantity,
+      category_name: item.category_name,
+      subcategory_name: item.subcategory_name,
+      coupon: item.coupon,
+      discount: item.discount,
+      ...('is_coupon' in item && { is_coupon: item.is_coupon }),
+      ...('is_gift' in item && { is_gift: item.is_gift }),
+      ...('coupon_type' in item && { coupon_type: item.coupon_type }),
+      ...('value' in item && { value: item.value }),
+    }));
  
   async function onOrder(event) {
     event.preventDefault();
@@ -455,14 +470,26 @@ export default function Checkout() {
       userJson = JSON.parse(user);
     }
 
-    const additionalFields = { ...formData, products : cartProducts, payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData }
- 
+    const {
+      shippingAdd,
+      note,
+      password,
+      otp,
+      ...cleanFormData
+    } = formData;
+
+    const additionalFields = { ...cleanFormData, products : mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData }
+    const token = localStorage.getItem('token');
+    // console.log('additionalFields', additionalFields);return;
     try {
       // const formDataa = new FormData(additionalFields);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/storeOrder`, {
         method: 'POST',
         body: JSON.stringify(additionalFields),
-        headers: { 'content-type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
       })
  
       if (!response.ok) {
@@ -470,7 +497,7 @@ export default function Checkout() {
           // localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
           // setCartProducts([]); // update the cartProducts state to an empty array
         }, 2000);
-        throw new Error('Oops!!! Your Session has been expired. Please try again.');
+        throw new Error('Oops!!! Your Session has been expired. Please refresh the page or login again.');
       }
  
       // Handle response if necessary
@@ -551,10 +578,10 @@ export default function Checkout() {
       } else if (data.discountMessage) {
         // setSuccess();
         setError(data.discountMessage);
-        setTimeout(() => {
-          localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
-          setCartProducts([]); // update the cartProducts state to an empty array
-        }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
+        // setTimeout(() => {
+        //   localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
+        //   setCartProducts([]); // update the cartProducts state to an empty array
+        // }, 2000); // time in milliseconds (e.g., 1000ms = 1 second)
         // localStorage.setItem('orderData', btoa(JSON.stringify(data)));
         // router.push(data.redirect_url);
       } else if (data.couponMessage) {
@@ -686,7 +713,7 @@ export default function Checkout() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/verifyOTP`, {
         method: 'POST',
         body: JSON.stringify({mobile, otp, flag: 'checkout'}),
-        headers: { 'Content-Type': 'application/json', }
+        headers: { 'Content-Type': 'application/json' }
       })
  
       if (!response.ok) { throw new Error('Failed to submit the data. Please try again.'); }
@@ -701,6 +728,7 @@ export default function Checkout() {
         setIsOTPVerified(true);
         setIsDisabled(false);
         setOTPError(null);
+        localStorage.setItem("token", data.access_token);
       } else {
         if(data['mobile']) { setOTPError(data['mobile']); }
         if(data['otp']) { setOTPError(data['otp']); }
@@ -1129,7 +1157,7 @@ export default function Checkout() {
                 </div>
                 {error ? ( <div style={{ backgroundColor: "#ffebe9", color: "#cf1e1e", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {error} </div> ) 
                 : success ? ( <div style={{ backgroundColor: "#e8f5e9", color: "#2e7d32", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {success} </div> ) : null}
-                <button className="btn btn-primary w-100 text-uppercase" type="submit" disabled={disablePlaceOrder} >
+                <button className="btn btn-primary w-100 text-uppercase" type="submit">
                   {isLoading ? 'Loading...' : 'Place Order'}
                 </button>
               </div>

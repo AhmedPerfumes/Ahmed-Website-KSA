@@ -43,7 +43,7 @@ export default function ResetPasswordOTP() {
     try {
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
-      if (token || user) {
+      if (user) {
         router.replace("/account_dashboard");
       }
     } catch {}

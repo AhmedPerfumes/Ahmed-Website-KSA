@@ -6,6 +6,7 @@ import Header14 from "@/components/headers/Header14";
 import { allBlogs } from "@/data/blogs";
 import React from "react";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
+import { headers } from 'next/headers';
 
 // export const metadata = {
 //   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -15,12 +16,27 @@ import MobileFooter2 from "@/components/footers/MobileFooter2";
 //   },
 // };
 
+function getRequestOrigin() {
+  const headersList = headers();
+  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
+  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
+  
+  // if (!host) {
+  //   // Fallback for local development or edge cases
+  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
+  // }
+
+  return `${protocol}://${host}`;
+}
+
 async function getBlog(blogName) {
   // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/getBlogDetails?blog=${blogName.split("-").join(" ").toUpperCase()}`);
+  const origin = getRequestOrigin();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/getBlogDetails`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'origin': origin,
     },
     body: JSON.stringify({
       // blog: blogName.split("-").join(" ").toUpperCase(),
@@ -48,12 +64,14 @@ async function getBlogSEO(blogName) {
   //     product: product.split("-").join(" ").toUpperCase(),
   //   })
   // });
+  const origin = getRequestOrigin();
   const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}api/blogSEO`,
       {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
+              'origin': origin,
           },
           body: JSON.stringify({
             blog: blogName.split("-").join(" ").toUpperCase(),

@@ -10,7 +10,7 @@ export function UserProvider({ children }) {
     // Simulate an API call to check user authentication
     async function checkUser() {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('user');
         if (token) {
           setIsLoggedIn(true);
         }

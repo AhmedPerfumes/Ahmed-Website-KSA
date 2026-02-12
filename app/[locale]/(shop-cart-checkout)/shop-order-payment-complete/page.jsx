@@ -3,6 +3,7 @@ import Header14 from "@/components/headers/Header14";
 import OrderPaymentCompleted from "@/components/shopCartandCheckout/OrderPaymentCompleted";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";
+import { headers } from 'next/headers';
 
 export const metadata = {
   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -11,6 +12,19 @@ export const metadata = {
       icon: "/assets/images/ahmed-favicon.png",
   },
 };
+
+function getRequestOrigin() {
+  const headersList = headers();
+  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
+  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
+  
+  // if (!host) {
+  //   // Fallback for local development or edge cases
+  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
+  // }
+
+  return `${protocol}://${host}`;
+}
 
 async function getOrderDetails(order_id) {
   // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
@@ -22,10 +36,12 @@ async function getOrderDetails(order_id) {
   //     order_number: order_id
   //   })
   // });
+  const origin = getRequestOrigin();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'origin': origin,
     },
     body: JSON.stringify({
       order_number: order_id

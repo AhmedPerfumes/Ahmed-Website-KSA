@@ -12,6 +12,7 @@ import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 
 import QuickView from "@/components/modals/QuickView";
 import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
+import { headers } from 'next/headers';
 
 export const metadata = {
   title: "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -21,12 +22,27 @@ export const metadata = {
   },
 };
 
+function getRequestOrigin() {
+  const headersList = headers();
+  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
+  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
+  
+  // if (!host) {
+  //   // Fallback for local development or edge cases
+  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
+  // }
+
+  return `${protocol}://${host}`;
+}
+
 async function getCategorySubCategory(categoryName) {
+  const origin = getRequestOrigin();
   const slug = categoryName.toLowerCase();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, { 
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'origin': origin,
     },
     body: JSON.stringify({
       category: categoryName.split("-").join(" ").toUpperCase(),

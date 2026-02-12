@@ -168,10 +168,12 @@ export default function MyDetails() {
       return;
     }
 
+    const token = localStorage.getItem('token');
+
     try {
       const resp = await fetch(`${API_BASE}api/customerUpdate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
         body: JSON.stringify({
           customer_id: customerId,
           customer_name: values.customer_name,
@@ -182,21 +184,30 @@ export default function MyDetails() {
       });
       const res = await resp.json();
 
-      setFieldErrors({ customer_email: "", customer_mobile: "" });
+    setFieldErrors({ customer_email: "", customer_mobile: "" });
 
-      if (res.message !== 'Customer Updated Successfully') {
-  if (res.error?.customer_mobile || (Array.isArray(res.customer_mobile) && res.customer_mobile.length > 0)) {
-    setFieldErrors((f) => ({
-      ...f,
-      customer_mobile: "Mobile already exists",
-    }));
-  }
-  if (res.error?.customer_email || (Array.isArray(res.customer_email) && res.customer_email.length > 0)) {
-    setFieldErrors((f) => ({
-      ...f,
-      customer_email: "Email already exists",
-    }));
-  }
+    if (res.message !== 'Customer Updated Successfully') {
+      if (res.error?.customer_mobile || (Array.isArray(res.customer_mobile) && res.customer_mobile.length > 0)) {
+        setFieldErrors((f) => ({
+          ...f,
+          customer_mobile: "Mobile already exists",
+        }));
+      }
+    if (res.error?.customer_email || (Array.isArray(res.customer_email) && res.customer_email.length > 0)) {
+      setFieldErrors((f) => ({
+        ...f,
+        customer_email: "Email already exists",
+      }));
+    }
+    if(res?.error || res?.message) {
+      if(res.error == 'Unauthorized' || res.message == 'Unauthorized') {
+        setError('Your session has expired. Please login again');
+        setSaveLoading(false);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login_register';
+      }
+    }
   setError("Data already exists. Please check inputs.");
   setSaveLoading(false);
   return;

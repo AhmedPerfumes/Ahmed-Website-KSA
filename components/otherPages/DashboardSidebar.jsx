@@ -43,7 +43,7 @@ export default function DashboardSidebar() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user");
     if (!token) router.replace("/login_register");
   }, [router]);
 
