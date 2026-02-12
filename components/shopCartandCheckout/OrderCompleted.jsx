@@ -97,6 +97,7 @@ export default function OrderCompleted() {
         validCoupon &&
         // !elm.sale_price &&
         !elm.discount
+        
       ) {
         // console.log('common Customer Coupon If', elm);
         // itemPrice = elm.price - (elm.price / 100) * couponDataContext.value;
