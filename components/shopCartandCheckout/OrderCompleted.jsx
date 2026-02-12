@@ -9,7 +9,7 @@ import Pagination1 from "../common/Pagination1";
 import FeedbackForm from "../common/Feedback";
 
 export default function OrderCompleted() {
-  const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext } = useContextElement();
+  const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext,promotionsContext } = useContextElement();
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   
   const [showDate, setShowDate] = useState(false);
@@ -78,6 +78,36 @@ export default function OrderCompleted() {
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+     if (couponDataContext && couponDataContext.code && couponDataContext.type === "customer") {
+      console.log('common Customer Coupon');
+      const validCoupon = orderDetails.products.some(
+        // (item) => !item.sale_price && !item.discount && !item.is_gift && !promotionsContext.some((promo) =>
+        (item) => !item.discount && !item.is_gift && !promotionsContext.some((promo) =>
+        promo.buy_products.some((item) => item.product_id === elm.product_id)
+        )
+      ) && (
+        !couponDataContext.start_date ||
+        !couponDataContext.end_date ||
+        (new Date(current_date_time) >= new Date(couponDataContext.start_date) &&
+          new Date(current_date_time) <= new Date(couponDataContext.end_date))
+      );
+
+      if (
+        elm.is_coupon &&
+        validCoupon &&
+        // !elm.sale_price &&
+        !elm.discount
+      ) {
+        // console.log('common Customer Coupon If', elm);
+        // itemPrice = elm.price - (elm.price / 100) * couponDataContext.value;
+        if(couponDataContext.coupon_type == "percent") {
+          itemPrice = elm.price - (elm.price / 100) * couponDataContext.value;
+        } else if(couponDataContext.coupon_type == "amount") {
+          // console.log('amount...', elm, couponData);
+          itemPrice = elm.price - couponDataContext.value;
+        }
+      }
+  }
     if(elm?.discount) {
       console.log('DISC', elm.discount);
       console.log('DISC', new Date(current_date_time), new Date(elm.discount.start_date));
@@ -91,17 +121,23 @@ export default function OrderCompleted() {
     } else if(elm?.sale_price) {
       console.log('SALE', elm);
       return <td>{((elm.sale_price) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-    } else if(elm?.coupon && elm.coupon.length != 0 && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
-      console.log('COUPON', elm);
-      if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date)) {
-        return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code.toLowerCase()]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-      } else {
-        return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-      }
-    } else {
+    } 
+    // else if(elm?.coupon && elm.coupon.length != 0 && elm.coupon[couponDataContext?.code.toLowerCase()]?.code == couponDataContext?.code.toLowerCase()) {
+    //   console.log('COUPON', elm);
+    //   if(new Date(current_date_time) >= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(elm.coupon[couponDataContext?.code.toLowerCase()]?.end_date)) {
+    //     return <td>{((elm.price - (elm.price / 100 * elm.coupon[couponDataContext?.code.toLowerCase()]?.value)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+    //   } else {
+    //     return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+    //   }
+    // } 
+    else {
         return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
     }
+    
+    
   };
+ 
+  
 
   return (
     <>

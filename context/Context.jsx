@@ -14,7 +14,14 @@ export default function Context({ children }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [freeShippingFlag, setFreeShippingFlag] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
+  const currentUTC = new Date();
+    const currentGST = new Date(currentUTC.getTime() + 4 * 60 * 60 * 1000);
+   const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
   const [ couponDataContext, setCouponDataContext] = useState(null);
+  const isCustomerCoupon = couponDataContext && couponDataContext.type === "customer";
+  const isCustomerCouponActive = isCustomerCoupon && (!couponDataContext.start_date || !couponDataContext.end_date || (new Date(current_date_time) >= new Date(couponDataContext.start_date) && new Date(current_date_time) <= new Date(couponDataContext.end_date)));
+    const [promotionsContext, setPromotionsContext] = useState([]);
+ 
 
   // useEffect(() => {
   //   const currentUTC = new Date(); // Current UTC time
@@ -48,6 +55,8 @@ export default function Context({ children }) {
 
   const subtotal = cartProducts.reduce((accumulator, product) => {
     // Ensure all prices are numbers, not strings
+    const basePrice = Number(product?.price || 0);
+    const qty = Number(product?.quantity || 0);
     let finalPrice = parseFloat(product.price);
 
     if (product.is_gift) {
@@ -64,6 +73,20 @@ export default function Context({ children }) {
         finalPrice = product.price - (product.price / 100 * product.discount.value);
       }
     }
+     if (isCustomerCouponActive && !product.discount && !promotionsContext.some((promo) => promo.buy_products.some((item) => item.product_id === product.product_id)))
+      {
+        console.log('customer couponC', product, isCustomerCouponActive, couponDataContext);
+        const value = Number(couponDataContext?.value || 0);
+        let discounted = basePrice; // fallback if no discount
+
+        if (couponDataContext.coupon_type === "percent") {
+          discounted = basePrice - (basePrice * value) / 100;
+        } else if (couponDataContext.coupon_type === "amount") {
+          discounted = basePrice - value;
+        }
+
+        return accumulator + qty * Number(discounted.toFixed(2));
+      }
     
     // 2. Check for sale price (if no discount)
     else if (product?.sale_price) {
@@ -72,15 +95,15 @@ export default function Context({ children }) {
     
     // 3. Check for applied coupon (if no discount and no sale price)
     // This uses the NEW logic
-    else if (product.is_coupon && couponDataContext != null) {
-      if (couponDataContext.coupon_type === 'percent') {
-        finalPrice = product.price - (product.price / 100 * couponDataContext.value);
-      } else if (couponDataContext.coupon_type === 'amount') {
-        // Assumes value is the total discount, not per-unit, so we divide by quantity
-        // If this is wrong, use: finalPrice = product.price - couponDataContext.value;
-        finalPrice = product.price - (couponDataContext.value / product.quantity);
-      }
-    }
+    // else if (product.is_coupon && couponDataContext != null) {
+    //   if (couponDataContext.coupon_type === 'percent') {
+    //     finalPrice = product.price - (product.price / 100 * couponDataContext.value);
+    //   } else if (couponDataContext.coupon_type === 'amount') {
+    //     // Assumes value is the total discount, not per-unit, so we divide by quantity
+    //     // If this is wrong, use: finalPrice = product.price - couponDataContext.value;
+    //     finalPrice = product.price - (couponDataContext.value / product.quantity);
+    //   }
+    // }
 
     // Add the calculated price * quantity to the total
     return accumulator + (product.quantity * finalPrice);
@@ -170,7 +193,9 @@ export default function Context({ children }) {
     orderDetails,
     couponDataContext,
     setCouponDataContext,
-    removeGiftFromCart
+    removeGiftFromCart,
+    promotionsContext,
+    setPromotionsContext
   };
   return (
     <dataContext.Provider value={contextElement}>
