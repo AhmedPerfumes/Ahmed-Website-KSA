@@ -483,7 +483,10 @@ export default function Checkout() {
       ...cleanFormData
     } = formData;
 
-    const additionalFields = { ...cleanFormData, products : mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData }
+    const additionalFields = { ...cleanFormData, 
+      // products : mapProductsFromFormData(cartProducts), 
+      cartProducts,
+      payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData }
     const token = localStorage.getItem('token');
     // console.log('additionalFields', additionalFields);return;
     try {
