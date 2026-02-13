@@ -494,8 +494,8 @@ export default function Checkout() {
  
       if (!response.ok) {
         setTimeout(() => {
-          // localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
-          // setCartProducts([]); // update the cartProducts state to an empty array
+          localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
+          setCartProducts([]); // update the cartProducts state to an empty array
         }, 2000);
         throw new Error('Oops!!! Your Session has been expired. Please refresh the page or login again.');
       }
@@ -1157,7 +1157,7 @@ export default function Checkout() {
                 </div>
                 {error ? ( <div style={{ backgroundColor: "#ffebe9", color: "#cf1e1e", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {error} </div> ) 
                 : success ? ( <div style={{ backgroundColor: "#e8f5e9", color: "#2e7d32", padding: "14px 20px", marginBottom: "1rem", textAlign: "center", fontSize: "15px", fontWeight: "500", borderRadius: "2px", }} > {success} </div> ) : null}
-                <button className="btn btn-primary w-100 text-uppercase" type="submit">
+                <button className="btn btn-primary w-100 text-uppercase" type="submit" disabled={disablePlaceOrder}>
                   {isLoading ? 'Loading...' : 'Place Order'}
                 </button>
               </div>
