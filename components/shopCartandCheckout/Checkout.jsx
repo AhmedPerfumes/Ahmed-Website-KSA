@@ -1058,7 +1058,7 @@ export default function Checkout() {
                       </span> */}
                     </label>
                   </div>
-                   <div className="form-check">
+                   {/* <div className="form-check">
                       <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_4" value={"paytabs"} checked={selectedOption === "paytabs"} onChange={handleRadioChange} />
                       <label className="form-check-label" htmlFor="checkout_payment_method_4" style={{ display: "flex", flexDirection: "column" }} > PayTabs - Credit / Debit Card <div style={{ display: "flex", gap: "6px" }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="60" height="20" viewBox="0 0 77 16" >
@@ -1074,12 +1074,12 @@ export default function Checkout() {
                           </g>
                         </svg> 
                         <hr></hr>
-                        {/* <Image src="/assets/images/paytabs-svg/UnionPay_logo.png" alt="Union Pay" width={50} height={20} />
+                        <Image src="/assets/images/paytabs-svg/UnionPay_logo.png" alt="Union Pay" width={50} height={20} />
                         <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={50} height={20} />
-                        <Image src="/assets/images/paytabs-svg/Samsung_Pay_Logo.png" alt="Samsung Pay" width={50} height={20} /> */}
+                        <Image src="/assets/images/paytabs-svg/Samsung_Pay_Logo.png" alt="Samsung Pay" width={50} height={20} />
                         </div>
                       </label>
-                    </div>
+                    </div> */}
                   {/* <div className="form-check">
                     <input
                       className="form-check-input form-check-input_fill"
