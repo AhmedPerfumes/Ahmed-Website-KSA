@@ -39,7 +39,7 @@ const swiperOptions = {
   },
 };
 
-const   BOGOFeature = () => {
+const BOGOFeature = () => {
   const { cartProducts, setCartProducts, addProductToCart, removeGiftFromCart, setPromotionsContext } = useContextElement();
   const [addedGifts, setAddedGifts] = useState([]);
   const [selectedGifts, setSelectedGifts] = useState({});
@@ -365,16 +365,24 @@ const   BOGOFeature = () => {
         } else if (selection_rule === 'same_product') {
           if (giftsAllowed === 0) {
             currentGifts.forEach((gift) => {
-              // console.log(`000 Removing gift for campaign ${campaign} due to insufficient quantity:`, gift.product_id);
               removeGiftFromCart(gift.product_id, campaign);
             });
             return;
           }
+
+          // ──────────────────────────────────────────────────────────────
+          // Step 1: Validate + clean up existing gifts
+          // ──────────────────────────────────────────────────────────────
           currentGifts.forEach((gift) => {
-            const matchingProduct = eligibleProducts.find((p) => p.product_id === gift.product_id);
             const isValidGift = free_products.some((fp) => fp.product_id === gift.product_id);
-            if (!isValidGift || (matchingProduct && matchingProduct.quantity < gift.quantity) || currentGifts.reduce((sum, g) => sum + (g.quantity || 0), 0) > giftsAllowed) {
-              // console.log(`000 Removing gift for campaign ${campaign}:`, gift.product_id);
+            const matchingBought = eligibleProducts.find((p) => p.product_id === gift.product_id);
+            const totalGiftQty = currentGifts.reduce((sum, g) => sum + (g.quantity || 0), 0);
+
+            if (
+              !isValidGift ||
+              (matchingBought && matchingBought.quantity < gift.quantity) ||
+              totalGiftQty > giftsAllowed
+            ) {
               removeGiftFromCart(gift.product_id, campaign);
             } else {
               newGiftsToAdd.push({
@@ -384,40 +392,76 @@ const   BOGOFeature = () => {
               });
             }
           });
+
+          // ──────────────────────────────────────────────────────────────
+          // Step 2: Calculate remaining slots
+          // ──────────────────────────────────────────────────────────────
           let remainingGifts = giftsAllowed - newGiftsToAdd
             .filter((g) => g.campaign === campaign)
             .reduce((sum, g) => sum + (g.quantity || 0), 0);
-          eligibleProducts.forEach((product) => {
-            if (remainingGifts <= 0) return;
-            const giftExists = currentGifts.find((g) => g.product_id === product.product_id);
-            if (!giftExists) {
-              const bogoGift = free_products.find((fp) => fp.product_id === product.product_id);
-              if (bogoGift) {
-                const giftQuantity = Math.min(product.quantity, remainingGifts);
-                // console.log(`111 Adding gift for ${campaign}:`, { product_id: bogoGift.product_id, quantity: giftQuantity });
-                addProductToCart({
-                  ...bogoGift,
-                  is_gift: true,
-                  price: '0',
-                  quantity: giftQuantity,
-                  campaign,
-                  selection_rule: 'same_product',
-                });
-                newGiftsToAdd.push({
-                  product_id: bogoGift.product_id,
-                  quantity: giftQuantity,
-                  campaign,
-                });
-                remainingGifts -= giftQuantity;
-              }
-            } else {
+
+          if (remainingGifts <= 0) return;
+
+          // ──────────────────────────────────────────────────────────────
+          // Step 3: Add missing gifts
+          //     → Prefer SAME product
+          //     → If not available → take ANY from free_products
+          // ──────────────────────────────────────────────────────────────
+        eligibleProducts.forEach((product) => {
+          if (remainingGifts <= 0) return;
+
+          // Skip if this product already has a gift assigned
+          const alreadyGifted = currentGifts.some((g) => g.product_id === product.product_id) ||
+                              newGiftsToAdd.some((g) => g.product_id === product.product_id);
+          if (alreadyGifted) return;
+
+          let selectedFreeProduct = null;
+
+          // Priority 1: Try to give the SAME product
+          const sameProductFree = free_products.find((fp) => fp.product_id === product.product_id);
+          if (sameProductFree) {
+            selectedFreeProduct = sameProductFree;
+          }
+          // Priority 2: If same product not in free_products → pick any unused one
+          else {
+            selectedFreeProduct = free_products.find((fp) =>
+              !currentGifts.some((g) => g.product_id === fp.product_id) &&
+              !newGiftsToAdd.some((g) => g.product_id === fp.product_id)
+            );
+
+            // Fallback: if no unused, take first one (you can change this logic)
+            if (!selectedFreeProduct && free_products.length > 0) {
+              selectedFreeProduct = free_products[0];
+            }
+          }
+
+          if (selectedFreeProduct) {
+            const giftQuantity = Math.min(
+              product.quantity,           // don't give more than bought
+              remainingGifts,             // don't exceed remaining slots
+              get_quantity || 1           // respect promotion rule
+            );
+
+            if (giftQuantity > 0) {
+              addProductToCart({
+                ...selectedFreeProduct,
+                is_gift: true,
+                price: '0',
+                quantity: giftQuantity,
+                campaign,
+                selection_rule: 'same_product',
+              });
+
               newGiftsToAdd.push({
-                product_id: product.product_id,
-                quantity: giftExists.quantity,
+                product_id: selectedFreeProduct.product_id,
+                quantity: giftQuantity,
                 campaign,
               });
+
+              remainingGifts -= giftQuantity;
             }
-          });
+          }
+        });
         } else if (selection_rule === 'customer_select') {
           if (giftsAllowed === 0) {
             currentGifts.forEach((gift) => {

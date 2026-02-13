@@ -175,7 +175,7 @@ export default function CartDrawer() {
                     <p className="cart-drawer-item__option text-secondary">
                       Size: L
                     </p> */}
-                    <div className="d-flex align-items-center justify-content-between mt-1">
+                   <div className="d-flex align-items-center justify-content-between mt-1">
                       {!elm.is_gift ? <div className="qty-control position-relative">
                         <input
                           type="number"
@@ -202,7 +202,7 @@ export default function CartDrawer() {
                         >
                           +
                         </div>
-                      </div> : 1}
+                      </div> : elm.quantity}
 
                         {subTotalPrice(elm)}
                       

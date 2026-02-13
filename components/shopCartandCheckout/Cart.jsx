@@ -16,7 +16,7 @@ export default function Cart() {
   // const [couponCode, setCouponCode] = useState("");
   // const [couponError, setCouponError] = useState(null);
   // const [couponSuccess, setCouponSuccess] = useState(null);
-  const { cartProducts, setCartProducts, totalPrice, freeShippingFlag, setCouponDataContext } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, freeShippingFlag, setCouponDataContext,removeGiftFromCart } = useContextElement();
   // const setQuantity = async (id, quantity, productQty) => {
   //   if (quantity >= 1 && quantity <= productQty) {
   //     setError(null);
@@ -31,6 +31,10 @@ export default function Cart() {
   //   }
   // };
 
+    useEffect(() => {
+    setCouponDataContext(null);
+    removeGiftFromCart();
+  }, []);
   const setQuantity = async (id, quantity, productQty, maxOrderQty) => {
     // Determine dynamic max allowed per product
     const MAX_LIMIT =
