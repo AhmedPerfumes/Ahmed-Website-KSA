@@ -20,6 +20,7 @@ import Image from "next/image";
 import Link from "next/link";
 import "swiper/css/pagination";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import ProductShowcase from "./singleProduct/ProductShowcase/ProductShowcase";
 import ProductSlider from "./ProductSlider";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -156,7 +157,7 @@ const ScrollSnapHorizontalBootstrap = () => {
             <div className="d-block d-lg-none" style={{ paddingTop: '5rem' }}>
                 <Hero2 />
             </div>
-
+ <ProductShowcase />
             <section className="scroll-section d-flex flex-direction-column bg-white">
                 <div className="panel2 mb-4">
                     <div className="inner2 mt-5 d-flex align-items-center">
@@ -165,6 +166,7 @@ const ScrollSnapHorizontalBootstrap = () => {
                     </div>
                 </div>
             </section>
+           
 
             <section className="scroll-section d-flex flex-direction-column section-1">
                 <div className="panel section-slider w-100 vh-100">

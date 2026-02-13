@@ -299,10 +299,10 @@ export default async function LocaleLayout({ children, params: { locale } }) {
             </noscript>
                 <NextIntlClientProvider messages={messages}>
                     <Svgs />
+                            <MenuProvider>
                     <Context>
                         <UserProvider>
                             <FacebookPixelEvents />
-                            <MenuProvider>
                                 <MobileHeader />
                                 {children}
                                 <MobileFooter1 />
@@ -317,9 +317,9 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                 <ProductAdditionalInformation />
                                 <ProductReviews />
                                 <ToastContainer />
-                            </MenuProvider>
                         </UserProvider>
                     </Context>
+                            </MenuProvider>
                     <div className="page-overlay" id="pageOverlay"></div>
                     <ScrollTop />
                 </NextIntlClientProvider>

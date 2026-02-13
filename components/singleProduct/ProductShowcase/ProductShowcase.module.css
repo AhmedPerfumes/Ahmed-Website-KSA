@@ -1,0 +1,348 @@
+/* -----------------------------------------------------------
+   ROOT LAYOUT
+----------------------------------------------------------- */
+.showcase-container {
+    background-image: url(https://adminksa.ahmedalmaghribi.com/public/storage/promotion-bg.png);
+    background-color: #fff;
+    --text: #1a1a1a;
+    --muted: #6c757d;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: var(--font-body);
+    background-position: top;
+    background-size: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+
+}
+
+/* Shared section formatting */
+.showcase-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+}
+
+/* -----------------------------------------------------------
+   LEFT BANNER + TEXT
+----------------------------------------------------------- */
+.banner-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 33vw;
+    /* background-image: url('https://admin.ahmedalmaghribi.com/public/storage/banners/mobile-size-uae-winter-sale-upto-30-discount.jpg'); */
+    background-size: cover;
+    background-position: center;
+    transition: opacity .5s ease;
+}
+
+.text-section .button-container {
+    width: auto !important;
+    display: inline-block !important;
+}
+
+
+.text-section {
+    width: 28vw;
+    position: relative;
+    z-index: 5;
+    transition: opacity .5s ease;
+}
+
+/* Fade-out on explore */
+.showcase-container.explored .banner-section,
+.showcase-container.explored .text-section {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* -----------------------------------------------------------
+   PRODUCTS SECTION – DIOR STYLE
+----------------------------------------------------------- */
+.products-section {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 44vw;
+    transform-origin: right center;
+    transition:
+        transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1),
+        opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+}
+
+/* Full expansion */
+.showcase-container.explored .products-section {
+    width: 100vw;
+}
+
+/* -----------------------------------------------------------
+   SWIPER
+----------------------------------------------------------- */
+.swiper-container {
+    width: 100%;
+    height: auto;
+    /* Dior height */
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.product-swiper {
+    width: 100%;
+    height: 100%;
+}
+
+/* -----------------------------------------------------------
+   PRODUCT CARD – PREMIUM, BALANCED
+----------------------------------------------------------- */
+.product-card {
+    width: 100%;
+    max-width: 360px;
+    /* untriggered */
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    transition:
+        transform .35s ease,
+        max-width .35s ease;
+}
+
+/* EXPANDED MODE → bigger, Dior-like */
+.showcase-container.explored .product-card {
+    max-width: 480px;
+}
+
+/* Hover elevation */
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Maintain perfect proportions */
+.product-image {
+    width: 100%;
+    object-fit: contain;
+}
+
+.product-info {
+    padding: 1.2rem 1rem;
+    text-align: center;
+}
+
+.product-name {
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: .2rem;
+}
+
+/* -----------------------------------------------------------
+   SKELETON LOADER STYLES (NEW)
+----------------------------------------------------------- */
+@keyframes pulse {
+    0% { background-color: #f0f0f0; }
+    50% { background-color: #e0e0e0; }
+    100% { background-color: #f0f0f0; }
+}
+
+.skeleton-card {
+    border-color: #f0f0f0;
+    pointer-events: none;
+    background: #fff;
+}
+
+.skeleton-image {
+    width: 100%;
+    aspect-ratio: 1/1; /* Skeletons stay square for tidiness */
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-text {
+    height: 16px;
+    border-radius: 4px;
+    margin: 0 auto;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* -----------------------------------------------------------
+   CUSTOM NAV (Dior bottom right)
+----------------------------------------------------------- */
+.customNav {
+    position: absolute;
+    bottom: 0;
+    right: 48px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 50;
+}
+
+.customNav button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    opacity: .6;
+    cursor: pointer;
+    transition: opacity .2s;
+}
+
+.customNav button:hover {
+    opacity: 1;
+}
+
+.pageIndicator {
+    font-size: 14px;
+    opacity: .65;
+}
+
+/* -----------------------------------------------------------
+   MOBILE LUXURY LAYOUT (RECOMMENDED)
+----------------------------------------------------------- */
+@media (max-width: 767px) {
+
+    /* .showcase-container {
+        height: auto !important;
+        overflow: visible !important;
+        padding-top: 2rem;
+    } */
+    .showcase-container {
+        height: auto !important;
+        overflow: visible !important;
+        padding-top: 0; /* Remove padding for flush look */
+        display: block;
+    }
+
+    .banner-section {
+        display: block;
+        position: relative;
+        width: 100vw !important;
+        height: auto !important;
+        aspect-ratio: 3/5;
+        min-height: 400px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: top center;
+    }
+
+    .text-section {
+        display: block !important;
+        position: relative !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        background: #fff;
+        left: 0 !important;
+    }
+
+    .text-section h2 {
+        font-size: 22px;
+        line-height: 1.3;
+        margin-bottom: 10px;
+    }
+
+    .text-section p {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    .text-section .button-container {
+        margin-top: 12px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .products-section {
+        position: relative !important;
+        width: 100% !important;
+        padding: 0 1rem 3rem;
+        margin-top: 0;
+        background: #fff;
+    }
+
+    .swiper-container {
+        height: auto !important;
+    }
+
+    .product-card {
+        max-width: 250px !important;
+        border-radius: 14px;
+    }
+
+    .customNav {
+        display: none !important;
+        /* Mobile → hide arrows */
+    }
+
+
+    .banner-section,
+    .text-section,
+    .products-section {
+        position: relative !important;
+        width: 100% !important;
+        left: 0 !important;
+        top: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    .products-section {
+        margin-top: 1rem;
+        padding-bottom: 2.5rem !important;
+    }
+
+    .mobileNav {
+        width: 100%;
+        margin-top: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 22px;
+        padding-bottom: 20px;
+    }
+
+    .mobileArrow {
+        background: none;
+        border: none;
+        font-size: 22px;
+        opacity: 0.7;
+        cursor: pointer;
+        padding: 6px 12px;
+        transition: opacity .2s;
+    }
+
+    .mobileArrow:active,
+    .mobileArrow:hover {
+        opacity: 1;
+    }
+
+    .mobileIndicator {
+        font-size: 14px;
+        opacity: .75;
+        font-weight: 500;
+    }
+
+}
+/* Add this to your CSS module */
+.text-wrapper {
+    max-width: 100%;
+    /* Ensures text breaks to the next line if it hits the edge */
+    overflow-wrap: break-word; 
+    word-wrap: break-word;
+    /* Prevents text from forcing the container wider */
+    white-space: normal; 
+}
+
+/* Optional: Ensure the heading specifically doesn't overflow */
+.text-wrapper h2 {
+    max-width: 100%;
+}
