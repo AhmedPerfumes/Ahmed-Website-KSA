@@ -497,6 +497,30 @@ export default function Checkout() {
         },
       })
  
+      if (response.status === 401) {
+        // Clear all authentication-related items
+        if (localStorage.getItem('user')) {
+          localStorage.removeItem('user');
+        }
+        if (localStorage.getItem('token')) {
+          localStorage.removeItem('token');
+        }
+
+        // If they were a guest user verified via OTP, they need to re-verify
+        // If they were logged in, they need to re-login
+        const errorMsg = isLoggedIn 
+          ? 'Your session has expired. Please login again.' 
+          : 'Mobile verification expired. Please verify your number again.';
+
+        setError(errorMsg);
+
+        setTimeout(() => {
+          // Redirecting to the combined login/register/OTP page
+          window.location.reload();
+        }, 2000);
+
+        return; // Stop execution
+      }
       if (!response.ok) {
         setTimeout(() => {
           // localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
