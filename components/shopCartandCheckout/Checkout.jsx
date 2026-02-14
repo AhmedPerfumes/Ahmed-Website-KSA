@@ -499,8 +499,8 @@ export default function Checkout() {
  
       if (!response.ok) {
         setTimeout(() => {
-          localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
-          setCartProducts([]); // update the cartProducts state to an empty array
+          // localStorage.setItem("cartList", JSON.stringify([])); // store an empty array in localStorage
+          // setCartProducts([]); // update the cartProducts state to an empty array
         }, 2000);
         throw new Error('Oops!!! Your Session has been expired. Please refresh the page or login again.');
       }
@@ -1144,13 +1144,13 @@ export default function Checkout() {
                     </label>
                   </div> */}
 
-                  {/* <div className="form-check">
+                  <div className="form-check">
                     <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_5" value={'tamara'} checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
                     <label className="form-check-label" htmlFor="checkout_payment_method_5" style={{display: "inline-flex"}} >
                       Tamara - No interest, No fees. 
                       <TamaraWidget inlineType='4' inlineVariant='text' locale={locale}/>
                     </label>
-                  </div> */}
+                  </div>
 
                   <div className="form-check">
                     <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_6" value={'tabby'} checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
