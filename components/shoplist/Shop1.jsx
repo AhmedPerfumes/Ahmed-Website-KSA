@@ -188,11 +188,13 @@ useEffect(() => {
     setFilteredProducts(filtered);
   };
 
+  const fmt = (v) => `${Number(v).toFixed(2)}${currency.symbol}`;
   const discPrice = (elm) => {
+    const base = Number(elm.price);
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-    if(elm.discount.discount_type == "percent") {
+    if(elm?.discount?.discount_type == "percent") {
         const sale = base - (base * Number(elm.discount.value || 0)) / 100;
         return (
           <>
@@ -200,7 +202,7 @@ useEffect(() => {
             <span className="money price price-sale">{fmt(sale)}</span>
           </>
         );
-      } else if(elm.discount.discount_type == "amount") {
+      } else if(elm?.discount?.discount_type == "amount") {
         const sale = base - Number(elm.discount.value || 0);
         return (
           <>
