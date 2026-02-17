@@ -455,6 +455,8 @@ export default function Checkout() {
       ...('is_gift' in item && { is_gift: item.is_gift }),
       ...('coupon_type' in item && { coupon_type: item.coupon_type }),
       ...('value' in item && { value: item.value }),
+      ...('campaign' in item && { campaign: item.campaign }),
+      ...('type' in item && { type: item.type }),
     }));
  
   async function onOrder(event) {
