@@ -531,12 +531,26 @@ const ScrollSnapHorizontalBootstrap = () => {
                     </div>
                 </div>
 
-                <div className="panel2 mt-5">
+                {/* <div className="panel2 mt-5">
                     <div className="inner2">
                         <VideoPanel
                             src="/assets/videos/Kawkab.mp4"
                             section="hundred"
                         />
+                    </div>
+                </div> */}
+
+                <div className="panel2 mt-5">
+                    <div className="inner2">
+                        <div className="youtube-wrapper">
+                        <iframe
+                            src="https://www.youtube.com/embed/gf0kYWgy-58?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&loop=1&playlist=gf0kYWgy-58&modestbranding=1&rel=0"
+                            title="K - Series"
+                            frameBorder="0"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            />
+                        </div>
                     </div>
                 </div>
 
