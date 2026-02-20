@@ -188,6 +188,18 @@
       }
     }
   },
+  "refund": {
+    "title": "Refund Policy",
+    "desc": "Free returns are available for all sale items within 7 days of receipt, provided the return conditions specified below are met.",
+    "instructions": "Return Instructions are provided below.",
+    "items": [
+      "Purchases must be returned from the original shipping country.",
+      "Returns will be accepted only if there is any manufacturing defect with the product or mismatch of the product.",
+      "Items returned must be in their unused original condition with all item tags attached and any related sampling pieces and booklets included.",
+      "Incomplete, damaged, or altered returns or anything we reasonably believe has been used will not be accepted and will be sent back to the customer.",
+      "Return charges are not applicable if you meet the above conditions."
+    ]
+  },
   "noProductFound": "No Product Found",
   "Fragrance Profile": "Fragrance Profile",
   "Grace":"Grace",
