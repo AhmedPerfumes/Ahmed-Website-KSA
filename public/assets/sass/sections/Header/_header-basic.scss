@@ -4,7 +4,7 @@
   z-index: 2;
 
   .form-select {
-    font-family: 'SofiaProRegular';
+    font-family: 'Kanit-Regular';
     border: 0;
     box-shadow: none;
     height: 2.5rem;
@@ -185,7 +185,9 @@
     background-image: escape-svg($btn-close-lg-white-bg);
   }
 
-  .mega-menu, .box-menu, .default-menu {
+  .mega-menu,
+  .box-menu,
+  .default-menu {
     a {
       color: $primary;
     }

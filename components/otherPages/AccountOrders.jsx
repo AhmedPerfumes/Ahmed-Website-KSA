@@ -536,7 +536,7 @@ export default function AccountOrders() {
       <div
         className="col-lg-9"
         style={{
-          fontFamily: "SofiaProRegular, sans‑serif",
+          fontFamily: "Kanit-Regular, sans‑serif",
           border: "1px solid #e9e9e9",
           borderRadius: ".75rem",
           padding: "50px",
