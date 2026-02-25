@@ -297,7 +297,7 @@ const Checkout = ({ product }) => {
         }
 
     // Dependency array
-    }, [currentQuantity, locale, product, cartProducts]);
+    }, [currentQuantity, locale, cartProducts]);
 
     return (
         <div>
