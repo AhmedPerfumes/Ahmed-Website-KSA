@@ -168,7 +168,7 @@ const KSeriesScrollSection = () => {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            font-family: "Lato", system-ui, -apple-system, BlinkMacSystemFont,
+            font-family: "Kanit-Regular", system-ui, -apple-system, BlinkMacSystemFont,
               "Segoe UI", sans-serif;
             color: #f7eee1;
           }
@@ -184,7 +184,7 @@ const KSeriesScrollSection = () => {
 
           .kseries-title {
             margin: 0;
-            font-family: "Playfair Display", "Georgia", serif;
+            font-family: "Kanit-Regular", "Georgia", serif;
             font-size: 1.5rem;
             line-height: 1.3;
             font-weight: 600;
@@ -337,7 +337,7 @@ const KSeriesScrollSection = () => {
           justify-content: center;
           gap: 14px;
           border: 1px solid rgba(255, 255, 255, 0.08);
-          font-family: "Sofia Pro", "Inter", system-ui, -apple-system,
+          font-family: "Kanit-Regular", "Inter", system-ui, -apple-system,
             BlinkMacSystemFont, "Segoe UI", sans-serif;
           color: #f7eee1;
           text-align: left;

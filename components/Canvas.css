@@ -1,133 +1,157 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-  }
-  html{
-    scroll-behavior: smooth;
-  }
-  body {
-    font-family: "Lato", sans-serif;
-    overflow-x: hidden;
-    
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Kanit-Regular", sans-serif;
+  overflow-x: hidden;
+
+}
+
+canvas {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+button {
+  position: absolute;
+  z-index: 100;
+  margin-top: 50px;
+  margin-right: 50px;
+}
+
+.details {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+.ball-text {
+  position: fixed;
+  z-index: 2;
+  color: white;
+  font-size: 5rem;
+  right: 20%;
+  bottom: 40%;
+  transform: translate(-20%, -40%);
+}
+
+@media screen and (max-width: 1024px) {
+  .ball-text {
+    font-size: 2rem;
+    right: 50%;
+    bottom: 25%;
+    transform: translate(50%, 50%);
   }
 
-  canvas {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-  }
-  button{
-    position: absolute;
-    z-index: 100;
-    margin-top: 50px;
-    margin-right: 50px;
-  }
-
-  .details {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  h1 {
     font-size: 2rem;
   }
-
-  .ball-text {
-    position: fixed;
-    z-index: 2;
-    color: white;
-    font-size: 5rem;
-    right: 20%;
-    bottom: 40%;
-    transform: translate(-20%, -40%);
-  }
-
-  @media screen and (max-width: 1024px) {
-    .ball-text {
-      font-size: 2rem;
-      right: 50%;
-      bottom: 25%;
-      transform: translate(50%, 50%);
-    }
-    h1 {
-      font-size: 2rem;
-    }
-  }
-  .page2{
-    height: 100vh;
-    width: 100vw;
-    background-color: lightblue;
-  }
-  .canvas {
-    display: block; /* Ensure canvas is displayed correctly */
-    width: 100%; /* Ensure it fits within the screen width */
-    height: 100vh; /* Automatically adjust the height based on the width */
-  }
-  
-  .skip-button {
-    position: fixed;
-    bottom: 60px;
-    left: 50%;
-    width: 120px; /* Make width a bit wider for a capsule look */
-    height: 60px; /* Reduce height to get a capsule shape */
-    border-radius: 30px; /* Apply uniform border-radius for capsule shape */
-    background-color: rgba(0, 0, 0, 0.178); /* Transparent background */
-    color: rgb(255, 255, 255);
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-    border: 2px solid white;
 }
 
-  
-  .skip-button:hover {
-    background-color: rgba(0, 0, 0, 0.9);
-  }
-  /* .canvas.hidden{
+.page2 {
+  height: 100vh;
+  width: 100vw;
+  background-color: lightblue;
+}
+
+.canvas {
+  display: block;
+  /* Ensure canvas is displayed correctly */
+  width: 100%;
+  /* Ensure it fits within the screen width */
+  height: 100vh;
+  /* Automatically adjust the height based on the width */
+}
+
+.skip-button {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  width: 120px;
+  /* Make width a bit wider for a capsule look */
+  height: 60px;
+  /* Reduce height to get a capsule shape */
+  border-radius: 30px;
+  /* Apply uniform border-radius for capsule shape */
+  background-color: rgba(0, 0, 0, 0.178);
+  /* Transparent background */
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  border: 2px solid white;
+}
+
+
+.skip-button:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* .canvas.hidden{
     display: none;
   } */
-  .skip-button2 {
-    position: fixed;
-    bottom: 60px;
-    left: 35%;
-    width: auto; /* Adjust width to fit the text */
-    height: auto; /* Adjust height based on text content */
-    background-color: rgba(0, 0, 0, 0.397); /* Transparent background */
-    color: rgb(255, 255, 255);
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-    padding: 10px 20px; /* Add some padding for spacing */
-    text-align: center; /* Center align the text */
-    border: none; /* Remove all borders */
-    border-bottom: 2px solid white; /* Add bottom border */
+.skip-button2 {
+  position: fixed;
+  bottom: 60px;
+  left: 35%;
+  width: auto;
+  /* Adjust width to fit the text */
+  height: auto;
+  /* Adjust height based on text content */
+  background-color: rgba(0, 0, 0, 0.397);
+  /* Transparent background */
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  padding: 10px 20px;
+  /* Add some padding for spacing */
+  text-align: center;
+  /* Center align the text */
+  border: none;
+  /* Remove all borders */
+  border-bottom: 2px solid white;
+  /* Add bottom border */
 }
 
-  
-  .skip-button2:hover {
-    background-color: rgba(0, 0, 0, 0.9);
-  }
 
-  [scroll-frames] {
-    position: sticky;
-    top: 0;
-    left: 0;
-    height: 100vh;
-  }
+.skip-button2:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
 
-  .sectionWebMob {
-      height: 150vh;
-  }
-  hr { opacity: 0 }
+[scroll-frames] {
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sectionWebMob {
+  height: 150vh;
+}
+
+hr {
+  opacity: 0
+}
 
 /* Canvas styles */
 /* .canvas {
@@ -146,12 +170,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background with more opacity */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Semi-transparent black background with more opacity */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's on top of other elements */
-  pointer-events: none; /* Disable interactions with the background */
+  z-index: 1000;
+  /* Ensure it's on top of other elements */
+  pointer-events: none;
+  /* Disable interactions with the background */
   overflow: hidden;
 }
 
@@ -159,8 +186,10 @@
   background-color: rgb(255, 243, 226);
   padding: 40px;
   border-radius: 8px;
-  width: 100%; /* Take up 90% of the screen width */
-  height: 100%; /* Take up 90% of the screen height */
+  width: 100%;
+  /* Take up 90% of the screen width */
+  height: 100%;
+  /* Take up 90% of the screen height */
   /* max-width: 800px; Optional: You can set a maximum width */
   /* max-height: 600px; Optional: You can set a maximum height */
   /* overflow-y: auto; If content overflows, allow scrolling */
@@ -168,18 +197,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  pointer-events: none; /* Disable interactions with the background */
+  pointer-events: none;
+  /* Disable interactions with the background */
 }
 
 .text-slide-container {
   position: fixed;
-  bottom: 14%; /* Position near the bottom */
-  left: 50%; /* Center horizontally */
+  bottom: 14%;
+  /* Position near the bottom */
+  left: 50%;
+  /* Center horizontally */
   transform: translateX(-50%);
   text-align: center;
-  pointer-events: none; /* Disable interactions */
+  pointer-events: none;
+  /* Disable interactions */
   z-index: 10;
-  width: 100%; /* Make sure it doesn't overflow on smaller screens */
+  width: 100%;
+  /* Make sure it doesn't overflow on smaller screens */
   color: #663915;
 }
 
@@ -188,18 +222,24 @@
 }
 
 .text-slide {
-  font-family: Lato, sans-serif, Serif;
+  font-family: 'Kanit-Regular';
   font-size: 22px;
   color: #906408;
-  background: rgba(255, 255, 255, 0.37); /* Slightly darker background for contrast */
-  padding: 15px 30px; /* Add padding for a clean look */
-  border-radius: 8px; /* Smooth corners */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Add subtle shadow */
+  background: rgba(255, 255, 255, 0.37);
+  /* Slightly darker background for contrast */
+  padding: 15px 30px;
+  /* Add padding for a clean look */
+  border-radius: 8px;
+  /* Smooth corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  /* Add subtle shadow */
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.6s forwards;
-  max-width: 600px; /* Limit width for readability */
-  margin: 0 auto; /* Center the text within the container */
+  max-width: 600px;
+  /* Limit width for readability */
+  margin: 0 auto;
+  /* Center the text within the container */
 }
 
 @keyframes fadeInUp {
@@ -207,9 +247,9 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-

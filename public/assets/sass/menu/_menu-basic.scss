@@ -30,7 +30,7 @@
   line-height: $navigation-item-line-height;
   text-decoration: none;
   text-transform: uppercase;
-  font-family: 'SofiaProRegular';
+  font-family: 'Kanit-Regular';
 
   &:after {
     content: '';
@@ -74,7 +74,7 @@
 }
 
 .menu-link {
-  font-family: 'SofiaProRegular';
+  font-family: 'Kanit-Regular';
   display: inline-block;
   position: relative;
   padding: $menu-link-padding-y $menu-link-padding-x;

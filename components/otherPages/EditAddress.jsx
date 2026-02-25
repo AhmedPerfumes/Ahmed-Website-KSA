@@ -246,7 +246,7 @@ export default function EditAddress() {
                 </p>
                 <div
                     className="d-flex gap-3 flex-column "
-                    style={{ fontFamily: "SofiaProRegular" }}
+                    style={{ fontFamily: "Kanit-Regular" }}
                 >
                     {["Home Address", "Other Address"].map((label, idx) => (
                         <div
@@ -297,7 +297,7 @@ export default function EditAddress() {
 
             {/* Edit Modal */}
             <Modal
-                style={{ fontFamily: "SofiaProRegular" }}
+                style={{ fontFamily: "Kanit-Regular" }}
                 show={show}
                 onHide={() => setShow(false)}
                 centered

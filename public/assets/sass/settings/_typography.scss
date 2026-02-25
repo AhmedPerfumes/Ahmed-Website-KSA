@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "SofiaProRegular";
-  src: url(/assets/fonts/sofia/SofiaProRegular.ttf);
+  font-family: "Kanit-Regular";
+  src: url(/assets/fonts/kanit/Kanit-Regular.ttf);
 }
 
 body {
@@ -39,7 +39,7 @@ h6 {
 }
 
 .font-sofia {
-  font-family: "SofiaProBold";
+  font-family: "Kanit-Bold";
 }
 
 .third-color {
@@ -222,38 +222,22 @@ h6 {
 }
 
 .smooth-16 {
-  text-shadow: calc(var(--stroke-width) * 1) calc(var(--stroke-width) * 0) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0.9239) calc(var(--stroke-width) * 0.3827) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0.7071) calc(var(--stroke-width) * 0.7071) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0.3827) calc(var(--stroke-width) * 0.9239) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0) calc(var(--stroke-width) * 1) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -0.3827) calc(var(--stroke-width) * 0.9239) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -0.7071) calc(var(--stroke-width) * 0.7071) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -0.9239) calc(var(--stroke-width) * 0.3827) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -1) calc(var(--stroke-width) * 0) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -0.9239) calc(var(--stroke-width) * -0.3827) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -0.7071) calc(var(--stroke-width) * -0.7071) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * -0.3827) calc(var(--stroke-width) * -0.9239) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0) calc(var(--stroke-width) * -1) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0.3827) calc(var(--stroke-width) * -0.9239) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0.7071) calc(var(--stroke-width) * -0.7071) 0
-      var(--stroke-color),
-    calc(var(--stroke-width) * 0.9239) calc(var(--stroke-width) * -0.3827) 0
-      var(--stroke-color);
+  text-shadow: calc(var(--stroke-width) * 1) calc(var(--stroke-width) * 0) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0.9239) calc(var(--stroke-width) * 0.3827) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0.7071) calc(var(--stroke-width) * 0.7071) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0.3827) calc(var(--stroke-width) * 0.9239) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0) calc(var(--stroke-width) * 1) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -0.3827) calc(var(--stroke-width) * 0.9239) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -0.7071) calc(var(--stroke-width) * 0.7071) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -0.9239) calc(var(--stroke-width) * 0.3827) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -1) calc(var(--stroke-width) * 0) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -0.9239) calc(var(--stroke-width) * -0.3827) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -0.7071) calc(var(--stroke-width) * -0.7071) 0 var(--stroke-color),
+    calc(var(--stroke-width) * -0.3827) calc(var(--stroke-width) * -0.9239) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0) calc(var(--stroke-width) * -1) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0.3827) calc(var(--stroke-width) * -0.9239) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0.7071) calc(var(--stroke-width) * -0.7071) 0 var(--stroke-color),
+    calc(var(--stroke-width) * 0.9239) calc(var(--stroke-width) * -0.3827) 0 var(--stroke-color);
 }
 
 @include media-breakpoint-up(lg) {
@@ -273,6 +257,7 @@ h6 {
 .fs-15 {
   font-size: 0.9375rem !important;
 }
+
 .fs-16 {
   font-size: 1rem !important;
 }
@@ -316,6 +301,7 @@ h6 {
 .fs-70 {
   @include font-size(4.375rem);
 }
+
 .fs-80 {
   @include font-size(5rem);
 }
