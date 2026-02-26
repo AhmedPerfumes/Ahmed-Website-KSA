@@ -489,11 +489,11 @@ const Checkout = ({ product }) => {
                                         aria-label="Decrease quantity"
                                         onClick={() => {
                                             const currentQty = isIncludeCard()?.quantity ?? 1;
-                                            // if(currentQty > 1) {
+                                            if(currentQty > 1) {
                                                 setQuantityCartItem(product.product_id, currentQty - 1, product?.maximum_order_quantity )
-                                            // } else {
-                                                // removeProduct(product.product_id)
-                                            // }
+                                            } else {
+                                                removeProduct(product.product_id)
+                                            }
                                         }}
                                         className="btn btn-sm rounded-circle border-0 d-flex align-items-center justify-content-center"
                                         style={{ width: 34, height: 34, background: "rgba(255,255,255,0.12)", color: "#fff", }}
