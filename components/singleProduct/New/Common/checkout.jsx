@@ -253,7 +253,7 @@ const Checkout = ({ product }) => {
             if (window.TabbyPromo && typeof window.TabbyPromo === 'function') {
                 try {
                     const tabbyNode = document.getElementById("TabbyPromo");
-                    if (tabbyNode) tabbyNode.innerHTML = "";
+                    // if (tabbyNode) tabbyNode.innerHTML = "";
 
                     const unitPrice = parseFloat(tabbyPrice(product));
                     const totalPrice = (unitPrice * currentQuantity).toFixed(2);
