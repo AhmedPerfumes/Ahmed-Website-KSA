@@ -285,7 +285,7 @@ export default function LoginRegister() {
 
                         <div className="form-floating mb-3">
                             <input name="password" type="password" className="form-control form-control_gray" placeholder="********" required />
-                            <label>Password* (Default: 123456)</label>
+                            <label>Password*</label>
                         </div>
 
                         <button className="btn btn-primary w-100 text-uppercase" type="submit" disabled={isLoading}>
