@@ -154,7 +154,7 @@ export default function MobileFooter2() {
         </p>
         <p className="text-center">
           <strong dir="ltr" className="fw-medium text-white text-center">
-          {t("+966 55 5073629 / +966 53 6654399")} 
+          {t("+966 55 5073629 / +966 53 6654399 / +966 50 6125444")} 
           </strong>
         </p>
 
