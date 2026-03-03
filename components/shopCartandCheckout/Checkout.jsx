@@ -33,7 +33,7 @@ export default function Checkout() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [OTPError, setOTPError] = useState(null);
-  const [OTPSuccess, setOTPSuccess] = useState(true);
+  const [OTPSuccess, setOTPSuccess] = useState(null);
   const [isSendOTPLoading, setIsSendOTPLoading] = useState(false);
   const [isOTPButton, setIsOTPButton] = useState(true);
   const [isOTPVerified, setIsOTPVerified] = useState(false);
@@ -61,7 +61,7 @@ export default function Checkout() {
   const hasCleaned = useRef(false);
   const hasFetchedRef = useRef(false);
   const searchParams = useSearchParams();
-  const disablePlaceOrder = isLoading || (!isLoggedIn && isOTPVerified) || (isLoggedIn && formData.shippingAdd && isOTPVerified); 
+  const disablePlaceOrder = isLoading || (!isLoggedIn && !isOTPVerified) || (isLoggedIn && formData.shippingAdd && !isOTPVerified); 
   
   // USE EFFECTS
 
@@ -874,9 +874,9 @@ export default function Checkout() {
                 {!isLoggedIn && (
                     <div className="col-md-12">
                       {OTPError ? ( <div style={{ color: "red" }}>{OTPError}</div> ) : ( <div style={{ color: "green" }}>{OTPSuccess}</div> )}
-                      {!isOTPButton ? ( <button className="btn btn-primary w-100 text-uppercase" type="button" disabled={isSendOTPLoading} onClick={sendOTP} > {isSendOTPLoading ? "Loading..." : "Send OTP"} </button> ) : ( 
+                      {isOTPButton ? ( <button className="btn btn-primary w-100 text-uppercase" type="button" disabled={isSendOTPLoading} onClick={sendOTP} > {isSendOTPLoading ? "Loading..." : "Send OTP"} </button> ) : ( 
                         <>
-                        {/* {!isOTPVerified && ( 
+                        {!isOTPVerified && ( 
                           <>
                             <div className="form-floating my-3">
                               <input type="number" className="form-control" id="billing_otp" placeholder="Eg. 1234 *" name="otp" value={formData.otp} onChange={handleChange} />
@@ -886,7 +886,7 @@ export default function Checkout() {
                               {isSendOTPLoading ? "Loading..." : "Verify OTP"} 
                             </button>
                           </>
-                        )} */}
+                        )}
                         </>
                       )}
                     </div>
