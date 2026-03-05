@@ -240,7 +240,7 @@ export default function LoginRegister() {
                 const defaultAddr = data?.data?.addresses?.find((addr) => addr.is_default);
 
                 if (defaultAddr) {
-                    localStorage.setItem("address", btoa(JSON.stringify({ id: defaultAddr.id, name: defaultAddr.name, email: defaultAddr.email, phone: defaultAddr.phone, state: defaultAddr.state, city: defaultAddr.city, address: defaultAddr.address, customer_id: defaultAddr.customer_id, is_default: 1, })));
+                    localStorage.setItem("address", btoa(JSON.stringify({ id: defaultAddr.id, name: defaultAddr.name, email: defaultAddr.email, phone: defaultAddr.phone, state: defaultAddr.state, city: defaultAddr.city, address: defaultAddr.address, customer_id: defaultAddr.customer_id, short_national_address: defaultAddr.short_national_address, is_default: 1, })));
                 }
                 setIsLoggedIn(true);
                 // setTimeout(() => (window.location.href = "/"), 1000);

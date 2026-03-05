@@ -42,8 +42,8 @@ export default function Checkout() {
   const [couponSuccess, setCouponSuccess] = useState(null);
   const [couponData, setCouponData] = useState(null);
   const [formData, setFormData] = useState({
-    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: ''},
-    billingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '' },
+    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '' },
+    billingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' },
     shippingAdd: false,
     note: '',
     password: '',
@@ -76,6 +76,7 @@ export default function Checkout() {
         let area = "";
         let building = "";
         let province = "";
+        let short_national_address = "";
         const userStr = localStorage.getItem("user");
         if (userStr) {
           const user = JSON.parse(atob(userStr));
@@ -96,12 +97,13 @@ export default function Checkout() {
           area = addr.city || "";
           building = addr.address || "";
           province = addr.state || "";
+          short_national_address = addr.short_national_address || "";
         }
 
         setFormData((prev) => ({ 
           ...prev, 
-          billingAddress: { ...prev.billingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, }, 
-          shippingAddress: { ...prev.shippingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, }, }));
+          billingAddress: { ...prev.billingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, short_national_address}, 
+          shippingAddress: { ...prev.shippingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province }, }));
       }
 
       // setCouponLoading(true);
@@ -466,6 +468,14 @@ export default function Checkout() {
     setError(null);
     setSuccess(null);
 
+
+    const short_national_address = formData.billingAddress.short_national_address?.trim();
+    if (!/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
+      setIsLoading(false);
+      setError('Valid 8-digit Short National Address is required. Enter 4 letters followed by 4 numbers.');
+      return;
+    }
+
     const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
     const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
     const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1].price);
@@ -540,7 +550,7 @@ export default function Checkout() {
         setOrderDetails(data);
         setFormData({
           shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' },
-          billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' },
+          billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '', short_national_address: '' },
           shippingAdd: false,
         });
         setTimeout(() => router.push(`/${locale}/shop-order-complete`), 1000);
@@ -813,6 +823,16 @@ export default function Checkout() {
                     </div>
                   </div>
                 </div>
+                <div className="col-md-12">
+                    <div className="form-floating mt-3 mb-3">
+                      <input type="text" className="form-control" id="checkout_short_national_address" placeholder="Short Natinal Address *" name="billingAddress.short_national_address" value={formData.billingAddress.short_national_address} onChange={handleChange} required pattern="^[A-Za-z]{4}[0-9]{4}$" maxlength="8" title="Enter 4 letters followed by 4 numbers"/>
+                      <label htmlFor="checkout_company_name"> Short National Address * </label>
+                    </div>
+                    {/* <div className="form-floating mt-3 mb-3">
+                      <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Full Address *" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
+                      <label htmlFor="checkout_company_name"> Full Address * </label>
+                    </div> */}
+                  </div>
                 <div className="col-md-12">
                   <div className="form-floating mt-3 mb-3">
                     <input type="text" className="form-control" id="checkout_street_address" placeholder="Area / Mantaqa *"  readOnly={isLoggedIn} name="billingAddress.area" value={formData.billingAddress.area} onChange={handleChange} required />
@@ -1250,12 +1270,12 @@ export default function Checkout() {
                   </div>
                   <div className="col-md-12">
                     <div className="form-floating mt-3 mb-3">
-                      <input type="text" className="form-control" id="checkout_street_address" placeholder="Address *" name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required />
+                      <input type="text" className="form-control" id="checkout_street_address" placeholder="Area / Mantaqa *" name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required />
                       <label htmlFor="checkout_company_name"> Area / Mantaqa * </label>
                     </div>
                     <div className="form-floating mt-3 mb-3">
-                      <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
-                      <label htmlFor="checkout_company_name"> Building / Villa / Apartment </label>
+                      <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment *" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
+                      <label htmlFor="checkout_company_name"> Building / Villa / Apartment * </label>
                     </div>
                   </div>
 
