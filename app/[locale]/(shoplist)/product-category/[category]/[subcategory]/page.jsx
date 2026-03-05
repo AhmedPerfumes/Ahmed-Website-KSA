@@ -130,7 +130,7 @@ export async function generateMetadata({ params }) {
 }
 // export default function ShopPage8() {
 const ShopPage8 = async ({ params }) => {
-  const { category, subcategory,locale } = params;
+  const { category, subcategory, locale } = params;
 
   try {
     const data = await getCategorySubCategory(category, subcategory);

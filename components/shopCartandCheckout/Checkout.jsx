@@ -9,7 +9,7 @@ import Image from "next/image";
 import he from 'he';
 import { products1 } from "@/data/products/fashion";
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
@@ -62,6 +62,7 @@ export default function Checkout() {
   const hasFetchedRef = useRef(false);
   const searchParams = useSearchParams();
   const disablePlaceOrder = isLoading || (!isLoggedIn && !isOTPVerified) || (isLoggedIn && formData.shippingAdd && !isOTPVerified); 
+  const t = useTranslations();
   
   // USE EFFECTS
 
@@ -787,27 +788,27 @@ export default function Checkout() {
         <form onSubmit={onOrder}>
           <div className="checkout-form">
             <div className="billing-info__wrapper">
-              <h4>BILLING DETAILS</h4>
+              <h4>{t("BILLING DETAILS")}</h4>
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-floating my-3">
                     <input type="text" className="form-control" id="checkout_first_name" placeholder="First Name" name="billingAddress.first_name" value={formData.billingAddress.first_name} onChange={handleChange} required />
-                    <label htmlFor="checkout_first_name">First Name</label>
+                    <label htmlFor="checkout_first_name">{t("First Name")}</label>
                     {fieldErrors.first_name && ( <div style={{ color: "red", fontSize: "0.85rem" }}> {fieldErrors.first_name} </div> )}
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="form-floating my-3">
                     <input type="text" className="form-control" id="checkout_last_name" placeholder="Last Name" name="billingAddress.last_name" value={formData.billingAddress.last_name} onChange={handleChange} required />
-                    <label htmlFor="checkout_last_name">Last Name</label>
+                    <label htmlFor="checkout_last_name">{t("Last Name")}</label>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="search-field my-3">
                     <div className={`form-label-fixed hover-container ${idDDActive ? "js-content_visible" : ""}`}>
-                      <label htmlFor="country" className="form-label">Country / Region*</label>
+                      <label htmlFor="country" className="form-label">{t("Country / Region")}*</label>
                       <div className="js-hover__open">
-                        <input type="text" className="form-control form-control-lg search-field__actor" id="country" name="billingAddress.country" value="Saudi Arabia" readOnly placeholder="Saudi Arabia" />
+                        <input type="text" className="form-control form-control-lg search-field__actor" id="country" name="billingAddress.country" value={t("Saudi Arabia")} readOnly placeholder={t("Saudi Arabia")} />
                       </div>
                     </div>
                   </div>
@@ -815,12 +816,12 @@ export default function Checkout() {
                 <div className="col-md-12">
                   <div className="form-floating mt-3 mb-3">
                     <input type="text" className="form-control" id="checkout_street_address" placeholder="Area / Mantaqa *"  readOnly={isLoggedIn} name="billingAddress.area" value={formData.billingAddress.area} onChange={handleChange} required />
-                    <label htmlFor="checkout_company_name">Area / Mantaqa *</label>
+                    <label htmlFor="checkout_company_name">{t("City")} *</label>
                     {fieldErrors.area && ( <div style={{ color: "red", fontSize: "0.85rem" }}> {fieldErrors.area} </div> )}
                   </div>
                   <div className="form-floating mt-3 mb-3">
                     <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" readOnly={isLoggedIn} name="billingAddress.building" value={formData.billingAddress.building} onChange={handleChange} required />
-                    <label htmlFor="checkout_company_name">Building / Villa / Apartment</label>
+                    <label htmlFor="checkout_company_name">{t("Full Address")}</label>
                     {fieldErrors.building && ( <div style={{ color: "red", fontSize: "0.85rem" }}> {fieldErrors.building} </div> )}
                   </div>
                 </div>
@@ -851,7 +852,7 @@ export default function Checkout() {
                 <div className="col-md-12">
                   <div className="form-floating mt-3 mb-3">
                     <input type="text" className="form-control" id="checkout_province" placeholder="Province *" readOnly={isLoggedIn} name="billingAddress.province" value={formData.billingAddress.province} onChange={handleChange} required />
-                    <label htmlFor="checkout_province"> Province * </label>
+                    <label htmlFor="checkout_province"> {t("Province")} * </label>
                   </div>
                   {/* <div className="form-floating mt-3 mb-3">
                     <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Building / Villa / Apartment" name="billingAddress.building" value={formData.billingAddress.building} onChange={handleChange} required />
@@ -862,19 +863,19 @@ export default function Checkout() {
                 <div className="col-md-12">
                   <div className="form-floating my-3">
                     <input type="email" className="form-control" id="billingAddress.email" placeholder="Your Mail *" name="billingAddress.email" value={formData.billingAddress.email} onChange={handleChange} required />
-                    <label htmlFor="checkout_email">Email Address *</label>
+                    <label htmlFor="checkout_email">{t("Email Address")} *</label>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="form-floating my-3">
                     <input type="text" pattern="^\d{10}$" title="Only positive integers allowed" className="form-control" id="checkout_otp" placeholder="Eg. 0500000000 *" name="billingAddress.mobile" value={formData.billingAddress.mobile} onChange={handleChange} required />
-                    <label htmlFor="checkout_phone">Mobile Number (Eg. 0500000000)*</label>
+                    <label htmlFor="checkout_phone">{t("Mobile Number")} (Eg. 0500000000)*</label>
                   </div>
                 </div>
                 {!isLoggedIn && (
                     <div className="col-md-12">
                       {OTPError ? ( <div style={{ color: "red" }}>{OTPError}</div> ) : ( <div style={{ color: "green" }}>{OTPSuccess}</div> )}
-                      {isOTPButton ? ( <button className="btn btn-primary w-100 text-uppercase" type="button" disabled={isSendOTPLoading} onClick={sendOTP} > {isSendOTPLoading ? "Loading..." : "Send OTP"} </button> ) : ( 
+                      {isOTPButton ? ( <button className="btn btn-primary w-100 text-uppercase" type="button" disabled={isSendOTPLoading} onClick={sendOTP} > {isSendOTPLoading ? "Loading..." : t("Send OTP")} </button> ) : ( 
                         <>
                         {!isOTPVerified && ( 
                           <>
@@ -894,11 +895,11 @@ export default function Checkout() {
                 <div className="col-md-12">
                   {!isLoggedIn && <div className="form-check mt-3">
                     <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue="" id="create_account" onClick={(prev) => setCreateAccount(!createAccount)} name="create_account" />
-                    <label className="form-check-label" htmlFor="create_account"> CREATE AN ACCOUNT? </label>
+                    <label className="form-check-label" htmlFor="create_account"> {t("CREATE AN ACCOUNT")}? </label>
                   </div>}
                   <div className="form-check mb-3">
                     <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue="" id="ship_different_address" onClick={handleCheckboxChange} name="shipping" />
-                    <label className="form-check-label" htmlFor="ship_different_address" > SHIP TO A DIFFERENT ADDRESS? </label>
+                    <label className="form-check-label" htmlFor="ship_different_address" > {t("SHIP TO A DIFFERENT ADDRESS")}? </label>
                   </div>
                 </div>
               </div>
@@ -917,12 +918,12 @@ export default function Checkout() {
             <div className="checkout__totals-wrapper">
               <div className="sticky-content">
                 <div className="checkout__totals">
-                  <h3>Your Order</h3>
+                  <h3>{t("Your Order")}</h3>
                   <table className="checkout-cart-items">
                     <thead>
                       <tr>
-                        <th>PRODUCT</th>
-                        <th>SUBTOTAL</th>
+                        <th>{t("PRODUCT")}</th>
+                        <th>{t("SUBTOTAL")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -939,11 +940,11 @@ export default function Checkout() {
                   <table className="checkout-totals">
                     <tbody>
                       <tr>
-                        <th>SUBTOTAL</th>
+                        <th>{t("SUBTOTAL")}</th>
                         <td>{totalPrice.toFixed(2)}{ currency.symbol }</td>
                       </tr>
                       <tr>
-                        <th>SHIPPING</th>
+                        <th>{t("SHIPPING")}</th>
                         <td>{freeShippingFlag ? 'You Got Free Shipping' : `Shipping Cost: ${ shippingServiceCharges[0].price }${ currency.symbol}`}</td>
                       </tr>
                       {/* <tr>
@@ -951,7 +952,7 @@ export default function Checkout() {
                         <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
                       </tr> */}
                       <tr>
-                        <th>TOTAL</th>
+                        <th>{t("TOTAL")}</th>
                         <td>{!freeShippingFlag ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) :
                             (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)}{ currency.symbol } (includes { !freeShippingFlag ? (
                             (
@@ -987,7 +988,7 @@ export default function Checkout() {
                    <div style={{ position: "relative" }}>
                       <input className="form-control mb-1" type="text" name="coupon_code" placeholder="Coupon Code" value={couponCode} onChange={handleCouponChange} style={{ paddingRight: "100px" }} />
                       <span style={{ position: "absolute", top: "50%", right: "12px", transform: "translateY(-50%)", fontSize: 14, color: "#a67b30", cursor: "pointer", textDecoration: "underline",}} onClick={() => setShowCouponModal(true)} >
-                        View Coupons
+                        {t("View Coupons")}
                       </span>
                     </div>
  
@@ -1000,9 +1001,9 @@ export default function Checkout() {
                         onChange={handleCouponChange}
                     /> */}
                     {!couponData ? (
-                      <input className="coupon-action-btn" type="button" value="APPLY COUPON" onClick={applyCoupon} />
+                      <input className="coupon-action-btn" type="button" value={t("APPLY COUPON")} onClick={applyCoupon} />
                     ) : (
-                      <input className="coupon-action-btn remove" type="button" value="REMOVE COUPON" onClick={removeCoupon} />
+                      <input className="coupon-action-btn remove" type="button" value={t("REMOVE COUPON")} onClick={removeCoupon} />
                     )}
                   {/* </form> */}
                   <br/><br/>
@@ -1010,20 +1011,20 @@ export default function Checkout() {
                       <div className="coupon-modal-overlay" onClick={() => setShowCouponModal(false)} >
                         <div className="coupon-modal" onClick={(e) => e.stopPropagation()} >
                           <div className="coupon-header">
-                            <h3>Available Offers</h3>
+                            <h3>{t("Available Offers")}</h3>
                             <button className="close-btn" onClick={() => setShowCouponModal(false)} >
                               &times;
                             </button>
                           </div>
                           <div className="coupon-subheader border-bottom">
-                            <h3>Coupon Offers</h3>
+                            <h3>{t("Coupon Offers")}</h3>
                           </div>
 
                           {couponLoading ? (
-                            <div className="coupon-loading">Loading…</div>
+                            <div className="coupon-loading">{t("Loading")}</div>
                           ) : coupons.length === 0 ? (
                             <div className="coupon-empty">
-                              You have no coupons yet.
+                              {t("You have no coupons yet")}
                             </div>
                           ) : (
                             <div className="coupon-body">
@@ -1033,7 +1034,7 @@ export default function Checkout() {
                                   <div key={c.id || `coupon-${idx}`} className={`coupon-ticket ${ expired ? "expired" : "" }`} >
                                     <div className="coupon-left">
                                       <div className="coupon-title">
-                                        {c.title || "Special Offer"}
+                                        {c.title || t("Special Offer")}
                                       </div>
                                       <div className="coupon-desc">
                                         <h5>
@@ -1055,11 +1056,11 @@ export default function Checkout() {
                                       {!expired && (
                                         <button className={`apply-btn ${copiedId === (c.id || `coupon-${idx}`) ? "applied" : "" }`}
                                           onClick={() => handleSelectCoupon(c.code, c.id || `coupon-${idx}`)}>
-                                          {copiedId === (c.id || `coupon-${idx}`) ? "Applied!" : "Click to Apply"} 
+                                          {copiedId === (c.id || `coupon-${idx}`) ? t("Applied!") : t("Click to Apply")} 
                                         </button>
                                       )}
 
-                                      {expired && ( <div className="coupon-expired-badge">Expired</div> )}
+                                      {expired && ( <div className="coupon-expired-badge">{t("Expired")}</div> )}
                                     </div>
                                   </div>
                                 );
@@ -1103,7 +1104,7 @@ export default function Checkout() {
                   <div className="form-check">
                     <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_3" value={'cod'} checked={selectedOption === 'cod'} onChange={handleRadioChange} />
                     <label className="form-check-label" htmlFor="checkout_payment_method_3" >
-                      Cash on delivery
+                      {t("Cash on delivery")}
                       {/* <span className="option-detail d-block">
                         Phasellus sed volutpat orci. Fusce eget lore mauris
                         vehicula elementum gravida nec dui. Aenean aliquam varius
@@ -1173,7 +1174,7 @@ export default function Checkout() {
                   <div className="form-check">
                     <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_5" value={'tamara'} checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
                     <label className="form-check-label" htmlFor="checkout_payment_method_5" style={{display: "inline-flex"}} >
-                      Tamara - No interest, No fees. 
+                      {t("Tamara - No interest, No fees")} 
                       <TamaraWidget inlineType='4' inlineVariant='text' locale={locale}/>
                     </label>
                   </div>
@@ -1182,7 +1183,7 @@ export default function Checkout() {
                     <input className="form-check-input form-check-input_fill" type="radio" name="checkout_payment_method" id="checkout_payment_method_6" value={'tabby'} checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
                     <label className="form-check-label" htmlFor="checkout_payment_method_6" >
                       <Image src="/assets/images/paymentGateway/Tabby.png" width="60" height="25" alt="Cropped Faux leather Jacket" />
-                      <span style={{marginLeft: "0.5rem"}}>Pay later with Tabby. <sup><strong>ⓘ</strong></sup></span><br/>Use any card.
+                      <span style={{marginLeft: "0.5rem"}}>{t("Pay later with Tabby")} <sup><strong>ⓘ</strong></sup></span><br/>{t("Use any card")}
                       {/* <button style={{ 'border-radius': '50px', 'border': 'none' }} type="button" data-tabby-info="installments" data-tabby-price={finalPriceState && finalPriceState} data-tabby-currency="AED">?</button> */}
                     </label>
                     {selectedOption == 'tabby' && <><div id="tabbyCard"></div></>}

@@ -5,6 +5,7 @@ import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 export const metadata = {
   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -13,7 +14,7 @@ export const metadata = {
       icon: "/assets/images/ahmed-favicon.png",
   },
 };
-
+const t=useTranslations();
 export default function () {
   return (
     <>
@@ -21,7 +22,7 @@ export default function () {
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="shop-checkout container">
-          <h2 className="page-title">Shipping and Checkout</h2>
+          <h2 className="page-title">{t("Shipping and Checkout")}</h2>
           <ChectoutSteps />
           <Checkout />
         </section>
