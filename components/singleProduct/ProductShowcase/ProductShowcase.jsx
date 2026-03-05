@@ -16,7 +16,7 @@ const GLOW_COLOR = HIGHLIGHT_COLOR;
 
 export default function FamilySection({ data = {} }) {
   const locale = useLocale();
-  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/${locale}/k-series/`;
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}${locale}/k-series/`;
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
 
