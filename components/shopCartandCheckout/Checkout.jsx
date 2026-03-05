@@ -826,7 +826,7 @@ export default function Checkout() {
                 <div className="col-md-12">
                     <div className="form-floating mt-3 mb-3">
                       <input type="text" className="form-control" id="checkout_short_national_address" placeholder="Short Natinal Address *" name="billingAddress.short_national_address" value={formData.billingAddress.short_national_address} onChange={handleChange} required pattern="^[A-Za-z]{4}[0-9]{4}$" maxlength="8" title="Enter 4 letters followed by 4 numbers"/>
-                      <label htmlFor="checkout_company_name"> Short National Address * </label>
+                      <label htmlFor="checkout_company_name"> {t("Short National Address")} * </label>
                     </div>
                     {/* <div className="form-floating mt-3 mb-3">
                       <input type="text" className="form-control" id="checkout_street_address_2" placeholder="Full Address *" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />

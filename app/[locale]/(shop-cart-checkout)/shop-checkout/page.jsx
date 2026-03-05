@@ -14,8 +14,8 @@ export const metadata = {
       icon: "/assets/images/ahmed-favicon.png",
   },
 };
-const t=useTranslations();
 export default function () {
+  const t= useTranslations();
   return (
     <>
       <Header14 />
