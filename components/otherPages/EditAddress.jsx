@@ -16,6 +16,7 @@ export default function EditAddress() {
             area: "",
             building: "",
             province: "",
+            short_national_address: "",
             isDefault: false,
         },
         {
@@ -26,6 +27,7 @@ export default function EditAddress() {
             area: "",
             building: "",
             province: "",
+            short_national_address: "",
             isDefault: false,
         },
     ]);
@@ -74,6 +76,7 @@ export default function EditAddress() {
                         area: addr.city || "",
                         building: addr.address || "",
                         province: addr.state || "",
+                        short_national_address: addr.short_national_address || "",
                         isDefault: addr.is_default === 1,
                     }));
 
@@ -96,6 +99,7 @@ export default function EditAddress() {
                             area: "",
                             building: "",
                             province: "",
+                            short_national_address: "",
                             isDefault: false,
                         },
                         parsed[1] || {
@@ -104,6 +108,7 @@ export default function EditAddress() {
                             area: "",
                             building: "",
                             province: "",
+                            short_national_address: "",
                             isDefault: false,
                         },
                     ]);
@@ -116,6 +121,7 @@ export default function EditAddress() {
                             area: "",
                             building: "",
                             province: "",
+                            short_national_address: "",
                             isDefault: false,
                         },
                         {
@@ -124,6 +130,7 @@ export default function EditAddress() {
                             area: "",
                             building: "",
                             province: "",
+                            short_national_address: "",
                             isDefault: false,
                         },
                     ]);
@@ -158,10 +165,12 @@ export default function EditAddress() {
 
         // ✅ Validation inside save
         const newErrors = {};
-        if (!form.area?.trim()) newErrors.area = "Area / Mantaqa is required";
+        if (!form.area?.trim()) newErrors.area = "City is required";
         if (!form.building?.trim())
-            newErrors.building = "Building / Villa / Apartment is required";
+            newErrors.building = "Full Address is required";
         if (!form.province?.trim()) newErrors.province = "Province is required";
+        if (!form.short_national_address?.trim()) newErrors.short_national_address = "Short National Address is required";
+        if (!/^[A-Za-z]{4}[0-9]{4}$/.test(form.short_national_address)) newErrors.short_national_address = "Valid 8-digit Short National Address is required. Enter 4 letters followed by 4 numbers.";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors); // show inline errors
@@ -195,6 +204,7 @@ export default function EditAddress() {
                             state: defaultAddr.province,
                             city: defaultAddr.area,
                             address: defaultAddr.building,
+                            short_national_address: defaultAddr.short_national_address,
                             customer_id: customerId,
                             is_default: 1,
                         })
@@ -222,6 +232,7 @@ export default function EditAddress() {
                     address: form.building,
                     city: form.area,
                     state: form.province,
+                    short_national_address: form.short_national_address,
                     is_default: form.isDefault ? 1 : 0,
                 }),
             });
@@ -312,7 +323,7 @@ export default function EditAddress() {
                     <Form>
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Area / Mantaqa
+                                City
                             </Form.Label>
                             <Form.Control
                                 name="area"
@@ -328,7 +339,7 @@ export default function EditAddress() {
 
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Building / Villa / Apartment
+                                Full Address
                             </Form.Label>
                             <Form.Control
                                 name="building"
@@ -351,6 +362,18 @@ export default function EditAddress() {
                                 onChange={handleChange}
                                 className="rounded-2 px-2 py-1"
                                 isInvalid={!!errors.province}
+                            ></Form.Control>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
+                                Short National Address
+                            </Form.Label>
+                            <Form.Control
+                                name="short_national_address"
+                                value={form.short_national_address}
+                                onChange={handleChange}
+                                className="rounded-2 px-2 py-1"
+                                isInvalid={!!errors.short_national_address}
                             ></Form.Control>
                         </Form.Group>
                         <Form.Group className="mb-4">
