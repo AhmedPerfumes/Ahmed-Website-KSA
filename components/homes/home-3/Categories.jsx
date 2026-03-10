@@ -102,6 +102,7 @@ export default function Categories({ params, subCategories }) {
 
   return (
     <section className="category-carousel container">
+       {categoryName !== "collections" && (
       <div className="position-relative">
         <Swiper {...swiperOptions} className="swiper-center swiper-container js-swiper-slider sub-cat-video">
           {subCategories?.map((elm, i) => (
@@ -144,6 +145,7 @@ export default function Categories({ params, subCategories }) {
           </video>
         </div>
       </div>
+        )}
     </section>
   );
 }
