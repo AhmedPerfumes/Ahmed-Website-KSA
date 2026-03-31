@@ -85,5 +85,26 @@ export const socialLinks = [
       <path d="M11.5 3.1c-.73 0-1.43-.2-2.04-.56A5.4 5.4 0 0 1 7.8.03c-.03-.02-.06-.03-.1-.03H5.3c-.1 0-.18.08-.18.18v8.03a1.47 1.47 0 1 1-1.47-1.47c.32 0 .6.1.85.26.08.05.18 0 .18-.1V5.7a.18.18 0 0 0-.2-.18 3.7 3.7 0 1 0 2.1 3.36V4.43a6 6 0 0 0 2.94.74h.02c.1 0 .18-.08.18-.18V3.3c0-.1-.08-.18-.18-.18Z" />
     ),
   },
+
   
+  
+];
+export const paymentMethods = [
+  {
+    name: "PayTabs",
+    image: null,
+    alt: "PayTabs",
+    isSvg: true,
+    component: "paytabs-full"
+  },
+  {
+    name: "Tamara",
+    image: "/assets/images/paymentGateway/tamara.svg",
+    alt: "Tamara",
+  },
+  {
+    name: "Tabby",
+    image: "/assets/images/paymentGateway/Tabby.png",
+    alt: "Tabby",
+  },
 ];

@@ -1,0 +1,274 @@
+.bgDarkTheme {
+    background-color: #121212;
+    color: #fff;
+}
+
+.textGold {
+    color: #C7944B;
+}
+
+.borderGold {
+    border-color: #C7944B !important;
+}
+
+.borderDarkSubtle {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Progress Bars */
+.progressThin {
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.progressBarGold {
+    background-color: #C7944B;
+}
+
+/* Form Inputs in Dark Mode */
+.formControlDark {
+    background-color: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+}
+
+.formControlDark:focus {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: #C7944B !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.2rem rgba(199, 148, 75, 0.25) !important;
+    outline: none;
+}
+
+.formControlDark::placeholder {
+    color: #666 !important;
+}
+
+.formControlDark:disabled {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #888 !important;
+}
+
+.isInvalid {
+    border-color: #ff6b6b !important;
+}
+
+/* Error Text */
+.textError {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Verified Badge */
+.verifiedBadge {
+    font-size: 0.75rem;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.checkmarkCircle {
+    background: #fff;
+    color: #000;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+/* Modal Overrides */
+.modalBackdropCustom {
+    background-color: rgba(0, 0, 0, 0.85);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2040;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modalContentDark {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: #fff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 800px;
+    position: relative;
+    border-radius: 4px;
+}
+
+.modalBodyScrollable {
+    overflow-y: auto;
+    max-height: 100%;
+    padding: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: #C7944B rgba(255, 255, 255, 0.05);
+}
+
+@media (min-width: 768px) {
+    .modalBodyScrollable {
+        padding: 3rem;
+    }
+}
+
+.modalBodyScrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modalBodyScrollable::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.modalBodyScrollable::-webkit-scrollbar-thumb {
+    background-color: #C7944B;
+    border-radius: 3px;
+}
+
+/* Star Animation */
+.starHover:hover {
+    transform: scale(1.2);
+}
+
+.starInput {
+    transition: transform 0.2s, color 0.2s;
+    display: inline-block;
+}
+
+/* Responsive List Padding */
+.pxResponsiveList {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+@media (min-width: 992px) {
+    .pxResponsiveList {
+        padding-left: 6rem !important;
+        padding-right: 6rem !important;
+    }
+}
+
+/* Custom Scrollbar */
+.customScroll {
+    scrollbar-width: thin;
+    scrollbar-color: #C7944B rgba(255, 255, 255, 0.05);
+}
+
+.customScroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.customScroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.customScroll::-webkit-scrollbar-thumb {
+    background-color: #C7944B;
+    border-radius: 3px;
+}
+
+.customScroll::-webkit-scrollbar-thumb:hover {
+    background-color: #e0b46a;
+}
+
+/* Toggles */
+.toggleCheckbox {
+    display: none;
+}
+
+.toggleSwitch {
+    position: relative;
+    width: 36px;
+    height: 18px;
+    background-color: #333;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.toggleSwitch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.toggleCheckbox:checked + .toggleSwitch {
+    background-color: #C7944B;
+}
+
+.toggleCheckbox:checked + .toggleSwitch::after {
+    transform: translateX(18px);
+}
+
+.toggleLabelText {
+    margin-left: 10px;
+    font-size: 0.8rem;
+    color: #888;
+    cursor: pointer;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.3s;
+}
+
+.toggleCheckbox:checked ~ .toggleLabelText {
+    color: #fff;
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.reviewList {
+    height: 50vh;
+    overflow-y: auto;
+}
+
+.rulesBox {
+    background-color: rgba(199, 148, 75, 0.08);
+    border: 1px dashed #C7944B;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.starRatingContainer {
+    display: inline-block;
+}
+
+.starRatingItem {
+    margin-right: 4px;
+}
