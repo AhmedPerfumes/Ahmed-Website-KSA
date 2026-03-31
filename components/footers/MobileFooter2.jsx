@@ -211,7 +211,7 @@ export default function MobileFooter2() {
                       <span style={{ color: '#ccc', fontSize: '12px' }}>|</span>
                       <Image src="/assets/images/paytabs-svg/UnionPay_logo.png" alt="Union Pay" width={45} height={16} style={{ height: '16px', width: 'auto' }} />
                       <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={45} height={16} style={{ height: '16px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
-                      <Image src="/assets/images/paytabs-svg/Samsung_Pay_Logo.png" alt="Samsung Pay" width={45} height={16} style={{ height: '16px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
+                      {/* <Image src="/assets/images/paytabs-svg/Samsung_Pay_Logo.png" alt="Samsung Pay" width={45} height={16} style={{ height: '16px', width: 'auto', filter: 'brightness(0) invert(1)' }} /> */}
                       <Image src="/assets/images/paytabs-svg/mada.webp" alt="Mada" width={50} height={20} />
                     </div>
                   ) : (

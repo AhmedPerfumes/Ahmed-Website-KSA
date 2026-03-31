@@ -1157,7 +1157,7 @@ export default function Checkout() {
                         <hr></hr>
                         <Image src="/assets/images/paytabs-svg/UnionPay_logo.png" alt="Union Pay" width={50} height={20} />
                         <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={50} height={20} />
-                        <Image src="/assets/images/paytabs-svg/Samsung_Pay_Logo.png" alt="Samsung Pay" width={50} height={20} />
+                        {/* <Image src="/assets/images/paytabs-svg/Samsung_Pay_Logo.png" alt="Samsung Pay" width={50} height={20} /> */}
                         <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="Mada" width={50} height={20} />
                         </div>
                       </label>
