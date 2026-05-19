@@ -2,34 +2,88 @@
 
 import { useContextElement } from "@/context/Context";
 import he from 'he';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMenu } from '@/context/MenuContext';
 import Pagination1 from "../common/Pagination1";
 import FeedbackForm from "../common/Feedback";
 
-export default function OrderPaymentCompleted({ orderDetails }) {
+export default function OrderPaymentCompleted({ orderDetails: initialOrderDetails, initialOrderCode }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   const { setCartProducts } = useContextElement();
-  const [showDate, setShowDate] = useState(false);
 
-  // useEffect(() => {
-  //   setShowDate(true);
-  //   localStorage.setItem('cartList', []);
-  //   setCartProducts([]);
-  // }, []);
+  // State to hold the live data and loading status
+  const [orderData, setOrderData] = useState(initialOrderDetails);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const isPollingRef = useRef(false);
 
+  // 1. POLLING EFFECT: Check status if it's not final (From your UAE code)
   useEffect(() => {
-    if (orderDetails?.payment_status === "completed" && orderDetails?.id) {
+    const finalStatuses = ['completed', 'failed', 'canceled', 'rejected', 'expired'];
+    
+    // If status is NOT final (e.g., 'pending' from PayTabs redirect), start polling
+    if (orderData && !finalStatuses.includes(orderData.payment_status)) {
+        setIsVerifying(true);
+        
+        const pollInterval = setInterval(async () => {
+            if (isPollingRef.current) return;
+            isPollingRef.current = true;
+
+            try {
+                // Fetch updated details using your standard endpoint
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      order_number: initialOrderCode || orderData.order_id
+                    })
+                });
+
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    
+                    // If status changed to a final state, update and stop polling
+                    if (finalStatuses.includes(updatedData.payment_status)) {
+                        setOrderData(updatedData);
+                        setIsVerifying(false);
+                        clearInterval(pollInterval);
+                    }
+                }
+            } catch (error) {
+                console.error("Polling error:", error);
+            } finally {
+                isPollingRef.current = false;
+            }
+        }, 5000); // Polling every 5 seconds is slightly better for instant payment feedback
+
+        // Cleanup: Stop polling after 50 seconds (timeout) or on unmount
+        const timeoutId = setTimeout(() => {
+            clearInterval(pollInterval);
+            setIsVerifying(false); // Give up and show what we have (e.g., pending message)
+        }, 50000);
+
+        return () => {
+            clearInterval(pollInterval);
+            clearTimeout(timeoutId);
+        };
+    } else {
+        // If loaded initially as completed/failed
+        setIsVerifying(false);
+    }
+  }, [orderData?.payment_status, initialOrderCode]);
+
+  // 2. ANALYTICS EFFECT: Only fire if payment is actually completed
+  useEffect(() => {
+    if (orderData?.payment_status === "completed" && orderData?.id) {
       // ---- GA4 Purchase ----
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: "purchase",
         ecommerce: {
-          transaction_id: orderDetails.order_id, // unique order ID
+          transaction_id: orderData.order_id,
           affiliation: "Ahmed Al Maghribi Perfumes KSA",
-          value: parseFloat(orderDetails.total), // total value (after discounts, shipping, tax)
+          value: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
-          items: orderDetails.products.map((item) => ({
+          items: orderData.products.map((item) => ({
             item_id: item.product_id?.toString(),
             item_name: he.decode(item.product_name),
             price: parseFloat(item.price),
@@ -41,12 +95,12 @@ export default function OrderPaymentCompleted({ orderDetails }) {
       // ---- TikTok Purchase ----
       if (typeof window.ttq === "object" && typeof window.ttq.track === "function") {
         window.ttq.track("Purchase", {
-          contents: orderDetails.products.map((item) => ({
+          contents: orderData.products.map((item) => ({
             content_id: item.product_id?.toString(),
             content_type: "product",
             content_name: he.decode(item.product_name),
           })),
-          value: parseFloat(orderDetails.total),
+          value: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
         });
       }
@@ -54,84 +108,87 @@ export default function OrderPaymentCompleted({ orderDetails }) {
       // ---- Snapchat Purchase ----
       if (typeof window.snaptr === "function") {
         window.snaptr("track", "PURCHASE", {
-          transaction_id: orderDetails.order_id,
-          price: parseFloat(orderDetails.total),
+          transaction_id: orderData.order_id,
+          price: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
-          item_ids: orderDetails.products.map((item) => item.product_id?.toString()),
+          item_ids: orderData.products.map((item) => item.product_id?.toString()),
           item_category: "perfume",
-          number_items: orderDetails.products.length,
+          number_items: orderData.products.length,
         });
       }
 
-      // Clear local cart after successful tracking
+      // Clear local cart after successful payment and tracking
       localStorage.removeItem("cartList");
       setCartProducts([]);
     }
-  }, [orderDetails, currency, setCartProducts]);
+  }, [orderData, currency, setCartProducts]);
+  console.log("orderData001",orderData);
+  
 
   const subTotalPrice = (elm) => {
-    if (elm.is_gift) {
-      return <td>0.00{currency.symbol} (Free Gift)</td>;
-    }
-    const currentUTC = new Date(); // Current UTC time
-    const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
-    const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
+    if (elm.is_gift) return <td>0.00{currency.symbol} (Free Gift)</td>;
+    
     if(elm?.discount_percent) {
-      console.log('...', elm.discount_percent);
-      // console.log('...', new Date(current_date_time), new Date(elm.discount.start_date));
-      // if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        // console.log('if...');
         return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.discount_percent)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-      // } else {
-      //   console.log('else...');
-      //   return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-      // }
     } else if(elm?.coupon) {
-        console.log('else if');
         return <td>{((elm.price - (elm.price / 100 * elm.coupon.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</td>;
+    } else {
+        if(elm.discount_amount && elm.discount_amount != '0') {
+          return <td>{ elm.gross_amount }{ currency.symbol }</td>;
+        }
+        return <td>{((elm.price * 1.15) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
     }
-    // else if(elm?.sale_price) {
-    //     return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.sale_price)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-    // } 
-    else {
-      console.log('else');
-      if(elm.discount_amount && elm.discount_amount != '0') {
-        return <td>{ elm.gross_amount }{ currency.symbol }</td>;
-      }
-      return <td>{((elm.price * 1.15) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
-  }
   };
 
-  if (isMenuLoading) {
-    return <div><Pagination1 /></div>;
-  }
-  if (isMenuError) {
-    return <div>{ isMenuError }</div>;
+  if (isMenuLoading) return <div><Pagination1 /></div>;
+  if (isMenuError) return <div>{ isMenuError }</div>;
+
+  // --- Show Loading Screen while verifying Webhook ---
+  if (isVerifying) {
+    return (
+        <div className="text-center pt-5 pb-5">
+            <h2 className="page-title">VERIFYING PAYMENT...</h2>
+            <div className="spinner-border text-primary" role="status" style={{width: '3rem', height: '3rem'}}>
+                <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Please wait a moment while we confirm your transaction securely with PayTabs.</p>
+        </div>
+    );
   }
 
-  const paymentStatus = () => {
-    if(orderDetails.payment_channel == 'tabby') {
-      if(orderDetails.payment_description == 'EXPIRED' || orderDetails.payment_status == 'expired') {
+  const paymentStatusMessage = () => {
+    if(orderData.payment_channel == 'tabby' || orderData.payment_channel == 'paytabs') {
+      if(orderData.payment_description == 'EXPIRED' || orderData.payment_status == 'expired') {
         return <h3>You aborted the payment. Please retry or choose another payment method.</h3>;
-      } else if(orderDetails.payment_description == 'REJECTED' || orderDetails.payment_status == 'rejected') {
-        return <h3>Sorry, Tabby is unable to approve this purchase. Please use an alternative payment method for your order.</h3>;
+      } else if(orderData.payment_description == 'REJECTED' || orderData.payment_status == 'rejected' || orderData.payment_status == 'failed') {
+        return <h3>Sorry, your payment was rejected. Please use an alternative payment method for your order.</h3>;
+      } else if (orderData.payment_status == 'pending') {
+        return <><h3>Payment Processing</h3><p>Your payment is taking a bit longer to verify. Don't worry, we'll email you a receipt once it clears!</p></>;
       } else {
         return <><h3>Your order is completed!</h3><p>Thank you. Your order has been received.</p></>;
       }
     } else {
-      if(orderDetails.payment_status != 'failed') {
+      if(orderData.payment_status != 'failed') {
         return <><h3>Your order is completed!</h3><p>Thank you. Your order has been received.</p></>;
       } else {
-        return <h3>Your order is failed!</h3>;
+        return <h3>Your order has failed!</h3>;
       }
     }
   }
 
+  // Determine if we should show the success checkmark
+  const isSuccess = orderData.payment_status !== 'failed' && 
+                    orderData.payment_status !== 'rejected' && 
+                    orderData.payment_status !== 'expired' && 
+                    orderData.payment_status !== 'pending';
+
   return (
     <>
-    {orderDetails.order_id ? <><div className="order-complete">
+    <h2 className="page-title">{isSuccess ? 'ORDER RECEIVED' : 'ORDER STATUS'}</h2>
+
+    {orderData.order_id ? <><div className="order-complete">
       <div className="order-complete__message">
-        {orderDetails.payment_status != 'failed' && <svg
+        {isSuccess && <svg
           width="80"
           height="80"
           viewBox="0 0 80 80"
@@ -144,16 +201,16 @@ export default function OrderPaymentCompleted({ orderDetails }) {
             fill="white"
           />
         </svg>}
-        {/* {orderDetails.payment_status != 'failed' ? <h3>Your order is completed!</h3> : <h3>Your order is failed!</h3>}
-        {orderDetails.payment_status != 'failed' && <p>Thank you. Your order has been received.</p>} */}
-        { paymentStatus() }
-        <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
+        
+        { paymentStatusMessage() }
+        <FeedbackForm orderId={orderData.id} customerName={orderData.customer_name}/>
       </div>
-      {orderDetails.payment_status != 'failed' ? <>
+
+      {isSuccess ? <>
       <div className="order-info">
         <div className="order-info__item">
           <label>Order Number</label>
-          <span>{ orderDetails.order_id }</span>
+          <span>{ orderData.order_id }</span>
         </div>
         <div className="order-info__item">
           <label>Date</label>
@@ -161,13 +218,11 @@ export default function OrderPaymentCompleted({ orderDetails }) {
         </div>
         <div className="order-info__item">
           <label>Total</label>
-
-          <span>{orderDetails.total}{ currency.symbol } (includes { orderDetails.tax_amount }{ currency.symbol } VAT)
-          </span>
+          <span>{orderData.total}{ currency.symbol } (includes { orderData.tax_amount }{ currency.symbol } VAT)</span>
         </div>
         <div className="order-info__item">
-          <label>Paymetn Method</label>
-          <span>{ orderDetails.payment_method }</span>
+          <label>Payment Method</label>
+          <span>{ orderData.payment_method }</span>
         </div>
       </div>
       <div className="checkout__totals-wrapper">
@@ -181,7 +236,7 @@ export default function OrderPaymentCompleted({ orderDetails }) {
               </tr>
             </thead>
             <tbody>
-              {orderDetails?.products?.map((elm, i) => (
+              {orderData?.products?.map((elm, i) => (
                 <tr key={i}>
                   <td>
                     {he.decode(elm.product_name)} x {elm.qty}
@@ -195,27 +250,20 @@ export default function OrderPaymentCompleted({ orderDetails }) {
             <tbody>
               <tr>
                 <th>SUBTOTAL</th>
-                <td>{orderDetails.sub_total}{ currency.symbol }</td>
+                <td>{orderData.sub_total}{ currency.symbol }</td>
               </tr>
               <tr>
                 <th>SHIPPING</th>
-                <td>{orderDetails.sub_total >= 300 ? 'You Got Free Shipping' : `Shipping Cost: ${ (orderDetails.shipping_amount * 1.15).toFixed(2) }${ currency.symbol }`}</td>
+                <td>{orderData.sub_total >= 300 ? 'You Got Free Shipping' : `Shipping Cost: ${ (orderData.shipping_amount * 1.15).toFixed(2) }${ currency.symbol }`}</td>
               </tr>
-              {/* <tr>
-                <th>SERVICE FEE</th>
-                <td>{ (orderDetails.service_amount * 1.15).toFixed(2) }{ currency.symbol }</td>
-              </tr> */}
               <tr>
                 <th>TOTAL</th>
-                <td>{orderDetails.total}{ currency.symbol } (includes { orderDetails.tax_amount }{ currency.symbol } VAT)
-                </td>
+                <td>{orderData.total}{ currency.symbol } (includes { orderData.tax_amount }{ currency.symbol } VAT)</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <a href='/'
-          className="btn btn-primary w-100 text-uppercase mb-3"
-        >
+        <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">
           Continue Shopping
         </a>
       </div></> : <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>

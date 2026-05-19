@@ -85,6 +85,7 @@ export default function RelatedSlider({ relatedProds }) {
       }
     }
   }
+  
 
   const price = (elm) => {
     const currentUTC = new Date(); // Current UTC time
@@ -109,6 +110,9 @@ export default function RelatedSlider({ relatedProds }) {
       return <span className="money price">{elm?.price}{ currency.symbol }</span>;
     }
   };
+    if (!relatedProds || relatedProds.length === 0) {
+        return null;
+    }
 
   return (
     <section className="products-carousel container">

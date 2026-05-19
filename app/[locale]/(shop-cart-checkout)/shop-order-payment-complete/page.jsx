@@ -15,27 +15,13 @@ export const metadata = {
 
 function getRequestOrigin() {
   const headersList = headers();
-  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
-  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
-  
-  // if (!host) {
-  //   // Fallback for local development or edge cases
-  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
-  // }
+  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; 
+  const protocol = headersList.get('x-forwarded-proto') || 'https'; 
 
   return `${protocol}://${host}`;
 }
 
 async function getOrderDetails(order_id) {
-  // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     order_number: order_id
-  //   })
-  // });
   const origin = getRequestOrigin();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, { 
     method: 'POST',
@@ -56,18 +42,18 @@ async function getOrderDetails(order_id) {
 
 const ShopOrderPaymentComplete = async ({ searchParams  }) => {
   const { q } = searchParams;
-  // console.log(q);
+  
   try {
     const data = await getOrderDetails(q && atob(q));
-    // console.log(data);
+    
       return data && (
         <>
           <Header14 />
           <main className="page-wrapper">
             <div className="mb-4 pb-4"></div>
             <section className="shop-checkout container">
-              <h2 className="page-title">{data.payment_status != 'failed' ? 'ORDER RECEIVED' : 'ORDER FAILED'}</h2>
-              <OrderPaymentCompleted orderDetails={ data }/>
+              {/* Removed the static <h2> here because the OrderPaymentCompleted component handles it dynamically now */}
+              <OrderPaymentCompleted orderDetails={ data } initialOrderCode={q && atob(q)} />
             </section>
           </main>
           <section className="d-none d-lg-block" style={{ height: "100%" }}>

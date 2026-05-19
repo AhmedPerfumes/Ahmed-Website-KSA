@@ -840,6 +840,13 @@ export default function Header14() {
                                     <div
                                         className="account-hover-menu"
                                         role="menu"
+                                         style={{
+                                            left:
+                                                locale === "ar" ? "0" : "auto",
+                                            right:
+                                                locale === "ar" ? "auto" : "0",
+                                            minWidth: "200px",
+                                        }}
                                     >
                                         {isLoggedIn ? (
                                             <>
