@@ -91,14 +91,40 @@ async function getBlogSEO(blogName) {
   return response.json();
 }
 export async function generateMetadata({ params }) {
-  const { blogName } = params;
+  const { blogName, locale } = params;
+
+  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
+
+  const canonicalUrl = `${baseUrl}/${locale}/blog/${blogName}`;
 
   try {
       const data = await getBlogSEO(blogName);
       // console.log(JSON.parse(data.meta_value)[0]);
+      const meta = JSON.parse(data.meta_value)[0] || {};
+
+        // Select Arabic SEO fields only if locale is ar and values exist
+        const seoTitle =
+            locale === "ar" && meta.seo_title_ar
+                ? meta.seo_title_ar
+                : meta.seo_title;
+
+        const seoDescription =
+            locale === "ar" && meta.seo_description_ar
+                ? meta.seo_description_ar
+                : meta.seo_description;
+                
       return {
-          title: JSON.parse(data.meta_value)[0]?.seo_title ? `${JSON.parse(data.meta_value)[0]?.seo_title}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-          description: JSON.parse(data.meta_value)[0]?.seo_description ? JSON.parse(data.meta_value)[0]?.seo_description?.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
+          metadataBase: new URL(baseUrl),
+          title: seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+            description: seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+            alternates: {
+              canonical: canonicalUrl,
+              languages: {
+                en: `/en/blog/${blogName}`,
+                ar: `/ar/blog/${blogName}`,
+                "x-default": `/en/blog/${blogName}`,
+              },
+            },
           // openGraph: {
           //     // title: data.product_name,
           //     // description: data.description.replace(/<\/?[^>]+(>|$)/g, "").trim(),

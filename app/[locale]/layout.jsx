@@ -31,13 +31,32 @@ import Head from "next/head";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export const metadata = {
+const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+
+export async function generateMetadata({ params: { locale } }) {
+  return {
+    metadataBase: new URL(baseUrl),
+
     title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-    description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+
+    description:
+      "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+
     icons: {
-        icon: "/assets/images/ahmed-favicon.png",
+      icon: "/assets/images/ahmed-favicon.png",
     },
-};
+
+    alternates: {
+      canonical: `/${locale}`,
+
+      languages: {
+        en: "/en",
+        ar: "/ar",
+        "x-default": "/en",
+      },
+    },
+  };
+}
 
 // Import English font
 const englishFont = localFont({
