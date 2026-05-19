@@ -9,13 +9,36 @@ import LocationMap from "@/components/otherPages/Contact/LocationMap";
 import React from "react";
 // import Loader from "@/components/loader/Loader";
 
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
+export async function generateMetadata({ params }) {
+  const { locale } = params;
+
+  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+
+  const canonicalUrl = `${baseUrl}/${locale}/export`;
+
+  return {
+    metadataBase: new URL(baseUrl),
+
+    title: "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+
+    description:
+      "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+
+    icons: {
       icon: "/assets/images/ahmed-favicon.png",
-  },
-};
+    },
+
+    alternates: {
+      canonical: canonicalUrl,
+
+      languages: {
+        en: "/en/export",
+        ar: "/ar/export",
+        "x-default": "/en/export",
+      },
+    },
+  };
+}
 
 const ExportPage = () => {
   return (
