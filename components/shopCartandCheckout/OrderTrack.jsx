@@ -81,6 +81,7 @@ export default function OrderTrack() {
       // if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
         // console.log('if...');
         return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.discount_percent)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
+        
       // } else {
       //   console.log('else...');
       //   return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;

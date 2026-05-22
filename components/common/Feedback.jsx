@@ -7,34 +7,36 @@ export default function FeedbackForm({ orderId, customerName }) {
   const [hoverRating, setHoverRating] = useState(0);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false); // New state to track form submission
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/submitReview`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: orderId,
-          customer_name: customerName,
-          star: rating,
-          comment: message,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}api/submitReview`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: orderId,
+            customer_name: customerName,
+            star: rating,
+            comment: message,
+          }),
+        }
+      );
 
       if (response.ok) {
-        setSubmitted(true); // Hide form on successful submission
+        setSubmitted(true);
       } else {
         const error = await response.json();
         alert("Error submitting feedback: " + (error.message || "Server error."));
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("Network error. Please try again.");
     } finally {
       setSubmitting(false);
@@ -44,8 +46,8 @@ export default function FeedbackForm({ orderId, customerName }) {
   if (submitted) {
     return (
       <div className="container mt-5 text-center">
-        <div className="alert alert-success" role="alert">
-          Thank you for your feedback!
+        <div className="alert alert-success">
+          Thank you for rating your website experience!
         </div>
       </div>
     );
@@ -53,12 +55,29 @@ export default function FeedbackForm({ orderId, customerName }) {
 
   return (
     <div className="container">
-      <div className="card shadow-sm mx-auto" style={{ maxWidth: "600px" }}>
-        <div className="card-body">
-          <h4 className="text-center section-paragraph">Your feedback helps us improve</h4>
+      <div
+        className="card shadow-sm mx-auto"
+        style={{ maxWidth: "600px" }}
+      >
+        <div className="card-body text-center">
+          {/* Title */}
+          <h4 className="section-paragraph mb-2">
+            Rate Your Website Experience
+          </h4>
+
+          {/* Subtitle */}
+          <p className="text-muted mb-4">
+            This feedback is about your experience using our website —
+            not the product itself.
+          </p>
+
           <form onSubmit={handleSubmit}>
-            <div className="mb-4 text-center">
-              <p className="form-label d-block fw-semibold">Rate Your Experience:</p>
+            {/* Star Rating */}
+            <div className="mb-4">
+              <p className="fw-semibold mb-2">
+                How was your experience using our website?
+              </p>
+
               <div className="d-flex justify-content-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
@@ -68,10 +87,13 @@ export default function FeedbackForm({ orderId, customerName }) {
                     onMouseLeave={() => setHoverRating(0)}
                     style={{
                       fontSize: "2.2rem",
-                      color: star <= (hoverRating || rating) ? "#ffc107" : "#e4e5e9",
+                      color:
+                        star <= (hoverRating || rating)
+                          ? "#ffc107"
+                          : "#e4e5e9",
                       cursor: "pointer",
                       transition: "color 0.2s ease",
-                      marginRight: "5px",
+                      marginRight: "6px",
                     }}
                   >
                     ★
@@ -80,25 +102,28 @@ export default function FeedbackForm({ orderId, customerName }) {
               </div>
             </div>
 
+            {/* Text Area */}
             <div className="mb-4">
-              <label htmlFor="feedbackMessage" className="form-label fw-semibold">
-                <h4 className="text-center section-paragraph">How was your experience? We'd appreciate your feedback</h4>
-              </label>
+              <h5 className="section-paragraph mb-2">
+                Tell us about your experience using our website
+              </h5>
+
               <textarea
                 className="form-control"
                 id="feedbackMessage"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={4}
-                placeholder="Write your feedback here..."
+                placeholder="Example: Was the website easy to use? Was checkout smooth?"
                 required
               />
             </div>
 
-            <div className="d-flex justify-content-center ">
+            {/* Submit Button */}
+            <div className="d-flex justify-content-center">
               <button
                 type="submit"
-                className="btn-rounded btn-link_lg  text-uppercase fw-medium"
+                className="btn-rounded btn-link_lg text-uppercase fw-medium"
                 disabled={submitting || rating === 0 || !message.trim()}
               >
                 {submitting ? "Submitting..." : "Submit Feedback"}
