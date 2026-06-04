@@ -190,16 +190,30 @@
     }
   },
   "refund": {
-    "title": "Refund Policy",
-    "desc": "Free returns are available for all sale items within 7 days of receipt, provided the return conditions specified below are met.",
-    "instructions": "Return Instructions are provided below.",
+    "title": "Returns & Exchanges",
+    "effective_date": "Effective: June 4, 2026",
+    "desc": "Returns or exchanges are only accepted in the following cases:",
     "items": [
-      "Purchases must be returned from the original shipping country.",
-      "Returns will be accepted only if there is any manufacturing defect with the product or mismatch of the product.",
-      "Items returned must be in their unused original condition with all item tags attached and any related sampling pieces and booklets included.",
-      "Incomplete, damaged, or altered returns or anything we reasonably believe has been used will not be accepted and will be sent back to the customer.",
-      "Return charges are not applicable if you meet the above conditions."
-    ]
+      "Wrong item received",
+      "Damaged product received",
+      "Defective item received"
+    ],
+    "desc2": "Any return or exchange request must be reported within 48 hours from the date of delivery.",
+    "desc3": "To process the request, customers must provide:",
+    "items2": [
+      "Order number",
+      "Photos/videos of the product",
+      "Clear description of the issue"
+    ],
+    "desc4": "Returned items must:",
+    "items4": [
+      "Be unused and unopened",
+      "Be in original packaging"
+    ],
+    "title2": "Refund Policy",
+    "desc5": "Refunds will only be processed after inspection and approval of the returned item.",
+    "desc6": "Approved refunds will be issued through the original payment method within [7-14] business days depending on bank or payment provider processing timelines.",
+    "desc7": "We reserve the right to reject refund or exchange requests if the returned product does not meet the above conditions."
   },
   "noProductFound": "No Product Found",
   "Fragrance Profile": "Fragrance Profile",
