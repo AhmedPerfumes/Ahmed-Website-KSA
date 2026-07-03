@@ -1,0 +1,373 @@
+/* ============================================================
+   NEW ARRIVALS v3 — Editorial banner cards
+   Desktop: 3-col grid of tall banner cards (image fills card,
+            text overlays bottom with gradient)
+   Mobile:  Swiper carousel
+   ============================================================ */
+
+.na2 {
+  --na2-gold:       #C5A664;
+  --na2-text:       #1a1a1a;
+  --na2-text-sec:   #6b6b6b;
+  --na2-text-muted: #aaa;
+  --na2-bg:         #FDFBF7;
+  --na2-ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ── Section ─────────────────────────────────────────────────── */
+.na2 {
+  position: relative;
+  padding: 56px 0 64px;
+  background: var(--na2-bg);
+  overflow-x: hidden;
+}
+@media (min-width: 768px)  { .na2 { padding: 80px 0 88px; } }
+@media (min-width: 1200px) { .na2 { padding: 96px 0 108px; } }
+
+/* ── Inner ───────────────────────────────────────────────────── */
+.na2__inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+@media (min-width: 480px)  { .na2__inner { padding: 0 20px; } }
+@media (min-width: 768px)  { .na2__inner { padding: 0 40px; } }
+@media (min-width: 1200px) { .na2__inner { padding: 0 56px; } }
+
+/* ── Heading block ───────────────────────────────────────────── */
+.na2__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+@media (min-width: 768px) {
+  .na2__head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+}
+
+.na2__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--na2-gold);
+  margin-bottom: 8px;
+}
+.na2__eyebrow::before {
+  content: "";
+  display: block;
+  width: 20px; height: 1px;
+  background: var(--na2-gold);
+  flex-shrink: 0;
+}
+@media (min-width: 768px) { .na2__eyebrow { font-size: 0.62rem; } }
+
+.na2__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: var(--na2-text);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+.na2__title strong { font-weight: 700; }
+@media (min-width: 480px)  { .na2__title { font-size: 2rem; } }
+@media (min-width: 768px)  { .na2__title { font-size: 2.4rem; } }
+@media (min-width: 1200px) { .na2__title { font-size: 2.9rem; } }
+
+/* View All */
+.na2__view-all {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.65rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--na2-text);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  flex-shrink: 0;
+  transition: color 0.25s ease;
+}
+.na2__view-all:hover { color: var(--na2-gold); }
+.na2__view-all svg {
+  width: 14px; height: 14px;
+  fill: none; stroke: currentColor;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+.na2__view-all:hover svg { transform: translateX(3px); }
+@media (min-width: 768px) { .na2__view-all { display: inline-flex; } }
+
+/* ── Desktop 3-col banner grid ───────────────────────────────── */
+.na2__grid {
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (min-width: 768px)  { .na2__grid { display: grid; } }
+@media (min-width: 1200px) { .na2__grid { gap: 24px; } }
+
+/* ── Mobile carousel ── */
+.na2__carousel { display: block; overflow: hidden; }
+@media (min-width: 768px) { .na2__carousel { display: none; } }
+
+/* Swiper fills the carousel, overflow:visible so peeking slide shows */
+.na2__carousel .swiper { overflow: visible; width: 100%; }
+.na2__carousel .swiper-slide { height: auto; box-sizing: border-box; }
+
+/* Scrollbar */
+.na2-scrollbar {
+  width: 100%; height: 1px;
+  margin-top: 22px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  position: relative;
+}
+.na2-scrollbar .swiper-scrollbar-drag {
+  height: 100%; background: var(--na2-gold);
+  border-radius: 2px; cursor: grab;
+}
+.na2-scrollbar .swiper-scrollbar-drag:active { cursor: grabbing; }
+
+/* Nav */
+.na2__nav {
+  display: flex; align-items: center;
+  justify-content: center; gap: 12px; margin-top: 14px;
+}
+.na2-arrow {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.14); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color 0.25s ease, background 0.25s ease;
+}
+.na2-arrow:hover { border-color: var(--na2-gold); background: var(--na2-gold); }
+.na2-arrow:hover svg { stroke: #fff; }
+.na2-arrow svg {
+  width: 15px; height: 15px;
+  fill: none; stroke: var(--na2-text);
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke 0.25s ease;
+}
+.na2-arrow.swiper-button-disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+
+/* ── Banner Card ─────────────────────────────────────────────── */
+.na2-banner {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  /* Tall portrait banner ratio */
+  aspect-ratio: 3 / 4;
+  background: #f0ece4;
+  cursor: pointer;
+}
+@media (min-width: 768px) { .na2-banner { aspect-ratio: 2 / 3; } }
+@media (min-width: 1200px){ .na2-banner { aspect-ratio: 3 / 4; } }
+
+/* Full-bleed image link */
+.na2-banner__link {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Product image */
+.na2-banner__img {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important; height: 100% !important;
+  object-fit: cover;
+  transition: transform 0.8s var(--na2-ease);
+  will-change: transform;
+}
+.na2-banner:hover .na2-banner__img { transform: scale(1.05); }
+
+/* Dark gradient overlay — stronger at bottom for legibility */
+.na2-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    rgba(0,0,0,0.18) 55%,
+    rgba(0,0,0,0.70) 80%,
+    rgba(0,0,0,0.82) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Floating top elements ───────────────────────────────────── */
+.na2-banner__badge {
+  position: absolute;
+  top: 14px; left: 14px; z-index: 5;
+  padding: 4px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.5rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: var(--na2-gold); color: #fff;
+  border-radius: 2px;
+}
+
+.na2-banner__wish {
+  position: absolute;
+  top: 12px; right: 12px; z-index: 5;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0; transform: scale(0.85);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+@media (hover: none) { .na2-banner__wish { opacity: 1; transform: scale(1); } }
+.na2-banner:hover .na2-banner__wish,
+.na2-banner__wish.active { opacity: 1; transform: scale(1); }
+
+.na2-banner__wish svg {
+  width: 13px; height: 13px;
+  fill: none; stroke: #fff; stroke-width: 1.6;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+.na2-banner__wish.active svg { fill: var(--na2-gold); stroke: var(--na2-gold); }
+.na2-banner__wish:hover svg  { fill: #fff; }
+
+/* ── Bottom text overlay ─────────────────────────────────────── */
+.na2-banner__body {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 4;
+  padding: 20px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media (min-width: 768px) { .na2-banner__body { padding: 22px 20px; } }
+@media (min-width: 1200px){ .na2-banner__body { padding: 26px 24px; } }
+
+/* Sub label */
+.na2-banner__sub {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.56rem; font-weight: 400;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+}
+@media (min-width: 768px) { .na2-banner__sub { font-size: 0.6rem; } }
+
+/* Product name */
+.na2-banner__name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.05rem; font-weight: 400;
+  color: #fff;
+  margin: 0 0 8px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+@media (min-width: 768px)  { .na2-banner__name { font-size: 1.15rem; } }
+@media (min-width: 1200px) { .na2-banner__name { font-size: 1.3rem; } }
+
+.na2-banner__name a {
+  color: inherit; text-decoration: none;
+}
+.na2-banner__name a:hover { color: var(--na2-gold); }
+
+/* Footer row: price + CTA */
+.na2-banner__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Price */
+.na2-banner__price {
+  display: flex; align-items: baseline; gap: 6px;
+  font-family: 'Inter', sans-serif;
+}
+.na2-banner__price-cur  { font-size: 0.82rem; font-weight: 500; color: #fff; }
+.na2-banner__price-old  { font-size: 0.68rem; font-weight: 400; color: rgba(255,255,255,0.5); text-decoration: line-through; }
+.na2-banner__price-sale { font-size: 0.82rem; font-weight: 600; color: #7ecba1; }
+
+/* Add to Cart — pill button on the image */
+.na2-banner__atc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.54rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--na2-text);
+  background: rgba(255,255,255,0.90);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none; border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+@media (min-width: 768px) { .na2-banner__atc { padding: 8px 16px; font-size: 0.56rem; } }
+.na2-banner__atc:hover { background: var(--na2-gold); color: #fff; }
+.na2-banner__atc.active { background: var(--na2-gold); color: #fff; }
+.na2-banner__atc--out { background: rgba(255,255,255,0.4); color: rgba(255,255,255,0.6); cursor: default; pointer-events: none; }
+
+/* ── Skeleton ────────────────────────────────────────────────── */
+.na2-skel-item { display: flex; flex-direction: column; }
+.na2-skel-item__img {
+  aspect-ratio: 3 / 4;
+  background: #f0ece4;
+  border-radius: 2px;
+  position: relative; overflow: hidden;
+}
+.na2-skel-item__img::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  animation: na2Shin 1.8s ease-in-out infinite;
+}
+.na2-skel-line {
+  background: #f0ece4; border-radius: 4px;
+  position: relative; overflow: hidden;
+}
+.na2-skel-line::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  animation: na2Shin 1.8s ease-in-out infinite;
+}
+.na2-skel-line--eyebrow { height: 8px;  width: 90px;  display: block; margin-bottom: 8px; }
+.na2-skel-line--title   { height: 22px; width: 200px; display: block; margin-bottom: 32px; }
+
+@keyframes na2Shin {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ── RTL ─────────────────────────────────────────────────────── */
+[dir="rtl"] .na2-banner__badge { left: auto; right: 14px; }
+[dir="rtl"] .na2-banner__wish  { right: auto; left: 12px; }
+[dir="rtl"] .na2__eyebrow::before { display: block; }
+[dir="rtl"] .na2__view-all:hover svg { transform: translateX(-3px); }
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .na2-banner__img { transition: none; }
+  .na2-banner:hover .na2-banner__img { transform: none; }
+}

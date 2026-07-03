@@ -1,8 +1,7 @@
-import Blog3 from "@/components/blogs/Blog3";
+﻿import Blog3 from "@/components/blogs/Blog3";
 import BlogDetails from "@/components/blogs/BlogDetails";
 import Footer14 from "@/components/footers/Footer14";
 
-import Header14 from "@/components/headers/Header14";
 import { allBlogs } from "@/data/blogs";
 import React from "react";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
@@ -154,7 +153,6 @@ const BlogDetailsPage = async({ params }) => {
     // console.log(data);
     return (
       <>
-        <Header14 />
         <main className="page-wrapper">
           <div className="mb-4 pb-4"></div>
           <BlogDetails blog={data} />

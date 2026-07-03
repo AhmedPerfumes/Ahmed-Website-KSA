@@ -1,6 +1,5 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 
-import Header14 from "@/components/headers/Header14";
 import Shop1 from "@/components/shoplist/Shop1";
 import React from "react";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
@@ -18,7 +17,6 @@ const ShopPage = async({ searchParams }) => {
   // console.log('000', search);
   return (
     <>
-      <Header14 />
       <main>
         <Shop1 search={search}/>
       </main>

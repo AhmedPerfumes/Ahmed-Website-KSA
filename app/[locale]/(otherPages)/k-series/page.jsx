@@ -1,10 +1,9 @@
-// app/kseries/page.js
+﻿// app/kseries/page.js
 
 "use client";
 import React, { useState } from "react";
 import HeroSection from "../../../../components/otherPages/KSeries/HeroSection";
 import KSeriesProductCards from "@/components/otherPages/KSeries/KSeriesProductCards";
-import Header14 from "@/components/headers/Header14";
 import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import FoundersStoryTransition from "@/components/otherPages/KSeries/FoundersStoryTransition";
@@ -16,7 +15,6 @@ export default function Page() {
       const [showPrebooking, setShowPrebooking] = useState(false);
     return (
         <>
-            <Header14 />
             {/* comment */}
             <main className="">
                 <HeroSection />

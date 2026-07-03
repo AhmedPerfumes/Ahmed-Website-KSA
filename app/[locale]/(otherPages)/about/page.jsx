@@ -1,7 +1,6 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 
-import Header14 from "@/components/headers/Header14";
 // import Loader from "@/components/loader/Loader";
 import About from "@/components/otherPages/about/About";
 import Clients from "@/components/otherPages/about/Clients";
@@ -19,7 +18,6 @@ export default function AboutPage() {
   return (
     <>
     {/* <Loader/> */}
-      <Header14 />
       <main className="">
         {/* <div className="mb-4 pb-4"></div> */}
         <About />

@@ -1,8 +1,7 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import Export from "@/components/otherPages/Contact/Export"
 
-import Header14 from "@/components/headers/Header14";
 import Contact from "@/components/otherPages/Contact/Contact";
 import LocationMap from "@/components/otherPages/Contact/LocationMap";
 
@@ -44,7 +43,6 @@ const ExportPage = () => {
   return (
     <>
       {/* <Loader/> */}
-      <Header14 />
       <Export />
       <section className="d-none d-lg-block" style={{ height: "100%" }}>
         <Footer14 />

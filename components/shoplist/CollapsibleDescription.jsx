@@ -4,7 +4,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
-export default function CollapsibleDescription({ description }) {
+export default function CollapsibleDescription({ description, locale = "en" }) {
     const [expanded, setExpanded] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [maxHeight, setMaxHeight] = useState("auto");
@@ -45,11 +45,15 @@ export default function CollapsibleDescription({ description }) {
     }
 
     return (
-        <div
+        <section
+            aria-label="Category Description"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+            lang={locale}
             style={{
                 fontFamily: "Merriweather, serif",
                 maxWidth: "930px",
                 margin: "0 auto",
+                padding: "2rem 1.25rem",
             }}
         >
             <div
@@ -63,7 +67,7 @@ export default function CollapsibleDescription({ description }) {
                     color: "#6E6E73",
                     letterSpacing: "0.02em",
                     fontWeight: "500",
-                    textAlign: "center",
+                    textAlign: locale === "ar" ? "right" : "center",
                 }}
             ></div>
             {isOverflowing && (
@@ -82,6 +86,6 @@ export default function CollapsibleDescription({ description }) {
                     </a>
                 </div>
             )}
-        </div>
+        </section>
     );
 }

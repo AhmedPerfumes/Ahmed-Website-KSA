@@ -1,8 +1,7 @@
-// app/kseries/[year]/page.js
+﻿// app/kseries/[year]/page.js
 "use client";
 
 import React, { useState } from "react";
-import Header14 from "@/components/headers/Header14";
 import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import VideoSection from "@/components/k-series/VideoSection";
@@ -135,7 +134,6 @@ export default function Page({ params }) {
 
   return (
     <>
-      <Header14 />
 
       {/* Optional: visual divider */}
       {/* <div style={{ width: "100%", height: "1px", background: "linear-gradient(90deg, #b8860b 0%, #d4af37 25%, #f7e9a0 50%, #d4af37 75%, #b8860b 100%)", borderRadius: "2px"}} /> */}

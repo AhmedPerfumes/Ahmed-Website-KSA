@@ -1,7 +1,6 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 
-import Header14 from "@/components/headers/Header14";
 // import Loader from "@/components/loader/Loader";
 import Contact from "@/components/otherPages/Contact/Contact";
 import LocationMap from "@/components/otherPages/Contact/LocationMap";
@@ -19,7 +18,6 @@ export default function ContactPage() {
   return (
     <>
     {/* <Loader/> */}
-      <Header14 />
         <Contact />
       <main className="page-wrapper">
     

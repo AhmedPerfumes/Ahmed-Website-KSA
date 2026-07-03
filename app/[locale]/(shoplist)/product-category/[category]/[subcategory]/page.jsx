@@ -1,36 +1,17 @@
 import Footer14 from "@/components/footers/Footer14";
-import Header14 from "@/components/headers/Header14";
-import Categories from "@/components/shoplist/Categories";
-// import Categories from "@/components/homes/home-3/Categories";
-import Shop10 from "@/components/shoplist/shop10/Shop10";
-import Banner5 from "@/components/shoplist/Banner5";
+import PremiumCategoryHero from "@/components/shoplist/premium/PremiumCategoryHero";
+import PremiumProductGrid from "@/components/shoplist/premium/PremiumProductGrid";
 import React from "react";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
-// import Loader from "@/components/loader/Loader";
-import RelatedSlider from "@/components/singleProduct/RelatedSlider";
-// import Link from "next/link";
 import QuickView from "@/components/modals/QuickView";
 import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
-import { headers } from 'next/headers';
-
-// export const metadata = {
-//   title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
-//   description: "Buy Best Perfumes Online Ahmed Perfume",
-//   icons: {
-//     icon: "https://www.ahmedalmaghribi.com/wp-content/uploads/2021/08/Ahmed-Logo-e1631552829722-100x100.png",
-//   },
-// };
+import { headers } from "next/headers";
 
 function getRequestOrigin() {
   const headersList = headers();
-  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
-  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
-  
-  // if (!host) {
-  //   // Fallback for local development or edge cases
-  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
-  // }
-
+  const host =
+    headersList.get("host") || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
+  const protocol = headersList.get("x-forwarded-proto") || "https";
   return `${protocol}://${host}`;
 }
 
@@ -38,64 +19,59 @@ async function getCategorySubCategory(categoryName, subCategoryName) {
   const origin = getRequestOrigin();
   const catSlug = categoryName.toLowerCase();
   const subSlug = subCategoryName.toLowerCase();
-  // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products?category=${categoryName.split("-").join(" ").toUpperCase()}&subCategory=${subCategoryName.split("-").join(" ").toUpperCase()}`);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'origin': origin,
-    },
-    body: JSON.stringify({
-      category: categoryName.split("-").join(" ").toUpperCase(),
-      subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
-    }),
-    next: {
-      tags: ["subCategories", `category-${catSlug}`, `subcategory-${subSlug}`],
-      revalidate: 604800 // 7 days
-    },
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}api/products`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        origin: origin,
+      },
+      body: JSON.stringify({
+        category: categoryName.split("-").join(" ").toUpperCase(),
+        subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
+      }),
+      next: {
+        tags: [
+          "subCategories",
+          `category-${catSlug}`,
+          `subcategory-${subSlug}`,
+        ],
+        revalidate: 604800, // 7 days
+      },
+    }
+  );
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error("Network response was not ok");
   }
   return response.json();
 }
+
 async function getProductCategorySEO(categoryName, subCategoryName) {
-  // console.log(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     category: categoryName.split("-").join(" ").toUpperCase(),
-  //     subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
-  //     product: product.split("-").join(" ").toUpperCase(),
-  //   })
-  // });
   const origin = getRequestOrigin();
   const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}api/productCategorySEO`,
-      {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              'origin': origin,
-          },
-          body: JSON.stringify({
-              category: categoryName.split("-").join(" ").toUpperCase(),
-              subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
-              // product: product.split("-").join(" ").toUpperCase(),
-          }),
-          next: {
-            tags: ["subcategorySEO"],
-            revalidate: 604800 // 7 days
-          },
-      }
+    `${process.env.NEXT_PUBLIC_API_URL}api/productCategorySEO`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        origin: origin,
+      },
+      body: JSON.stringify({
+        category: categoryName.split("-").join(" ").toUpperCase(),
+        subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
+      }),
+      next: {
+        tags: ["subcategorySEO"],
+        revalidate: 604800, // 7 days
+      },
+    }
   );
-  
+
   if (!response.ok) {
-      const errorMessage = await response.text(); // Get the error message from the server
-      console.error("SEO API Error:", errorMessage);
-      throw new Error(`SEO API Error: ${errorMessage}`);
+    const errorMessage = await response.text();
+    console.error("SEO API Error:", errorMessage);
+    throw new Error(`SEO API Error: ${errorMessage}`);
   }
   return response.json();
 }
@@ -104,106 +80,188 @@ export async function generateMetadata({ params }) {
   const { category, subcategory, locale } = params;
 
   const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
-
   const canonicalUrl = `${baseUrl}/${locale}/product-category/${category}/${subcategory}`;
 
-    try {
-        const data = await getProductCategorySEO(category, subcategory);
-        // console.log(JSON.parse(data.meta_value)[0]);
-        const meta = JSON.parse(data.meta_value)[0] || {};
+  try {
+    const data = await getProductCategorySEO(category, subcategory);
+    const meta = JSON.parse(data.meta_value)[0] || {};
 
-        // Select Arabic SEO fields only if locale is ar and values exist
-        const seoTitle =
-            locale === "ar" && meta.seo_title_ar
-                ? meta.seo_title_ar
-                : meta.seo_title;
+    const seoTitle =
+      locale === "ar" && meta.seo_title_ar
+        ? meta.seo_title_ar
+        : meta.seo_title;
 
-        const seoDescription =
-            locale === "ar" && meta.seo_description_ar
-                ? meta.seo_description_ar
-                : meta.seo_description;
+    const seoDescription =
+      locale === "ar" && meta.seo_description_ar
+        ? meta.seo_description_ar
+        : meta.seo_description;
 
-        return {
-              metadataBase: new URL(baseUrl),
-              title: seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-              description: seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-              alternates: {
-                canonical: canonicalUrl,
-                languages: {
-                  en: `/en/product-category/${category}/${subcategory}`,
-                  ar: `/ar/product-category/${category}/${subcategory}`,
-                  "x-default": `/en/product-category/${category}/${subcategory}`,
-                },
+    return {
+      metadataBase: new URL(baseUrl),
+      title: seoTitle
+        ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes`
+        : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+      description: seoDescription
+        ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim()
+        : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+      robots: { index: true, follow: true },
+      alternates: {
+        canonical: canonicalUrl,
+        languages: {
+          en: `/en/product-category/${category}/${subcategory}`,
+          ar: `/ar/product-category/${category}/${subcategory}`,
+          "x-default": `/en/product-category/${category}/${subcategory}`,
+        },
+      },
+      openGraph: {
+        type: "website",
+        url: canonicalUrl,
+        siteName: "Ahmed Al Maghribi Perfumes",
+        title: seoTitle || "Ahmed Al Maghribi Perfumes",
+        description: seoDescription
+          ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim()
+          : "Luxury Arabic perfumes, oud, dakhoon & gift sets.",
+        images: meta.seo_image
+          ? [
+              {
+                url: `${process.env.NEXT_PUBLIC_API_URL}storage/${meta.seo_image}`,
+                width: 1200,
+                height: 630,
               },
-            // openGraph: {
-            //     // title: data.product_name,
-            //     // description: data.description.replace(/<\/?[^>]+(>|$)/g, "").trim(),
-            //     // url: `https://ae.ahmedalmaghribi.com/en/shop/${categoryName}/${subCategoryName}/${data.product_name
-            //     //     .split(" ")
-            //     //     .join("-")
-            //     //     .toLowerCase()}`,
-            //     images: `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(data.meta_value)[0]?.seo_image}`,
-            //     // type: "product.item",
-            // }
-        };
-    } catch (error) {
-        console.error("Error generating metadata:", error);
-        return {
-            title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-            description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
-        };
-    }
+            ]
+          : [],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+      description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+    };
+  }
 }
-// export default function ShopPage8() {
+
 const ShopPage8 = async ({ params }) => {
   const { category, subcategory, locale } = params;
 
   try {
     const data = await getCategorySubCategory(category, subcategory);
-    const activeDescription= locale==='ar'?data.description_ar:data.description
-    // console.log(data);
+    const activeDescription =
+      locale === "ar" ? data.description_ar : data.description;
+
+    const categoryLabel = category
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+
+    const subcategoryLabel = subcategory
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+
+    // JSON-LD: ItemList schema
+    const baseUrl =
+      process.env.NEXT_PUBLIC_DEFAULT_ORIGIN ||
+      "https://ksa.ahmedalmaghribi.com";
+
+    const itemsForSchema = data.products || [];
+
+    const itemListSchema = itemsForSchema.length
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: `${subcategoryLabel} — Ahmed Al Maghribi Perfumes`,
+          url: `${baseUrl}/${locale}/product-category/${category}/${subcategory}`,
+          numberOfItems: itemsForSchema.length,
+          itemListElement: itemsForSchema.slice(0, 20).map((product, idx) => ({
+            "@type": "ListItem",
+            position: idx + 1,
+            name: product.product_name,
+            url: `${baseUrl}/${locale}/shop/${category}/${subcategory}/${(product.product_name || "")
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, "")
+              .replace(/\s+/g, "-")
+              .trim()}`,
+          })),
+        }
+      : null;
+
     return (
       <>
+        {itemListSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+          />
+        )}
+
         <QuickView />
-        <Header14 />
-        <Banner5 image={ data.image } mobile_image={data.mobile_image}/>
-       <main className="page-wrapper pt-0">
-          <Categories description={ data.description }/>
-          <div className="mb-4 pb-lg-3"></div>
-          <Shop10 products={ data.products }/>
-          <div className="mb-4 pb-lg-3"></div>
-          <CollapsibleDescription  scription description={activeDescription}locale={locale} />
+
+        <main>
+          {/* Premium hero — replaces Banner5 */}
+          <PremiumCategoryHero
+            categorySlug={category}
+            categoryLabel={categoryLabel}
+            subcategorySlug={subcategory}
+            subcategoryLabel={subcategoryLabel}
+            desktopImage={data.image || null}
+            mobileImage={data.mobile_image || null}
+            locale={locale}
+          />
+
+          {/* Product grid — replaces Categories + Shop10 */}
+          <PremiumProductGrid products={data.products || null} />
+
+          <CollapsibleDescription
+            description={activeDescription}
+            locale={locale}
+          />
         </main>
-        <div className="mb-5 pb-xl-5"></div>
+
         <section className="d-none d-lg-block" style={{ height: "100%" }}>
           <Footer14 />
-          
         </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5  ">
-        <div className="MobileFooter">
-        
-
-        <MobileFooter2/>
-        </div>
-      </section>
+        <section className="d-sm-block d-md-none bg-dark pt-5">
+          <div className="MobileFooter">
+            <MobileFooter2 />
+          </div>
+        </section>
       </>
     );
   } catch (error) {
     console.error(error);
-    return <><Header14 />
-    <main className="page-wrapper">
-      <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No SubCategory Found</h2>
-      <RelatedSlider relatedProds={ null }/>
-    </main>
-    <section className="d-none d-lg-block" style={{ height: "100%" }}>
-      <Footer14 />
-    </section>
-    <section className="d-sm-block d-md-none bg-dark pt-5  ">
-      <div className="MobileFooter">
-        <MobileFooter2/>
-      </div>
-    </section></>
+    const categoryLabel = category
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+
+    return (
+      <>
+        <main className="page-wrapper">
+          <h1
+            style={{
+              textAlign: "center",
+              padding: "4rem 1rem",
+              fontSize: "1.2rem",
+            }}
+          >
+            {categoryLabel}
+          </h1>
+          <p style={{ textAlign: "center", color: "#888" }}>
+            No subcategory found. Please try again later.
+          </p>
+        </main>
+        <section className="d-none d-lg-block" style={{ height: "100%" }}>
+          <Footer14 />
+        </section>
+        <section className="d-sm-block d-md-none bg-dark pt-5">
+          <div className="MobileFooter">
+            <MobileFooter2 />
+          </div>
+        </section>
+      </>
+    );
   }
-}
+};
 
 export default ShopPage8;

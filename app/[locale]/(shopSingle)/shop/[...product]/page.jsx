@@ -1,6 +1,5 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 
-import Header14 from "@/components/headers/Header14";
 import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 import SingleProduct11 from "@/components/singleProduct/SingleProduct11";
 import React from "react";
@@ -246,7 +245,6 @@ const ProductDetailsPage16 = async({ params }) => {
               content="Ahmed Al Maghribi Perfumes"
           />
         </Head>
-        <Header14 />
         <ProductSchema
                     category={categoryName}
                     subcategory={subCategoryName}
@@ -273,7 +271,6 @@ const ProductDetailsPage16 = async({ params }) => {
   } catch (error) {
     console.error(error);
     return <>
-            <Header14 />
             <main className="page-wrapper text-center">
               <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>
               {/* <RelatedSlider relatedProds={ null }/> */}

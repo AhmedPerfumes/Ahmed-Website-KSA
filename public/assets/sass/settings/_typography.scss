@@ -1,6 +1,7 @@
 @font-face {
   font-family: "Kanit-Regular";
   src: url(/assets/fonts/kanit/Kanit-Regular.ttf);
+  font-display: swap; /* render immediately with fallback, swap when loaded */
 }
 
 body {

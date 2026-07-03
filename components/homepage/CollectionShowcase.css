@@ -1,0 +1,376 @@
+/* ============================================================
+   COLLECTION SHOWCASE — Ahmed Al Maghribi Perfumes
+   MFK-inspired: Left text + Swiper slider
+   ============================================================ */
+
+.collections {
+  --col-gold: #C5A664;
+  --col-gold-light: #D4BC82;
+  --col-text: #1a1a1a;
+  --col-text-secondary: #6b6b6b;
+  --col-text-muted: #999;
+  --col-bg: #FDFBF7;
+  --col-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.collections {
+  position: relative;
+  padding: 80px 0;
+  background: var(--col-bg);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .collections { padding: 100px 0; }
+}
+
+@media (min-width: 1200px) {
+  .collections { padding: 120px 0; }
+}
+
+.collections__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (min-width: 576px) {
+  .collections__inner { padding: 0 32px; }
+}
+
+@media (min-width: 1200px) {
+  .collections__inner { padding: 0 56px; }
+}
+
+/* ── Layout: Text left + Slider right ───────────────────────── */
+.collections__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .collections__layout {
+    flex-direction: row;
+    gap: 60px;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .collections__layout {
+    gap: 80px;
+  }
+}
+
+/* ── Left Text Block ────────────────────────────────────────── */
+.collections__text {
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .collections__text {
+    width: 280px;
+    padding-top: 20px;
+    position: sticky;
+    top: 120px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .collections__text {
+    width: 320px;
+  }
+}
+
+.collections__title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--col-text);
+  margin: 0 0 16px;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 576px) {
+  .collections__title { font-size: 2.4rem; }
+}
+
+@media (min-width: 768px) {
+  .collections__title { font-size: 2.8rem; }
+}
+
+@media (min-width: 1200px) {
+  .collections__title { font-size: 3rem; }
+}
+
+.collections__desc {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--col-text-secondary);
+  line-height: 1.7;
+  margin: 0 0 28px;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 768px) {
+  .collections__desc {
+    font-size: 0.88rem;
+  }
+}
+
+.collections__discover-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--col-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--col-text);
+  padding-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.collections__discover-all:hover {
+  color: var(--col-gold);
+  border-bottom-color: var(--col-gold);
+}
+
+.collections__discover-all svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.collections__discover-all:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── Nav Arrows ─────────────────────────────────────────────── */
+.collections__nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.collections__arrow {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.35s var(--col-transition);
+}
+
+.collections__arrow:hover {
+  border-color: var(--col-gold);
+  background: var(--col-gold);
+}
+
+.collections__arrow:hover svg {
+  stroke: #fff;
+}
+
+.collections__arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--col-text);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.35s ease;
+}
+
+.collections__arrow.swiper-button-disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Swiper Slider Area ─────────────────────────────────────── */
+.collections__slider {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.collections__slider .swiper {
+  overflow: visible;
+}
+
+.collections__slider .swiper-slide {
+  height: auto;
+}
+
+/* ── Collection Card ────────────────────────────────────────── */
+.collections__card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--col-text);
+  height: 100%;
+}
+
+/* Card Image */
+.collections__card-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin-bottom: 18px;
+  background: #f0ece4;
+  border-radius: 4px;
+}
+
+.collections__card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s var(--col-transition);
+  will-change: transform;
+}
+
+.collections__card:hover .collections__card-img {
+  transform: scale(1.04);
+}
+
+/* Card Title */
+.collections__card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--col-text);
+  margin: 0 0 6px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 768px) {
+  .collections__card-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Card subtitle / italic */
+.collections__card-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--col-text-secondary);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+/* Card Description */
+.collections__card-desc {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--col-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Card CTA */
+.collections__card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--col-text);
+  text-decoration: none;
+  margin-top: auto;
+  transition: color 0.3s ease;
+}
+
+.collections__card:hover .collections__card-cta {
+  color: var(--col-gold);
+}
+
+.collections__card-cta svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.collections__card:hover .collections__card-cta svg {
+  transform: translateX(3px);
+}
+
+/* ── Scrollbar Progress Line ────────────────────────────────── */
+.collections__scrollbar {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  margin-top: 40px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+}
+
+.collections__scrollbar .swiper-scrollbar-drag {
+  height: 100%;
+  background: var(--col-gold);
+  border-radius: 2px;
+  cursor: grab;
+  transition: height 0.2s ease, background 0.3s ease;
+}
+
+.collections__scrollbar .swiper-scrollbar-drag:hover {
+  height: 3px;
+  margin-top: -0.5px;
+}
+
+.collections__scrollbar .swiper-scrollbar-drag:active {
+  cursor: grabbing;
+}
+
+/* ── RTL ────────────────────────────────────────────────────── */
+[dir="rtl"] .collections__discover-all svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .collections__discover-all:hover svg {
+  transform: scaleX(-1) translateX(-3px);
+}
+
+[dir="rtl"] .collections__card-cta svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .collections__card:hover .collections__card-cta svg {
+  transform: scaleX(-1) translateX(-3px);
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .collections__card-img {
+    transition: none;
+  }
+  .collections__card:hover .collections__card-img {
+    transform: none;
+  }
+}

@@ -1,22 +1,27 @@
 "use client";
 import { useContextElement } from "@/context/Context";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocale } from "next-intl";
 
+/**
+ * MobileFooter1 — fixed bottom nav bar for mobile.
+ *
+ * CLS Fix: Previously used `useState(false)` + `useEffect(() => setShowFooter(true))`
+ * to add `position-fixed` via JS after mount. This caused a 0.058 CLS score
+ * because the footer would "appear" and push content.
+ *
+ * Fix: Render as position-fixed from the very first paint (no JS toggle).
+ * The footer is always at the bottom of the viewport — no content shifts.
+ * We hide it on server render using CSS opacity initially, then fade in via CSS.
+ */
 export default function MobileFooter1() {
     const locale = useLocale();
-    const [showFooter, setShowFooter] = useState(false);
     const { wishList, cartProducts } = useContextElement();
-    useEffect(() => {
-        setShowFooter(true);
-    }, []);
 
     return (
         <footer
-            className={`footer-mobile container w-100 px-5 d-md-none bg-body ${
-                showFooter ? "position-fixed footer-mobile_initialized" : ""
-            }`}
+            className="footer-mobile container w-100 px-5 d-md-none bg-body position-fixed footer-mobile_initialized"
         >
             <div className="row text-center">
                 <div className="col-4">

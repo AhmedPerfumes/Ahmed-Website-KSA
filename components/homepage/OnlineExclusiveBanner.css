@@ -1,0 +1,167 @@
+/* ============================================================
+   ONLINE EXCLUSIVE BANNER — Contained editorial image block
+   Mirrors GiftBanner layout and sizing exactly.
+   ============================================================ */
+
+.oebnr {
+  background: #FDFBF7;
+  padding: 0 16px;
+}
+@media (min-width: 480px)  { .oebnr { padding: 0 20px; } }
+@media (min-width: 768px)  { .oebnr { padding: 0 40px; } }
+@media (min-width: 1200px) { .oebnr { padding: 0 56px; } }
+
+/* ── Centered container ──────────────────────────────────── */
+.oebnr__inner {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  aspect-ratio: 21 / 7;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 767px) {
+  .oebnr__inner { aspect-ratio: 16 / 9; }
+}
+@media (max-width: 480px) {
+  .oebnr__inner { aspect-ratio: 4 / 3; }
+}
+
+/* ── Image link ───────────────────────────────────────────── */
+.oebnr__link {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.oebnr__img {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.oebnr__inner:hover .oebnr__img { transform: scale(1.025); }
+
+/* ── Dark scrim — slightly heavier to support subtitle text ── */
+.oebnr__scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0,0,0,0.52) 0%,
+    rgba(0,0,0,0.32) 55%,
+    rgba(0,0,0,0.16) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Text overlay ─────────────────────────────────────────── */
+.oebnr__text {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 24px;
+  pointer-events: none;
+  max-width: 680px;
+}
+
+/* Eyebrow */
+.oebnr__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #C5A664;
+  margin-bottom: 12px;
+}
+.oebnr__eyebrow::before,
+.oebnr__eyebrow::after {
+  content: "";
+  display: block;
+  width: 22px; height: 1px;
+  background: #C5A664;
+  flex-shrink: 0;
+}
+@media (min-width: 768px) {
+  .oebnr__eyebrow { font-size: 0.65rem; margin-bottom: 16px; }
+}
+
+/* Title */
+.oebnr__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 3.4rem);
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+.oebnr__title em {
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* Subtitle */
+.oebnr__subtitle {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  font-weight: 300;
+  color: rgba(255,255,255,0.82);
+  margin: 12px 0 0;
+  line-height: 1.65;
+  max-width: 500px;
+}
+@media (max-width: 480px) {
+  .oebnr__subtitle { display: none; }
+}
+
+/* CTA button */
+.oebnr__cta {
+  pointer-events: all;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 10px 24px;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  white-space: nowrap;
+}
+.oebnr__cta:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.9);
+}
+.oebnr__cta svg {
+  width: 13px; height: 13px;
+  fill: none; stroke: #fff;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+.oebnr__cta:hover svg { transform: translateX(3px); }
+[dir="rtl"] .oebnr__cta:hover svg { transform: translateX(-3px); }
+@media (min-width: 768px) {
+  .oebnr__cta { padding: 11px 28px; font-size: 0.65rem; margin-top: 24px; }
+}

@@ -1,6 +1,5 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
-import Header14 from "@/components/headers/Header14";
 import TermsRaffle from "@/components/otherPages/TermsRaffle";
 import React from "react";
 export const metadata = {
@@ -17,7 +16,6 @@ function Tnc() {
                 backgroundImage: `url(/assets/background-ivory.webp)`,
             }}
         >
-            <Header14 />
             <TermsRaffle />
             <section className="d-none d-lg-block" style={{ height: "100%" }}>
                 <Footer14 />

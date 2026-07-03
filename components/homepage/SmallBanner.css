@@ -1,0 +1,198 @@
+/* ============================================================
+   SMALL BANNER — Ahmed Al Maghribi Perfumes
+   Dark cinematic band with text + CTA
+   ============================================================ */
+
+.small-banner {
+  --sb-gold: #C5A664;
+  --sb-gold-light: #D4BC82;
+  --sb-text: #FDFBF7;
+  --sb-text-muted: rgba(253, 251, 247, 0.6);
+  --sb-bg: #1a1a1a;
+  --sb-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.small-banner {
+  position: relative;
+  padding: 64px 0;
+  background: var(--sb-bg);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .small-banner {
+    padding: 80px 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .small-banner {
+    padding: 100px 0;
+  }
+}
+
+/* Subtle decorative lines */
+.small-banner::before,
+.small-banner::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 1px;
+  background: var(--sb-gold);
+  opacity: 0.4;
+}
+
+.small-banner::before {
+  top: 0;
+}
+
+.small-banner::after {
+  bottom: 0;
+}
+
+.small-banner__inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+/* Eyebrow */
+.small-banner__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--sb-gold);
+  margin-bottom: 20px;
+}
+
+.small-banner__eyebrow::before,
+.small-banner__eyebrow::after {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--sb-gold);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .small-banner__eyebrow {
+    font-size: 0.65rem;
+    margin-bottom: 24px;
+  }
+
+  .small-banner__eyebrow::before,
+  .small-banner__eyebrow::after {
+    width: 40px;
+  }
+}
+
+/* Title */
+.small-banner__title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--sb-text);
+  margin: 0 0 14px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+
+.small-banner__title em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+@media (min-width: 576px) {
+  .small-banner__title {
+    font-size: 1.9rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .small-banner__title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .small-banner__title {
+    font-size: 2.6rem;
+  }
+}
+
+/* Description */
+.small-banner__desc {
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--sb-text-muted);
+  margin: 0 0 32px;
+  line-height: 1.7;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 768px) {
+  .small-banner__desc {
+    font-size: 0.88rem;
+    margin-bottom: 40px;
+  }
+}
+
+/* CTA Button */
+.small-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 40px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sb-bg);
+  background: var(--sb-gold);
+  text-decoration: none;
+  border: 1px solid var(--sb-gold);
+  border-radius: 50px;
+  transition: all 0.4s var(--sb-transition);
+}
+
+.small-banner__cta:hover {
+  background: transparent;
+  color: var(--sb-gold);
+}
+
+.small-banner__cta svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.small-banner__cta:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── RTL ────────────────────────────────────────────────────── */
+[dir="rtl"] .small-banner__cta svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .small-banner__cta:hover svg {
+  transform: scaleX(-1) translateX(-3px);
+}

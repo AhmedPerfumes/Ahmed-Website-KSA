@@ -1,8 +1,7 @@
-import Footer14 from "@/components/footers/Footer14";
+﻿import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 
-import Header14 from "@/components/headers/Header14";
 
 
 import React from "react";
@@ -43,7 +42,6 @@ const Citywalk = () => {
   return (
     <>
       {/* <Loader/> */}
-      <Header14 />
    <CityWalk/>
     
       <section className="d-none d-lg-block" style={{ height: "100%" }}>

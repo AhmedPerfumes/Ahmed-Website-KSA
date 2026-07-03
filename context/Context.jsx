@@ -207,9 +207,11 @@ export default function Context({ children }) {
       cartProducts[existingItemIndex].quantity = Math.min(currentQty + 1, MAX_LIMIT);
       dispatch({ type: 'UPDATE_CART', payload: cartProducts });
       
-      // Open cart drawer
-      document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
-      document.getElementById("cartDrawer")?.classList.add("aside_visible");
+      // Open cart drawer (unless caller requested silent mode)
+      if (!product._silent) {
+        document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
+        document.getElementById("cartDrawer")?.classList.add("aside_visible");
+      }
       return;
     }
 
@@ -226,9 +228,11 @@ export default function Context({ children }) {
       payload: product
     });
 
-    // Open cart drawer
-    document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
-    document.getElementById("cartDrawer")?.classList.add("aside_visible");
+    // Open cart drawer (unless caller requested silent mode)
+    if (!product._silent) {
+      document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
+      document.getElementById("cartDrawer")?.classList.add("aside_visible");
+    }
   };
 
   const removeGiftFromCart = (productId = null, campaign = null) => {

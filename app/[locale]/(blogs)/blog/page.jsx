@@ -1,8 +1,7 @@
-import Blog1 from "@/components/blogs/Blog1";
+﻿import Blog1 from "@/components/blogs/Blog1";
 
 import Footer14 from "@/components/footers/Footer14";
 
-import Header14 from "@/components/headers/Header14";
 import React from "react";
 
 import MobileFooter2 from "@/components/footers/MobileFooter2";
@@ -17,7 +16,6 @@ export const metadata = {
 export default function BlogPage1() {
   return (
     <>
-      <Header14 />
       <main className="page-wrapper">
         <Blog1 />
       </main>

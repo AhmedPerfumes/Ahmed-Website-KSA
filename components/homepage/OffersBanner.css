@@ -1,0 +1,57 @@
+/* ============================================================
+   OFFERS BANNER — Editorial image above Exclusive Offers
+   Same contained structure as GiftBanner / DakhoonBanner.
+   ============================================================ */
+
+.offbnr {
+  background: #FDFBF7;
+  padding: 0 16px;
+}
+@media (min-width: 480px)  { .offbnr { padding: 0 20px; } }
+@media (min-width: 768px)  { .offbnr { padding: 0 40px; } }
+@media (min-width: 1200px) { .offbnr { padding: 0 56px; } }
+
+/* ── Contained image block ───────────────────────────────── */
+.offbnr__inner {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  aspect-ratio: 21 / 7;
+  overflow: hidden;
+  cursor: pointer;
+}
+@media (max-width: 767px) { .offbnr__inner { aspect-ratio: 16 / 9; } }
+@media (max-width: 480px) { .offbnr__inner { aspect-ratio: 4 / 3; } }
+
+/* ── Image link ──────────────────────────────────────────── */
+.offbnr__link {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.offbnr__img {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.offbnr__inner:hover .offbnr__img { transform: scale(1.025); }
+
+/* ── Subtle dark scrim (very light — image is the hero) ──── */
+.offbnr__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.04) 0%,
+    rgba(0,0,0,0.12) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}

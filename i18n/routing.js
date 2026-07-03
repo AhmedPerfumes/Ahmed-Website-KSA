@@ -6,8 +6,17 @@ export const routing = defineRouting({
   locales: ['en', 'ar'],
  
   // Used when no locale matches
-  // defaultLocale: 'en'
-  defaultLocale: 'ar'
+  // • Fresh visit (no cookie) → Arabic
+  // • Cookie = 'en' (user switched) → English until browser closes
+  defaultLocale: 'ar',
+
+  // Tell middleware to read/write the NEXT_LOCALE cookie for locale persistence.
+  // No maxAge = session cookie → cleared when browser closes (new visit = Arabic again).
+  localeCookie: {
+    name: 'NEXT_LOCALE',
+    sameSite: 'lax',
+    // maxAge intentionally omitted → session cookie (cleared on browser close)
+  },
 });
  
 // Lightweight wrappers around Next.js' navigation APIs

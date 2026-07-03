@@ -1,0 +1,14 @@
+# Target modern browsers only.
+# This eliminates the polyfill chunk (2117-e619a53d2ff2c222.js) that was
+# taking 1,717ms CPU time due to Array.prototype.at, Object.fromEntries etc.
+# All these features are natively supported in browsers from 2021+.
+
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+last 2 Samsung versions
+> 0.5%
+not dead
+not IE 11
+not op_mini all

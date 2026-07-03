@@ -1,5 +1,4 @@
-import Footer14 from "@/components/footers/Footer14";
-import Header14 from "@/components/headers/Header14";
+﻿import Footer14 from "@/components/footers/Footer14";
 import OrderPaymentCompleted from "@/components/shopCartandCheckout/OrderPaymentCompleted";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";
@@ -48,7 +47,6 @@ const ShopOrderPaymentComplete = async ({ searchParams  }) => {
     
       return data && (
         <>
-          <Header14 />
           <main className="page-wrapper">
             <div className="mb-4 pb-4"></div>
             <section className="shop-checkout container">
@@ -68,7 +66,7 @@ const ShopOrderPaymentComplete = async ({ searchParams  }) => {
     );
   } catch (error) {
     console.error(error);
-    return <><Header14 />
+    return <>
         <main className="page-wrapper">
           <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Data Found</h2>
         </main>
