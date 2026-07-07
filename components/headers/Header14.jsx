@@ -736,7 +736,7 @@ export default function Header14() {
                                 <Link href="/">
                                     <Image
                                         loading="lazy"
-                                        src="/assets/images/about/ahmed-logo.png"
+                                        src="/assets/images/logo/Desktop.svg"
                                         width="100"
                                         height="100"
                                         alt="Ahmed Al Maghribi"

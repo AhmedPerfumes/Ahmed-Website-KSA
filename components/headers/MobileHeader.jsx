@@ -196,9 +196,9 @@ export default function MobileHeader() {
         <div className="logo">
           <a href="/">
           <Image
-              src="/assets/images/about/AhmedLogo.png"
-              width={70}
-              height={70}
+              src="/assets/images/logo/Mobile.svg"
+              width={190}
+              height={80}
               alt="Ahmed"
               className=""
             />
