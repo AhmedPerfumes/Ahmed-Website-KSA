@@ -16,10 +16,9 @@
 import createMiddleware from 'next-intl/middleware';
 import {routing} from './i18n/routing';
 
-// localeDetection: true (default) — next-intl checks the NEXT_LOCALE cookie first.
-// • Cookie absent (fresh session) → falls back to defaultLocale ('ar') → correct new-visit behaviour
-// • Cookie = 'en' (user switched language) → stays English until browser closes (session cookie)
-export default createMiddleware(routing);
+export default createMiddleware(routing, {
+  localeDetection: false   // ★ IMPORTANT ★
+});
 
 export const config = {
   matcher: [

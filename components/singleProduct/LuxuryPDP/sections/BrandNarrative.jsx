@@ -27,7 +27,8 @@ const BrandNarrative = ({ product }) => {
     <section className="pdp-narrative pdp-fade-in" aria-labelledby="narrative-heading">
       <div className="pdp-container">
         <div className="pdp-narrative__inner">
-          <header style={{ marginBottom: "2rem" }}>
+          <span className="pdp-narrative__gold-line" aria-hidden="true" />
+          <header style={{ marginBottom: "1.25rem" }}>
             <span className="pdp-section-eyebrow" style={{ color: "#C9A96E" }}>
               The Story Behind
             </span>
@@ -42,7 +43,7 @@ const BrandNarrative = ({ product }) => {
           </blockquote>
 
           <p className="pdp-narrative__source">
-            Ahmed Al Maghribi Perfumes
+            — Ahmed Al Maghribi Perfumes
           </p>
         </div>
       </div>

@@ -348,11 +348,8 @@ export default function Header14() {
     };
 
     const handleLangChange = (e) => {
-        const newLocale = e.target.value;
-        // Save preference as a session cookie (no expires → cleared when browser closes).
-        // next-intl middleware reads NEXT_LOCALE to honour user preference on home-page visits.
-        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; SameSite=Lax`;
-        router.push(pathname, { locale: newLocale });
+        // console.log(pathname, e.target.value);
+        router.push(pathname, { locale: e.target.value });
     };
 
     //  const pathname = usePathname();
