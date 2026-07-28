@@ -156,6 +156,11 @@ export default function Context({ children }) {
         }
       }
 
+      // Legacy flat sale_price field (item_family API items)
+      if (!product?.discount && product?.sale_price && Number(product.sale_price) > 0 && Number(product.sale_price) < basePrice) {
+        return accumulator + qty * Number(Number(product.sale_price).toFixed(2));
+      }
+
       // Customer/global coupon (apply across all products)
       if (isCustomerCouponActive && !product.discount && !promotionsContext.some((promo) => promo.buy_products.some((item) => item.product_id === product.product_id))) {
         const value = Number(couponDataContext?.value || 0);
@@ -228,12 +233,59 @@ export default function Context({ children }) {
       payload: product
     });
 
+    // ---- GA4 add_to_cart (TikTok listener in layout.jsx maps this to ttq AddToCart) ----
+    // ---- Meta Pixel AddToCart (explicit — autoConfig is disabled) ----
+    try {
+      if (!product.is_gift) {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "add_to_cart",
+          ecommerce: {
+            currency: "SAR",
+            value: parseFloat((product.price || 0) * (product.quantity || 1)),
+            items: [{
+              item_id: product.product_id?.toString(),
+              item_name: product.product_name,
+              price: parseFloat(product.price || 0),
+              quantity: product.quantity || 1,
+              item_category: product.category_name || "",
+            }],
+          },
+        });
+
+        if (typeof window.fbq === "function") {
+          window.fbq("track", "AddToCart", {
+            content_ids: [product.product_id?.toString()],
+            content_name: product.product_name,
+            content_type: "product",
+            value: parseFloat((product.price || 0) * (product.quantity || 1)),
+            currency: "SAR",
+          });
+        }
+      }
+    } catch (e) { /* tracking errors must never break cart */ }
+
     // Open cart drawer (unless caller requested silent mode)
     if (!product._silent) {
       document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
       document.getElementById("cartDrawer")?.classList.add("aside_visible");
     }
+
+    // Save last-added product info for the "You May Also Like" cart popup.
+    // The popup reads this on cart/checkout page mount and fires once per session.
+    if (!product.is_gift && product.product_name) {
+      try {
+        localStorage.setItem("ahmed_last_cart_item", JSON.stringify({
+          name:        product.product_name,
+          category:    product.category_name    || "",
+          subcategory: product.subcategory_name || product.subcategory?.subcategory_name || "",
+        }));
+        // Also clear the session flag so the popup re-fires for the new product
+        sessionStorage.removeItem("ymal_shown");
+      } catch { /* storage errors must never break cart */ }
+    }
   };
+
 
   const removeGiftFromCart = (productId = null, campaign = null) => {
     if (state.isProcessing) return;

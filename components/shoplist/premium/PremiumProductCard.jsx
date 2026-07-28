@@ -51,10 +51,10 @@ function isDiscountActive(discount) {
 }
 
 /** Dispatch global toast event — does NOT open cart drawer */
-function fireToast(name, image, qty) {
+function fireToast(name, image, qty, category, subcategory) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(
-    new CustomEvent("cart:added", { detail: { name, image, qty: qty ?? 1 } })
+    new CustomEvent("cart:added", { detail: { name, image, qty: qty ?? 1, category: category || "", subcategory: subcategory || "" } })
   );
 }
 
@@ -179,7 +179,7 @@ export default function PremiumProductCard({
         subcategory_name: capitalizeEachWord(subcat.split("-").join(" ")),
         quantity: qty,
       });
-      fireToast(displayName, img1, qty);
+      fireToast(displayName, img1, qty, capitalizeEachWord(category.split("-").join(" ")), capitalizeEachWord(subcat.split("-").join(" ")));
       setQty(1);
     },
     [
@@ -317,7 +317,7 @@ export default function PremiumProductCard({
           <>
             {alreadyInCart ? (
               /* ── In cart: qty stepper updates cart qty directly ── */
-              <div className="pc-qty" role="group" aria-label={`Quantity for ${displayName}`}>
+              <div className="pc-qty pc-qty--cart" role="group" aria-label={`Quantity for ${displayName}`}>
                 <button
                   className="pc-qty__btn"
                   type="button"
