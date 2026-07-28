@@ -1,11 +1,23 @@
 "use client";
 /**
- * YouMayAlsoLike.jsx  — Premium bottom-sheet modal for cart page
- * Section A: related_prods of last added cart product (hidden if none)
- * Section B: Top-5 best sellers from that product category
+ * YouMayAlsoLike.jsx  — Centered brand-themed modal for cart / checkout pages
+ *
+ * TRIGGER LOGIC (answers the "3 products" question):
+ * --------------------------------------------------
+ * The popup anchors on the MOST RECENTLY NEWLY ADDED product (not a qty increment).
+ * Rationale: the last fresh add expresses the user's current shopping intent.
+ *
+ * Example: cart has Marj → Rose Noir → Kaaf (added in that order)
+ *   → popup recommends products related to "Kaaf" (most recent intent)
+ *
+ * If the user re-visits cart later in the same session without adding anything new,
+ * the popup does NOT re-fire (once per session per distinct product added).
+ *
+ * Section A: related_prods of that anchor product (hidden if API returns none)
+ * Section B: top-5 best sellers from that product's category (always shown if available)
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
 import { fetchBestSelling } from "@/utlis/productsCache";
@@ -18,8 +30,11 @@ import "swiper/css/navigation";
 import { useLocale } from "next-intl";
 import he from "he";
 
-const SESSION_KEY = "ymal_shown";
+/* ── Session / Storage keys ─────────────────────────────────── */
+const SESSION_KEY    = "ymal_shown";
+const STORAGE_KEY    = "ahmed_last_cart_item";
 
+/* ── Helpers ────────────────────────────────────────────────── */
 const slugify = (str) =>
   (str || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 
@@ -32,282 +47,298 @@ const getImg = (p) => {
   }
 };
 
-/* ── Inline CSS ──────────────────────────────────────────────────────── */
-const css = `
-/* Overlay */
+/* ── Inline styles (no extra CSS file needed) ───────────────── */
+const STYLES = `
+/* ─── Overlay ──────────────────────────────────────────────── */
 .ymal-overlay {
   position: fixed; inset: 0;
-  background: rgba(8,6,4,0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(15, 12, 8, 0.52);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 9950;
-  display: flex; align-items: flex-end; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.3s ease;
 }
-.ymal-overlay.ymal-open { opacity: 1; pointer-events: auto; }
+.ymal-overlay.ymal-open {
+  opacity: 1; pointer-events: auto;
+}
 
-/* Sheet */
-.ymal-sheet {
-  width: 100%; max-width: 1100px;
-  max-height: 85svh;
-  background: #0f0d0a;
-  border-radius: 24px 24px 0 0;
+/* ─── Modal card ─────────────────────────────────────────────── */
+.ymal-modal {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  max-height: 88svh;
+  background: #ffffff;
+  border-radius: 6px;
   overflow: hidden;
-  transform: translateY(100%);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex; flex-direction: column;
-  border-top: 1px solid rgba(197,166,100,0.18);
-  box-shadow: 0 -32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(197,166,100,0.06);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
+  transform: scale(0.94) translateY(12px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.ymal-overlay.ymal-open .ymal-sheet { transform: translateY(0); }
-
-/* Handle */
-.ymal-handle-wrap {
-  flex-shrink: 0;
-  display: flex; justify-content: center;
-  padding: 14px 0 0;
-}
-.ymal-handle {
-  width: 44px; height: 4px;
-  background: rgba(197,166,100,0.25);
-  border-radius: 2px;
+.ymal-overlay.ymal-open .ymal-modal {
+  transform: scale(1) translateY(0);
 }
 
-/* Header */
+/* ─── Header ────────────────────────────────────────────────── */
 .ymal-header {
   flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 28px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 1.5rem 1.75rem 1.1rem;
+  border-bottom: 1px solid #ede9e1;
+  background: #fff;
 }
-.ymal-header-left { display: flex; flex-direction: column; gap: 4px; }
+.ymal-header-text { display: flex; flex-direction: column; gap: 0.25rem; }
 .ymal-eyebrow {
-  font-size: 0.58rem; font-weight: 700;
+  font-size: 0.6rem; font-weight: 700;
   letter-spacing: 0.28em; text-transform: uppercase;
-  color: #b8973e;
+  color: #a67b30; margin: 0;
 }
 .ymal-title {
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
-  font-weight: 300; letter-spacing: 0.05em;
-  color: #f5f0e8; margin: 0;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: clamp(1.3rem, 2.5vw, 1.65rem);
+  font-weight: 400; letter-spacing: 0.02em;
+  color: #1a1a1a; margin: 0; line-height: 1.2;
 }
-.ymal-title em { font-style: italic; color: #d4b86a; }
+.ymal-title em { font-style: italic; color: #a67b30; }
+
+/* Anchor product context pill */
+.ymal-anchor-chip {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  background: #fdf6e8; border: 1px solid #e8d5a0;
+  border-radius: 100px; padding: 0.2rem 0.65rem 0.2rem 0.45rem;
+  font-size: 0.62rem; color: #7a5a1a; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  margin-top: 0.5rem; width: fit-content;
+}
+.ymal-anchor-chip svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+/* Close button */
 .ymal-close {
-  width: 36px; height: 36px;
+  width: 34px; height: 34px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 50%;
-  cursor: pointer; color: rgba(255,255,255,0.55); font-size: 0.85rem;
-  transition: background 0.18s, color 0.18s, transform 0.2s;
-  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid #e0dbd2; border-radius: 50%;
+  cursor: pointer; color: #888;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.22s;
+  margin-top: 0.15rem;
 }
 .ymal-close:hover {
-  background: rgba(197,166,100,0.12);
-  color: #d4b86a;
+  background: #fdf6e8; border-color: #c5a05a; color: #a67b30;
   transform: rotate(90deg);
 }
+.ymal-close svg { width: 14px; height: 14px; }
 
-/* Body */
+/* ─── Body / scroll area ─────────────────────────────────────── */
 .ymal-body {
   flex: 1; overflow-y: auto;
-  padding: 20px 28px 36px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(197,166,100,0.2) transparent;
+  padding: 1.25rem 1.75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: #e0dbd2 transparent;
 }
 .ymal-body::-webkit-scrollbar { width: 4px; }
-.ymal-body::-webkit-scrollbar-thumb { background: rgba(197,166,100,0.2); border-radius: 2px; }
+.ymal-body::-webkit-scrollbar-thumb { background: #e0dbd2; border-radius: 2px; }
 
-/* Section */
-.ymal-section { margin-bottom: 32px; }
+/* ─── Section label ─────────────────────────────────────────── */
+.ymal-section { margin-bottom: 2rem; }
 .ymal-section:last-child { margin-bottom: 0; }
-.ymal-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.ymal-section-head {
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
+}
 .ymal-section-label {
-  font-size: 0.58rem; font-weight: 700;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(197,166,100,0.8);
-  white-space: nowrap;
+  font-size: 0.6rem; font-weight: 700; white-space: nowrap;
+  letter-spacing: 0.22em; text-transform: uppercase; color: #a67b30;
 }
 .ymal-section-line {
   flex: 1; height: 1px;
-  background: linear-gradient(90deg, rgba(197,166,100,0.2), transparent);
+  background: linear-gradient(90deg, #e0d5c0, transparent);
 }
 
-/* Card */
+/* ─── Product card ───────────────────────────────────────────── */
 .ymal-card {
-  background: #1a1610;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 14px;
-  overflow: hidden;
-  transition: border-color 0.22s, box-shadow 0.22s;
+  background: #fafaf8;
+  border: 1px solid #ede9e1;
+  border-radius: 4px; overflow: hidden;
+  transition: border-color 0.22s, box-shadow 0.22s, transform 0.22s;
   display: flex; flex-direction: column; height: 100%;
+  cursor: pointer;
 }
 .ymal-card:hover {
-  border-color: rgba(197,166,100,0.25);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border-color: #c5a05a;
+  box-shadow: 0 8px 32px rgba(166, 123, 48, 0.12);
+  transform: translateY(-2px);
 }
 
-/* Card image */
+/* Image */
 .ymal-card__img-link {
-  display: block;
-  position: relative;
-  aspect-ratio: 3/4;
-  overflow: hidden;
-  background: #111;
+  display: block; position: relative;
+  aspect-ratio: 3/4; overflow: hidden; background: #f5f0e8;
 }
 .ymal-card__img-link img { object-fit: cover; transition: transform 0.5s ease; }
-.ymal-card:hover .ymal-card__img-link img { transform: scale(1.06); }
+.ymal-card:hover .ymal-card__img-link img { transform: scale(1.05); }
 
 /* Discount badge */
 .ymal-card__badge {
-  position: absolute; top: 10px; left: 10px;
-  background: linear-gradient(135deg, #b8973e, #d4b86a);
-  color: #0f0d0a;
-  font-size: 0.6rem; font-weight: 800;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 100px;
-  z-index: 2;
+  position: absolute; top: 8px; left: 8px;
+  background: linear-gradient(135deg, #a67b30, #c5a05a);
+  color: #fff; font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 100px; z-index: 2;
 }
 
-/* Card info */
+/* Info block */
 .ymal-card__info {
-  padding: 12px 12px 14px;
-  flex: 1; display: flex; flex-direction: column; gap: 6px;
+  padding: 0.7rem 0.75rem 0.8rem;
+  flex: 1; display: flex; flex-direction: column; gap: 0.35rem;
 }
 .ymal-card__sub {
-  font-size: 0.62rem; color: rgba(197,166,100,0.65);
-  letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 0.58rem; color: #a67b30; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; margin: 0;
 }
 .ymal-card__name {
-  font-size: 0.88rem; font-weight: 500;
-  color: #f0ece4; line-height: 1.3;
-  text-decoration: none; display: block;
-  overflow: hidden; display: -webkit-box;
-  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 0.92rem; font-weight: 600; color: #1a1a1a;
+  letter-spacing: 0.02em; line-height: 1.3;
+  text-decoration: none !important; display: block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.ymal-card__name:hover { color: #d4b86a; }
-.ymal-card__prices { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
-.ymal-card__price-new { font-size: 0.9rem; font-weight: 700; color: #d4b86a; }
-.ymal-card__price-old { font-size: 0.75rem; color: rgba(255,255,255,0.3); text-decoration: line-through; }
-.ymal-card__price-reg { font-size: 0.88rem; color: rgba(255,255,255,0.7); }
+.ymal-card__name:hover { color: #a67b30; }
+
+/* Prices */
+.ymal-card__prices {
+  display: flex; align-items: baseline; gap: 0.4rem; flex-wrap: wrap;
+}
+.ymal-card__price-reg, .ymal-card__price-new {
+  font-size: 0.88rem; font-weight: 700; color: #1a1a1a;
+}
+.ymal-card__price-old {
+  font-size: 0.72rem; color: #bbb; text-decoration: line-through;
+}
 
 /* ATC button */
 .ymal-card__atc {
-  margin-top: auto;
+  margin-top: auto; padding-top: 0.5rem;
   width: 100%;
-  padding: 9px 10px;
-  background: transparent;
-  border: 1px solid rgba(197,166,100,0.3);
-  color: #d4b86a;
+  padding: 0.55rem 0.5rem;
   font-size: 0.62rem; font-weight: 700;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border: 1px solid #a67b30; border-radius: 3px;
+  background: transparent; color: #a67b30;
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 0.35rem;
 }
 .ymal-card__atc:hover {
-  background: rgba(197,166,100,0.12);
-  border-color: rgba(197,166,100,0.6);
+  background: linear-gradient(135deg, #b8913a, #a67b30);
+  color: #fff; border-color: transparent;
 }
 .ymal-card__atc--added {
-  background: rgba(197,166,100,0.08);
-  border-color: rgba(197,166,100,0.4);
-  color: rgba(197,166,100,0.7);
+  background: #f0faf4; color: #2a7a4e;
+  border-color: #a8d5b5;
+}
+.ymal-card__atc--added:hover {
+  background: #e5f5ec; color: #2a7a4e; border-color: #a8d5b5;
 }
 
-/* Swiper overrides */
-.ymal-swiper {
-  width: 100%; padding-bottom: 2px !important; overflow: visible !important;
+/* ─── Swiper overrides ──────────────────────────────────────── */
+.ymal-swiper { padding: 4px 2px 8px !important; overflow: visible !important; }
+.ymal-swiper .swiper-button-prev,
+.ymal-swiper .swiper-button-next {
+  width: 32px; height: 32px;
+  background: #fff; border: 1px solid #e0dbd2; border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  color: #1a1a1a; top: 38%;
+  transition: border-color 0.18s, color 0.18s;
 }
-.ymal-swiper .swiper-button-next,
-.ymal-swiper .swiper-button-prev {
-  color: #d4b86a;
-  background: rgba(15,13,10,0.8);
-  border: 1px solid rgba(197,166,100,0.2);
-  width: 34px !important; height: 34px !important;
-  border-radius: 50%;
-  top: -34px !important;
+.ymal-swiper .swiper-button-prev:hover,
+.ymal-swiper .swiper-button-next:hover {
+  border-color: #a67b30; color: #a67b30;
 }
-.ymal-swiper .swiper-button-prev { right: 42px !important; left: auto !important; }
-.ymal-swiper .swiper-button-next { right: 0 !important; }
-.ymal-swiper .swiper-button-next::after,
-.ymal-swiper .swiper-button-prev::after { font-size: 0.75rem !important; }
-.ymal-swiper .swiper-button-disabled { opacity: 0.25 !important; }
+.ymal-swiper .swiper-button-prev::after,
+.ymal-swiper .swiper-button-next::after {
+  font-size: 0.65rem; font-weight: 800;
+}
+.ymal-swiper .swiper-button-disabled { opacity: 0.3; }
 
-/* Loader */
-.ymal-loader {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  height: 180px; gap: 14px;
+/* ─── Loading skeleton ──────────────────────────────────────── */
+.ymal-skeleton-card {
+  background: #f5f0e8; border-radius: 4px;
+  overflow: hidden; height: 280px;
+  animation: ymal-shimmer 1.5s ease-in-out infinite;
 }
-.ymal-loader__ring {
-  width: 36px; height: 36px;
-  border: 2px solid rgba(197,166,100,0.15);
-  border-top-color: #b8973e;
-  border-radius: 50%;
-  animation: ymal-spin 0.8s linear infinite;
+@keyframes ymal-shimmer {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
 }
-@keyframes ymal-spin { to { transform: rotate(360deg); } }
-.ymal-loader__text { font-size: 0.78rem; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .ymal-header { padding: 14px 16px 10px; }
-  .ymal-body { padding: 16px 16px 28px; }
-  .ymal-sheet { border-radius: 20px 20px 0 0; }
-  .ymal-swiper .swiper-button-next,
-  .ymal-swiper .swiper-button-prev { display: none !important; }
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ymal-overlay { padding: 0; align-items: flex-end; }
+  .ymal-modal {
+    max-width: 100%; max-height: 90svh; border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+  }
+  .ymal-overlay.ymal-open .ymal-modal { transform: translateY(0); }
+  .ymal-header { padding: 1.1rem 1.25rem 0.85rem; }
+  .ymal-body  { padding: 1rem 1.25rem 2rem; }
+  .ymal-title { font-size: 1.2rem; }
 }
 `;
 
-/* ── Component ───────────────────────────────────────────────────────── */
 export default function YouMayAlsoLike() {
-  const locale = useLocale();
+  const { isLoading: menuLoading, currency }      = useMenu();
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
-  const { currency } = useMenu();
+  const locale      = useLocale();
 
+  const [open,        setOpen]        = useState(false);
+  const [loading,     setLoading]     = useState(true);
+  const [anchorProd,  setAnchorProd]  = useState(null); // the product we anchor on
+  const [related,     setRelated]     = useState([]);
+  const [bestSell,    setBestSell]    = useState([]);
   const overlayRef = useRef(null);
-  const [related, setRelated]   = useState([]);
-  const [bestSell, setBestSell] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [open, setOpen]         = useState(false);
-  const [lastProduct, setLastProduct] = useState(null);
 
-  /* Read last-added product from localStorage on mount */
+  /* ── Step 1: Read anchor product from localStorage ─────────── */
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Once per session per anchor product
     if (sessionStorage.getItem(SESSION_KEY)) return;
-    const stored = localStorage.getItem("ahmed_last_cart_item");
+
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return;
-    try { setLastProduct(JSON.parse(stored)); } catch { /* ignore */ }
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed?.name) setAnchorProd(parsed);
+    } catch { /* ignore */ }
   }, []);
 
-  /* Fetch once we know the last product */
+  /* ── Step 2: Fetch once anchor product is known ─────────────── */
   useEffect(() => {
-    if (!lastProduct) return;
+    if (!anchorProd) return;
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const { category = "", subcategory = "", name = "" } = lastProduct;
+      const { category = "", subcategory = "", name = "" } = anchorProd;
 
+      /* Section A — related products from API */
       let relatedProds = [];
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            category: category.toUpperCase(),
+            category:    category.toUpperCase(),
             subCategory: subcategory.toUpperCase(),
-            product: name.toUpperCase(),
+            product:     name.toUpperCase(),
           }),
         });
         const d = await res.json();
         relatedProds = Array.isArray(d?.related_prods) ? d.related_prods.slice(0, 8) : [];
       } catch { /* ignore */ }
 
+      /* Section B — top-5 best sellers from that category */
       let best = [];
       try {
         const all = await fetchBestSelling();
@@ -321,17 +352,30 @@ export default function YouMayAlsoLike() {
         setLoading(false);
         if (relatedProds.length > 0 || best.length > 0) {
           sessionStorage.setItem(SESSION_KEY, "1");
-          setTimeout(() => setOpen(true), 800);
+          // Slight delay so the page layout settles first
+          setTimeout(() => setOpen(true), 700);
         }
       }
     })();
     return () => { cancelled = true; };
-  }, [lastProduct]);
+  }, [anchorProd]);
 
-  const close = () => setOpen(false);
-  const onOverlay = (e) => { if (e.target === overlayRef.current) close(); };
+  /* ── Keyboard / body scroll lock ────────────────────────────── */
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
-  /* Price renderer */
+  const close      = useCallback(() => setOpen(false), []);
+  const onOverlay  = useCallback((e) => { if (e.target === overlayRef.current) close(); }, [close]);
+
+  /* ── Price renderer ─────────────────────────────────────────── */
   const renderPrice = (elm) => {
     const now = Date.now();
     if (elm?.discount) {
@@ -349,10 +393,10 @@ export default function YouMayAlsoLike() {
         );
       }
     }
-    if (elm?.sale_price && +elm.sale_price > 0 && +elm.sale_price < +elm.price) {
+    if (!elm?.discount && elm?.sale_price && Number(elm.sale_price) > 0 && Number(elm.sale_price) < Number(elm.price)) {
       return (
         <div className="ymal-card__prices">
-          <span className="ymal-card__price-new">{(+elm.sale_price).toFixed(2)} {currency?.symbol}</span>
+          <span className="ymal-card__price-new">{Number(elm.sale_price).toFixed(2)} {currency?.symbol}</span>
           <span className="ymal-card__price-old">{elm.price} {currency?.symbol}</span>
         </div>
       );
@@ -366,168 +410,201 @@ export default function YouMayAlsoLike() {
     const s  = new Date(elm.discount.start_date).getTime();
     const e2 = new Date(elm.discount.end_date).getTime();
     if (now < s || now > e2) return null;
-    return elm.discount.discount_type === "percent"
-      ? `${elm.discount.value}% OFF`
-      : `SALE`;
+    return elm.discount.discount_type === "percent" ? `${Math.round(elm.discount.value)}% OFF` : `SALE`;
   };
 
-  /* Product card */
-  const ProductCard = ({ elm, categorySlug, subcategorySlug }) => {
+  /* ── Product card ───────────────────────────────────────────── */
+  const ProductCard = ({ elm, catSlug, subcatSlug }) => {
     const img    = getImg(elm);
     const name   = he.decode(elm.product_name || elm.name || "");
     const slug   = slugify(name);
-    const href   = `/${locale}/shop/${categorySlug}/${subcategorySlug}/${slug}`;
+    const href   = `/${locale}/shop/${catSlug || "perfumes"}/${subcatSlug || "all"}/${slug}`;
     const inCart = isAddedToCartProducts(elm.product_id);
     const badge  = getDiscountBadge(elm);
+    const subcat = elm.subcategory?.subcategory_name || "";
 
-    const handleATC = () => {
-      addProductToCart({ ...elm, _silent: true });
+    const handleATC = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      addProductToCart({
+        ...elm,
+        _silent: true,
+        category_name:    elm.category_name || "",
+        subcategory_name: elm.subcategory?.subcategory_name || "",
+      });
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("cart:added", {
-          detail: { name, image: img || "", qty: 1, category: elm.category_name, subcategory: elm.subcategory?.subcategory_name || "" },
+          detail: { name, image: img || "", qty: 1,
+            category: elm.category_name || "", subcategory: elm.subcategory?.subcategory_name || "" },
         }));
       }
     };
 
     return (
-      <div className="ymal-card">
+      <article className="ymal-card">
         <Link href={href} className="ymal-card__img-link" onClick={close}>
-          {badge && <span className="ymal-card__badge">{badge}</span>}
+          {badge && <span className="ymal-card__badge" aria-label={badge}>{badge}</span>}
           {img ? (
-            <Image src={img} alt={name} fill sizes="240px" style={{ objectFit: "cover" }} />
+            <Image src={img} alt={name} fill sizes="(max-width:768px) 45vw, 200px" style={{ objectFit: "cover" }} />
           ) : (
-            <div style={{ background: "#1a1610", width: "100%", height: "100%" }} />
+            <div style={{ background: "#f0ebe0", width: "100%", height: "100%" }} aria-hidden="true" />
           )}
         </Link>
         <div className="ymal-card__info">
-          {elm.subcategory?.subcategory_name && (
-            <span className="ymal-card__sub">{elm.subcategory.subcategory_name}</span>
-          )}
-          <Link href={href} className="ymal-card__name" onClick={close}>{name}</Link>
+          {subcat && <p className="ymal-card__sub">{subcat}</p>}
+          <Link href={href} className="ymal-card__name" title={name} onClick={close}>{name}</Link>
           {renderPrice(elm)}
           <button
             className={`ymal-card__atc${inCart ? " ymal-card__atc--added" : ""}`}
             type="button"
             onClick={handleATC}
+            aria-label={inCart ? `${name} added to cart` : `Add ${name} to cart`}
           >
             {inCart ? (
               <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                 Added
               </>
             ) : "Add to Cart"}
           </button>
         </div>
-      </div>
+      </article>
     );
   };
 
+  /* ── Swiper config ──────────────────────────────────────────── */
   const swiperOpts = {
     modules: [Navigation],
-    spaceBetween: 14,
+    spaceBetween: 12,
     navigation: true,
     className: "ymal-swiper",
     breakpoints: {
       0:   { slidesPerView: 2.2, spaceBetween: 10 },
       480: { slidesPerView: 3.2, spaceBetween: 12 },
       768: { slidesPerView: 4,   spaceBetween: 14 },
-      1024:{ slidesPerView: 5,   spaceBetween: 14 },
+      960: { slidesPerView: 5,   spaceBetween: 14 },
     },
   };
 
-  if (!lastProduct) return null;
+  /* Build slugs for Section A (related = same category/subcategory) */
+  const relatedCatSlug    = slugify(anchorProd?.category);
+  const relatedSubcatSlug = slugify(anchorProd?.subcategory);
+
+  /* Build slugs for Section B (best sellers — use product's own category) */
+  const getBestCatSlug    = (p) => slugify(p?.category_name || anchorProd?.category);
+  const getBestSubcatSlug = (p) => slugify(p?.subcategory?.subcategory_name || anchorProd?.subcategory);
+
+  if (!open && !loading) return null;
 
   return (
     <>
-      <style>{css}</style>
+      {/* Inline styles */}
+      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
+
+      {/* Modal overlay — role="dialog" for a11y */}
       <div
-        className={`ymal-overlay${open ? " ymal-open" : ""}`}
         ref={overlayRef}
+        className={`ymal-overlay${open ? " ymal-open" : ""}`}
         onClick={onOverlay}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="ymal-heading"
+        aria-label="You may also like these products"
       >
-        <div className="ymal-sheet">
+        <div className="ymal-modal">
 
-          {/* Handle */}
-          <div className="ymal-handle-wrap" aria-hidden="true">
-            <div className="ymal-handle" />
-          </div>
-
-          {/* Header */}
-          <div className="ymal-header">
-            <div className="ymal-header-left">
-              <span className="ymal-eyebrow">Curated for you</span>
-              <h2 className="ymal-title" id="ymal-heading">
-                You May Also <em>Like</em>
-              </h2>
+          {/* ── Header ───────────────────────────────────────────── */}
+          <header className="ymal-header">
+            <div className="ymal-header-text">
+              <p className="ymal-eyebrow">Curated for you</p>
+              <h2 className="ymal-title">You May Also <em>Like</em></h2>
+              {anchorProd?.name && (
+                <div className="ymal-anchor-chip" aria-label={`Based on ${he.decode(anchorProd.name)}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  Based on: {he.decode(anchorProd.name)}
+                </div>
+              )}
             </div>
-            <button className="ymal-close" onClick={close} aria-label="Close" type="button">
-              &#x2715;
+            <button
+              className="ymal-close"
+              onClick={close}
+              aria-label="Close recommendations"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6"  y2="18"/>
+                <line x1="6"  y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
-          </div>
+          </header>
 
-          {/* Body */}
+          {/* ── Body ─────────────────────────────────────────────── */}
           <div className="ymal-body">
+
             {loading ? (
-              <div className="ymal-loader">
-                <div className="ymal-loader__ring" />
-                <p className="ymal-loader__text">Finding recommendations…</p>
+              /* Loading skeletons */
+              <div className="ymal-section">
+                <div className="ymal-section-head">
+                  <span className="ymal-section-label">Loading recommendations…</span>
+                  <span className="ymal-section-line" aria-hidden="true" />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="ymal-skeleton-card" aria-hidden="true" />
+                  ))}
+                </div>
               </div>
             ) : (
               <>
-                {/* A — Related products */}
+                {/* ── Section A: Related products ─────────────────── */}
                 {related.length > 0 && (
-                  <div className="ymal-section">
+                  <section className="ymal-section" aria-labelledby="ymal-related-heading">
                     <div className="ymal-section-head">
-                      <span className="ymal-section-label">Pairs well with {lastProduct.name}</span>
-                      <div className="ymal-section-line" />
+                      <h3 id="ymal-related-heading" className="ymal-section-label">
+                        Pairs Well With {anchorProd?.name ? he.decode(anchorProd.name) : ""}
+                      </h3>
+                      <span className="ymal-section-line" aria-hidden="true" />
                     </div>
                     <Swiper {...swiperOpts}>
-                      {related.map((p, i) => (
-                        <SwiperSlide key={i}>
-                          <ProductCard
-                            elm={p}
-                            categorySlug={slugify(p.category_name)}
-                            subcategorySlug={slugify(p.subcategory?.subcategory_name || "")}
-                          />
+                      {related.map((elm, i) => (
+                        <SwiperSlide key={elm.product_id ?? i}>
+                          <ProductCard elm={elm} catSlug={relatedCatSlug} subcatSlug={relatedSubcatSlug} />
                         </SwiperSlide>
                       ))}
                     </Swiper>
-                  </div>
+                  </section>
                 )}
 
-                {/* B — Best sellers from category */}
+                {/* ── Section B: Best sellers ─────────────────────── */}
                 {bestSell.length > 0 && (
-                  <div className="ymal-section">
+                  <section className="ymal-section" aria-labelledby="ymal-bestsell-heading">
                     <div className="ymal-section-head">
-                      <span className="ymal-section-label">Best sellers in {lastProduct.category}</span>
-                      <div className="ymal-section-line" />
+                      <h3 id="ymal-bestsell-heading" className="ymal-section-label">
+                        Best Sellers in {anchorProd?.category || "Perfumes"}
+                      </h3>
+                      <span className="ymal-section-line" aria-hidden="true" />
                     </div>
                     <Swiper {...swiperOpts}>
-                      {bestSell.map((p, i) => (
-                        <SwiperSlide key={i}>
+                      {bestSell.map((elm, i) => (
+                        <SwiperSlide key={elm.product_id ?? i}>
                           <ProductCard
-                            elm={p}
-                            categorySlug={slugify(p.category_name || lastProduct.category)}
-                            subcategorySlug={slugify(p.subcategory?.subcategory_name || "")}
+                            elm={elm}
+                            catSlug={getBestCatSlug(elm)}
+                            subcatSlug={getBestSubcatSlug(elm)}
                           />
                         </SwiperSlide>
                       ))}
                     </Swiper>
-                  </div>
-                )}
-
-                {related.length === 0 && bestSell.length === 0 && (
-                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.85rem", textAlign: "center", marginTop: "40px" }}>
-                    No recommendations available.
-                  </p>
+                  </section>
                 )}
               </>
             )}
           </div>
+          {/* end body */}
+
         </div>
+        {/* end modal */}
       </div>
     </>
   );
