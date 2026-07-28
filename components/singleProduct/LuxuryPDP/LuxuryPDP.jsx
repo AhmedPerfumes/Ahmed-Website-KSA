@@ -35,26 +35,14 @@ import ProductInfoPanel from "./sections/ProductInfoPanel";
 import TrustPillars from "./sections/TrustPillars";
 import FragranceBreakdown from "./sections/FragranceBreakdown";
 import PerformanceMetrics from "./sections/PerformanceMetrics";
-import BrandNarrative from "./sections/BrandNarrative";
-import OccasionSection from "./sections/OccasionSection";
 import StickyATC from "./StickyATC";
 import ProductSchema from "./ProductSchema";
 
 // ── Below-fold sections (lazy loaded)
-const BundleUpsell = dynamic(() => import("./sections/BundleUpsell"), {
-  ssr: false,
-  loading: () => <div style={{ height: "300px" }} />,
-});
-
 const CustomerReviews = dynamic(
   () => import("../New/ProductInfoTabs/CustomerReviews"),
   { ssr: false, loading: () => <div style={{ height: "400px", background: "#111" }} /> }
 );
-
-const ItemFamilySlider = dynamic(() => import("../New/ItemFamilySlider"), {
-  ssr: false,
-  loading: () => <div style={{ height: "300px" }} />,
-});
 
 const FAQSection = dynamic(() => import("./sections/FAQSection"), {
   ssr: false,
@@ -66,10 +54,17 @@ const RecentlyViewed = dynamic(() => import("./sections/RecentlyViewed"), {
   loading: () => null,
 });
 
-// ── Accordion (existing, for product details/delivery/how-to info)
+// ── Accordion — ssr:false removed intentionally to fix refresh hydration glitch.
+// React.useState inside AccordionItem keeps toggle state; no Bootstrap JS needed.
 const ProductAccordion = dynamic(() => import("../New/accordian"), {
   ssr: false,
-  loading: () => null,
+  loading: () => (
+    <div style={{ borderTop: "1px solid #E5E0D8", marginTop: "2rem", padding: "1.5rem 0" }}>
+      {["PRODUCT OVERVIEW", "USAGE & APPLICATION", "DELIVERY INFORMATION"].map((t) => (
+        <div key={t} style={{ padding: "1rem 0", borderBottom: "1px solid #E5E0D8", fontSize: ".85rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#1A1A1A", opacity: .5 }}>{t}</div>
+      ))}
+    </div>
+  ),
 });
 
 /* ──────────────────────────────────────────────────────────────── */
@@ -146,7 +141,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
   }
 
   return (
-    <>
+    <div className="luxury-pdp">
       {/* JSON-LD Product Schema */}
       <ProductSchema
         product={product}
@@ -182,9 +177,10 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
               />
 
               {/* Product Accordion (fragrance notes, delivery, etc.) */}
-              <div style={{ marginTop: "2rem" }}>
+              <div className="pdp-accordion-wrap" style={{ marginTop: "2rem" }}>
                 <Suspense fallback={null}>
-                  <ProductAccordion product={product} />
+                  {/* Only hide fragrance profile in accordion when FragranceBreakdown will render it */}
+                  <ProductAccordion product={product} hideFragranceProfile={!!(product?.top_note || product?.heart_note || product?.base_note)} />
                 </Suspense>
               </div>
             </div>
@@ -192,29 +188,18 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
         </div>
       </section>
 
-      {/* ── Section 5: Trust Pillars ── */}
-      <TrustPillars />
-
-      {/* ── Section 6: Fragrance Breakdown ── */}
+      {/* ── Section 5: Fragrance Breakdown (above trust pillars for better flow) ── */}
       <FragranceBreakdown product={product} />
+
+      {/* ── Section 6: Trust Pillars ── */}
+      <TrustPillars />
 
       {/* ── Section 7: Performance Metrics ── */}
       <PerformanceMetrics product={product} />
 
-      {/* ── Section 8: Brand Narrative / Story ── */}
-      <BrandNarrative product={product} />
-
-      {/* ── Section 9: Occasion / When to Wear ── */}
-      <OccasionSection product={product} />
-
-      {/* ── Section 10: Bundle / Upsell (lazy) ── */}
-      <Suspense fallback={null}>
-        <BundleUpsell product={product} />
-      </Suspense>
-
-      {/* ── Section 11: Reviews (lazy, dark background) ── */}
-      <div id="pdp-reviews" style={{ background: "#111111" }}>
-        <Suspense fallback={<div style={{ height: "400px", background: "#111" }} />}>
+      {/* ── Section 11: Reviews ── */}
+      <div id="pdp-reviews" style={{ background: "#FAF8F4", borderTop: "1px solid #E8E1D9" }}>
+        <Suspense fallback={<div style={{ height: "400px", background: "#FAF8F4" }} />}>
           <CustomerReviews
             product={{ ...product, category, subcategory }}
             reviews={reviews}
@@ -234,13 +219,6 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
         </Suspense>
       </div>
 
-      {/* ── Section 12: Related Products (lazy) ── */}
-      <Suspense fallback={<div style={{ height: "300px" }} />}>
-        <ItemFamilySlider
-          product={product}
-          itemFamilyProds={product?.item_family}
-        />
-      </Suspense>
 
       {/* ── Section 13: FAQ (lazy) ── */}
       <Suspense fallback={null}>
@@ -249,12 +227,13 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
 
       {/* ── Section 14: Recently Viewed (lazy, localStorage) ── */}
       <Suspense fallback={null}>
-        <RecentlyViewed product={product} />
+        <RecentlyViewed product={product} category={category} subcategory={subcategory} />
       </Suspense>
 
       {/* ── Sticky Mobile ATC Bar ── */}
       <StickyATC product={product} />
-    </>
+
+    </div>
   );
 };
 

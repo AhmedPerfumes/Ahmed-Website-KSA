@@ -7,7 +7,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { renderPrice } from "@/utlis/priceRenderer";
 import { motion, AnimatePresence } from "framer-motion";
 import TamaraWidget from "@/components/TamaraWidget";
-import { toast } from "react-toastify";
 import Link from "next/link";
 import he from "he";
 
@@ -301,10 +300,28 @@ const ProductInfoPanel = ({ product, category, subcategory }) => {
       };
       setCartProducts((prev) => [...prev, item]);
       setError(null);
-      toast.success(t("Added to Cart"), {
-        position: "bottom-right",
-        autoClose: 4000,
-      });
+      // Fire the global CartToast (same event PremiumProductCard uses)
+      if (typeof window !== "undefined") {
+        const images = product?.images
+          ? typeof product.images === "string"
+            ? JSON.parse(product.images)
+            : product.images
+          : [];
+        const img = images[0]
+          ? `${process.env.NEXT_PUBLIC_API_URL}storage/${images[0]}`
+          : "";
+        window.dispatchEvent(
+          new CustomEvent("cart:added", {
+            detail: {
+              name: productName,
+              image: img,
+              qty: quantity,
+              category: category || "",
+              subcategory: subcategory || "",
+            },
+          })
+        );
+      }
     }
   };
 
@@ -481,13 +498,30 @@ const ProductInfoPanel = ({ product, category, subcategory }) => {
                   <button
                     className="pdp-qty-btn"
                     aria-label="Increase quantity"
-                    onClick={() =>
+                    onClick={() => {
+                      const newQty = (cartItem?.quantity ?? 1) + 1;
                       setQuantityCartItem(
                         product.product_id,
-                        (cartItem?.quantity ?? 1) + 1,
+                        newQty,
                         product?.maximum_order_quantity
-                      )
-                    }
+                      );
+                      // Fire toast to show updated qty (same as SpecialOffers)
+                      if (typeof window !== "undefined") {
+                        const images = product?.images
+                          ? typeof product.images === "string"
+                            ? JSON.parse(product.images)
+                            : product.images
+                          : [];
+                        const img = images[0]
+                          ? `${process.env.NEXT_PUBLIC_API_URL}storage/${images[0]}`
+                          : "";
+                        window.dispatchEvent(
+                          new CustomEvent("cart:added", {
+                            detail: { name: productName, image: img, qty: newQty },
+                          })
+                        );
+                      }
+                    }}
                   >
                     +
                   </button>

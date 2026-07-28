@@ -6,8 +6,15 @@ import { useContextElement } from "@/context/Context";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
 import { renderPrice } from "@/utlis/priceRenderer";
-import { toast } from "react-toastify";
 import { ShoppingCart } from "@mui/icons-material";
+
+/** Fires the global cart toast — same event that CartToast listens to */
+function fireCartToast(name, image, qty, category, subcategory) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1, category: category || "", subcategory: subcategory || "" } })
+  );
+}
 
 /**
  * StickyATC — Enhanced Sticky Add-to-Cart Bar
@@ -74,7 +81,8 @@ const StickyATC = ({ product }) => {
         quantity: 1,
       };
       setCartProducts((prev) => [...prev, item]);
-      toast.success(t("addToCart"), { position: "bottom-right", autoClose: 3000 });
+      // Fire premium cart toast
+      fireCartToast(productName, thumbSrc, 1, product?.category_name, product?.subcategory?.subcategory_name || "");
     }
   };
 

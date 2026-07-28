@@ -26,7 +26,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { sortingOptions } from "@/data/products/productCategories";
 import PremiumProductCard from "./PremiumProductCard";
-import CartToast from "./CartToast";
+import PremiumBreadcrumb from "./PremiumBreadcrumb";
 import "./premium-category.css";
 
 /* ─── Helpers ────────────────────────────────────────────────── */
@@ -92,9 +92,24 @@ function IconClose() {
   );
 }
 
+/* ─── Skeleton card ─────────────────────────────────────────── */
+
+function SkeletonCard() {
+  return (
+    <div style={{ background: "#fff", display: "flex", flexDirection: "column" }}>
+      <div style={{ width: "100%", paddingTop: "130%", background: "#f0f0f0", animation: "pc-shimmer 1.4s ease-in-out infinite" }} />
+      <div style={{ padding: "1rem 0.75rem 1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <div style={{ height: 10, width: "60%", background: "#f0f0f0", borderRadius: 4, animation: "pc-shimmer 1.4s ease-in-out 0.1s infinite" }} />
+        <div style={{ height: 13, width: "85%", background: "#f0f0f0", borderRadius: 4, animation: "pc-shimmer 1.4s ease-in-out 0.2s infinite" }} />
+        <div style={{ height: 11, width: "40%", background: "#f0f0f0", borderRadius: 4, animation: "pc-shimmer 1.4s ease-in-out 0.3s infinite" }} />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Component ─────────────────────────────────────────── */
 
-export default function PremiumProductGrid({ subCategories, products, categoryLabel, categoryLabelAr }) {
+export default function PremiumProductGrid({ subCategories, products, categoryLabel, categoryLabelAr, breadcrumbItems }) {
   const pathname     = usePathname();
   const locale       = useLocale();
   const pathCategory = pathname.split("/")[3] || "";
@@ -234,8 +249,10 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
   return (
     <div className="pc-root">
 
-      {/* Cart toast — bottom-right notification */}
-      <CartToast />
+      {/* Breadcrumb */}
+      {breadcrumbItems && breadcrumbItems.length > 0 && (
+        <PremiumBreadcrumb items={breadcrumbItems} />
+      )}
 
       {/* H1 Heading — no banner */}
       {displayLabel && (
@@ -351,67 +368,89 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
 
       {/* Toolbar */}
       <div className="pc-toolbar" role="toolbar" aria-label="Filters and sorting">
-        {/* Filter button */}
-        <button
-          className="pc-filter-btn"
-          onClick={() => setDrawerOpen(true)}
-          aria-expanded={drawerOpen}
-          aria-controls="pc-drawer"
-        >
-          <IconFilter />
-          <span>Filter</span>
-          {activeFilters > 0 && (
-            <span className="pc-filter-btn__count">{activeFilters}</span>
-          )}
-        </button>
+        <div className="pc-toolbar__inner">
+          {/* Filter button */}
+          <button
+            className="pc-filter-btn"
+            onClick={() => setDrawerOpen(true)}
+            aria-expanded={drawerOpen}
+            aria-controls="pc-drawer"
+          >
+            <IconFilter />
+            <span>{locale === "ar" ? "تصفية" : "Filter"}</span>
+            {activeFilters > 0 && (
+              <span className="pc-filter-btn__count">{activeFilters}</span>
+            )}
+          </button>
 
-        <div className="pc-toolbar__spacer" />
+          <div className="pc-toolbar__spacer" />
 
-        {/* Count */}
-        <span className="pc-toolbar__count" aria-live="polite">
-          {displayed.length} {locale === "ar" ? "منتج" : (displayed.length === 1 ? "product" : "products")}
-        </span>
+          {/* Count */}
+          <span className="pc-toolbar__count" aria-live="polite">
+            {displayed.length} {locale === "ar" ? "منتج" : (displayed.length === 1 ? "product" : "products")}
+          </span>
 
-        {/* Sort */}
-        <select
-          className="pc-sort-select"
-          aria-label="Sort products"
-          value={sortOpt}
-          onChange={(e) => handleSort(e.target.value)}
-        >
-          {sortingOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          {/* Sort */}
+          <select
+            className="pc-sort-select"
+            aria-label="Sort products"
+            value={sortOpt}
+            onChange={(e) => handleSort(e.target.value)}
+          >
+            {sortingOptions.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Grid */}
       <div className="pc-grid-wrap">
-        <div className="pc-grid" role="list" aria-label="Products">
-          {displayed.length === 0 ? (
-            <div className="pc-empty" role="status">
-              <p className="pc-empty__title">No products match your filters</p>
-              <p className="pc-empty__sub">Try adjusting or clearing your selection.</p>
-              {activeFilters > 0 && (
-                <button className="pc-empty__reset" onClick={clearFilters}>
-                  Clear filters
-                </button>
-              )}
-            </div>
-          ) : (
-            displayed.map((elm, i) => (
-              <div key={elm.product_id ?? i} role="listitem">
-                <PremiumProductCard
-                  elm={elm}
-                  category={pathCategory}
-                  subcat={getSubcat(elm)}
-                  priority={i < 4}
-                />
+        {/* Skeleton — shown while products data hasn't arrived (null) */}
+        {products === null && !subCategories ? (
+          <div className="pc-grid" role="list" aria-busy="true" aria-label="Loading products">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="pc-grid" role="list" aria-label="Products">
+            {displayed.length === 0 ? (
+              <div className="pc-empty" role="status">
+                <p className="pc-empty__title">
+                  {locale === "ar" ? "لا توجد منتجات تطابق التصفية" : "No products match your filters"}
+                </p>
+                <p className="pc-empty__sub">
+                  {locale === "ar" ? "جرّب تعديل أو مسح التصفيات" : "Try adjusting or clearing your selection."}
+                </p>
+                {activeFilters > 0 && (
+                  <button className="pc-empty__reset" onClick={clearFilters}>
+                    {locale === "ar" ? "مسح التصفيات" : "Clear filters"}
+                  </button>
+                )}
               </div>
-            ))
-          )}
-        </div>
+            ) : (
+              displayed.map((elm, i) => (
+                <div key={elm.product_id ?? i} role="listitem">
+                  <PremiumProductCard
+                    elm={elm}
+                    category={pathCategory}
+                    subcat={getSubcat(elm)}
+                    priority={i < 4}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
+
+      <style>{`
+        @keyframes pc-shimmer {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.45; }
+        }
+      `}</style>
 
     </div>
   );

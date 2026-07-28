@@ -51,10 +51,10 @@ function isDiscountActive(discount) {
 }
 
 /** Dispatch global toast event — does NOT open cart drawer */
-function fireToast(name, image) {
+function fireToast(name, image, qty) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(
-    new CustomEvent("cart:added", { detail: { name, image } })
+    new CustomEvent("cart:added", { detail: { name, image, qty: qty ?? 1 } })
   );
 }
 
@@ -166,7 +166,7 @@ export default function PremiumProductCard({
             : p
         );
         setCartProducts(updatedCart);
-        fireToast(displayName, img1);
+        fireToast(displayName, img1, Math.min((cartProducts.find(p => p.product_id === elm.product_id)?.quantity || 1) + qty, maxQty));
         setQty(1); // reset local qty after adding
         return;
       }
@@ -179,7 +179,7 @@ export default function PremiumProductCard({
         subcategory_name: capitalizeEachWord(subcat.split("-").join(" ")),
         quantity: qty,
       });
-      fireToast(displayName, img1);
+      fireToast(displayName, img1, qty);
       setQty(1);
     },
     [
@@ -315,52 +315,63 @@ export default function PremiumProductCard({
       <div className="pc-card__actions">
         {!isOOS ? (
           <>
-            {/* Qty stepper */}
-            <div className="pc-qty" role="group" aria-label={`Quantity for ${displayName}`}>
-              <button
-                className="pc-qty__btn"
-                onClick={handleQtyDown}
-                disabled={qty <= 1}
-                aria-label="Decrease quantity"
-                type="button"
-              >
-                −
-              </button>
-              <span className="pc-qty__num" aria-label={`Quantity: ${qty}`}>
-                {qty}
-              </span>
-              <button
-                className="pc-qty__btn"
-                onClick={handleQtyUp}
-                disabled={qty >= maxQty}
-                aria-label="Increase quantity"
-                type="button"
-              >
-                +
-              </button>
-            </div>
-
-            {/* ATC button — always active (shows "Add More" when already in cart) */}
-            <div className="pc-atc-row">
-              <button
-                className={`pc-atc${alreadyInCart ? " pc-atc--readd" : ""}`}
-                onClick={handleAddToCart}
-                aria-label={`${alreadyInCart ? "Add more" : t("Add To Cart")} — ${displayName}`}
-                type="button"
-              >
-                {alreadyInCart ? (
-                  <>
-                    <PlusIcon />
-                    Add More
-                  </>
-                ) : (
-                  <>
-                    <CartIcon />
-                    {t("Add To Cart")}
-                  </>
-                )}
-              </button>
-            </div>
+            {alreadyInCart ? (
+              /* ── In cart: qty stepper updates cart qty directly ── */
+              <div className="pc-qty" role="group" aria-label={`Quantity for ${displayName}`}>
+                <button
+                  className="pc-qty__btn"
+                  type="button"
+                  aria-label="Decrease quantity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const cur = cartProducts.find(p => p.product_id === elm.product_id)?.quantity ?? 1;
+                    if (cur <= 1) {
+                      setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id));
+                    } else {
+                      setCartProducts(cartProducts.map(p =>
+                        p.product_id === elm.product_id ? { ...p, quantity: cur - 1 } : p
+                      ));
+                    }
+                  }}
+                >
+                  −
+                </button>
+                <span className="pc-qty__num">
+                  {cartProducts.find(p => p.product_id === elm.product_id)?.quantity ?? 1}
+                </span>
+                <button
+                  className="pc-qty__btn"
+                  type="button"
+                  aria-label="Increase quantity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const cur = cartProducts.find(p => p.product_id === elm.product_id)?.quantity ?? 1;
+                    if (cur < maxQty) {
+                      const newQty = cur + 1;
+                      setCartProducts(cartProducts.map(p =>
+                        p.product_id === elm.product_id ? { ...p, quantity: newQty } : p
+                      ));
+                      fireToast(displayName, img1, newQty);
+                    }
+                  }}
+                >
+                  +
+                </button>
+              </div>
+            ) : (
+              /* ── Not in cart: show Add to Cart button only ── */
+              <div className="pc-atc-row">
+                <button
+                  className="pc-atc"
+                  onClick={handleAddToCart}
+                  aria-label={`${t("Add To Cart")} — ${displayName}`}
+                  type="button"
+                >
+                  <CartIcon />
+                  {t("Add To Cart")}
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <div className="pc-atc-row">
