@@ -31,9 +31,10 @@ import { useLocale } from "next-intl";
 import he from "he";
 
 /* ── Session / Storage keys ─────────────────────────────────── */
-const SESSION_KEY  = "ymal_shown";          // sessionStorage — clears each tab/session
-const STORAGE_KEY  = "ahmed_last_cart_item"; // localStorage  — anchor product info
-const DISMISS_KEY  = "ymal_dismissed";       // sessionStorage — "don't remind me" for this browser session
+const SESSION_KEY   = "ymal_shown";          // sessionStorage — clears each tab/session
+const STORAGE_KEY   = "ahmed_last_cart_item"; // localStorage  — anchor product info
+const DISMISS_KEY   = "ymal_dismissed";       // sessionStorage — "don't remind me again" (full session block)
+const COOLDOWN_KEY  = "ymal_cooldown_until"; // sessionStorage — X-button soft close (timestamp)
 
 /* ── Helpers ────────────────────────────────────────────────── */
 const slugify = (str) =>
@@ -340,8 +341,12 @@ export default function YouMayAlsoLike() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (sessionStorage.getItem(SESSION_KEY)) return;
+    // Tier 3: permanent session dismiss
     if (sessionStorage.getItem(DISMISS_KEY)) return;
+    // Tier 2: X-button cooldown (30 min)
+    const coolUntil = Number(sessionStorage.getItem(COOLDOWN_KEY) || 0);
+    if (coolUntil && Date.now() < coolUntil) return;
+    // SESSION_KEY is NOT checked here — outside-click clears it, so refresh re-triggers
     setCanShow(true);
   }, []);
 
@@ -432,33 +437,58 @@ export default function YouMayAlsoLike() {
   /* ── Keyboard / body scroll lock ────────────────────────────── */
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    // Escape = intentional soft close (same as X button → 30-min cooldown)
+    const onKey = (e) => { if (e.key === "Escape") closeX(); };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
-   * X button / Escape / backdrop click → session close only.
-   * Popup re-fires next session (or immediately when user adds new product).
+   * TIER 1 — Outside (overlay) click — ACCIDENTAL dismiss.
+   * Clears SESSION_KEY so the popup re-fires on next page load / refresh.
+   * Does NOT set any cooldown — zero penalty.
    */
-  const close = useCallback(() => setOpen(false), []);
+  const closeAccidental = useCallback(() => {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+    setOpen(false);
+  }, []);
 
   /**
-   * Footer "Close" button — also saves 7-day dismiss if checkbox ticked.
+   * TIER 2 — X button / Escape — INTENTIONAL soft close.
+   * Sets a 30-minute cooldown in sessionStorage (session-scoped, auto-clears on tab close).
+   * Popup will re-appear after 30 min or in a new tab.
+   */
+  const closeX = useCallback(() => {
+    try {
+      const thirtyMin = Date.now() + 30 * 60 * 1000;
+      sessionStorage.setItem(COOLDOWN_KEY, String(thirtyMin));
+    } catch { /* ignore */ }
+    setOpen(false);
+  }, []);
+
+  /**
+   * TIER 3 — Footer "Don't remind me again" — PERMANENT session dismiss.
+   * Blocks popup for the entire browser session (clears when browser/tab closes).
    */
   const closeDismissed = useCallback(() => {
     if (dontShow) {
-      // Store in sessionStorage — clears automatically when browser/tab closes
       try { sessionStorage.setItem(DISMISS_KEY, "1"); } catch { /* ignore */ }
+    } else {
+      // Checkbox not ticked — treat footer close like X (soft 30-min cooldown)
+      try {
+        const thirtyMin = Date.now() + 30 * 60 * 1000;
+        sessionStorage.setItem(COOLDOWN_KEY, String(thirtyMin));
+      } catch { /* ignore */ }
     }
     setOpen(false);
   }, [dontShow]);
 
-  const onOverlay = useCallback((e) => { if (e.target === overlayRef.current) close(); }, [close]);
+  /** Overlay backdrop → accidental dismiss (Tier 1) */
+  const onOverlay = useCallback((e) => { if (e.target === overlayRef.current) closeAccidental(); }, [closeAccidental]);
 
   /* ── Price renderer ─────────────────────────────────────────── */
   const renderPrice = (elm) => {
@@ -609,7 +639,7 @@ export default function YouMayAlsoLike() {
             </div>
             <button
               className="ymal-close"
-              onClick={close}
+              onClick={closeX}
               aria-label="Close recommendations"
               type="button"
             >
