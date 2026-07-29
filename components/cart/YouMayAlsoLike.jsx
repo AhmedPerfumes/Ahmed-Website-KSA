@@ -496,10 +496,14 @@ export default function YouMayAlsoLike() {
       if (!cancelled) {
         setRelated(relatedProds);
         setBestSell(best);
-        setLoading(false);
         if (relatedProds.length > 0 || best.length > 0) {
           sessionStorage.setItem(SESSION_KEY, "1");
-          setTimeout(() => setOpen(true), 200); // faster trigger
+          // Batch setLoading + setOpen in the same render — no setTimeout gap
+          // that would cause !open && !loading = true and unmount the component.
+          setLoading(false);
+          setOpen(true);
+        } else {
+          setLoading(false);
         }
       }
     })();
@@ -700,6 +704,9 @@ export default function YouMayAlsoLike() {
   };
 
 
+  // Only skip rendering if the feature was never triggered (canShow=false).
+  // Keep in DOM while loading so the open animation fires without unmount-gap.
+  if (!canShow) return null;
   if (!open && !loading) return null;
 
   return (
