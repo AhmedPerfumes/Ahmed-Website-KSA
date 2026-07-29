@@ -56,7 +56,17 @@ const headerStyles = `
         pointer-events: none;
     }
     .search-minimal {
-        margin-left: auto; /* pushes it to the right side */
+        margin-left: auto; /* LTR: pushes search to the right side */
+    }
+    /* ── RTL fix: in RTL flex, margin-left:auto pulls search away from
+       the icon group and parks it right against the logo. Flip to
+       flex-start (= visual RIGHT in RTL) so all icons pack near the logo,
+       with free space on the left edge — mirroring the English layout. ── */
+    [dir="rtl"] .header-tools {
+        justify-content: flex-start !important;
+    }
+    [dir="rtl"] .search-minimal {
+        margin-left: 0 !important;
     }
     .search-minimal form {
         width: 220px; /* adjust width as needed */
