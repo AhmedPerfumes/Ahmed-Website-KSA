@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
 import { fetchBestSelling } from "@/utlis/productsCache";
@@ -472,21 +473,30 @@ export default function YouMayAlsoLike() {
   }, []);
 
   /**
-   * TIER 3 — Footer "Don't remind me again" — PERMANENT session dismiss.
-   * Blocks popup for the entire browser session (clears when browser/tab closes).
+   * TIER 3 — Footer button.
+   *
+   * Checkbox NOT ticked → "Continue Shopping":
+   *   Navigates to the shop page so the user can browse & add more.
+   *   Clears SESSION_KEY so the popup re-fires when they return to cart.
+   *   Zero cooldown written — popup does its job again on next cart visit.
+   *
+   * Checkbox ticked → "Got it, Close":
+   *   Full session dismiss — the ONLY way to silence the popup for the session.
+   *   Stays on the current page.
    */
+  const router = useRouter();
   const closeDismissed = useCallback(() => {
     if (dontShow) {
+      // Full session block
       try { sessionStorage.setItem(DISMISS_KEY, "1"); } catch { /* ignore */ }
+      setOpen(false);
     } else {
-      // Checkbox not ticked — treat footer close like X (soft 30-min cooldown)
-      try {
-        const thirtyMin = Date.now() + 30 * 60 * 1000;
-        sessionStorage.setItem(COOLDOWN_KEY, String(thirtyMin));
-      } catch { /* ignore */ }
+      // Navigate to shop — clear shown flag so popup returns when user comes back
+      try { sessionStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+      setOpen(false);
+      router.push(`/${locale}/shop`);
     }
-    setOpen(false);
-  }, [dontShow]);
+  }, [dontShow, router, locale]);
 
   /**
    * Track where the drag STARTED.
@@ -743,7 +753,7 @@ export default function YouMayAlsoLike() {
                 type="button"
                 className="ymal-footer-close"
                 onClick={closeDismissed}
-                aria-label={dontShow ? "Close and skip recommendations for 7 days" : "Close recommendations"}
+                aria-label={dontShow ? "Close and stop showing recommendations this session" : "Continue shopping — go to the shop page"}
               >
                 {dontShow ? "Got it, Close" : "Continue Shopping"}
               </button>
