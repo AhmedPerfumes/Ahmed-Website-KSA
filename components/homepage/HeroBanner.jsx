@@ -76,7 +76,7 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
         sw.navigation.destroy();
         sw.navigation.init();
         sw.navigation.update();
-    }, [swiperRef.current]); // eslint-disable-line
+    }, []); // run once after mount — swiperRef.current is mutable, using it as dep causes infinite loop
 
     /* ── Slide resolution ──
      *
