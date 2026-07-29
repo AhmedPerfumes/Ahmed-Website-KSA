@@ -12,25 +12,25 @@ import "./NewArrivals.css";
 /* ── Static editorial new arrival cards ── */
 const NEW_ARRIVAL_ITEMS = [
     {
-        id: "ignite-rose",
-        label: "Floral Oriental",
-        name: "Ignite Rose",
-        img: "/assets/images/home/demo8/ignite-rose-bnr.jpg",
-        link: "/shop/perfumes/extrait-de-parfum/ignite-rose",
+        id: "the-roots",
+        label: "K-Series · 2000",
+        name: "The Roots",
+        img: "/assets/images/kseries/PAST_Bottle_Final.jpg",
+        link: "/k-series/2000",
     },
     {
-        id: "khususi",
-        label: "Oriental Collection",
-        name: "Khususi",
-        img: "/assets/images/home/demo8/Khususi-banner.jpg",
-        link: "/shop/perfumes/extrait-de-parfum/khususi",
+        id: "the-alchemy-lab",
+        label: "K-Series · 2025",
+        name: "The Alchemy Lab",
+        img: "/assets/images/kseries/Present_2025.jpg",
+        link: "/k-series/2025",
     },
     {
-        id: "laathani",
-        label: "Arabic Heritage",
-        name: "Laathani",
-        img: "/assets/images/home/demo8/Laathani-Banner.jpg",
-        link: "/shop/perfumes/extrait-de-parfum/laathani",
+        id: "the-beyond",
+        label: "K-Series · 2050",
+        name: "The Beyond",
+        img: "/assets/images/kseries/FUTURE_mobile_1.jpg",
+        link: "/k-series/2050",
     },
 ];
 
