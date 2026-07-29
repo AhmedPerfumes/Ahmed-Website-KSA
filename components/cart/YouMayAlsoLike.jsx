@@ -202,7 +202,7 @@ const STYLES = `
 }
 .ymal-card__name {
   font-family: 'Cormorant Garamond', 'Georgia', serif;
-  font-size: 0.92rem; font-weight: 600; color: #1a1a1a;
+  font-size: 1rem; font-weight: 600; color: #1a1a1a;
   letter-spacing: 0.02em; line-height: 1.3;
   text-decoration: none !important; display: block;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -311,81 +311,109 @@ const STYLES = `
 
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .ymal-overlay { padding: 0; align-items: flex-end; }
+  .ymal-overlay { display: flex; align-items: center; justify-content: center; padding: 1rem; }
   .ymal-modal {
-    max-width: 100%; max-height: 90svh; border-radius: 16px 16px 0 0;
-    transform: translateY(100%);
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 12px;
   }
-  .ymal-overlay.ymal-open .ymal-modal { transform: translateY(0); }
-  .ymal-header { padding: 1.1rem 1.25rem 0.85rem; }
-  .ymal-body  { padding: 1rem 1.25rem 2rem; }
-  .ymal-title { font-size: 1.2rem; }
-  .ymal-footer { padding: 0.65rem 1.25rem; flex-wrap: wrap; }
+  .ymal-header { padding: 1rem 1.1rem 0.8rem; }
+  .ymal-body  { padding: 0.9rem 1.1rem 1.5rem; }
+  .ymal-title { font-size: 1.1rem; }
+  .ymal-footer { padding: 0.6rem 1.1rem; flex-wrap: wrap; }
 }
 `;
 
 export default function YouMayAlsoLike() {
-  const { isLoading: menuLoading, currency }      = useMenu();
-  const { addProductToCart, isAddedToCartProducts } = useContextElement();
-  const locale      = useLocale();
+  const { currency } = useMenu();
+  const { cartProducts, addProductToCart, isAddedToCartProducts } = useContextElement();
+  const locale = useLocale();
 
-  const [open,        setOpen]        = useState(false);
-  const [loading,     setLoading]     = useState(true);
-  const [anchorProd,  setAnchorProd]  = useState(null);
-  const [related,     setRelated]     = useState([]);
-  const [bestSell,    setBestSell]    = useState([]);
-  const [dontShow,    setDontShow]    = useState(false); // "skip for 7 days" checkbox
-  const overlayRef = useRef(null);
+  const [open,     setOpen]     = useState(false);
+  const [loading,  setLoading]  = useState(true);
+  const [related,  setRelated]  = useState([]);
+  const [bestSell, setBestSell] = useState([]);
+  const [dontShow, setDontShow] = useState(false);
+  const [canShow,  setCanShow]  = useState(false);
+  const overlayRef  = useRef(null);
+  const fetchedRef  = useRef(false);
 
-  /* ── Step 1: Guard checks → read anchor product ────────────── */
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    // Guard 1: Already shown this browser session
     if (sessionStorage.getItem(SESSION_KEY)) return;
-
-    // Guard 2: User clicked "Don’t remind me again" — stored in sessionStorage,
-    // so it resets automatically when the browser/tab closes.
     if (sessionStorage.getItem(DISMISS_KEY)) return;
-
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return;
-    try {
-      const parsed = JSON.parse(stored);
-      if (parsed?.name) setAnchorProd(parsed);
-    } catch { /* ignore */ }
+    setCanShow(true);
   }, []);
 
-  /* ── Step 2: Fetch once anchor product is known ─────────────── */
   useEffect(() => {
-    if (!anchorProd) return;
+    if (!canShow) return;
+    if (cartProducts.length === 0) return;
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const { category = "", subcategory = "", name = "" } = anchorProd;
 
-      /* Section A — related products from API */
+      // All non-gift cart items
+      const cartItems = cartProducts.filter(p => !p.is_gift);
+      const cartIdSet = new Set(cartItems.map(p => p.product_id));
+
+      // Up to 3 unique category-subcategory combos (most-recently-added first)
+      const uniqueItems = [];
+      const seenKeys = new Set();
+      for (const p of [...cartItems].reverse()) {
+        const sub = p.subcategory_name || p.subcategory?.subcategory_name || "";
+        const key = `${p.category_name}|${sub}`;
+        if (!seenKeys.has(key)) { seenKeys.add(key); uniqueItems.push(p); }
+        if (uniqueItems.length >= 3) break;
+      }
+
+      /* ── Section A: related products — parallel fetch for each unique item ── */
       let relatedProds = [];
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            category:    category.toUpperCase(),
-            subCategory: subcategory.toUpperCase(),
-            product:     name.toUpperCase(),
-          }),
-        });
-        const d = await res.json();
-        relatedProds = Array.isArray(d?.related_prods) ? d.related_prods.slice(0, 8) : [];
+        const responses = await Promise.all(
+          uniqueItems.map(item =>
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
+              method:  "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                category:    (item.category_name || "").toUpperCase(),
+                subCategory: (item.subcategory_name || item.subcategory?.subcategory_name || "").toUpperCase(),
+                product:     (item.product_name || "").toUpperCase(),
+              }),
+            }).then(r => r.json()).catch(() => ({}))
+          )
+        );
+        const seenRelated = new Set();
+        for (const d of responses) {
+          for (const p of (Array.isArray(d?.related_prods) ? d.related_prods : [])) {
+            if (!seenRelated.has(p.product_id) && !cartIdSet.has(p.product_id)) {
+              seenRelated.add(p.product_id);
+              relatedProds.push(p);
+            }
+          }
+        }
+        relatedProds = relatedProds.slice(0, 12);
       } catch { /* ignore */ }
 
-      /* Section B — top-5 best sellers from that category */
+      /* ── Section B: best sellers from ALL cart categories ─────────────────── */
       let best = [];
       try {
-        const all = await fetchBestSelling();
-        const key = Object.keys(all).find(k => k.toUpperCase() === category.toUpperCase());
-        best = key ? (all[key] || []).slice(0, 5) : [];
+        const all        = await fetchBestSelling();
+        const uniqueCats = [...new Set(cartItems.map(p => p.category_name).filter(Boolean))];
+        const seenBest   = new Set();
+        for (const cat of uniqueCats) {
+          const key = Object.keys(all).find(k => k.toUpperCase() === cat.toUpperCase());
+          if (!key) continue;
+          for (const p of (all[key] || []).slice(0, 4)) {
+            if (!seenBest.has(p.product_id) && !cartIdSet.has(p.product_id)) {
+              seenBest.add(p.product_id);
+              best.push(p);
+            }
+          }
+        }
+        best = best.slice(0, 8);
       } catch { /* ignore */ }
 
       if (!cancelled) {
@@ -394,13 +422,12 @@ export default function YouMayAlsoLike() {
         setLoading(false);
         if (relatedProds.length > 0 || best.length > 0) {
           sessionStorage.setItem(SESSION_KEY, "1");
-          // Slight delay so the page layout settles first
-          setTimeout(() => setOpen(true), 700);
+          setTimeout(() => setOpen(true), 200); // faster trigger
         }
       }
     })();
     return () => { cancelled = true; };
-  }, [anchorProd]);
+  }, [canShow, cartProducts.length]); // re-evaluates only when cart size changes
 
   /* ── Keyboard / body scroll lock ────────────────────────────── */
   useEffect(() => {
@@ -575,7 +602,7 @@ export default function YouMayAlsoLike() {
             <div className="ymal-header-text">
               <p className="ymal-eyebrow">Curated for you</p>
               <h2 className="ymal-title">You May Also <em>Like</em></h2>
-              {anchorProd?.name && (
+              {cartProducts.length > 0 && (
                 <div className="ymal-anchor-chip" aria-label="Based on your recent choices">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -620,7 +647,7 @@ export default function YouMayAlsoLike() {
                   <section className="ymal-section" aria-labelledby="ymal-related-heading">
                     <div className="ymal-section-head">
                       <h3 id="ymal-related-heading" className="ymal-section-label">
-                        Pairs Well With {anchorProd?.name ? he.decode(anchorProd.name) : ""}
+                        Pairs Well With Your Choices
                       </h3>
                       <span className="ymal-section-line" aria-hidden="true" />
                     </div>
