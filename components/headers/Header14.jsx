@@ -348,8 +348,11 @@ export default function Header14() {
     };
 
     const handleLangChange = (e) => {
-        // console.log(pathname, e.target.value);
-        router.push(pathname, { locale: e.target.value });
+        const newLocale = e.target.value;
+        // Session cookie — no maxAge means it clears when browser closes.
+        // Next visit = no cookie = defaultLocale (Arabic). Same session = chosen locale.
+        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; SameSite=Lax`;
+        router.push(pathname, { locale: newLocale });
     };
 
     //  const pathname = usePathname();
@@ -535,18 +538,6 @@ export default function Header14() {
                                 ></button>
                             </div>
                             <div className="search-popup__results">
-                                {/* Show Loading State */}
-                                {isSearching && (
-                                    <div className="p-4 text-center">
-                                        <div
-                                            className="spinner-border spinner-border-sm text-dark me-2"
-                                            role="status"
-                                        ></div>
-                                        <span className="fs-14">
-                                            {t("Searching...")}
-                                        </span>
-                                    </div>
-                                )}
 
                                 {/* Show Results */}
                                 {!isSearching &&

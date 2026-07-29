@@ -268,12 +268,7 @@ export default function MobileHeader() {
             </div>
              {(isSearching || searchSuggestions.length > 0) && (
         <div className="mobile-search-results position-absolute start-0 top-100 w-100" style={{ zIndex: 999 }}>
-            {isSearching && (
-                <div className="p-3 text-center fs-13 text-muted">
-                    <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                    {t("Searching...")}
-                </div>
-            )}
+            {isSearching && null}
 
             {!isSearching && searchSuggestions.map((item, index) => (
                 <Link 
