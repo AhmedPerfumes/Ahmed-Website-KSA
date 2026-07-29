@@ -499,10 +499,13 @@ export default function YouMayAlsoLike() {
   };
 
   /* ── Product card ───────────────────────────────────────────── */
-  const ProductCard = ({ elm, catSlug, subcatSlug }) => {
+  const ProductCard = ({ elm }) => {
     const img    = getImg(elm);
     const name   = he.decode(elm.product_name || elm.name || "");
     const slug   = slugify(name);
+    // Derive URL slugs from the product's own category/subcategory
+    const catSlug    = slugify(elm.category_name || "");
+    const subcatSlug = slugify(elm.subcategory?.subcategory_name || elm.subcategory_name || "");
     const href   = `/${locale}/shop/${catSlug || "perfumes"}/${subcatSlug || "all"}/${slug}`;
     const inCart = isAddedToCartProducts(elm.product_id);
     const badge  = getDiscountBadge(elm);
@@ -571,13 +574,6 @@ export default function YouMayAlsoLike() {
     },
   };
 
-  /* Build slugs for Section A (related = same category/subcategory) */
-  const relatedCatSlug    = slugify(anchorProd?.category);
-  const relatedSubcatSlug = slugify(anchorProd?.subcategory);
-
-  /* Build slugs for Section B (best sellers — use product's own category) */
-  const getBestCatSlug    = (p) => slugify(p?.category_name || anchorProd?.category);
-  const getBestSubcatSlug = (p) => slugify(p?.subcategory?.subcategory_name || anchorProd?.subcategory);
 
   if (!open && !loading) return null;
 
@@ -654,7 +650,7 @@ export default function YouMayAlsoLike() {
                     <Swiper {...swiperOpts}>
                       {related.map((elm, i) => (
                         <SwiperSlide key={elm.product_id ?? i}>
-                          <ProductCard elm={elm} catSlug={relatedCatSlug} subcatSlug={relatedSubcatSlug} />
+                          <ProductCard elm={elm} />
                         </SwiperSlide>
                       ))}
                     </Swiper>
@@ -673,11 +669,7 @@ export default function YouMayAlsoLike() {
                     <Swiper {...swiperOpts}>
                       {bestSell.map((elm, i) => (
                         <SwiperSlide key={elm.product_id ?? i}>
-                          <ProductCard
-                            elm={elm}
-                            catSlug={getBestCatSlug(elm)}
-                            subcatSlug={getBestSubcatSlug(elm)}
-                          />
+                          <ProductCard elm={elm} />
                         </SwiperSlide>
                       ))}
                     </Swiper>
