@@ -55,19 +55,61 @@ const STYLES = `
 /* ─── Overlay ──────────────────────────────────────────────── */
 .ymal-overlay {
   position: fixed; inset: 0;
-  background: rgba(15, 12, 8, 0.52);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(15, 12, 8, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
   z-index: 9950;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.38s ease, background 0.38s ease,
+              backdrop-filter 0.38s ease, -webkit-backdrop-filter 0.38s ease;
 }
 .ymal-overlay.ymal-open {
   opacity: 1; pointer-events: auto;
+  background: rgba(15, 12, 8, 0.54);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────── */
+
+/* Spring entrance: shoots up, slightly overshoots, settles */
+@keyframes ymal-spring-in {
+  0%   { opacity: 0; transform: scale(0.84) translateY(48px); }
+  55%  { opacity: 1; transform: scale(1.03) translateY(-6px); }
+  78%  { transform: scale(0.98) translateY(3px); }
+  100% { transform: scale(1)   translateY(0); }
+}
+
+/* Subtle golden glow that pulses once on open */
+@keyframes ymal-glow-pulse {
+  0%   { box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08),
+                     0 0 0 0   rgba(166,123,48,0); }
+  40%  { box-shadow: 0 32px 90px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.10),
+                     0 0 0 8px rgba(166,123,48,0.20); }
+  100% { box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08),
+                     0 0 0 0   rgba(166,123,48,0); }
+}
+
+/* Smooth exit */
+@keyframes ymal-spring-out {
+  0%   { opacity: 1; transform: scale(1)    translateY(0); }
+  100% { opacity: 0; transform: scale(0.92) translateY(20px); }
+}
+
+/* Generic fade-up for child elements */
+@keyframes ymal-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header slides down */
+@keyframes ymal-fade-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ─── Modal card ─────────────────────────────────────────────── */
@@ -81,12 +123,40 @@ const STYLES = `
   overflow: hidden;
   display: flex; flex-direction: column;
   box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
-  transform: scale(0.94) translateY(12px);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Default (closed) state — hidden below */
+  opacity: 0;
+  transform: scale(0.84) translateY(48px);
+  transition: none;
 }
 .ymal-overlay.ymal-open .ymal-modal {
-  transform: scale(1) translateY(0);
+  /* Spring entrance + one-shot glow pulse */
+  animation:
+    ymal-spring-in  0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    ymal-glow-pulse 1.5s 0.45s ease-out forwards;
 }
+/* Staggered child reveals once modal is open */
+.ymal-overlay.ymal-open .ymal-header {
+  animation: ymal-fade-down 0.42s 0.18s ease both;
+}
+.ymal-overlay.ymal-open .ymal-body {
+  animation: ymal-fade-up 0.42s 0.26s ease both;
+}
+.ymal-overlay.ymal-open .ymal-section:nth-child(1) {
+  animation: ymal-fade-up 0.4s 0.3s ease both;
+}
+.ymal-overlay.ymal-open .ymal-section:nth-child(2) {
+  animation: ymal-fade-up 0.4s 0.4s ease both;
+}
+.ymal-overlay.ymal-open .ymal-footer {
+  animation: ymal-fade-up 0.38s 0.48s ease both;
+}
+/* Product card stagger (first 6 visible slides) */
+.ymal-overlay.ymal-open .swiper-slide:nth-child(1) .ymal-card { animation: ymal-fade-up 0.35s 0.32s ease both; }
+.ymal-overlay.ymal-open .swiper-slide:nth-child(2) .ymal-card { animation: ymal-fade-up 0.35s 0.40s ease both; }
+.ymal-overlay.ymal-open .swiper-slide:nth-child(3) .ymal-card { animation: ymal-fade-up 0.35s 0.48s ease both; }
+.ymal-overlay.ymal-open .swiper-slide:nth-child(4) .ymal-card { animation: ymal-fade-up 0.35s 0.56s ease both; }
+.ymal-overlay.ymal-open .swiper-slide:nth-child(5) .ymal-card { animation: ymal-fade-up 0.35s 0.62s ease both; }
+.ymal-overlay.ymal-open .swiper-slide:nth-child(6) .ymal-card { animation: ymal-fade-up 0.35s 0.68s ease both; }
 
 /* ─── Header ────────────────────────────────────────────────── */
 .ymal-header {
@@ -270,9 +340,9 @@ const STYLES = `
 .ymal-skeleton-card {
   background: #f5f0e8; border-radius: 4px;
   overflow: hidden; height: 280px;
-  animation: ymal-shimmer 1.5s ease-in-out infinite;
+  animation: ymal-skel-pulse 1.5s ease-in-out infinite;
 }
-@keyframes ymal-shimmer {
+@keyframes ymal-skel-pulse {
   0%, 100% { opacity: 0.5; }
   50%       { opacity: 1; }
 }
