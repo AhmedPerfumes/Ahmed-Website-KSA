@@ -15,13 +15,13 @@ import "./HeroBanner.css";
 /**
  * HeroBanner — FK-style luxury panoramic strip.
  *
- * LCP strategy:
- * - `initialSliders` is server-fetched (passed from home-8/page.jsx Server Component)
- * - We render the hero IMMEDIATELY using server data — no skeleton delay
- * - When MenuContext finishes its client-side fetch, we seamlessly update to the
- *   freshest slider data (without any visible jump)
- * - Result: the first hero <Image priority> is in SSR HTML → browser sees
- *   <link rel="preload"> and starts downloading before any JS runs
+ * Infinite-loop fix:
+ * - Previously: setProgress(pct) fired at 60 fps via RAF → 60 React re-renders/s
+ *   → new onSwiper/onSlideChange arrow-function refs on every render
+ *   → Swiper detected ref changes and re-fired callbacks
+ *   → animateProgress() called again → new RAF loop → exponential explosion.
+ * - Fix 1: progress bar drives the DOM directly via ref (zero setState, zero re-renders).
+ * - Fix 2: onSwiper / onSlideChange wrapped in useCallback → stable references.
  */
 export default function HeroBanner({ initialSliders = [], initialMobileSliders = [] }) {
     const locale = useLocale();
@@ -30,13 +30,13 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
 
     const [isMobile, setIsMobile] = useState(false);
     const [activeIdx, setActiveIdx] = useState(0);
-    const [progress, setProgress] = useState(0);
 
-    const swiperRef = useRef(null);
-    const prevRef   = useRef(null);
-    const nextRef   = useRef(null);
-    const rafRef    = useRef(null);
-    const startRef  = useRef(null);
+    const swiperRef      = useRef(null);
+    const prevRef        = useRef(null);
+    const nextRef        = useRef(null);
+    const rafRef         = useRef(null);
+    const startRef       = useRef(null);
+    const progressBarRef = useRef(null); // direct DOM update — avoids re-renders
 
     const DELAY = 6000; // ms per slide
 
@@ -48,26 +48,29 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
         return () => window.removeEventListener("resize", check);
     }, []);
 
-    /* ── Progress bar — skipped on mobile (counter is hidden; saves ~375 setState/s of TBT) ── */
+    /* ── Progress bar — direct DOM mutation, no setState ── */
     const animateProgress = useCallback(() => {
         if (typeof window !== "undefined" && window.innerWidth < 768) {
-            setProgress(0);
+            if (progressBarRef.current) progressBarRef.current.style.width = "0%";
             return;
         }
         cancelAnimationFrame(rafRef.current);
         startRef.current = performance.now();
         const tick = (now) => {
             const elapsed = now - startRef.current;
-            const pct = Math.min((elapsed / DELAY) * 100, 100);
-            setProgress(pct);
+            const pct     = Math.min((elapsed / DELAY) * 100, 100);
+            if (progressBarRef.current) {
+                progressBarRef.current.style.width = `${pct}%`;
+            }
             if (pct < 100) rafRef.current = requestAnimationFrame(tick);
         };
         rafRef.current = requestAnimationFrame(tick);
-    }, []);
+    }, []); // stable — no deps
 
+    /* cleanup RAF on unmount */
     useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
-    /* ── Nav wiring ── */
+    /* ── Nav wiring — run once after mount ── */
     useEffect(() => {
         const sw = swiperRef.current?.swiper;
         if (!sw || !prevRef.current || !nextRef.current) return;
@@ -76,33 +79,45 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
         sw.navigation.destroy();
         sw.navigation.init();
         sw.navigation.update();
-    }, []); // run once after mount — swiperRef.current is mutable, using it as dep causes infinite loop
+    }, []); // [] — swiperRef.current is mutable; using it as dep causes infinite loop
+
+    /* ── Stable Swiper callbacks — wrapped in useCallback so references
+         don't change on re-render (prevents Swiper from re-firing them) ── */
+    const handleSwiper = useCallback((sw) => {
+        animateProgress();
+        if (prevRef.current && nextRef.current) {
+            sw.params.navigation.prevEl = prevRef.current;
+            sw.params.navigation.nextEl = nextRef.current;
+            sw.navigation.destroy();
+            sw.navigation.init();
+            sw.navigation.update();
+        }
+    }, [animateProgress]);
+
+    const handleSlideChange = useCallback((sw) => {
+        const idx = sw.realIndex ?? 0;
+        setActiveIdx(idx);
+        animateProgress();
+    }, [animateProgress]);
 
     /* ── Slide resolution ──
-     *
-     * Priority:  MenuContext (freshest live data)
+     * Priority: MenuContext (freshest live data)
      *         → initialSliders prop (server-fetched, instant)
      *         → skeleton (fallback if server fetch also failed)
-     *
-     * This means: on first render we use server data immediately (no skeleton!).
-     * After MenuContext resolves we switch to its data silently.
      */
     let slides;
     if (!isMenuLoading && (homeSliders?.length || homeMobileSliders?.length)) {
-        // MenuContext has loaded — use its (freshest) data
         slides = (isMobile && homeMobileSliders?.length) ? homeMobileSliders : homeSliders;
     } else if (initialSliders.length > 0 || initialMobileSliders.length > 0) {
-        // Server-provided data — use immediately without waiting for MenuContext
         slides = (isMobile && initialMobileSliders.length > 0) ? initialMobileSliders : initialSliders;
     } else {
-        // Neither server data nor MenuContext ready yet — show skeleton
         slides = null;
     }
 
     const total = slides?.length || 0;
     const pad   = (n) => String(n).padStart(2, "0");
 
-    /* ── Skeleton: only shown when BOTH server fetch AND client fetch are unavailable ── */
+    /* ── Skeleton ── */
     if (!slides || !slides.length) {
         return (
             <div className="hero-skeleton" role="status" aria-label="Loading">
@@ -131,43 +146,24 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
                     effect="fade"
                     fadeEffect={{ crossFade: true }}
                     navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-                    onSlideChange={(sw) => {
-                        const idx = sw.realIndex ?? 0;
-                        setActiveIdx(idx);
-                        animateProgress();
-                    }}
-                    onSwiper={(sw) => {
-                        animateProgress();
-                        if (prevRef.current && nextRef.current) {
-                            sw.params.navigation.prevEl = prevRef.current;
-                            sw.params.navigation.nextEl = nextRef.current;
-                            sw.navigation.destroy();
-                            sw.navigation.init();
-                            sw.navigation.update();
-                        }
-                    }}
+                    onSlideChange={handleSlideChange}
+                    onSwiper={handleSwiper}
                     className="hero-swiper"
                 >
                     {slides.map((slide, index) => {
-                        const isFirst   = index === 0;
-                        // With Swiper fade, slides 0-2 are ALL stacked in the DOM as
-                        // position:absolute full-viewport images. The browser considers
-                        // ALL of them LCP candidates. Using loading=lazy + fetchPriority=low
-                        // on slides 1-2 was causing Lighthouse to flag them as lazy-loaded
-                        // LCP elements. Fix: first 3 slides are eager, rest are lazy.
+                        const isFirst     = index === 0;
                         const isAboveFold = index < 3;
-                        const imgSrc    = `${process.env.NEXT_PUBLIC_API_URL}storage/${slide.image}`;
-                        const hasSeason = Boolean(slide.season);
-                        const hasTitle  = Boolean(slide.title);
-                        const hasSub    = Boolean(slide.sub_title);
-                        const hasLink   = Boolean(slide.link);
-                        const hasText   = hasSeason || hasTitle || hasSub;
-                        const HeadTag   = isFirst && hasTitle ? "h1" : "h2";
+                        const imgSrc      = `${process.env.NEXT_PUBLIC_API_URL}storage/${slide.image}`;
+                        const hasSeason   = Boolean(slide.season);
+                        const hasTitle    = Boolean(slide.title);
+                        const hasSub      = Boolean(slide.sub_title);
+                        const hasLink     = Boolean(slide.link);
+                        const hasText     = hasSeason || hasTitle || hasSub;
+                        const HeadTag     = isFirst && hasTitle ? "h1" : "h2";
 
                         return (
                             <SwiperSlide key={index}>
 
-                                {/* ── Background Image ── */}
                                 <div className="hero-slide__image-wrapper">
                                     {hasLink && !hasText ? (
                                         <Link href={`/${locale}/${slide.link}`} className="hero-slide__image-link">
@@ -254,8 +250,9 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
 
                 <div className="hero-progress-wrap" aria-hidden="true">
                     <div
+                        ref={progressBarRef}
                         className="hero-progress-bar"
-                        style={{ width: `${progress}%`, transition: progress === 0 ? "none" : "width 0.1s linear" }}
+                        style={{ width: "0%", transition: "none" }}
                     />
                 </div>
 
