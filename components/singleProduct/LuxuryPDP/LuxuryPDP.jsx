@@ -188,15 +188,15 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
                   <ProductAccordion product={product} hideFragranceProfile={!!(product?.top_note || product?.heart_note || product?.base_note)} />
                 </Suspense>
               </div>
+
+              {/* You May Also Like — compact panel below accordion */}
+              <Suspense fallback={null}>
+                <ItemFamilySlider product={product} itemFamilyProds={product?.item_family} />
+              </Suspense>
             </div>
           </div>
         </div>
       </section>
-
-      {/* ── You May Also Like — full-width below hero ── */}
-      <Suspense fallback={null}>
-        <ItemFamilySlider product={product} itemFamilyProds={product?.item_family} />
-      </Suspense>
 
 
       {/* ── Section 6: Fragrance Breakdown (above trust pillars for better flow) ── */}
