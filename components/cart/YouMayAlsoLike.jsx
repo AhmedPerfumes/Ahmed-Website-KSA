@@ -33,8 +33,7 @@ import he from "he";
 /* ── Session / Storage keys ─────────────────────────────────── */
 const SESSION_KEY  = "ymal_shown";          // sessionStorage — clears each tab/session
 const STORAGE_KEY  = "ahmed_last_cart_item"; // localStorage  — anchor product info
-const DISMISS_KEY  = "ymal_dismissed_at";    // localStorage  — timestamp of 7-day dismiss
-const DISMISS_TTL  = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+const DISMISS_KEY  = "ymal_dismissed";       // sessionStorage — "don't remind me" for this browser session
 
 /* ── Helpers ────────────────────────────────────────────────── */
 const slugify = (str) =>
@@ -345,12 +344,9 @@ export default function YouMayAlsoLike() {
     // Guard 1: Already shown this browser session
     if (sessionStorage.getItem(SESSION_KEY)) return;
 
-    // Guard 2: User chose "skip for 7 days" and cooldown not expired
-    const dismissedAt = parseInt(localStorage.getItem(DISMISS_KEY) || "0", 10);
-    if (dismissedAt) {
-      if (Date.now() - dismissedAt < DISMISS_TTL) return; // still within 7-day window
-      localStorage.removeItem(DISMISS_KEY); // expired → clean up
-    }
+    // Guard 2: User clicked "Don’t remind me again" — stored in sessionStorage,
+    // so it resets automatically when the browser/tab closes.
+    if (sessionStorage.getItem(DISMISS_KEY)) return;
 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return;
@@ -429,7 +425,8 @@ export default function YouMayAlsoLike() {
    */
   const closeDismissed = useCallback(() => {
     if (dontShow) {
-      try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch { /* ignore */ }
+      // Store in sessionStorage — clears automatically when browser/tab closes
+      try { sessionStorage.setItem(DISMISS_KEY, "1"); } catch { /* ignore */ }
     }
     setOpen(false);
   }, [dontShow]);
@@ -579,11 +576,11 @@ export default function YouMayAlsoLike() {
               <p className="ymal-eyebrow">Curated for you</p>
               <h2 className="ymal-title">You May Also <em>Like</em></h2>
               {anchorProd?.name && (
-                <div className="ymal-anchor-chip" aria-label={`Based on ${he.decode(anchorProd.name)}`}>
+                <div className="ymal-anchor-chip" aria-label="Based on your recent choices">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
-                  Based on: {he.decode(anchorProd.name)}
+                  Based on Your Choices
                 </div>
               )}
             </div>
@@ -642,7 +639,7 @@ export default function YouMayAlsoLike() {
                   <section className="ymal-section" aria-labelledby="ymal-bestsell-heading">
                     <div className="ymal-section-head">
                       <h3 id="ymal-bestsell-heading" className="ymal-section-label">
-                        Best Sellers in {anchorProd?.category || "Perfumes"}
+                        Best Sellers
                       </h3>
                       <span className="ymal-section-line" aria-hidden="true" />
                     </div>
@@ -675,7 +672,7 @@ export default function YouMayAlsoLike() {
                   checked={dontShow}
                   onChange={(e) => setDontShow(e.target.checked)}
                 />
-                <span>Skip recommendations for 7 days</span>
+                <span>Don’t remind me again</span>
               </label>
               <button
                 type="button"
