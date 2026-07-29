@@ -173,7 +173,7 @@ export default function HeroBanner({ initialSliders = [], initialMobileSliders =
                                                 fill sizes="100vw"
                                                 priority={isFirst}
                                                 loading={isAboveFold ? "eager" : "lazy"}
-                                                quality={75}
+                                                quality={90}
                                                 style={{ objectFit: "cover", objectPosition: "center" }}
                                             />
                                         </Link>

@@ -9,9 +9,11 @@ import Context from "@/context/Context";
 import { MenuProvider } from "@/context/MenuContext";
 import { UserProvider } from "@/context/UserContext";
 import CartDrawer from "@/components/shopCartandCheckout/CartDrawer";
+import CartToast from "@/components/shoplist/premium/CartToast";
 import SiteMap from "@/components/modals/SiteMap";
 import NewsLetter from "@/components/modals/NewsLetter";
 import MobileHeader from "@/components/headers/MobileHeader";
+import Header14 from "@/components/headers/Header14";
 import SizeGuide from "@/components/modals/SizeGuide";
 import Delivery from "@/components/modals/Delivery";
 import CustomerLogin from "@/components/asides/CustomerLogin";
@@ -102,10 +104,18 @@ export async function generateMetadata({ params: { locale } }) {
 // Import English font — adjustFontFallback calculates size-adjust/ascent-override
 // automatically to minimize layout shift when the custom font swaps in.
 const englishFont = localFont({
-    src: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.ttf",
+    src: [
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.woff2",      weight: "400", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayLight.woff2",         weight: "300", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayMedium.woff2",        weight: "500", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplaySemiBold.woff2",      weight: "600", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayBold.woff2",          weight: "700", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayItalic.woff2",        weight: "400", style: "italic" },
+    ],
     display: "swap",
     adjustFontFallback: true,
     preload: true,
+    variable: "--font-wulkan",
 });
 
 // Import Arabic font
@@ -114,6 +124,7 @@ const arabicFont = localFont({
     display: "swap",
     adjustFontFallback: true,
     preload: false, // only preloaded for ar locale
+    variable: "--font-alexandria",
 });
 
 // sofiaFont (Kanit-Regular.ttf) REMOVED — it was only used for locale="secondary"
@@ -209,6 +220,26 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                 `}
             </Script>
 
+            {/* Last-cart-item tracker — for YouMayAlsoLike popup */}
+            <Script id="last-cart-item-tracker" strategy="lazyOnload">
+                {`
+                    window.addEventListener('cart:added', function(e){
+                        try {
+                            var d = e.detail || {};
+                            if (d.name) {
+                                var existing = JSON.parse(localStorage.getItem('ahmed_last_cart_item') || '{}');
+                                localStorage.setItem('ahmed_last_cart_item', JSON.stringify({
+                                    name: d.name,
+                                    category: d.category || existing.category || '',
+                                    subcategory: d.subcategory || existing.subcategory || '',
+                                    image: d.image || existing.image || ''
+                                }));
+                            }
+                        } catch(err){}
+                    });
+                `}
+            </Script>
+
             {/* TikTok pixel — lazyOnload */}
             <Script id="tiktok-pixel" strategy="lazyOnload">
                 {`
@@ -233,11 +264,13 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                         if(eventObj && eventObj.event){
                         const ecommerce = eventObj.ecommerce || {};
                         const items = ecommerce.items || [];
+                        const lastItem = items[items.length - 1] || {};
                         switch(eventObj.event){
                             case "view_item":
                             window.ttq?.track("ViewContent", { contents: items.map(i => ({ content_id: i.item_id, content_type: "product", content_name: i.item_name })), value: ecommerce.value, currency: ecommerce.currency }); break;
                             case "add_to_cart":
-                            window.ttq?.track("AddToCart", { contents: items.map(i => ({ content_id: i.item_id, content_type: "product", content_name: i.item_name })), value: ecommerce.value, currency: ecommerce.currency }); break;
+                            case "cart:added":
+                            window.ttq?.track("AddToCart", { contents: items.map(i => ({ content_id: i.item_id, content_type: "product", content_name: i.item_name })), value: ecommerce.value, currency: ecommerce.currency, content_name: lastItem.item_name, content_id: lastItem.item_id }); break;
                             case "begin_checkout":
                             window.ttq?.track("InitiateCheckout", { contents: items.map(i => ({ content_id: i.item_id, content_type: "product", content_name: i.item_name })), value: ecommerce.value, currency: ecommerce.currency }); break;
                             case "add_payment_info":
@@ -287,7 +320,8 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                         const it = ec.items || [];
                         switch(ev.event){
                         case "view_item":    window.snaptr && snaptr('track','VIEW_CONTENT',  { price: ec.value, currency: ec.currency||"SAR", item_ids: it.map(i=>i.item_id), item_category:"perfume" }); break;
-                        case "add_to_cart":  window.snaptr && snaptr('track','ADD_CART',       { price: ec.value, currency: ec.currency||"SAR", item_ids: it.map(i=>i.item_id), item_category:"perfume", number_items: it.length }); break;
+                        case "add_to_cart":
+                        case "cart:added":   window.snaptr && snaptr('track','ADD_CART',       { price: ec.value, currency: ec.currency||"SAR", item_ids: it.map(i=>i.item_id), item_category:"perfume", number_items: it.length }); break;
                         case "begin_checkout": window.snaptr && snaptr('track','START_CHECKOUT',{ price: ec.value, currency: ec.currency||"SAR", item_ids: it.map(i=>i.item_id), item_category:"perfume", number_items: it.length }); break;
                         case "purchase":     window.snaptr && snaptr('track','PURCHASE',       { price: ec.value, currency: ec.currency||"SAR", transaction_id: ec.transaction_id, item_ids: it.map(i=>i.item_id), item_category:"perfume", number_items: it.length }); break;
                         }
@@ -313,6 +347,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                         <UserProvider>
                             <FacebookPixelEvents />
                                 <MobileHeader />
+                                <Header14 />
                                 {children}
                                 <MobileFooter1 />
                                 {/* Modals and Asides */}
@@ -320,6 +355,8 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                 <SizeGuide />
                                 <Delivery />
                                 <CartDrawer />
+                                <CartToast />
+                                <NewsLetter />
                                 <SiteMap />
                                 <CustomerLogin />
                                 <ProductDescription />

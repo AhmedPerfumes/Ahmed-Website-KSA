@@ -11,10 +11,11 @@ const nextConfig = {
     },
     images: {
         formats: ['image/avif', 'image/webp'],
-        minimumCacheTTL: 300, // 5 min — reduces repeat-visit CDN round-trips
-        // Trimmed to actual breakpoints used — fewer srcset entries = faster browser evaluation
-        deviceSizes: [390, 640, 750, 828, 1080, 1200, 1440, 1920],
-        imageSizes: [16, 32, 64, 128, 256],
+        minimumCacheTTL: 3600, // 1 hour — reduces repeat-visit CDN round-trips
+        // Full range including large/4K/retina — prevents upscaling on 2560-3840px displays
+        deviceSizes: [390, 640, 750, 828, 1080, 1200, 1440, 1920, 2560, 3840],
+        // Extended so product card thumbnails don't upscale on large monitors
+        imageSizes: [16, 32, 64, 128, 256, 384, 512, 768],
         remotePatterns: [
           {
             protocol: 'https',
