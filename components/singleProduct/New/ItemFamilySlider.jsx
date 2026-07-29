@@ -10,6 +10,14 @@ import { useMenu } from "@/context/MenuContext";
 
 import { renderPrice } from "@/utlis/priceRenderer";
 
+/** Fires the global cart toast — same event that CartToast listens to */
+function fireCartToast(name, image, qty) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1 } })
+  );
+}
+
 export default function ItemFamilySlider({ product, itemFamilyProds }) {
     const {
         isLoading: isMenuLoading,
@@ -124,6 +132,15 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
         return null;
     }
 
+    // Filter out out-of-stock products — only show items with available stock
+    const inStockProds = itemFamilyProds.filter(
+        (p) => p?.product_qty > 0
+    );
+
+    if (inStockProds.length === 0) {
+        return null;
+    }
+
     return (
         <section className="products-carousel container my-4">
             <h2 className="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4 mt-4">
@@ -140,8 +157,8 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                     className="swiper-container js-swiper-slider"
                     data-settings=""
                 >
-                    {itemFamilyProds &&
-                        itemFamilyProds.map((elm, i) => (
+                    {inStockProds &&
+                        inStockProds.map((elm, i) => (
                             <SwiperSlide
                                 key={i}
                                 className="swiper-slide product-card"
@@ -236,16 +253,20 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                         : elm.product_qty > 0 && (
                                               <button
                                                   className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                                                  onClick={() =>
+                                                  onClick={() => {
                                                       addProductToCart({
                                                           ...elm,
-                                                          category_name:
-                                                              elm.category_name,
-                                                          subcategory_name:
-                                                              elm.subcategory
-                                                                  .subcategory_name,
-                                                      })
-                                                  }
+                                                          category_name: elm.category_name,
+                                                          subcategory_name: elm.subcategory?.subcategory_name || "",
+                                                      });
+                                                      // Fire premium cart toast
+                                                      const imgs = Array.isArray(elm.images) ? elm.images : [];
+                                                      const img = imgs[0]
+                                                          ? `${process.env.NEXT_PUBLIC_API_URL || ""}storage/${imgs[0]}`
+                                                          : null;
+                                                      const displayName = he.decode(elm?.product_name || "");
+                                                      fireCartToast(displayName, img, 1);
+                                                  }}
                                                   title="Add to Cart"
                                               >
                                                   Add To Cart

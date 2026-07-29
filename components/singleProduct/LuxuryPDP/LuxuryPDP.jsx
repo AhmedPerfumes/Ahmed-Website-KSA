@@ -188,12 +188,18 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
                   <ProductAccordion product={product} hideFragranceProfile={!!(product?.top_note || product?.heart_note || product?.base_note)} />
                 </Suspense>
               </div>
+
+              {/* You May Also Like — below Delivery Information accordion */}
+              <Suspense fallback={null}>
+                <ItemFamilySlider product={product} itemFamilyProds={product?.item_family} />
+              </Suspense>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Section 5: Fragrance Breakdown (above trust pillars for better flow) ── */}
+
+      {/* ── Section 6: Fragrance Breakdown (above trust pillars for better flow) ── */}
       <FragranceBreakdown product={product} />
 
       {/* ── Section 6: Trust Pillars ── */}
@@ -224,11 +230,6 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
         </Suspense>
       </div>
 
-
-      {/* ── Section 12: You May Also Like / Item Family Slider ── */}
-      <Suspense fallback={null}>
-        <ItemFamilySlider product={product} itemFamilyProds={product?.item_family} />
-      </Suspense>
 
       {/* ── Section 13: FAQ (lazy) ── */}
       <Suspense fallback={null}>
