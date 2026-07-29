@@ -15,16 +15,15 @@ export default function OffersBanner() {
     return (
         <div className="offbnr" aria-label="Exclusive Offers Banner">
             <div className="offbnr__inner">
-                <Link href={`/${locale}/shop/special-offers`} className="offbnr__link" tabIndex={-1}>
+                <Link href={`/${locale}/shop`} className="offbnr__link" tabIndex={-1}>
                     <Image
-                        src="https://assaf.ae/cdn/shop/files/Frankel_2000x.jpg?v=1764520098"
-                        alt="Exclusive Offers — Ahmed Al Maghribi Perfumes"
+                        src="/assets/images/home/demo8/collection-Banner.jpg"
+                        alt="Collection — Ahmed Al Maghribi Perfumes"
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
                         className="offbnr__img"
                         priority={false}
                         loading="lazy"
-                        unoptimized
                     />
                     <span className="offbnr__scrim" />
                 </Link>
