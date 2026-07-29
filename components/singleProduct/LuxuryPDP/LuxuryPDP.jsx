@@ -49,6 +49,11 @@ const FAQSection = dynamic(() => import("./sections/FAQSection"), {
   loading: () => null,
 });
 
+const ItemFamilySlider = dynamic(
+  () => import("../New/ItemFamilySlider"),
+  { ssr: false, loading: () => null }
+);
+
 const RecentlyViewed = dynamic(() => import("./sections/RecentlyViewed"), {
   ssr: false,
   loading: () => null,
@@ -219,6 +224,11 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
         </Suspense>
       </div>
 
+
+      {/* ── Section 12: You May Also Like / Item Family Slider ── */}
+      <Suspense fallback={null}>
+        <ItemFamilySlider product={product} itemFamilyProds={product?.item_family} />
+      </Suspense>
 
       {/* ── Section 13: FAQ (lazy) ── */}
       <Suspense fallback={null}>
