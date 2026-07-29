@@ -336,8 +336,9 @@ export default function YouMayAlsoLike() {
   const [bestSell, setBestSell] = useState([]);
   const [dontShow, setDontShow] = useState(false);
   const [canShow,  setCanShow]  = useState(false);
-  const overlayRef  = useRef(null);
-  const fetchedRef  = useRef(false);
+  const overlayRef              = useRef(null);
+  const fetchedRef              = useRef(false);
+  const dragOriginOnOverlay     = useRef(false); // true only when pointerdown started ON the overlay backdrop
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -487,8 +488,22 @@ export default function YouMayAlsoLike() {
     setOpen(false);
   }, [dontShow]);
 
-  /** Overlay backdrop → accidental dismiss (Tier 1) */
-  const onOverlay = useCallback((e) => { if (e.target === overlayRef.current) closeAccidental(); }, [closeAccidental]);
+  /**
+   * Track where the drag STARTED.
+   * If pointerdown fires on the modal content (not the backdrop), we
+   * must NOT close when the pointer is released outside — that's just
+   * the user dragging a Swiper slider and accidentally leaving the modal.
+   */
+  const onOverlayPointerDown = useCallback((e) => {
+    dragOriginOnOverlay.current = e.target === overlayRef.current;
+  }, []);
+
+  /** Overlay backdrop click → only close if drag also STARTED on the backdrop (Tier 1) */
+  const onOverlay = useCallback((e) => {
+    if (e.target === overlayRef.current && dragOriginOnOverlay.current) {
+      closeAccidental();
+    }
+  }, [closeAccidental]);
 
   /* ── Price renderer ─────────────────────────────────────────── */
   const renderPrice = (elm) => {
@@ -616,6 +631,7 @@ export default function YouMayAlsoLike() {
       <div
         ref={overlayRef}
         className={`ymal-overlay${open ? " ymal-open" : ""}`}
+        onPointerDown={onOverlayPointerDown}
         onClick={onOverlay}
         role="dialog"
         aria-modal="true"
