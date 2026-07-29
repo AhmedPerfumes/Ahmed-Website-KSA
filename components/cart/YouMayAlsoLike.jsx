@@ -31,8 +31,10 @@ import { useLocale } from "next-intl";
 import he from "he";
 
 /* ── Session / Storage keys ─────────────────────────────────── */
-const SESSION_KEY    = "ymal_shown";
-const STORAGE_KEY    = "ahmed_last_cart_item";
+const SESSION_KEY  = "ymal_shown";          // sessionStorage — clears each tab/session
+const STORAGE_KEY  = "ahmed_last_cart_item"; // localStorage  — anchor product info
+const DISMISS_KEY  = "ymal_dismissed_at";    // localStorage  — timestamp of 7-day dismiss
+const DISMISS_TTL  = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
 
 /* ── Helpers ────────────────────────────────────────────────── */
 const slugify = (str) =>
@@ -274,6 +276,40 @@ const STYLES = `
   50%       { opacity: 1; }
 }
 
+/* ─── Footer (dismiss row) ──────────────────────────────────── */
+.ymal-footer {
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.7rem 1.75rem;
+  border-top: 1px solid #ede9e1;
+  background: #fafaf8;
+  gap: 1rem;
+}
+.ymal-dismiss-label {
+  display: flex; align-items: center; gap: 0.45rem;
+  cursor: pointer; font-size: 0.68rem; color: #999;
+  letter-spacing: 0.03em; user-select: none;
+  transition: color 0.18s;
+}
+.ymal-dismiss-label:hover { color: #666; }
+.ymal-dismiss-checkbox {
+  width: 14px; height: 14px; cursor: pointer;
+  accent-color: #a67b30; flex-shrink: 0;
+}
+.ymal-footer-close {
+  font-size: 0.6rem; font-weight: 700; color: #a67b30;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: transparent; border: 1px solid #a67b30;
+  padding: 0.38rem 1.1rem; border-radius: 3px;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.ymal-footer-close:hover {
+  background: linear-gradient(135deg, #b8913a, #a67b30);
+  color: #fff; border-color: transparent;
+}
+
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .ymal-overlay { padding: 0; align-items: flex-end; }
@@ -285,6 +321,7 @@ const STYLES = `
   .ymal-header { padding: 1.1rem 1.25rem 0.85rem; }
   .ymal-body  { padding: 1rem 1.25rem 2rem; }
   .ymal-title { font-size: 1.2rem; }
+  .ymal-footer { padding: 0.65rem 1.25rem; flex-wrap: wrap; }
 }
 `;
 
@@ -295,16 +332,25 @@ export default function YouMayAlsoLike() {
 
   const [open,        setOpen]        = useState(false);
   const [loading,     setLoading]     = useState(true);
-  const [anchorProd,  setAnchorProd]  = useState(null); // the product we anchor on
+  const [anchorProd,  setAnchorProd]  = useState(null);
   const [related,     setRelated]     = useState([]);
   const [bestSell,    setBestSell]    = useState([]);
+  const [dontShow,    setDontShow]    = useState(false); // "skip for 7 days" checkbox
   const overlayRef = useRef(null);
 
-  /* ── Step 1: Read anchor product from localStorage ─────────── */
+  /* ── Step 1: Guard checks → read anchor product ────────────── */
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Once per session per anchor product
+
+    // Guard 1: Already shown this browser session
     if (sessionStorage.getItem(SESSION_KEY)) return;
+
+    // Guard 2: User chose "skip for 7 days" and cooldown not expired
+    const dismissedAt = parseInt(localStorage.getItem(DISMISS_KEY) || "0", 10);
+    if (dismissedAt) {
+      if (Date.now() - dismissedAt < DISMISS_TTL) return; // still within 7-day window
+      localStorage.removeItem(DISMISS_KEY); // expired → clean up
+    }
 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return;
@@ -372,8 +418,23 @@ export default function YouMayAlsoLike() {
     };
   }, [open]);
 
-  const close      = useCallback(() => setOpen(false), []);
-  const onOverlay  = useCallback((e) => { if (e.target === overlayRef.current) close(); }, [close]);
+  /**
+   * X button / Escape / backdrop click → session close only.
+   * Popup re-fires next session (or immediately when user adds new product).
+   */
+  const close = useCallback(() => setOpen(false), []);
+
+  /**
+   * Footer "Close" button — also saves 7-day dismiss if checkbox ticked.
+   */
+  const closeDismissed = useCallback(() => {
+    if (dontShow) {
+      try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch { /* ignore */ }
+    }
+    setOpen(false);
+  }, [dontShow]);
+
+  const onOverlay = useCallback((e) => { if (e.target === overlayRef.current) close(); }, [close]);
 
   /* ── Price renderer ─────────────────────────────────────────── */
   const renderPrice = (elm) => {
@@ -602,6 +663,30 @@ export default function YouMayAlsoLike() {
             )}
           </div>
           {/* end body */}
+
+          {/* ── Footer: dismiss row ──────────────────────────────── */}
+          {!loading && (
+            <footer className="ymal-footer">
+              <label className="ymal-dismiss-label" htmlFor="ymal-dont-show">
+                <input
+                  id="ymal-dont-show"
+                  type="checkbox"
+                  className="ymal-dismiss-checkbox"
+                  checked={dontShow}
+                  onChange={(e) => setDontShow(e.target.checked)}
+                />
+                <span>Skip recommendations for 7 days</span>
+              </label>
+              <button
+                type="button"
+                className="ymal-footer-close"
+                onClick={closeDismissed}
+                aria-label={dontShow ? "Close and skip recommendations for 7 days" : "Close recommendations"}
+              >
+                {dontShow ? "Got it, Close" : "Continue Shopping"}
+              </button>
+            </footer>
+          )}
 
         </div>
         {/* end modal */}

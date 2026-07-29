@@ -272,7 +272,8 @@ export default function Context({ children }) {
     }
 
     // Save last-added product info for the "You May Also Like" cart popup.
-    // The popup reads this on cart/checkout page mount and fires once per session.
+    // Clears the session key so the popup re-fires on next cart visit.
+    // DOES NOT clear the 7-day dismiss preference — that is the user's choice.
     if (!product.is_gift && product.product_name) {
       try {
         localStorage.setItem("ahmed_last_cart_item", JSON.stringify({
@@ -280,7 +281,8 @@ export default function Context({ children }) {
           category:    product.category_name    || "",
           subcategory: product.subcategory_name || product.subcategory?.subcategory_name || "",
         }));
-        // Also clear the session flag so the popup re-fires for the new product
+        // Allow the popup to re-fire for this new product on next cart visit.
+        // The popup itself will then re-check the 7-day dismiss guard before showing.
         sessionStorage.removeItem("ymal_shown");
       } catch { /* storage errors must never break cart */ }
     }
