@@ -7,331 +7,231 @@ import Image from "next/image";
 import he from "he";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
-
+import { useRef } from "react";
 import { renderPrice } from "@/utlis/priceRenderer";
+import "./ItemFamilySlider.css";
 
 /** Fires the global cart toast — same event that CartToast listens to */
 function fireCartToast(name, image, qty) {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(
-    new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1 } })
-  );
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+        new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1 } })
+    );
+}
+
+/** Build the product URL slug — mirrors the PHP/JS logic */
+function removeSpecialCharactersAndAmp(productName) {
+    const dynamicKey = productName.replace(/[^a-zA-Z0-9\s]/g, "") + " Description";
+    const wordsToRemove = ["&", " &", "& ", " & ", "amp", " amp", "amp ", " amp ", ";", " ;", "; ", " ; "];
+    let cleanString = dynamicKey;
+    wordsToRemove.forEach((word) => {
+        const regex = new RegExp(word, "gi");
+        cleanString = cleanString.replace(regex, "");
+    });
+    return cleanString.replace(/\s+/g, " ").trim();
+}
+
+function getSubcategorySlug(category, subcategory) {
+    if (subcategory != null) {
+        return removeSpecialCharactersAndAmp(subcategory.subcategory_name)
+            .split(" ").join("-").toLowerCase();
+    }
+    const cat = removeSpecialCharactersAndAmp(category).toLowerCase();
+    if (cat === "gift-sets") return "gift-sets";
+    if (cat === "hair-mist") return "hair-mist";
+    if (cat === "extrait-de-parfum") return "extrait-de-parfum";
+    return "online-exclusive";
+}
+
+function getProductUrl(locale, elm) {
+    const catSlug = removeSpecialCharactersAndAmp(elm.category_name).split(" ").join("-").toLowerCase();
+    const subSlug = getSubcategorySlug(elm.category_name.split(" ").join("-").toLowerCase(), elm.subcategory);
+    const prodSlug = removeSpecialCharactersAndAmp(elm.product_name).split(" ").join("-").toLowerCase();
+    return `/${locale}/shop/${catSlug}/${subSlug}/${prodSlug}`;
 }
 
 export default function ItemFamilySlider({ product, itemFamilyProds }) {
-    const {
-        isLoading: isMenuLoading,
-        error: isMenuError,
-        currency,
-    } = useMenu();
+    const { currency } = useMenu();
     const locale = useLocale();
-    const { toggleWishlist, isAddedtoWishlist } = useContextElement();
-    const { setQuickViewItem } = useContextElement();
     const { addProductToCart, isAddedToCartProducts } = useContextElement();
     const t = useTranslations();
     const tp = useTranslations("ProductDetails");
-    const swiperOptions = {
-        autoplay: false,
-        slidesPerView: 4,
-        slidesPerGroup: 4,
-        effect: "none",
-        loop: true,
-        modules: [Pagination, Navigation],
-        pagination: {
-            el: "#item_family_products .products-pagination",
-            type: "bullets",
-            clickable: true,
-        },
-        navigation: {
-            nextEl: ".ssn-family",
-            prevEl: ".ssp-family",
-        },
-        breakpoints: {
-            320: {
-                slidesPerView: 2,
-                slidesPerGroup: 2,
-                spaceBetween: 14,
-            },
-            768: {
-                slidesPerView: 3,
-                slidesPerGroup: 3,
-                spaceBetween: 24,
-            },
-            992: {
-                slidesPerView: 4,
-                slidesPerGroup: 4,
-                spaceBetween: 30,
-            },
-        },
-    };
 
-      // "WARNING: If you change this logic, update the corresponding PHP/JS file."
-    function removeSpecialCharactersAndAmp(productName) {
-        // Step 1: Remove any non-alphanumeric characters except for spaces
-    const dynamicKey = productName.replace(/[^a-zA-Z0-9\s]/g, '') + ' Description';
-  
-    // Step 2: Words to remove
-    const wordsToRemove = ['&', ' &', '& ', ' & ', 'amp', ' amp', 'amp ', ' amp ', ';', ' ;', '; ', ' ; '];
-  
-    // Step 3: Remove the words from the dynamic key (case insensitive)
-    let cleanString = dynamicKey;
-    wordsToRemove.forEach(word => {
-      const regex = new RegExp(word, 'gi'); // 'gi' for global and case-insensitive replacement
-      cleanString = cleanString.replace(regex, '');
-    });
-  
-    // Step 4: Replace multiple spaces with a single space
-    cleanString = cleanString.replace(/\s+/g, ' ').trim(); // Trim to remove leading/trailing spaces
-  
-    return cleanString;
-    }
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
 
-    const isSubcategory = (category, subcategory) => {
-        let subcat = "";
-        if (subcategory != null) {
-            return (subcat = removeSpecialCharactersAndAmp(
-                subcategory.subcategory_name
-            )
-                .split(" ")
-                .join("-")
-                .toLowerCase());
-        } else {
-            if (removeSpecialCharactersAndAmp(category) == "gift-sets") {
-                return (subcat = "gift-sets");
-            } else if (removeSpecialCharactersAndAmp(category) == "hair-mist") {
-                return (subcat = "hair-mist");
-            } else if (
-                removeSpecialCharactersAndAmp(category) == "extrait-de-parfum"
-            ) {
-                return (subcat = "extrait-de-parfum");
-            } else {
-                return (subcat = "online-exclusive");
-            }
-        }
-    };
+    // Guard: no data
+    if (!itemFamilyProds || itemFamilyProds.length === 0) return null;
 
-    // const price = (elm) => {
-    //   // Current time is Tuesday, September 9, 2025 at 2:59 PM (GST - UAE time)
-    //   const current_date_time = new Date('2025-09-09T14:59:00+04:00');
+    // Filter out-of-stock
+    const inStockProds = itemFamilyProds.filter((p) => p?.product_qty > 0);
+    if (inStockProds.length === 0) return null;
 
-    //   if (elm?.discount) {
-    //     if (current_date_time >= new Date(elm.discount.start_date) && current_date_time <= new Date(elm.discount.end_date)) {
-    //       return <><span className="money price price-old">{elm?.price}{currency.symbol}</span> <span className="money price price-sale">{(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}{currency.symbol}</span></>;
-    //     } else {
-    //       return <span className="money price">{elm?.price}{currency.symbol}</span>;
-    //     }
-    //   } else if (elm?.sale_price) {
-    //     return <><span className="money price price-old">{elm?.price}{currency.symbol}</span> <span className="money price price-sale">{(elm.sale_price).toFixed(2)}{currency.symbol}</span></>;
-    //   } else {
-    //     return <span className="money price">{elm?.price}{currency.symbol}</span>;
-    //   }
-    // };
-
-    // ADDED: Validation to hide the component if there's no data
-    if (!itemFamilyProds || itemFamilyProds.length === 0) {
-        return null;
-    }
-
-    // Filter out out-of-stock products — only show items with available stock
-    const inStockProds = itemFamilyProds.filter(
-        (p) => p?.product_qty > 0
-    );
-
-    if (inStockProds.length === 0) {
-        return null;
-    }
+    const familyName = product?.product_family ? he.decode(product.product_family) : "";
 
     return (
-        <section className="products-carousel container my-4">
-            <h2 className="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4 mt-4">
-                {tp.rich("discoverMore", {
-                    familyName: he.decode(product?.product_family),
-                    // Tell the component how to render the <bold> tag
-                    bold: (chunks) => <strong>{chunks}</strong>,
-                })}
-            </h2>
+        <section className="ymal-section">
+            <div className="ymal-inner">
 
-            <div id="item_family_products" className="position-relative">
+                {/* ── Header ── */}
+                <div className="ymal-header">
+                    <div className="ymal-title-block">
+                        <span className="ymal-eyebrow">You May Also Like</span>
+                        <h2 className="ymal-title">
+                            {familyName
+                                ? <>Discover More from <strong>{familyName}</strong></>
+                                : "Complete Your Collection"}
+                        </h2>
+                    </div>
+
+                    {/* Desktop nav arrows */}
+                    <div className="ymal-nav-btns">
+                        <button
+                            ref={prevRef}
+                            className="ymal-nav-btn ymal-prev"
+                            aria-label="Previous products"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                        </button>
+                        <button
+                            ref={nextRef}
+                            className="ymal-nav-btn ymal-next"
+                            aria-label="Next products"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {/* ── Carousel ── */}
                 <Swiper
-                    {...swiperOptions}
-                    className="swiper-container js-swiper-slider"
-                    data-settings=""
+                    className="ymal-swiper"
+                    modules={[Pagination, Navigation]}
+                    loop={inStockProds.length > 4}
+                    slidesPerView={2}
+                    spaceBetween={16}
+                    navigation={{
+                        prevEl: prevRef.current,
+                        nextEl: nextRef.current,
+                    }}
+                    onBeforeInit={(swiper) => {
+                        swiper.params.navigation.prevEl = prevRef.current;
+                        swiper.params.navigation.nextEl = nextRef.current;
+                    }}
+                    pagination={{
+                        el: ".ymal-pagination",
+                        clickable: true,
+                    }}
+                    breakpoints={{
+                        576: { slidesPerView: 2, spaceBetween: 16 },
+                        768: { slidesPerView: 3, spaceBetween: 20 },
+                        1024: { slidesPerView: 4, spaceBetween: 24 },
+                        1280: { slidesPerView: 4, spaceBetween: 28 },
+                    }}
+                    dir={locale === "ar" ? "rtl" : "ltr"}
                 >
-                    {inStockProds &&
-                        inStockProds.map((elm, i) => (
-                            <SwiperSlide
-                                key={i}
-                                className="swiper-slide product-card"
-                            >
-                                <div className="pc__img-wrapper">
-                                    <Link
-                                        href={`/${locale}/shop/${removeSpecialCharactersAndAmp(
-                                            elm.category_name
-                                        )
-                                            .split(" ")
-                                            .join("-")
-                                            .toLowerCase()}/${isSubcategory(
-                                            elm.category_name
-                                                .split(" ")
-                                                .join("-")
-                                                .toLowerCase(),
-                                            elm.subcategory
-                                        )}/${removeSpecialCharactersAndAmp(
-                                            elm.product_name
-                                        )
-                                            .split(" ")
-                                            .join("-")
-                                            .toLowerCase()}`}
-                                    >
-                                        {elm?.images &&
-                                            Array.isArray(elm.images) && (
-                                                <>
-                                                    {elm.images[0] && (
-                                                        <Image
-                                                            loading="lazy"
-                                                            src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.images[0]}`}
-                                                            width="330"
-                                                            height="400"
-                                                            alt="img"
-                                                            className="pc__img"
-                                                        />
-                                                    )}
-                                                    {elm.images[1] && (
-                                                        <Image
-                                                            loading="lazy"
-                                                            src={`${process.env.NEXT_PUBLIC_API_URL}storage/${elm.images[1]}`}
-                                                            width="330"
-                                                            height="400"
-                                                            alt="img"
-                                                            className="pc__img pc__img-second"
-                                                        />
-                                                    )}
-                                                </>
-                                            )}
-                                    </Link>
-                                    {elm?.label_name && (
-                                        <div
-                                            style={{
-                                                backgroundColor:
-                                                    elm.label_color,
-                                            }}
-                                            className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2"
-                                        >
-                                            {elm?.label_name}
-                                        </div>
-                                    )}
-                                    {elm.product_qty <= 0 ? (
-                                        <div
-                                            style={{
-                                                backgroundColor: "#dc3545",
-                                            }}
-                                            className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2"
-                                        >
-                                            Out Of Stock
-                                        </div>
-                                    ) : (
-                                        elm.discount && (
-                                            <div
-                                                style={{
-                                                    backgroundColor: "#198754",
-                                                }}
-                                                className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2"
-                                            >
-                                                Sale {elm.discount.value}%
-                                            </div>
-                                        )
-                                    )}
-                                    {isAddedToCartProducts(elm?.product_id)
-                                        ? elm.product_qty > 0 && (
-                                              <button
-                                                  className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                                                  title="Already Added"
-                                              >
-                                                  Already Added
-                                              </button>
-                                          )
-                                        : elm.product_qty > 0 && (
-                                              <button
-                                                  className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                                                  onClick={() => {
-                                                      addProductToCart({
-                                                          ...elm,
-                                                          category_name: elm.category_name,
-                                                          subcategory_name: elm.subcategory?.subcategory_name || "",
-                                                      });
-                                                      // Fire premium cart toast
-                                                      const imgs = Array.isArray(elm.images) ? elm.images : [];
-                                                      const img = imgs[0]
-                                                          ? `${process.env.NEXT_PUBLIC_API_URL || ""}storage/${imgs[0]}`
-                                                          : null;
-                                                      const displayName = he.decode(elm?.product_name || "");
-                                                      fireCartToast(displayName, img, 1);
-                                                  }}
-                                                  title="Add to Cart"
-                                              >
-                                                  Add To Cart
-                                              </button>
-                                          )}
-                                </div>
+                    {inStockProds.map((elm, i) => {
+                        const imgs = Array.isArray(elm.images) ? elm.images : [];
+                        const img0 = imgs[0] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[0]}` : null;
+                        const img1 = imgs[1] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[1]}` : null;
+                        const url = getProductUrl(locale, elm);
+                        const name = he.decode(elm?.product_name || "");
+                        const isAdded = isAddedToCartProducts(elm?.product_id);
 
-                                <div className="pc__info position-relative">
-                                    <p className="pc__category">
-                                        {t(elm.category_name)}
-                                    </p>
-                                    <h6 className="pc__title">
-                                        <Link
-                                            href={`/${locale}/shop/${removeSpecialCharactersAndAmp(
-                                                elm.category_name
-                                            )
-                                                .split(" ")
-                                                .join("-")
-                                                .toLowerCase()}/${isSubcategory(
-                                                elm.category_name
-                                                    .split(" ")
-                                                    .join("-")
-                                                    .toLowerCase(),
-                                                elm.subcategory
-                                            )}/${removeSpecialCharactersAndAmp(
-                                                elm.product_name
-                                            )
-                                                .split(" ")
-                                                .join("-")
-                                                .toLowerCase()}`}
-                                        >
-                                            {elm?.product_name &&
-                                                t(he.decode(elm?.product_name))}
+                        // Check active discount
+                        const now = new Date();
+                        const hasDiscount = elm.discount &&
+                            new Date(elm.discount.start_date) <= now &&
+                            new Date(elm.discount.end_date) >= now;
+
+                        return (
+                            <SwiperSlide key={i}>
+                                <div className="ymal-card">
+
+                                    {/* Image area */}
+                                    <div className="ymal-card__img-wrap">
+                                        <Link href={url} tabIndex={-1} aria-hidden="true">
+                                            {img0 && (
+                                                <Image
+                                                    src={img0}
+                                                    alt={name}
+                                                    fill
+                                                    sizes="(max-width: 576px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                    className="ymal-img"
+                                                    loading="lazy"
+                                                    style={{ objectFit: "cover" }}
+                                                />
+                                            )}
+                                            {img1 && (
+                                                <Image
+                                                    src={img1}
+                                                    alt={name}
+                                                    fill
+                                                    sizes="(max-width: 576px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                    className="ymal-img-hover"
+                                                    loading="lazy"
+                                                    style={{ objectFit: "cover" }}
+                                                />
+                                            )}
                                         </Link>
-                                    </h6>
-                                    <div className="product-card__price d-flex">
-                                        {renderPrice(elm, currency)}
+
+                                        {/* Sale badge */}
+                                        {hasDiscount && (
+                                            <span className="ymal-badge ymal-badge--sale">
+                                                Sale {elm.discount.value}%
+                                            </span>
+                                        )}
+                                        {elm?.label_name && !hasDiscount && (
+                                            <span
+                                                className="ymal-badge"
+                                                style={{ background: elm.label_color || "#1A1A1A" }}
+                                            >
+                                                {elm.label_name}
+                                            </span>
+                                        )}
+
+                                        {/* Quick Add */}
+                                        <button
+                                            className={`ymal-card__atc${isAdded ? " ymal-card__atc--added" : ""}`}
+                                            onClick={() => {
+                                                if (isAdded) return;
+                                                addProductToCart({
+                                                    ...elm,
+                                                    category_name: elm.category_name,
+                                                    subcategory_name: elm.subcategory?.subcategory_name || "",
+                                                });
+                                                fireCartToast(name, img0, 1);
+                                            }}
+                                            title={isAdded ? "Added to bag" : "Add to bag"}
+                                        >
+                                            {isAdded ? "✓ Added to Bag" : "Add to Bag"}
+                                        </button>
+                                    </div>
+
+                                    {/* Card info */}
+                                    <div className="ymal-card__info">
+                                        <p className="ymal-card__category">
+                                            {t(elm.category_name)}
+                                        </p>
+                                        <h3 className="ymal-card__name">
+                                            <Link href={url}>{name}</Link>
+                                        </h3>
+                                        <div className="ymal-card__price">
+                                            {renderPrice(elm, currency)}
+                                        </div>
                                     </div>
                                 </div>
                             </SwiperSlide>
-                        ))}
+                        );
+                    })}
                 </Swiper>
 
-                <div className="cursor-pointer products-carousel__prev ssp-family position-absolute top-50 d-flex align-items-center justify-content-center">
-                    <svg
-                        width="25"
-                        height="25"
-                        viewBox="0 0 25 25"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <use href="#icon_prev_md" />
-                    </svg>
-                </div>
-                <div className="cursor-pointer products-carousel__next ssn-family position-absolute top-50 d-flex align-items-center justify-content-center">
-                    <svg
-                        width="25"
-                        height="25"
-                        viewBox="0 0 25 25"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <use href="#icon_next_md" />
-                    </svg>
-                </div>
-
-                <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center"></div>
+                {/* Pagination dots */}
+                <div className="ymal-pagination" />
             </div>
         </section>
     );

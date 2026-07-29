@@ -1,0 +1,383 @@
+/* ═══════════════════════════════════════════════════════════════
+   ItemFamilySlider — You May Also Like  |  Premium PDP Section
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Section wrapper ── */
+.ymal-section {
+    background: #FAF8F4;
+    border-top: 1px solid #E8E0D0;
+    padding: 4rem 0 4.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle decorative grain overlay */
+.ymal-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ymal-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ── Section header ── */
+.ymal-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    gap: 1rem;
+}
+
+.ymal-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ymal-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #C9A84C;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.ymal-eyebrow::before,
+.ymal-eyebrow::after {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: #C9A84C;
+    opacity: 0.7;
+}
+
+.ymal-title {
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: #1A1A1A;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.ymal-title strong {
+    font-style: italic;
+    color: #C9A84C;
+}
+
+.ymal-nav-btns {
+    display: flex;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+.ymal-nav-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid #C9A84C;
+    background: transparent;
+    color: #C9A84C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.ymal-nav-btn:hover {
+    background: #C9A84C;
+    color: #fff;
+}
+
+.ymal-nav-btn:disabled,
+.ymal-nav-btn.swiper-button-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.ymal-nav-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ── Swiper wrapper ── */
+.ymal-swiper {
+    overflow: visible !important;
+}
+
+.ymal-swiper .swiper-slide {
+    height: auto;
+}
+
+/* ── Product card ── */
+.ymal-card {
+    background: #fff;
+    border: 1px solid #EDE8DF;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.ymal-card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+/* ── Image area ── */
+.ymal-card__img-wrap {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #F7F4EF;
+}
+
+.ymal-card__img-wrap .ymal-img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.ymal-card__img-wrap .ymal-img-hover {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.5s ease;
+}
+
+.ymal-card:hover .ymal-img {
+    transform: scale(1.04);
+}
+
+.ymal-card:hover .ymal-img-hover {
+    opacity: 1;
+}
+
+/* ── Badge ── */
+.ymal-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 1px;
+    color: #fff;
+    line-height: 1;
+}
+
+.ymal-badge--sale {
+    background: #C9A84C;
+}
+
+/* ── Quick add button (slides up on hover) ── */
+.ymal-card__atc {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: #1A1A1A;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s ease;
+    text-align: center;
+    z-index: 3;
+}
+
+.ymal-card:hover .ymal-card__atc {
+    transform: translateY(0);
+}
+
+.ymal-card__atc:hover {
+    background: #C9A84C;
+}
+
+.ymal-card__atc--added {
+    background: #C9A84C;
+    transform: translateY(0) !important;
+}
+
+/* ── Card info ── */
+.ymal-card__info {
+    padding: 1rem 1rem 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background: #fff;
+}
+
+.ymal-card__category {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #9E8F7D;
+    margin: 0;
+}
+
+.ymal-card__name {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #1A1A1A;
+    margin: 0;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ymal-card__name a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.ymal-card__name a:hover {
+    color: #C9A84C;
+}
+
+.ymal-card__price {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #1A1A1A;
+    margin-top: 0.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* ── Gold divider below section heading ── */
+.ymal-divider {
+    width: 48px;
+    height: 1px;
+    background: linear-gradient(90deg, #C9A84C 0%, transparent 100%);
+    margin-bottom: 2rem;
+}
+
+/* ── Pagination ── */
+.ymal-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 2.5rem;
+}
+
+.ymal-pagination .swiper-pagination-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #C9A84C;
+    opacity: 0.3;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ymal-pagination .swiper-pagination-bullet-active {
+    opacity: 1;
+    width: 20px;
+    border-radius: 3px;
+}
+
+/* ── RTL support ── */
+[dir="rtl"] .ymal-eyebrow::before,
+[dir="rtl"] .ymal-eyebrow::after {
+    /* mirror decorative lines */
+}
+
+[dir="rtl"] .ymal-badge {
+    left: auto;
+    right: 12px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+    .ymal-inner {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .ymal-section {
+        padding: 3rem 0 3.5rem;
+    }
+
+    .ymal-inner {
+        padding: 0 1rem;
+    }
+
+    .ymal-header {
+        margin-bottom: 1.75rem;
+    }
+
+    .ymal-nav-btns {
+        display: none; /* use swiper touch on mobile */
+    }
+
+    .ymal-card__atc {
+        transform: translateY(0); /* always visible on touch */
+        position: relative;
+        border-top: 1px solid #EDE8DF;
+    }
+
+    .ymal-card__img-wrap {
+        aspect-ratio: 3 / 4;
+    }
+}
+
+@media (max-width: 480px) {
+    .ymal-title {
+        font-size: 1.25rem;
+    }
+
+    .ymal-card__info {
+        padding: 0.75rem 0.75rem 1rem;
+    }
+
+    .ymal-card__name {
+        font-size: 0.85rem;
+    }
+}
