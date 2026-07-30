@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from "react";
 import {
   useReactTable,
@@ -536,7 +536,7 @@ export default function AccountOrders() {
       <div
         className="col-lg-9"
         style={{
-          fontFamily: "Kanit-Regular, sans‑serif",
+          fontFamily: "inherit",
           border: "1px solid #e9e9e9",
           borderRadius: ".75rem",
           padding: "50px",
