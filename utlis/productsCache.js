@@ -6,8 +6,9 @@
  * 3× the API round-trips and ~600ms extra TBT on mobile.
  *
  * Usage:
- *   import { fetchAllProducts } from '@/utlis/productsCache';
+ *   import { fetchAllProducts, fetchProductsByCategory } from '@/utlis/productsCache';
  *   const products = await fetchAllProducts();
+ *   const perfumes = await fetchProductsByCategory('PERFUMES');
  */
 
 let _cache = null;
@@ -47,3 +48,49 @@ export async function fetchAllProducts() {
 
   return _inFlight;
 }
+
+/**
+ * Fetches best-selling products from /api/getBestSelling.
+ * Returns the full keyed object: { Perfumes: [...], Dakhoon: [...], ... }
+ * Cached for the lifetime of the browser tab.
+ */
+let _bestSellingCache = null;
+let _bestSellingInFlight = null;
+
+export async function fetchBestSelling() {
+  if (_bestSellingCache) return _bestSellingCache;
+  if (_bestSellingInFlight) return _bestSellingInFlight;
+
+  _bestSellingInFlight = (async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}api/getBestSelling`
+      );
+      const data = await res.json();
+      _bestSellingCache = data || {};
+      return _bestSellingCache;
+    } catch (e) {
+      console.error('[productsCache] getBestSelling failed:', e);
+      return {};
+    } finally {
+      _bestSellingInFlight = null;
+    }
+  })();
+
+  return _bestSellingInFlight;
+}
+
+/**
+ * @deprecated use fetchBestSelling() instead
+ * Kept for backward compat with other components.
+ */
+export async function fetchProductsByCategory(category) {
+  const data = await fetchBestSelling();
+  // Find the matching key case-insensitively
+  const key = Object.keys(data).find(
+    k => k.toUpperCase() === category.toUpperCase()
+  );
+  const products = key ? (data[key] || []) : [];
+  return products.sort((a, b) => (b.sales || 0) - (a.sales || 0));
+}
+

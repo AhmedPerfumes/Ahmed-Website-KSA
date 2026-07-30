@@ -63,26 +63,26 @@ $theme-colors: (
 /*------------------ Typography -----------------*/
 /*-----------------------------------------------*/
 
-$font-size-base: 0.875rem;
-$h1-font-size: $font-size-base * 5;
-$h2-font-size: $font-size-base * 2;
-$h3-font-size: 1.625rem;
-$h4-font-size: 1.25rem;
-$h5-font-size: 1.125rem;
-$h6-font-size: 1rem;
+$font-size-base: 0.9375rem;       /* 15px — up from 14px for large-screen legibility */
+$h1-font-size: $font-size-base * 4.5;
+$h2-font-size: $font-size-base * 2.25;
+$h3-font-size: 1.75rem;
+$h4-font-size: 1.125rem;
+$h5-font-size: 1rem;
+$h6-font-size: 0.9375rem;
 $strock-font-size: 5.625rem;
 
 $font-weight-base: 400;
-$font-weight-heading: 500;
+$font-weight-heading: 600;        /* Stronger weight for crisp headings */
 
-$line-height-base: 1.7143;
+$line-height-base: 1.7;
 
 /*------------------ Page Title -----------------*/
 $page-title-size: 3.125rem;
 $page-title-weight: 700;
 
 /*---------------- Section Title ----------------*/
-$section-title-size: $font-size-base * 2.5;
+$section-title-size: $font-size-base * 2.8;
 $section-title-mobile-size: $h3-font-size;
 
 /*----------------- Block Title -----------------*/

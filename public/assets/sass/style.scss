@@ -25,6 +25,7 @@
 @import "components/aside-popup";
 @import "components/search-popup";
 @import "components/cart-drawer";
+@import "components/cart-drawer-new";
 @import "components/star-rating";
 @import "components/modals";
 @import "components/effects";
@@ -69,3 +70,7 @@
 @import "sections/Testimonial/testimonial";
 @import "./custom.scss";
 // @import "../css/product-single.css";
+
+// ── Professional typography overrides — imported LAST to win specificity ──
+// Fixes: eyebrow sizes, pale gray, section heading scale, product card names
+@import "settings/typography-overrides";

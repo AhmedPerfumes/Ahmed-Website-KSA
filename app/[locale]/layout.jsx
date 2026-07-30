@@ -118,6 +118,27 @@ const englishFont = localFont({
     variable: "--font-wulkan",
 });
 
+// Playfair Display — editorial luxury serif for major section headings.
+// Same font used on AE site. Renders beautifully at all scales.
+const playfairDisplay = Playfair_Display({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800", "900"],
+    style: ["normal", "italic"],
+    display: "swap",
+    preload: true,
+    variable: "--font-playfair",
+});
+
+// Inter — clean neutral sans-serif for prices, UI labels, descriptions.
+// Designed for screen clarity at all sizes including large 2560px displays.
+const inter = Inter({
+    subsets: ["latin"],
+    weight: ["300", "400", "500", "600", "700"],
+    display: "swap",
+    preload: false, // DM Sans is the primary; Inter is for specific UI elements
+    variable: "--font-inter",
+});
+
 // DM Sans — body/UI font. Clean humanist sans-serif, designed for screens.
 // Renders crisply on Windows at all sizes including large displays.
 const dmSans = DM_Sans({
@@ -148,11 +169,14 @@ export default async function LocaleLayout({ children, params: { locale } }) {
         notFound();
     }
 
-    // Select the font based on locale
-    // Both variables are registered so SCSS can reference --font-wulkan and --font-dm-sans
-    let fontClasses = `${englishFont.variable} ${dmSans.variable}`;
+    // All font CSS variables available on body.
+    // --font-playfair : Playfair Display (section headings)
+    // --font-wulkan   : Wulkan Display (editorial display)
+    // --font-dm-sans  : DM Sans (body / UI)
+    // --font-inter    : Inter (prices, labels)
+    let fontClasses = `${englishFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable}`;
     if (locale === "ar") {
-        fontClasses = `${arabicFont.variable} ${dmSans.variable}`;
+        fontClasses = `${arabicFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable}`;
     }
 
     // Fetch translation messages

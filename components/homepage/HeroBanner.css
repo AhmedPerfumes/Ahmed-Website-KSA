@@ -7,12 +7,12 @@
 
 /* ── Design Tokens ── */
 :root {
-  --hero-gold:       #C5A664;
-  --hero-gold-dim:   rgba(197, 166, 100, 0.35);
-  --hero-dark:       #1a1a1a;
+  --hero-gold: #C5A664;
+  --hero-gold-dim: rgba(197, 166, 100, 0.35);
+  --hero-dark: #1a1a1a;
   /* Luxury slow-in / slow-out — used on Dior, Hermès */
-  --hero-ease:       cubic-bezier(0.76, 0, 0.24, 1);
-  --hero-ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --hero-ease: cubic-bezier(0.76, 0, 0.24, 1);
+  --hero-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Outer Section ── */
@@ -97,15 +97,18 @@
 .swiper-slide-active .hero-slide__image-wrapper img {
   animation: heroKB1 10s var(--hero-ease) forwards;
 }
+
 .swiper-slide-active:nth-child(2n) .hero-slide__image-wrapper img {
   animation: heroKB2 10s var(--hero-ease) forwards;
 }
+
 .swiper-slide-active:nth-child(3n) .hero-slide__image-wrapper img {
   animation: heroKB3 10s var(--hero-ease) forwards;
 }
 
 /* Mobile: disable Ken Burns — frees GPU compositing layer, improving LCP */
 @media (max-width: 767px) {
+
   .swiper-slide-active .hero-slide__image-wrapper img,
   .swiper-slide-active:nth-child(2n) .hero-slide__image-wrapper img {
     animation: none;
@@ -114,26 +117,54 @@
 
 /* Desktop Ken Burns variants */
 @keyframes heroKB1 {
-  0%   { transform: scale(1.00) translate(0,    0);    }
-  100% { transform: scale(1.08) translate(-1%, -0.5%); }
+  0% {
+    transform: scale(1.00) translate(0, 0);
+  }
+
+  100% {
+    transform: scale(1.08) translate(-1%, -0.5%);
+  }
 }
+
 @keyframes heroKB2 {
-  0%   { transform: scale(1.06) translate(-0.5%, 0.5%); }
-  100% { transform: scale(1.00) translate(0,    0);     }
+  0% {
+    transform: scale(1.06) translate(-0.5%, 0.5%);
+  }
+
+  100% {
+    transform: scale(1.00) translate(0, 0);
+  }
 }
+
 @keyframes heroKB3 {
-  0%   { transform: scale(1.02) translate(0.5%, 0);  }
-  100% { transform: scale(1.08) translate(-0.5%, -1%); }
+  0% {
+    transform: scale(1.02) translate(0.5%, 0);
+  }
+
+  100% {
+    transform: scale(1.08) translate(-0.5%, -1%);
+  }
 }
 
 /* Mobile Ken Burns variants */
 @keyframes heroKBMobile1 {
-  0%   { transform: scale(1.00) translate(0,    0);   }
-  100% { transform: scale(1.12) translate(0, -2%);   }
+  0% {
+    transform: scale(1.00) translate(0, 0);
+  }
+
+  100% {
+    transform: scale(1.12) translate(0, -2%);
+  }
 }
+
 @keyframes heroKBMobile2 {
-  0%   { transform: scale(1.08) translate(0, -1%);   }
-  100% { transform: scale(1.00) translate(0,  0);    }
+  0% {
+    transform: scale(1.08) translate(0, -1%);
+  }
+
+  100% {
+    transform: scale(1.00) translate(0, 0);
+  }
 }
 
 /* Cinematic overlay — desktop: subtle horizontal gradient */
@@ -243,8 +274,8 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -274,7 +305,7 @@
 
 /* ── FK-style Title — large multi-line serif, white ── */
 .hero-slide__title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: clamp(1.9rem, 5vw, 3.8rem);
   font-weight: 400;
   font-style: normal;
@@ -315,7 +346,7 @@
 
 /* ── Subtitle — bold accent line below title ── */
 .hero-slide__subtitle {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: clamp(1rem, 2vw, 2rem);
   font-weight: 700;
   font-style: italic;
@@ -382,7 +413,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.65rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -524,8 +555,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 400;
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.55);
@@ -601,7 +632,8 @@
 @media (max-width: 767px) {
   .hero-skeleton__inner {
     height: 92svh;
-    height: 92vh; /* fallback */
+    height: 92vh;
+    /* fallback */
     min-height: 520px;
     max-height: 680px;
     padding: 0 24px;

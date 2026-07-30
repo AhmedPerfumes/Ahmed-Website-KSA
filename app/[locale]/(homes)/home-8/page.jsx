@@ -1,4 +1,4 @@
-﻿import Footer14 from "@/components/footers/Footer14";
+import Footer14 from "@/components/footers/Footer14";
 import HomePage from "@/components/HomePage";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";

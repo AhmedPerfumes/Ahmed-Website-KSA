@@ -8,46 +8,48 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
-import { fetchAllProducts } from "@/utlis/productsCache";
+import { fetchBestSelling } from "@/utlis/productsCache";
 import he from "he";
 import "./BestSellers.css";
 
 const TABS = [
-    { id: "all",                 label: "All",                 match: null },
-    { id: "perfumes",            label: "Perfumes",            match: "perfume" },
-    { id: "dakhoon",             label: "Dakhoon",             match: "dakhoon" },
-    { id: "concentrated-parfum", label: "Concentrated Parfum", match: "concentrated" },
-    { id: "gift-sets",           label: "Gift Sets",           match: "gift" },
-    { id: "care-essentials",     label: "Care Essentials",     match: "care" },
+    { id: "all",                 label: "All",                 category: null },
+    { id: "perfumes",            label: "Perfumes",            category: "PERFUMES" },
+    { id: "dakhoon",             label: "Dakhoon",             category: "DAKHOON" },
+    { id: "concentrated-parfum", label: "Concentrated Parfum", category: "CONCENTRATED PARFUM" },
+    { id: "gift-sets",           label: "Gift Sets",           category: "GIFT SETS" },
+    { id: "hair-mist",           label: "Hair Mist",           category: "HAIR MIST" },
+    { id: "gel",                 label: "Gel",                 category: "GEL" },
 ];
 
 export default function BestSellers() {
     const locale = useLocale();
     const t      = useTranslations();
     const { currency, isLoading: isMenuLoading } = useMenu();
-    const { addProductToCart, isAddedToCartProducts, toggleWishlist, isAddedtoWishlist } = useContextElement();
+    const { addProductToCart, isAddedToCartProducts, toggleWishlist, isAddedtoWishlist, cartProducts, setCartProducts } = useContextElement();
 
     const [activeTab, setActiveTab]     = useState(0);
-    const [allProducts, setAllProducts] = useState([]);
+    const [allProducts, setAllProducts] = useState({}); // keyed: { Perfumes: [...], ... }
     const [loading, setLoading]         = useState(true);
     const [swiper, setSwiper]           = useState(null);
 
     const prevRef = useRef(null);
     const nextRef = useRef(null);
 
-    /* ── Fetch ─────────────────────────────────────────────── */
+    /* ── Fetch best sellers on mount (single API call for all tabs) ─ */
     useEffect(() => {
         (async () => {
             try {
                 setLoading(true);
-                const data = await fetchAllProducts();
-                if (data?.length) {
-                    setAllProducts([...data].sort((a, b) => (b.sales || 0) - (a.sales || 0)));
-                }
+                const data = await fetchBestSelling();
+                // data = { Perfumes: [...], Dakhoon: [...], ... }
+                setAllProducts(data || {});
             } catch (e) { console.error(e); }
             finally { setLoading(false); }
         })();
     }, []);
+
+    /* No separate per-tab fetch needed — all data comes from getBestSelling */
 
     /* Wire nav refs after swiper mounts */
     useEffect(() => {
@@ -63,29 +65,51 @@ export default function BestSellers() {
     /* Reset slide on tab change */
     useEffect(() => { if (swiper) swiper.slideTo(0, 300); }, [activeTab, swiper]);
 
-    /* Filter */
+    /* ── Derive products for current tab (max 12 best sellers) ─── */
     const currentTab = TABS[activeTab];
-    const products   = currentTab.match === null
-        ? allProducts
-        : allProducts.filter(p => p.category_name?.toLowerCase().includes(currentTab.match));
+    const inStock = arr => (arr || []).filter(p => p.product_qty === undefined || Number(p.product_qty) > 0);
 
-    /* ── Helpers ────────────────────────────────────────────── */
+    let products = [];
+    if (currentTab.category === null) {
+        // "All" tab — top 2 from each category combined, sorted by sales
+        const seen = new Set();
+        Object.values(allProducts).forEach(items => {
+            inStock(items)
+                .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+                .slice(0, 2)
+                .forEach(p => { if (!seen.has(p.product_id)) { seen.add(p.product_id); products.push(p); } });
+        });
+        products = products.sort((a, b) => (b.sales || 0) - (a.sales || 0)).slice(0, 12);
+    } else {
+        // Category tab — find matching key in getBestSelling data
+        const key = Object.keys(allProducts).find(
+            k => k.toUpperCase() === currentTab.category
+        );
+        products = inStock(key ? allProducts[key] : [])
+            .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+            .slice(0, 12);
+    }
+
+    /* ── Helpers ────────────────────────────────────────── */
     const cleanStr = useCallback(str =>
-        str.replace(/&amp;/g, "").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim()
+        (str || "").replace(/&amp;/g, "").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim()
     , []);
 
     const getSubcatSlug = useCallback((category, subcategory) => {
         if (subcategory?.subcategory_name)
             return cleanStr(subcategory.subcategory_name).split(" ").join("-").toLowerCase();
-        const cat = cleanStr(category).toLowerCase();
+        const cat = cleanStr(category || "").toLowerCase();
         if (cat.includes("gift")) return "gift-sets";
         if (cat.includes("hair")) return "hair-mist";
         return "extrait-de-parfum";
     }, [cleanStr]);
 
-    const productUrl = useCallback(elm =>
-        `/${locale}/shop/${cleanStr(elm.category_name).split(" ").join("-").toLowerCase()}/${getSubcatSlug(elm.category_name, elm.subcategory)}/${cleanStr(elm.product_name).split(" ").join("-").toLowerCase()}`
-    , [locale, cleanStr, getSubcatSlug]);
+    const productUrl = useCallback(elm => {
+        const cat  = cleanStr(elm.category_name  || "").split(" ").join("-").toLowerCase() || "shop";
+        const sub  = getSubcatSlug(elm.category_name || "", elm.subcategory);
+        const name = cleanStr(elm.product_name   || "").split(" ").join("-").toLowerCase();
+        return `/${locale}/shop/${cat}/${sub}/${name}`;
+    }, [locale, cleanStr, getSubcatSlug]);
 
     const fmt = useCallback(v => `${Number(v).toFixed(2)}${currency?.symbol || ""}`, [currency]);
 
@@ -113,7 +137,7 @@ export default function BestSellers() {
         } catch { return ""; }
     }, []);
 
-    /* ── Skeleton ───────────────────────────────────────────── */
+    /* ── Skeleton (initial load only) ───────────────────────── */
     if (isMenuLoading || loading) return (
         <section className="best-sellers" id="best-sellers">
             <div className="best-sellers__inner">
@@ -122,7 +146,7 @@ export default function BestSellers() {
                     <div className="bs-skel-line bs-skel-line--title"   />
                 </div>
                 <div className="bs-skel-tabs">
-                    {[...Array(5)].map((_, i) => <div key={i} className="bs-skel-tab" />)}
+                    {[...Array(6)].map((_, i) => <div key={i} className="bs-skel-tab" />)}
                 </div>
                 <div className="bs-skel-row">
                     {[...Array(4)].map((_, i) => (
@@ -137,7 +161,7 @@ export default function BestSellers() {
         </section>
     );
 
-    if (!allProducts.length) return null;
+    if (!Object.keys(allProducts).length) return null;
 
     return (
         <section className="best-sellers" aria-label="Best Sellers" id="best-sellers">
@@ -175,6 +199,7 @@ export default function BestSellers() {
                         onSwiper={setSwiper}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".bs-scrollbar" }}
+                        loop={products.length > 4}
                         spaceBetween={20}
                         slidesPerView={1.4}
                         breakpoints={{
@@ -248,23 +273,40 @@ export default function BestSellers() {
                                                 {renderPrice(elm)}
                                             </div>
 
-                                            {/* Add to Cart — always visible */}
-                                            {elm.product_qty > 0 ? (
-                                                <button
-                                                    type="button"
-                                                    className={`bs-card__atc${inCart ? " bs-card__atc--added" : ""}`}
-                                                    onClick={() => addProductToCart({
-                                                        ...elm,
-                                                        category_name: elm.category_name,
-                                                        subcategory_name: elm.subcategory?.subcategory_name,
-                                                    })}
-                                                >
-                                                    {inCart ? t("Added to Cart") : t("Add To Cart")}
-                                                </button>
-                                            ) : (
-                                                <span className="bs-card__atc bs-card__atc--out">
-                                                    {t("Out Of Stock")}
-                                                </span>
+                                            {/* Add to Cart / Qty Stepper */}
+                                            {elm.product_qty > 0 ? (() => {
+                                                const cartItem = cartProducts.find(p => p.product_id === elm.product_id);
+                                                const cartQty  = cartItem?.quantity || 0;
+                                                const maxQty   = elm.maximum_order_quantity || elm.product_qty || 99;
+                                                let img = "";
+                                                try { img = JSON.parse(elm.images || "[]")[0] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}` : ""; } catch {}
+                                                const fireToast = (qty) => {
+                                                    if (typeof window === "undefined") return;
+                                                    window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: elm.product_name, image: img, qty, category: elm.category_name, subcategory: elm.subcategory?.subcategory_name || "" } }));
+                                                };
+
+                                                return cartQty > 0 ? (
+                                                    <div className="bs-card__stepper">
+                                                        <button type="button" className="bs-card__step-btn" aria-label="Decrease" onClick={() => {
+                                                            if (cartQty <= 1) { setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id)); }
+                                                            else { setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: cartQty - 1 } : p)); }
+                                                        }}>−</button>
+                                                        <span className="bs-card__step-num">{cartQty}</span>
+                                                        <button type="button" className={`bs-card__step-btn${cartQty >= maxQty ? " bs-card__step-btn--max" : ""}`} aria-label="Increase" onClick={() => {
+                                                            if (cartQty >= maxQty) return;
+                                                            const newQty = cartQty + 1;
+                                                            setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: newQty } : p));
+                                                            fireToast(newQty);
+                                                        }}>+</button>
+                                                    </div>
+                                                ) : (
+                                                    <button type="button" className="bs-card__atc" onClick={() => {
+                                                        addProductToCart({ ...elm, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name, _silent: true });
+                                                        fireToast(1);
+                                                    }}>{t("Add To Cart")}</button>
+                                                );
+                                            })() : (
+                                                <span className="bs-card__atc bs-card__atc--out">{t("Out Of Stock")}</span>
                                             )}
                                         </div>
 

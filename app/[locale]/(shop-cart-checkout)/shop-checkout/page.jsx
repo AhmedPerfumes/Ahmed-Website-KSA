@@ -1,4 +1,4 @@
-﻿import Footer14 from "@/components/footers/Footer14";
+import Footer14 from "@/components/footers/Footer14";
 import Checkout from "@/components/shopCartandCheckout/Checkout";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
@@ -21,7 +21,7 @@ export default function () {
         <div className="mb-4 pb-4"></div>
         <section className="shop-checkout container">
           <h2 className="page-title">{t("Shipping and Checkout")}</h2>
-          <ChectoutSteps />
+          <ChectoutSteps step={2} />
           <Checkout />
         </section>
       </main>

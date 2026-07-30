@@ -1,13 +1,15 @@
 "use client";
 
 /**
- * CartToast — bottom-right add-to-cart notification
+ * CartToast — bottom-right cart notification
+ *
+ * Handles three modes based on qty:
+ *  - qty > 1 and previous qty was different → "Updated" (qty changed)
+ *  - qty === 0 → "Removed from cart"
+ *  - qty (first add or +1 at 1) → "Added to cart"
  *
  * Triggered via global CustomEvent "cart:added"
- * dispatched from PremiumProductCard after addProductToCart.
- *
- * Clicking "VIEW CART" opens the cart drawer (same mechanism
- * as other ATC buttons in the app — adds CSS classes to drawer).
+ * dispatched from PremiumProductCard, ProductInfoPanel, etc.
  */
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
@@ -20,21 +22,35 @@ function openCartDrawer() {
 }
 
 export default function CartToast() {
-  const [toast, setToast] = useState(null); // { name, image }
+  const [toast, setToast] = useState(null); // { name, image, qty, mode }
   const [visible, setVisible] = useState(false);
   const timerRef = useRef(null);
+  const prevQtyRef = useRef(null);
 
   const dismiss = useCallback(() => {
     setVisible(false);
-    setTimeout(() => setToast(null), 350);
+    setTimeout(() => {
+      setToast(null);
+      prevQtyRef.current = null;
+    }, 350);
   }, []);
 
   useEffect(() => {
     const handler = (e) => {
-      const { name, image } = e.detail || {};
+      const { name, image, qty } = e.detail || {};
       if (!name) return;
       clearTimeout(timerRef.current);
-      setToast({ name, image });
+
+      // Determine mode
+      let mode = "added";
+      if (qty === 0) {
+        mode = "removed";
+      } else if (prevQtyRef.current !== null && qty !== prevQtyRef.current) {
+        mode = qty > prevQtyRef.current ? "increased" : "decreased";
+      }
+      prevQtyRef.current = qty;
+
+      setToast({ name, image, qty: qty ?? 1, mode });
       // force re-render then enable visible for CSS transition
       setTimeout(() => setVisible(true), 16);
       timerRef.current = setTimeout(dismiss, 4500);
@@ -53,43 +69,60 @@ export default function CartToast() {
 
   if (!toast) return null;
 
+  const isRemoved = toast.mode === "removed";
+  const isUpdated = toast.mode === "increased" || toast.mode === "decreased";
+
+  const statusLabel = isRemoved
+    ? "✕ Removed from cart"
+    : "✓ Added to cart";
+
+  const qtyLabel = isRemoved ? null : `Qty: ${toast.qty}`;
+
   return (
     <div
-      className={`cart-toast${visible ? " cart-toast--visible" : ""}`}
+      className={`cart-toast${visible ? " cart-toast--visible" : ""}${isRemoved ? " cart-toast--removed" : ""}`}
       role="alert"
       aria-live="polite"
       aria-atomic="true"
     >
       {/* Product thumbnail */}
-      <div className="cart-toast__img-wrap">
-        {toast.image ? (
-          <Image
-            src={toast.image}
-            alt={toast.name}
-            width={52}
-            height={52}
-            className="cart-toast__img"
-            style={{ objectFit: "contain" }}
-            unoptimized
-          />
-        ) : (
-          <div className="cart-toast__img-placeholder" />
-        )}
-      </div>
+      {!isRemoved && (
+        <div className="cart-toast__img-wrap">
+          {toast.image ? (
+            <Image
+              src={toast.image}
+              alt={toast.name}
+              width={52}
+              height={52}
+              className="cart-toast__img"
+              style={{ objectFit: "contain" }}
+              unoptimized
+            />
+          ) : (
+            <div className="cart-toast__img-placeholder" />
+          )}
+        </div>
+      )}
 
       {/* Info */}
       <div className="cart-toast__body">
+        <p className={`cart-toast__added-label${isRemoved ? " cart-toast__added-label--removed" : ""}`}>
+          {statusLabel}
+        </p>
         <p className="cart-toast__name">{toast.name}</p>
-        <button
-          className="cart-toast__view"
-          type="button"
-          onClick={() => {
-            dismiss();
-            openCartDrawer();
-          }}
-        >
-          VIEW CART
-        </button>
+        {qtyLabel && <p className="cart-toast__qty">{qtyLabel}</p>}
+        {!isRemoved && (
+          <button
+            className="cart-toast__view"
+            type="button"
+            onClick={() => {
+              dismiss();
+              openCartDrawer();
+            }}
+          >
+            VIEW CART →
+          </button>
+        )}
       </div>
 
       {/* Close */}

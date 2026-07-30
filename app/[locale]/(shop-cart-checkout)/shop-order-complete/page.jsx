@@ -1,4 +1,4 @@
-﻿import Footer14 from "@/components/footers/Footer14";
+import Footer14 from "@/components/footers/Footer14";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import OrderCompleted from "@/components/shopCartandCheckout/OrderCompleted";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
@@ -20,7 +20,7 @@ export default function () {
         <div className="mb-4 pb-4"></div>
         <section className="shop-checkout container">
           <h2 className="page-title">ORDER RECEIVED</h2>
-          {/* <ChectoutSteps /> */}
+          <ChectoutSteps step={3} />
           <OrderCompleted />
         </section>
       </main>

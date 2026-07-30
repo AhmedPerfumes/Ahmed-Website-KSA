@@ -79,8 +79,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -100,7 +100,7 @@
 }
 
 .dkbnr__title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: clamp(1.1rem, 2.5vw, 2.2rem);
   font-weight: 400;
   color: #fff;
@@ -121,7 +121,7 @@
   gap: 8px;
   margin-top: 20px;
   padding: 10px 24px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -153,8 +153,8 @@
 .dk-section {
   --dk-gold:       #C5A664;
   --dk-text:       #1a1a1a;
-  --dk-text-sec:   #6b6b6b;
-  --dk-text-muted: #aaa;
+  --dk-text-sec:   #3d3d3d;
+  --dk-text-muted: #888;
   --dk-bg:         #FDFBF7;
   --dk-card-bg:    #f0ece4;
   --dk-ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -198,8 +198,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -213,10 +213,10 @@
   width: 20px; height: 1px;
   background: var(--dk-gold);
 }
-@media (min-width: 768px) { .dk-eyebrow { font-size: 0.62rem; letter-spacing: 0.26em; } }
+@media (min-width: 768px) { .dk-eyebrow { font-size: 0.75rem; letter-spacing: 0.26em; } }
 
 .dk-title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: 1.55rem;
   font-weight: 400;
   color: var(--dk-text);
@@ -230,7 +230,7 @@
 @media (min-width: 1200px) { .dk-title { font-size: 2.75rem; } }
 
 .dk-sub {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: clamp(0.68rem, 1.1vw, 0.82rem);
   font-weight: 400;
   color: var(--dk-text-sec);
@@ -243,7 +243,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -401,7 +401,7 @@
 }
 
 .dk-card__name {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.88rem; font-weight: 500;
   color: var(--dk-text);
   margin: 0 0 4px; line-height: 1.4;
@@ -426,8 +426,8 @@
   justify-content: center;
   width: 100%;
   padding: 9px 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem; font-weight: 600;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem; font-weight: 600;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--dk-text);
   background: transparent;

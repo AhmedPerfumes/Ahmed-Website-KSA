@@ -7,11 +7,13 @@
 
   /*
    * Font variables — resolved via Next.js localFont/googleFont CSS vars.
-   * --font-wulkan  : Wulkan Display (self-hosted WOFF2) — luxury display serif for headings
+   * --font-playfair : Playfair Display (Google, luxury serif — all major headings)
+   * --font-wulkan  : Wulkan Display (self-hosted WOFF2 — display/editorial accents)
    * --font-dm-sans : DM Sans (Google, optimised WOFF2) — clean body/UI text font
+   * --font-inter   : Inter (Google) — prices, labels, UI numbers
    * --font-alexandria : Alexandria (Arabic locale only)
    */
-  --font-heading: var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-playfair), var(--font-wulkan), "Georgia", serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-special: "Allura", cursive;
 }

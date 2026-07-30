@@ -14,11 +14,11 @@
   --pc-surface:      #fafafa;
   --pc-border:       #ebebeb;
   --pc-border-mid:   #d8d8d8;
-  --pc-mid:          #666666;
+  --pc-mid: #444444;
   --pc-red:          #b03a2e;
   --pc-green:        #1e7e4b;
-  --pc-font:         'Poppins', 'Segoe UI', sans-serif;
-  --pc-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --pc-font:         var(--font-family-base, var(--font-dm-sans, 'Segoe UI', sans-serif));
+  --pc-font-serif:   var(--font-heading, 'Cormorant Garamond', Georgia, serif);
   --pc-ease:         cubic-bezier(0.4, 0, 0.2, 1);
   --pc-t:            0.22s;
   /* Mobile nav is taller (~110px), so offset must match */
@@ -83,30 +83,35 @@
 
 /* ─── TOOLBAR ───────────────────────────────────────────────── */
 
+/* Full-width band with border — keeps visual continuity */
 .pc-toolbar {
-  position: sticky;
-  top: var(--header-h);
+  position: relative;
   z-index: 40;
   background: rgba(255,255,255,0.98);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--pc-border);
-  padding: 0.5rem 0.85rem;
+  /* No side padding here — inner wrapper handles it */
+  padding: 0;
+}
+
+/* Inner row: same max-width as product grid, centered */
+.pc-toolbar__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-/* On mobile: toolbar scrolls with the page (no sticky) */
-@media (max-width: 767px) {
-  .pc-toolbar {
-    position: relative;
-    top: auto;
-  }
+  width: 100%;
 }
 
 @media (min-width: 768px) {
-  .pc-toolbar { padding: 0.55rem 1.5rem; gap: 0.75rem; }
+  .pc-toolbar__inner { padding: 0.55rem 1.5rem; gap: 0.75rem; }
+}
+
+@media (min-width: 1440px) {
+  .pc-toolbar__inner { padding: 0.55rem 2rem; }
 }
 
 .pc-filter-btn {
@@ -149,7 +154,7 @@
 .pc-toolbar__spacer { flex: 1; min-width: 0; }
 
 .pc-toolbar__count {
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 400;
   color: var(--pc-mid);
   white-space: nowrap;
@@ -171,7 +176,7 @@
   border-radius: 3px;
   padding: 0.32rem 1.8rem 0.32rem 0.65rem;
   font-family: var(--pc-font);
-  font-size: 0.71rem;
+  font-size: 0.875rem;
   font-weight: 400;
   color: var(--pc-dark);
   cursor: pointer;
@@ -642,37 +647,67 @@
 .pc-price--old    { font-size: 0.78rem; font-weight: 400; color: var(--pc-mid); text-decoration: line-through; }
 .pc-price--sale   { font-size: 0.9rem; font-weight: 600; color: var(--pc-red); }
 
-/* ─── CARD ACTIONS: qty (top) + ATC (bottom) ────────────────── */
+/* ─── CARD ACTIONS: qty + ATC inline in one row ─────────────── */
 
 .pc-card__actions {
   display: flex;
-  flex-direction: column; /* stack: qty above, ATC below */
+  flex-direction: column;
   border-top: 1px solid var(--pc-border);
   flex-shrink: 0;
   background: var(--pc-white);
 }
 
-/* Quantity stepper — full-width centered row */
+/* Single action row: qty stepper left + ATC button right */
+.pc-action-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 46px;
+}
+
+/* Quantity stepper — compact left side */
 .pc-qty {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  border-bottom: 1px solid var(--pc-border);
+  border-right: 1px solid var(--pc-border);
   background: #fafafa;
-  padding: 0.1rem 0;
+  flex-shrink: 0;
 }
 
+/* When stepper replaces the full button (in-cart state) */
+.pc-qty--cart {
+  flex: 1;
+  border-right: none;
+  background: #fffdf8;
+  border: 1.5px solid var(--pc-gold);
+  border-radius: 0;
+  justify-content: space-between;
+}
+.pc-qty--cart .pc-qty__btn {
+  width: 40px;
+  height: 46px;
+  color: var(--pc-gold-dark, #8b6914);
+  font-size: 1.3rem;
+}
+.pc-qty--cart .pc-qty__num {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--pc-dark);
+  border-color: var(--pc-gold);
+}
+
+
 .pc-qty__btn {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: transparent;
   font-family: var(--pc-font);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 400;
   color: var(--pc-mid);
   cursor: pointer;
@@ -689,8 +724,8 @@
 .pc-qty__btn:disabled { opacity: 0.3; cursor: default; }
 
 .pc-qty__num {
-  min-width: 40px;
-  height: 38px;
+  min-width: 28px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -704,10 +739,11 @@
   letter-spacing: 0.02em;
 }
 
-/* ATC full-width wrapper */
+/* ATC full-width wrapper — now flex:1 to fill remaining space */
 .pc-atc-row {
-  width: 100%;
+  flex: 1;
   display: flex;
+  min-width: 0;
 }
 
 /* Add to Cart */
@@ -777,6 +813,12 @@
 }
 
 .pc-atc--oos:hover::before { display: none; }
+
+/* OOS spacer — invisible placeholder matching qty row height */
+.pc-qty--oos-spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
 
 /* ─── EMPTY STATE ───────────────────────────────────────────── */
 
@@ -879,3 +921,80 @@
 /* Next.js Image fill shim */
 .pc-card__img-wrap > div,
 .pc-card__img-wrap > a > div { width: 100% !important; height: 100% !important; }
+
+/* ─── QTY LIMIT WARNING ─────────────────────────────────────── */
+
+/* Maxed + button: amber tint */
+.pc-qty__btn--maxed {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Warning badge — fades in below the stepper */
+@keyframes pc-warn-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pc-qty-warn {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #7d4f00;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-top: 5px;
+  text-align: center;
+  animation: pc-warn-in 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+/* ─── IN-CART QTY STEPPER (full-width gold style) ───────────── */
+
+.pc-qty--cart {
+  width: 100%;
+  border: 1.5px solid #b9a16b;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  background: #fffdf8;
+}
+
+.pc-qty--cart .pc-qty__btn {
+  background: transparent;
+  border: none;
+  color: #b9a16b;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 2.2rem;
+  min-height: 2.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.pc-qty--cart .pc-qty__btn:hover {
+  background: #f5edd9;
+}
+
+.pc-qty--cart .pc-qty__btn--maxed {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pc-qty--cart .pc-qty__num {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #e8d5a0;
+  border-right: 1px solid #e8d5a0;
+}

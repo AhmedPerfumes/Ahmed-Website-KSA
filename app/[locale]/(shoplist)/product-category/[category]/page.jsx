@@ -1,14 +1,7 @@
 import Footer14 from "@/components/footers/Footer14";
-import Header14 from "@/components/headers/Header14";
-import Categories from "@/components/shoplist/Categories";
-// import Categories from "@/components/homes/home-3/Categories";
-import Shop10 from "@/components/shoplist/shop10/Shop10";
-import Banner5 from "@/components/shoplist/Banner5";
+import PremiumProductGrid from "@/components/shoplist/premium/PremiumProductGrid";
 import React from "react";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
-// import Loader from "@/components/loader/Loader";
-import RelatedSlider from "@/components/singleProduct/RelatedSlider";
-// import Link from "next/link";
 import QuickView from "@/components/modals/QuickView";
 import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
 import { headers } from 'next/headers';
@@ -160,56 +153,79 @@ export async function generateMetadata({ params }) {
         };
     }
 }
-// export default function ShopPage8() {
 const ShopPage8 = async ({ params }) => {
-  const { category,locale } = params;
-  // console.log(category);
-  
+  const { category, locale } = params;
+
+  const arabicLabels = {
+    perfumes: "العطور",
+    "gift-sets": "مجموعات الهدايا",
+    dakhoon: "الدخون",
+    gel: "الجيل",
+    "hair-mist": "عطر الشعر",
+    "concentrated-parfum": "العطر المركز",
+    "online-exclusive": "حصري على الإنترنت",
+  };
+
+  const categoryLabel = category
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+  const categoryLabelAr = arabicLabels[category] || categoryLabel;
+
   try {
     const data = await getCategorySubCategory(category);
-    const activeDescription= locale==='ar'?data.description_ar:data.description
-    // console.log(data);
-    
-    
+    const activeDescription = locale === 'ar' ? data.description_ar : data.description;
+
     return data && (
       <>
         <QuickView />
-        <Header14 />
-        <Banner5 image={ data.image } mobile_image={data.mobile_image}/>
-       <main className="page-wrapper pt-0">
-          <Categories subCategories={ data.productSubCategories }/>
-          <div className="mb-4 pb-lg-3"></div>
-          <Shop10 subCategories={ data.productSubCategories } products={ data.products }/>
-          <div className="mb-4 pb-lg-3"></div>
-          <CollapsibleDescription description={activeDescription}locale={locale} />
+        <main>
+          <PremiumProductGrid
+            subCategories={data.productSubCategories || null}
+            products={data.products || null}
+            categoryLabel={categoryLabel}
+            categoryLabelAr={categoryLabelAr}
+            breadcrumbItems={[
+              { label: "Shop", labelAr: "المتجر", href: `/${locale}/shop` },
+              { label: categoryLabel, labelAr: categoryLabelAr },
+            ]}
+          />
+          <CollapsibleDescription description={activeDescription} locale={locale} />
         </main>
-        <div className="mb-5 pb-xl-5"></div>
         <section className="d-none d-lg-block" style={{ height: "100%" }}>
           <Footer14 />
         </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5  ">
-        <div className="MobileFooter">
-          <MobileFooter2/>
-        </div>
-      </section>
+        <section className="d-sm-block d-md-none bg-dark pt-5">
+          <div className="MobileFooter">
+            <MobileFooter2 />
+          </div>
+        </section>
       </>
     );
   } catch (error) {
     console.error(error);
-    return <><Header14 />
-            <main className="page-wrapper">
-              <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Category Found</h2>
-              <RelatedSlider relatedProds={ null }/>
-            </main>
-            <section className="d-none d-lg-block" style={{ height: "100%" }}>
-              <Footer14 />
-            </section>
-            <section className="d-sm-block d-md-none bg-dark pt-5  ">
-              <div className="MobileFooter">
-                <MobileFooter2/>
-              </div>
-            </section></>;
+    return (
+      <>
+        <main className="page-wrapper">
+          <h1 style={{ textAlign: "center", padding: "4rem 1rem", fontSize: "1.2rem" }}>
+            {categoryLabel}
+          </h1>
+          <p style={{ textAlign: "center", color: "#888" }}>
+            No products found. Please try again later.
+          </p>
+        </main>
+        <section className="d-none d-lg-block" style={{ height: "100%" }}>
+          <Footer14 />
+        </section>
+        <section className="d-sm-block d-md-none bg-dark pt-5">
+          <div className="MobileFooter">
+            <MobileFooter2 />
+          </div>
+        </section>
+      </>
+    );
   }
-}
+};
 
 export default ShopPage8;

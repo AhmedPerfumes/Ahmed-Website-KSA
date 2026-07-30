@@ -16,7 +16,15 @@ export default function SpecialOffers() {
     const locale = useLocale();
     const t      = useTranslations();
     const { currency, isLoading: isMenuLoading } = useMenu();
-    const { addProductToCart, isAddedToCartProducts, toggleWishlist, isAddedtoWishlist } = useContextElement();
+    const { addProductToCart, isAddedToCartProducts, toggleWishlist, isAddedtoWishlist, cartProducts, setCartProducts } = useContextElement();
+
+    /* Fire the same CartToast used on the product listing page */
+    const fireToast = (elm, qty = 1) => {
+        if (typeof window === "undefined") return;
+        let img = "";
+        try { img = JSON.parse(elm.images || "[]")[0] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}` : ""; } catch {}
+        window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: elm.product_name, image: img, qty, category: elm.category_name, subcategory: elm.subcategory?.subcategory_name || "" } }));
+    };
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading]   = useState(true);
@@ -121,8 +129,8 @@ export default function SpecialOffers() {
 
                 {/* ── Centered heading ── */}
                 <div className="so-head">
-                    <span className="so-eyebrow">{t("Limited Time")}</span>
-                    <h2 className="so-title">{t("Exclusive Offers")}</h2>
+                    <span className="so-eyebrow">{t("Exclusive Offers")}</span>
+                    <h2 className="so-title">{t("Buy 3 Get 1 Free")}</h2>
                 </div>
 
                 {/* ── Carousel ── */}
@@ -215,22 +223,29 @@ export default function SpecialOffers() {
                                                 )}
                                             </div>
 
-                                            {elm.product_qty > 0 ? (
-                                                <button
-                                                    type="button"
-                                                    className={`so-card__atc${inCart ? " so-card__atc--added" : ""}`}
-                                                    onClick={() => addProductToCart({
-                                                        ...elm,
-                                                        category_name:    elm.category_name,
-                                                        subcategory_name: elm.subcategory?.subcategory_name,
-                                                    })}
-                                                >
-                                                    {inCart ? t("Added to Cart") : t("Add To Cart")}
-                                                </button>
-                                            ) : (
-                                                <span className="so-card__atc so-card__atc--out">
-                                                    {t("Out Of Stock")}
-                                                </span>
+                                            {elm.product_qty > 0 ? (() => {
+                                                const cartItem = cartProducts.find(p => p.product_id === elm.product_id);
+                                                const cartQty  = cartItem?.quantity || 0;
+                                                const maxQty   = elm.maximum_order_quantity || elm.product_qty || 99;
+                                                return cartQty > 0 ? (
+                                                    <div className="so-card__stepper">
+                                                        <button type="button" className="so-card__step-btn" aria-label="Decrease" onClick={() => {
+                                                            if (cartQty <= 1) { setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id)); }
+                                                            else { setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: cartQty - 1 } : p)); }
+                                                        }}>−</button>
+                                                        <span className="so-card__step-num">{cartQty}</span>
+                                                        <button type="button" className={`so-card__step-btn${cartQty >= maxQty ? " so-card__step-btn--max" : ""}`} aria-label="Increase" onClick={() => {
+                                                            if (cartQty >= maxQty) return;
+                                                            const newQty = cartQty + 1;
+                                                            setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: newQty } : p));
+                                                            fireToast(elm, newQty);
+                                                        }}>+</button>
+                                                    </div>
+                                                ) : (
+                                                    <button type="button" className="so-card__atc" onClick={() => { addProductToCart({ ...elm, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name, _silent: true }); fireToast(elm, 1); }}>{t("Add To Cart")}</button>
+                                                );
+                                            })() : (
+                                                <span className="so-card__atc so-card__atc--out">{t("Out Of Stock")}</span>
                                             )}
                                         </div>
 

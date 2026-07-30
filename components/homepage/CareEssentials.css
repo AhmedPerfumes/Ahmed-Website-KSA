@@ -74,8 +74,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -100,7 +100,7 @@
 }
 
 .care__title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: 1.7rem;
   font-weight: 400;
   text-transform: uppercase;
@@ -227,7 +227,7 @@
 
 .care-card__eyebrow {
   display: block;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.54rem;
   font-weight: 500;
   letter-spacing: 0.2em;
@@ -243,7 +243,7 @@
 }
 
 .care-card__title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 400;
   color: #fff;
@@ -252,7 +252,7 @@
 }
 
 .care-card__sub {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
   font-weight: 300;
   color: rgba(255, 255, 255, 0.72);
@@ -273,8 +273,8 @@
   align-items: center;
   gap: 8px;
   padding: 10px 22px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -312,7 +312,7 @@
 @media (min-width: 768px) {
   .care-card__cta {
     padding: 11px 26px;
-    font-size: 0.62rem;
+    font-size: 0.75rem;
   }
 }
 

@@ -22,7 +22,15 @@ export default function OnlineExclusive() {
     const locale = useLocale();
     const t      = useTranslations();
     const { currency, isLoading: isMenuLoading } = useMenu();
-    const { addProductToCart, isAddedToCartProducts, toggleWishlist, isAddedtoWishlist } = useContextElement();
+    const { addProductToCart, isAddedToCartProducts, toggleWishlist, isAddedtoWishlist, cartProducts, setCartProducts } = useContextElement();
+
+    /* Fire the same CartToast used on the product listing page */
+    const fireToast = (elm, qty = 1) => {
+        if (typeof window === "undefined") return;
+        let img = "";
+        try { img = JSON.parse(elm.images || "[]")[0] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}` : ""; } catch {}
+        window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: elm.product_name, image: img, qty, category: elm.category_name, subcategory: elm.subcategory?.subcategory_name || "" } }));
+    };
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading]   = useState(true);
@@ -149,7 +157,7 @@ export default function OnlineExclusive() {
 
                 {/* ── View All row ── */}
                 <div className="oe-view-all-row">
-                    <Link href={`/${locale}/shop/online-exclusive`} className="oe-view-all">
+                    <Link href={`/${locale}/shop`} className="oe-view-all">
                         {t("View All")}
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </Link>
@@ -247,22 +255,29 @@ export default function OnlineExclusive() {
                                                 )}
                                             </div>
 
-                                            {elm.product_qty > 0 ? (
-                                                <button
-                                                    type="button"
-                                                    className={`oe-card__atc${inCart ? " oe-card__atc--added" : ""}`}
-                                                    onClick={() => addProductToCart({
-                                                        ...elm,
-                                                        category_name:    elm.category_name,
-                                                        subcategory_name: elm.subcategory?.subcategory_name,
-                                                    })}
-                                                >
-                                                    {inCart ? t("Added to Cart") : t("Add To Cart")}
-                                                </button>
-                                            ) : (
-                                                <span className="oe-card__atc oe-card__atc--out">
-                                                    {t("Out Of Stock")}
-                                                </span>
+                                            {elm.product_qty > 0 ? (() => {
+                                                const cartItem = cartProducts.find(p => p.product_id === elm.product_id);
+                                                const cartQty  = cartItem?.quantity || 0;
+                                                const maxQty   = elm.maximum_order_quantity || elm.product_qty || 99;
+                                                return cartQty > 0 ? (
+                                                    <div className="oe-card__stepper">
+                                                        <button type="button" className="oe-card__step-btn" aria-label="Decrease" onClick={() => {
+                                                            if (cartQty <= 1) { setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id)); }
+                                                            else { setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: cartQty - 1 } : p)); }
+                                                        }}>−</button>
+                                                        <span className="oe-card__step-num">{cartQty}</span>
+                                                        <button type="button" className={`oe-card__step-btn${cartQty >= maxQty ? " oe-card__step-btn--max" : ""}`} aria-label="Increase" onClick={() => {
+                                                            if (cartQty >= maxQty) return;
+                                                            const newQty = cartQty + 1;
+                                                            setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: newQty } : p));
+                                                            fireToast(elm, newQty);
+                                                        }}>+</button>
+                                                    </div>
+                                                ) : (
+                                                    <button type="button" className="oe-card__atc" onClick={() => { addProductToCart({ ...elm, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name, _silent: true }); fireToast(elm, 1); }}>{t("Add To Cart")}</button>
+                                                );
+                                            })() : (
+                                                <span className="oe-card__atc oe-card__atc--out">{t("Out Of Stock")}</span>
                                             )}
                                         </div>
 

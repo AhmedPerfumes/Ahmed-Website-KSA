@@ -8,8 +8,8 @@
 .na2 {
   --na2-gold:       #C5A664;
   --na2-text:       #1a1a1a;
-  --na2-text-sec:   #6b6b6b;
-  --na2-text-muted: #aaa;
+  --na2-text-sec:   #3d3d3d;
+  --na2-text-muted: #888;
   --na2-bg:         #FDFBF7;
   --na2-ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -56,8 +56,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -71,10 +71,10 @@
   background: var(--na2-gold);
   flex-shrink: 0;
 }
-@media (min-width: 768px) { .na2__eyebrow { font-size: 0.62rem; } }
+@media (min-width: 768px) { .na2__eyebrow { font-size: 0.75rem; } }
 
 .na2__title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: 1.7rem;
   font-weight: 400;
   color: var(--na2-text);
@@ -92,7 +92,7 @@
   display: none;
   align-items: center;
   gap: 8px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.65rem; font-weight: 500;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--na2-text);
@@ -263,7 +263,7 @@
 
 /* Sub label */
 .na2-banner__sub {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.56rem; font-weight: 400;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(255,255,255,0.65);
@@ -273,7 +273,7 @@
 
 /* Product name */
 .na2-banner__name {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: 1.05rem; font-weight: 400;
   color: #fff;
   margin: 0 0 8px;
@@ -312,7 +312,7 @@
   align-items: center;
   justify-content: center;
   padding: 7px 14px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.54rem; font-weight: 600;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--na2-text);

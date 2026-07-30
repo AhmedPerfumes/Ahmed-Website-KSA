@@ -7,12 +7,12 @@
 .oe-section {
   --oe-gold: #C5A664;
   --oe-text: #1a1a1a;
-  --oe-text-sec: #6b6b6b;
-  --oe-text-muted: #aaa;
+  --oe-text-sec: #3d3d3d;
+  --oe-text-muted: #888;
   --oe-bg: #ffffff;
   --oe-card-bg: #f0ece4;
   --oe-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --gs2-text-sec: #6b6b6b;
+  --gs2-text-sec: #3d3d3d;
 }
 
 /* ── Section ── */
@@ -90,8 +90,8 @@
 
 .oe-eyebrow {
   display: block;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -101,16 +101,16 @@
 
 @media (min-width: 768px) {
   .oe-eyebrow {
-    font-size: 0.62rem;
+    font-size: 0.75rem;
   }
 }
 
 /* Subtitle */
 .oe-subtitle {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: clamp(0.7rem, 1.5vw, 0.88rem);
   font-weight: 300;
-  color: #6b6b6b;
+  color: #3d3d3d;
   margin: 12px auto 0;
   max-width: 520px;
   line-height: 1.65;
@@ -118,7 +118,7 @@
 }
 
 .oe-title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: 1.55rem;
   font-weight: 400;
   text-transform: uppercase;
@@ -151,8 +151,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.62rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -433,7 +433,7 @@
 }
 
 .oe-card__sub {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.6rem;
   font-weight: 400;
   text-transform: uppercase;
@@ -444,7 +444,7 @@
 }
 
 .oe-card__name {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.83rem;
   font-weight: 500;
   color: var(--oe-text);
@@ -468,7 +468,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--oe-text);
@@ -497,8 +497,8 @@
   justify-content: center;
   width: 100%;
   padding: 9px 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;

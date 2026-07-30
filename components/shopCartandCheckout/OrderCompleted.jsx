@@ -2,7 +2,7 @@
 
 import { useContextElement } from "@/context/Context";
 import { useMenu } from '@/context/MenuContext';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import he from 'he';
 import Link from "next/link";
 import Pagination1 from "../common/Pagination1";
@@ -14,13 +14,18 @@ export default function OrderCompleted() {
   
   const [showDate, setShowDate] = useState(false);
   const [orderData, setorderData] = useState(null);
+  const hasFiredPurchase = useRef(false); // prevents purchase events firing more than once
+
   useEffect(() => {
   setShowDate(true);
   localStorage.setItem('cartList', []);
   setCartProducts([]);
 
-  if (orderDetails && orderDetails.order_id) {
-    // ---- GA4 Purchase ----
+  // ✅ Fire purchase events exactly once when orderDetails becomes available
+  if (orderDetails && orderDetails.order_id && !hasFiredPurchase.current) {
+    hasFiredPurchase.current = true; // lock — never fires again for this page visit
+
+    // ---- GA4 Purchase (TikTok listener in layout.jsx maps this to ttq.track("Purchase")) ----
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "purchase",
@@ -31,23 +36,27 @@ export default function OrderCompleted() {
         currency: currency?.code || "SAR",
         items: orderDetails.products.map((item) => ({
           item_id: item.product_id?.toString(),
-          item_name: he.decode(item.name),
+          item_name: he.decode(item.name || item.product_name || ""),
           price: parseFloat(item.price),
           quantity: item.qty,
         })),
       },
     });
 
-    // ---- TikTok Pixel ----
-    window.ttq?.track("Purchase", {
-      contents: orderDetails.products.map((item) => ({
-        content_id: item.product_id?.toString(),
+    // ---- Meta (Facebook) Pixel Purchase ----
+    if (typeof window.fbq === "function") {
+      window.fbq("track", "Purchase", {
+        content_ids: orderDetails.products.map((item) => item.product_id?.toString()),
         content_type: "product",
-        content_name: he.decode(item.name),
-      })),
-      value: parseFloat(orderDetails.total),
-      currency: currency?.code || "SAR",
-    });
+        contents: orderDetails.products.map((item) => ({
+          id: item.product_id?.toString(),
+          quantity: item.qty,
+        })),
+        value: parseFloat(orderDetails.total),
+        currency: currency?.code || "SAR",
+        order_id: orderDetails.order_id,
+      });
+    }
 
     // ---- Snapchat Pixel ----
     if (window.snaptr) {

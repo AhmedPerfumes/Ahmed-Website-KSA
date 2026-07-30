@@ -159,6 +159,20 @@ const ShopPage8 = async ({ params }) => {
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
 
+    // Arabic labels for heading and breadcrumb
+    const arabicCategoryLabels = {
+      perfumes: "العطور",
+      "gift-sets": "مجموعات الهدايا",
+      dakhoon: "الدخون",
+      gel: "الجيل",
+      "hair-mist": "عطر الشعر",
+      "concentrated-parfum": "العطر المركز",
+      "online-exclusive": "حصري على الإنترنت",
+    };
+    const categoryLabelAr = arabicCategoryLabels[category] || categoryLabel;
+    // Use Arabic sub-category name from API if available, else fall back to slug
+    const subcategoryLabelAr = data.name_ar || subcategoryLabel;
+
     // JSON-LD: ItemList schema
     const baseUrl =
       process.env.NEXT_PUBLIC_DEFAULT_ORIGIN ||
@@ -209,8 +223,28 @@ const ShopPage8 = async ({ params }) => {
             locale={locale}
           />
 
-          {/* Product grid — replaces Categories + Shop10 */}
-          <PremiumProductGrid products={data.products || null} />
+          {/* Product grid */}
+          <PremiumProductGrid
+            products={data.products || null}
+            categoryLabel={subcategoryLabel}
+            categoryLabelAr={subcategoryLabelAr}
+            breadcrumbItems={[
+              {
+                label: "Shop",
+                labelAr: "المتجر",
+                href: `/${locale}/shop`,
+              },
+              {
+                label: categoryLabel,
+                labelAr: categoryLabelAr,
+                href: `/${locale}/product-category/${category}`,
+              },
+              {
+                label: subcategoryLabel,
+                labelAr: subcategoryLabelAr,
+              },
+            ]}
+          />
 
           <CollapsibleDescription
             description={activeDescription}

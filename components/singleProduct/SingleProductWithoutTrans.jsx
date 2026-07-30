@@ -107,12 +107,39 @@ export default function SingleProduct11({ category, subcategory, product }) {
       const item = {...product, category_name: capitalizeEachWord(category.split('-').join(' ')), subcategory_name: capitalizeEachWord(subcategory.split('-').join(' '))};
       item.quantity = quantity;
       setCartProducts((pre) => [...pre, item]);
-      document
-      .getElementById("cartDrawerOverlay")
-      .classList.add("page-overlay_visible");
+      document.getElementById("cartDrawerOverlay").classList.add("page-overlay_visible");
       document.getElementById("cartDrawer").classList.add("aside_visible");
+
+      // ---- GA4 add_to_cart + Meta Pixel AddToCart ----
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "add_to_cart",
+          ecommerce: {
+            currency: currency?.code || "SAR",
+            value: parseFloat((product.price || 0) * (quantity || 1)),
+            items: [{
+              item_id: product.product_id?.toString(),
+              item_name: product.product_name,
+              price: parseFloat(product.price || 0),
+              quantity: quantity || 1,
+              item_category: category || "",
+            }],
+          },
+        });
+        if (typeof window.fbq === "function") {
+          window.fbq("track", "AddToCart", {
+            content_ids: [product.product_id?.toString()],
+            content_name: product.product_name,
+            content_type: "product",
+            value: parseFloat((product.price || 0) * (quantity || 1)),
+            currency: currency?.code || "SAR",
+          });
+        }
+      } catch (e) { /* tracking errors must never break Add to Cart */ }
     }
   };
+
 
   function cleanProductName(productName) {
     // Step 1: Remove any non-alphanumeric characters except for spaces

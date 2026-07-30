@@ -9,6 +9,14 @@ import { useMenu } from "@/context/MenuContext";
 import { renderPrice } from "@/utlis/priceRenderer";
 import he from "he";
 
+/** Fires the global cart toast — same event that CartToast listens to */
+function fireCartToast(name, image, qty) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1 } })
+  );
+}
+
 /**
  * BundleUpsell — Section 10
  *
@@ -128,6 +136,13 @@ const BundleUpsell = ({ product }) => {
           subcategory_name: item.subcategory_name || "",
         },
       ]);
+      // Fire premium cart toast
+      const imgs = item?.images
+        ? (typeof item.images === "string" ? JSON.parse(item.images) : item.images)
+        : [];
+      const img = imgs[0] ? `${API_URL}storage/${imgs[0]}` : null;
+      const name = he.decode(item?.product_name || item?.name || "");
+      fireCartToast(name, img, 1);
     }
   };
 

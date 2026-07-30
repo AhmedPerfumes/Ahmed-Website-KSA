@@ -3,471 +3,205 @@ import { useContextElement } from "@/context/Context";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-
 import { useLocale } from "next-intl";
 import { useMenu } from '../../context/MenuContext';
 import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "../TamaraWidget";
+import dynamic from "next/dynamic";
+const YouMayAlsoLike = dynamic(() => import("@/components/cart/YouMayAlsoLike"), { ssr: false });
 
 export default function Cart() {
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   const locale = useLocale();
   const [error, setError] = useState(null);
-  // const [couponCode, setCouponCode] = useState("");
-  // const [couponError, setCouponError] = useState(null);
-  // const [couponSuccess, setCouponSuccess] = useState(null);
-  const { cartProducts, setCartProducts, totalPrice, freeShippingFlag, setCouponDataContext,removeGiftFromCart } = useContextElement();
-  // const setQuantity = async (id, quantity, productQty) => {
-  //   if (quantity >= 1 && quantity <= productQty) {
-  //     setError(null);
-  //     const item = cartProducts.filter((elm) => elm.product_id == id)[0];
-  //     const items = [...cartProducts];
-  //     const itemIndex = items.indexOf(item);
-  //     item.quantity = quantity;
-  //     items[itemIndex] = item;
-  //     setCartProducts(items);
-  //   } else {
-  //     setError("Quantity is more than available quantity");
-  //   }
-  // };
+  const { cartProducts, setCartProducts, totalPrice, freeShippingFlag, setCouponDataContext, removeGiftFromCart } = useContextElement();
 
-    useEffect(() => {
+  useEffect(() => {
     setCouponDataContext(null);
     removeGiftFromCart();
   }, []);
-  const setQuantity = async (id, quantity, productQty, maxOrderQty) => {
-    // Determine dynamic max allowed per product
-    const MAX_LIMIT =
-      maxOrderQty && maxOrderQty > 0
-        ? maxOrderQty
-        : productQty; // fallback to stock quantity
-
-    // Check stock limit
-    const withinStock = quantity >= 1 && quantity <= productQty;
-
-    // Check max purchase limit
-    const withinLimit = quantity <= MAX_LIMIT;
-
-    if (withinStock && withinLimit) {
-      setError(null);
-
-      const items = [...cartProducts];
-      const itemIndex = items.findIndex((elm) => elm.product_id == id);
-
-      if (itemIndex !== -1) {
-        items[itemIndex] = {
-          ...items[itemIndex],
-          quantity,
-        };
-      }
-
-      setCartProducts(items);
-    } else {
-      setError(
-        !withinStock
-          ? "Quantity is more than available quantity"
-          : `Maximum allowed quantity is ${MAX_LIMIT}`
-      );
-    }
-  };
-  const removeItem = async(id) => {
-    setCartProducts((pre) => [...pre.filter((elm) => elm.product_id != id)]);
-  };
-
-  const [checkboxes, setCheckboxes] = useState({
-    free_shipping: freeShippingFlag,
-    flat_rate: false,
-    local_pickup: false,
-  });
-
-  // Step 2: Create a handler function
-  const handleCheckboxChange = (event) => {
-    const { id, checked } = event.target;
-    setCheckboxes((prevCheckboxes) => ({
-      ...prevCheckboxes,
-      [id]: checked,
-    }));
-  };
-
-  // const handleCouponChange = (e) => {
-  //   setCouponCode(e.target.value);
-  // };
-
-  // const applyCoupon = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     // Call your backend API or validation logic for the coupon code
-  //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/validateCoupon`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ couponCode }),
-  //     });
-
-  //     const data = await res.json();
-
-  //     if(data.message && data.message.split(' ')[0] == 'Details') {
-  //       setCouponError(null);
-  //       setCouponSuccess('Coupon Applied Successfully');
-  //     } else {
-  //       setCouponSuccess(null);
-  //       console.log(data);
-  //       if(data['couponCode']) {
-  //         setCouponError(data['couponCode']);
-  //       } else if(data['mobile_number']) {
-  //         setCouponError(data['mobile_number']);
-  //       } else {
-  //         setCouponError(data.message);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     setCouponSuccess(null);
-  //     setCouponError("An error occurred. Please try again.");
-  //   }
-  // };
 
   useEffect(() => {
-      // Load the TabbyPromo script
-      const tabbyPromoScript = document.createElement("script");
-      tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
-      tabbyPromoScript.async = true;
-      document.body.appendChild(tabbyPromoScript);
-  
-      tabbyPromoScript.onload = () => {
-        new window.TabbyPromo({
-            selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
-            currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
-            price: !freeShippingFlag ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) : (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
-            lang: 'en', // Optional, en|ar only supported
-            source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
-            publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
-            merchantCode: 'assaaste'  // required
-        });
-      };
+    const s = document.createElement('script');
+    s.src = 'https://checkout.tabby.ai/tabby-promo.js';
+    s.async = true;
+    document.body.appendChild(s);
+    setCouponDataContext(null);
+    return () => { document.body.removeChild(s); };
+  }, []);
 
-      setCouponDataContext(null);
-  
-      return () => {
-        document.body.removeChild(tabbyPromoScript);
-      };
-    }, []);
-
-  if (isMenuLoading) {
-    return <div><Pagination1 /></div>;
-  }
-  if (isMenuError) {
-    return <div>{ isMenuError }</div>;
-  }
-
-  const currentUTC = new Date(); // Current UTC time
-  const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
-  const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-
-  const subTotalPrice = (elm) => {
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        if(elm.discount.discount_type == "percent") {
-          return <span className="shopping-cart__subtotal">{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-        } else if(elm.discount.discount_type == "amount") {
-          return <span className="shopping-cart__subtotal">{((elm.price - elm.discount.value) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-        }
-        // return <span className="shopping-cart__subtotal">{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-      } else {
-        return <span className="shopping-cart__subtotal">{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-      }
-    }
-    // else if(elm?.sale_price) {
-    //   return <span className="shopping-cart__subtotal">{((elm.sale_price) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-    // } 
-    else {
-      return <span className="shopping-cart__subtotal">{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-    }
-  };
-
-  const price = (elm) => {
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        if(elm.discount.discount_type == "percent") {
-          return (
-            <>
-              <span className="price price-sale">
-                {currency.symbol}{(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}
-              </span>
-              <span className="money price price-old">
-                {currency.symbol}{elm?.price}
-              </span>
-            </>
-          );
-        } else if(elm.discount.discount_type == "amount") {
-          return (
-            <>
-              <span className="price price-sale">
-                {currency.symbol}{(elm.price - elm.discount.value).toFixed(2)}
-              </span>
-              <span className="money price price-old">
-                {currency.symbol}{elm?.price}
-              </span>
-            </>
-          );
-        }
-        // return (
-        //   <>
-        //     <span className="price price-sale">
-        //       {currency.symbol}{(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}
-        //     </span>
-        //     <span className="money price price-old">
-        //       {currency.symbol}{elm?.price}
-        //     </span>
-        //   </>
-        // );
-      } else {
-        return <span className="money price">{elm?.price}{ currency.symbol }</span>;
-      }
-    }
-     else if(elm?.sale_price) {
-      return <><span className="money price price-old">{currency.symbol}{elm?.price}</span><span className="price price-sale">{ currency.symbol }{(elm.sale_price).toFixed(2)}</span></>;
+  const setQuantity = (id, quantity, productQty, maxOrderQty) => {
+    const MAX = maxOrderQty && maxOrderQty > 0 ? maxOrderQty : productQty;
+    if (quantity >= 1 && quantity <= productQty && quantity <= MAX) {
+      setError(null);
+      setCartProducts(cartProducts.map(elm =>
+        elm.product_id === id ? { ...elm, quantity } : elm
+      ));
     } else {
-      return <span className="shopping-cart__product-price">{elm.price}{ currency.symbol }</span>;
+      setError(quantity < 1 ? 'Minimum quantity is 1' : `Maximum allowed quantity is ${MAX}`);
     }
   };
+
+  const removeItem = id => setCartProducts(cartProducts.filter(elm => elm.product_id !== id));
+
+  if (isMenuLoading) return <div><Pagination1 /></div>;
+  if (isMenuError)   return <div>{isMenuError}</div>;
+
+  const now = new Date(new Date().getTime() + 4*60*60*1000).toISOString().slice(0,19).replace('T',' ');
+
+
+  const getDiscountedPrice = elm => {
+    if (elm?.discount && new Date(now) >= new Date(elm.discount.start_date) && new Date(now) <= new Date(elm.discount.end_date)) {
+      if (elm.discount.discount_type === 'percent') return elm.price - elm.price/100*elm.discount.value;
+      if (elm.discount.discount_type === 'amount')  return elm.price - elm.discount.value;
+    }
+    // Legacy flat sale_price field
+    if (!elm?.discount && elm?.sale_price && Number(elm.sale_price) > 0 && Number(elm.sale_price) < Number(elm.price)) {
+      return Number(elm.sale_price);
+    }
+    return null;
+  };
+
+  const getItemSubtotal = elm => {
+    const d = getDiscountedPrice(elm);
+    return d !== null ? (d * elm.quantity).toFixed(2) : (elm.price * elm.quantity).toFixed(2);
+  };
+
+  const shippingLoaded = Array.isArray(shippingServiceCharges) && shippingServiceCharges.length >= 2;
+  const grandTotal = shippingLoaded
+    ? (!freeShippingFlag
+        ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)
+        : (totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2))
+    : totalPrice.toFixed(2);
+  const vatAmount = shippingLoaded && vatTax?.percentage
+    ? (!freeShippingFlag
+        ? ((parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + vatTax.percentage/100)) + (totalPrice - totalPrice / (1 + vatTax.percentage/100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage/100))).toFixed(2)
+        : ((totalPrice - totalPrice / (1 + vatTax.percentage/100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage/100))).toFixed(2))
+    : null;
 
   return (
-    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
-      <div className="cart-table__wrapper">
-        {cartProducts.length ? (
-          <>
-            <h6 style={{ color: "red" }}>{error && error}</h6>
-            <table className="cart-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th></th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Subtotal</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartProducts.map((elm, i) => (
-                  <tr key={i}>
-                    <td>
-                      <div className="shopping-cart__product-item">
-                        <Image
-                          loading="lazy"
-                          src={elm.image ? `${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}` : `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}`}
-                          width="120"
-                          height="120"
-                          alt="image"
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <div className="shopping-cart__product-item__detail">
-                        <h4>{elm.product_name}</h4>
-                        {/* <ul className="shopping-cart__product-item__options">
-                          <li>Color: Yellow</li>
-                          <li>Size: L</li>
-                        </ul> */}
-                      </div>
-                    </td>
-                    <td>
-                      
-                        { price(elm) }
-                      
-                    </td>
-                    <td>
-                      {!elm.is_gift ? <div className="qty-control position-relative">
-                        <input
-                          type="number"
-                          name="quantity"
-                          value={elm.quantity}
-                          min={1}
-                          onChange={(e) =>
-                            setQuantity(elm.product_id, e.target.value / 1, elm.product_qty, elm?.maximum_order_quantity)
-                          }
-                          className="qty-control__number text-center"
-                          readOnly
-                        />
-                        <div
-                          onClick={() => setQuantity(elm.product_id, elm.quantity - 1, elm.product_qty, elm?.maximum_order_quantity)}
-                          className="qty-control__reduce"
-                        >
-                          -
-                        </div>
-                        <div
-                          onClick={() => setQuantity(elm.product_id, elm.quantity + 1, elm.product_qty, elm?.maximum_order_quantity)}
-                          className="qty-control__increase"
-                        >
-                          +
-                        </div>
-                      </div> : 1}
-                    </td>
-                    <td>
-                      
-                        { subTotalPrice(elm) }
-                      
-                    </td>
-                    <td>
-                      <a
-                        onClick={() => removeItem(elm.product_id)}
-                        className="remove-cart"
-                      >
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 10 10"
-                          fill="#767676"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M0.259435 8.85506L9.11449 0L10 0.885506L1.14494 9.74056L0.259435 8.85506Z" />
-                          <path d="M0.885506 0.0889838L9.74057 8.94404L8.85506 9.82955L0 0.97449L0.885506 0.0889838Z" />
-                        </svg>
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* <div className="cart-table-footer">
-              <form
-                onSubmit={applyCoupon}
-                className="position-relative bg-body"
-              >
-                {couponError ? <div style={{ color: 'red' }}>{couponError}</div> : <div style={{ color: 'green' }}>{couponSuccess}</div>}
-                <input
-                  className="form-control"
-                  type="text"
-                  name="coupon_code"
-                  placeholder="Coupon Code"
-                  required
-                  value={couponCode}
-                  onChange={handleCouponChange}
-                />
-                <input
-                  className="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4"
-                  type="submit"
-                  value="APPLY COUPON"
-                />
-              </form>
-              -<button className="btn btn-light">UPDATE CART</button>-
-            </div> */}
-          </>
-        ) : (
-          <>
-            <div className="fs-20">Shop cart is empty</div>
+    <>
+    <div className="shopping-cart" style={{ minHeight: 'calc(100vh - 300px)', paddingBottom: '70px' }}>
 
-            <button className="btn mt-3 btn-light">
-              <Link href={`/${locale}/shop`}>Explore Products</Link>
-            </button>
-          </>
-        )}
-      </div>
+      {error && <div className="cc-alert cc-alert--error mb-2">⚠️ {error}</div>}
+
       {cartProducts.length ? (
-        <div className="shopping-cart__totals-wrapper">
-          <div className="sticky-content">
-            <div className="shopping-cart__totals">
-              <h3>Cart Totals</h3>
-              <table className="cart-totals">
-                <tbody>
-                  <tr>
-                    <th>Subtotal</th>
-                    <td>{totalPrice.toFixed(2)}{ currency.symbol }</td>
-                  </tr>
-                  <tr>
-                    <th>Shipping</th>
-                    <td>
-                      {/* <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="free_shipping"
-                          checked={freeShippingFlag}
-                          onChange={handleCheckboxChange}
-                          disabled
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="free_shipping"
-                        >
-                          Free shipping
-                        </label>
-                      </div> */}
-                      {
-                        freeShippingFlag ? <div className="form-check">
-                          <label className="form-check-label" htmlFor="flat_rate">
-                            You Got Free Shipping
-                          </label>
-                        </div> :
-                        <div className="form-check">
-                          <label className="form-check-label" htmlFor="flat_rate">
-                            Shipping Cost: { shippingServiceCharges[0].price }{ currency.symbol }
-                          </label>
+        <>
+          {/* Items list — left column on desktop */}
+          <div className="cart-table__wrapper">
+            <div className="cc-cart-items-list">
+              {cartProducts.map((elm, i) => {
+                const disc = getDiscountedPrice(elm);
+                const isGift = !!elm.is_gift;
+                return (
+                  <div key={i} className="cc-cart-item">
+                    <div className="cc-cart-item__image">
+                      <Image
+                        src={elm.image
+                          ? `${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`
+                          : `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}`}
+                        width={72} height={72} alt={elm.product_name} loading="lazy"
+                        style={{objectFit:'cover'}}
+                      />
+                    </div>
+                    <div className="cc-cart-item__body">
+                      <p className="cc-cart-item__name">{elm.product_name}</p>
+                      {isGift && <span className="cc-gift-badge">🎁 Free Gift</span>}
+                      <div className="cc-cart-item__price-row">
+                        {disc !== null ? (
+                          <>
+                            <span className="cc-cart-item__price-old">{currency.symbol}{parseFloat(elm.price).toFixed(2)}</span>
+                            <span className="cc-cart-item__price-sale">{currency.symbol}{disc.toFixed(2)}</span>
+                          </>
+                        ) : (
+                          <span className="cc-cart-item__price-regular">{currency.symbol}{parseFloat(elm.price).toFixed(2)}</span>
+                        )}
+                      </div>
+                      {!isGift ? (
+                        <div className="cc-cart-item__qty-row">
+                          <button type="button" className="cc-cart-item__qty-btn" aria-label="Decrease"
+                            onClick={() => setQuantity(elm.product_id, elm.quantity-1, elm.product_qty, elm?.maximum_order_quantity)}>−</button>
+                          <span className="cc-cart-item__qty-num">{elm.quantity}</span>
+                          <button type="button" className="cc-cart-item__qty-btn" aria-label="Increase"
+                            onClick={() => setQuantity(elm.product_id, elm.quantity+1, elm.product_qty, elm?.maximum_order_quantity)}>+</button>
                         </div>
-                      }
-                      {/* <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="local_pickup"
-                          checked={checkboxes.local_pickup}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="local_pickup"
-                        >
-                          Local pickup: $8
-                        </label>
-                      </div> */}
-                      {/* <div>Shipping to AL.</div> */}
-                      {/* <div>
-                        <Link href="#" className="menu-link menu-link_us-s">
-                          CHANGE ADDRESS
-                        </Link>
-                      </div> */}
-                    </td>
-                  </tr>
-                  {/* <tr>
-                    <th>SERVICE FEE</th>
-                    <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
-                  </tr> */}
-                  <tr>
-                    <th>Total</th>
-                    <td>
-                      {!freeShippingFlag ?
-                        (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) :
-                        (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)}{ currency.symbol } (includes { !freeShippingFlag ? (
-                          (
-                            (parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + parseFloat(vatTax.percentage / 100))) +
-                            (parseFloat(totalPrice) - parseFloat(totalPrice) / (1 + parseFloat(vatTax.percentage / 100))) +
-                            (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                          ).toFixed(2)) : (
-                          (
-                            0 +
-                            (parseFloat(totalPrice) - parseFloat(totalPrice) / (1 + parseFloat(vatTax.percentage / 100))) +
-                            (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                          ).toFixed(2)) }{ currency.symbol } VAT)
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div id="TabbyPromo" className="mb-2"></div>
-              <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
+                      ) : (
+                        <span style={{fontSize:'0.72rem',color:'#888'}}>Qty: 1</span>
+                      )}
+                      <span className="cc-cart-item__subtotal">
+                        Subtotal: <strong>{currency.symbol}{getItemSubtotal(elm)}</strong>
+                      </span>
+                    </div>
+                    {!isGift && (
+                      <button type="button" className="cc-cart-item__remove" aria-label="Remove item" onClick={() => removeItem(elm.product_id)}>
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <div className="mobile_fixed-btn_wrapper">
-              <div className="button-wrapper container">
-                <Link href={`/${locale}/shop-checkout`} className="btn btn-primary btn-checkout">
-                  PROCEED TO CHECKOUT
+          </div>
+
+          {/* Totals sidebar */}
+          <div className="shopping-cart__totals-wrapper">
+            <div className="sticky-content">
+              <div className="cc-totals-card">
+                <h3>Order Summary</h3>
+
+                <div className="cc-totals-card__row">
+                  <span className="cc-totals-label">Subtotal</span>
+                  <span className="cc-totals-value">{totalPrice.toFixed(2)}{currency.symbol}</span>
+                </div>
+                <div className="cc-totals-card__row">
+                  <span className="cc-totals-label">Shipping</span>
+                  <span className="cc-totals-value">
+                    {freeShippingFlag
+                      ? <span className="cc-free-ship">🎉 Free</span>
+                      : shippingLoaded ? `${shippingServiceCharges[0].price}${currency.symbol}` : '…'}
+                  </span>
+                </div>
+                <div className="cc-totals-card__row cc-totals--total">
+                  <span className="cc-totals-label">Total</span>
+                  <span className="cc-totals-value">{grandTotal}{currency.symbol}</span>
+                </div>
+                <div style={{fontSize:'0.68rem',color:'#bbb',textAlign:'center',margin:'0.25rem 0 0.75rem'}}>
+                  Includes VAT{vatAmount ? ` (${currency.symbol}${vatAmount})` : ''}
+                </div>
+
+                <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
+
+                {/* Checkout CTA — below Tamara widget */}
+                <Link
+                  href={`/${locale}/shop-checkout`}
+                  className="cc-btn-gold"
+                  style={{ textDecoration: 'none', display: 'flex', marginTop: '1rem' }}
+                >
+                  Proceed to Checkout
                 </Link>
+
+                <div className="cc-trust-bar">
+                  <span className="cc-trust-item">🔒 Secure</span>
+                  <span className="cc-trust-item">📦 Free ship 300+ SAR</span>
+                  <span className="cc-trust-item">✅ VAT incl.</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+
+        </>
       ) : (
-        ""
+        <div className="cc-cart-empty">
+          <div className="cc-cart-empty__icon">🛍️</div>
+          <h2 className="cc-cart-empty__title">Your bag is empty</h2>
+          <p className="cc-cart-empty__sub">Add some fragrances to get started</p>
+          <Link href={`/${locale}/shop`} className="cc-btn-gold" style={{width:'auto',padding:'0 2rem',textDecoration:'none'}}>
+            Explore Products
+          </Link>
+        </div>
       )}
     </div>
+    <YouMayAlsoLike />
+    </>
   );
 }

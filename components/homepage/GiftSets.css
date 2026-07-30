@@ -7,8 +7,8 @@
 .gs2-section {
   --gs2-gold:       #C5A664;
   --gs2-text:       #1a1a1a;
-  --gs2-text-sec:   #6b6b6b;
-  --gs2-text-muted: #aaa;
+  --gs2-text-sec:   #3d3d3d;
+  --gs2-text-muted: #888;
   --gs2-bg:         #FDFBF7;
   --gs2-card-bg:    #f0ece4;
   --gs2-ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -51,7 +51,7 @@
 @media (min-width: 768px) { .gs2-head { margin-bottom: 48px; } }
 
 .gs2-lead {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-size: clamp(1rem, 2vw, 1.35rem);
   font-style: italic;
   color: var(--gs2-text);
@@ -61,7 +61,7 @@
 }
 
 .gs2-sub {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: clamp(0.68rem, 1.1vw, 0.82rem);
   font-weight: 400;
   color: var(--gs2-text-sec);
@@ -74,7 +74,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -236,7 +236,7 @@
 }
 
 .gs2-card__name {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.88rem; font-weight: 500; font-style: normal;
   color: var(--gs2-text);
   margin: 0 0 4px;
@@ -263,8 +263,8 @@
   justify-content: center;
   width: 100%;
   padding: 9px 10px;
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
-  font-size: 0.58rem; font-weight: 600;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem; font-weight: 600;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--gs2-text);
   background: transparent;

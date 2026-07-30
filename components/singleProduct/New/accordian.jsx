@@ -92,35 +92,32 @@ const CollectionSummary = ({ product, currency }) => {
 };
 
 const AccordionItem = ({ title, id, defaultOpen = false, children }) => {
+    const [isOpen, setIsOpen] = React.useState(defaultOpen);
+
     return (
-        <div className="accordion-item">
-            <h2 className="accordion-header" id={`heading${id}`}>
+        <div className="pdp-acc-item">
+            <div className="pdp-acc-header" id={`heading${id}`}>
                 <button
-                    className={`accordion-button fw-semibold accordion-btn-custom ${
-                        !defaultOpen && "collapsed"
-                    }`}
+                    className={`pdp-acc-btn${isOpen ? " pdp-acc-btn--open" : ""}`}
                     type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target={`#collapse${id}`}
-                    aria-expanded={defaultOpen}
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    aria-expanded={isOpen}
                     aria-controls={`collapse${id}`}
                 >
                     {title}
                 </button>
-            </h2>
+            </div>
             <div
                 id={`collapse${id}`}
-                className={`accordion-collapse collapse ${
-                    defaultOpen && "show"
-                }`}
+                className={`pdp-acc-body${isOpen ? " pdp-acc-body--open" : ""}`}
                 aria-labelledby={`heading${id}`}
-                data-bs-parent="#productAccordion"
             >
-                <div className="accordion-body">{children}</div>
+                <div className="pdp-acc-content">{children}</div>
             </div>
         </div>
     );
 };
+
 
 // const howToApplyContent = {
 //     "Care Essentials": {
@@ -235,7 +232,7 @@ const AccordionItem = ({ title, id, defaultOpen = false, children }) => {
 //     return content || null;
 // };
 
-const ProductAccordion = ({ product }) => {
+const ProductAccordion = ({ product, hideFragranceProfile = false }) => {
     const locale = useLocale();
     const { currency } = useMenu();
     const t = useTranslations("ProductDetails");
@@ -516,7 +513,7 @@ const ProductAccordion = ({ product }) => {
 
 
             {/* --- Fragrance Profile --- */}
-            {(notesData?.length > 0 || fragranceSummaryData?.length > 0) && (
+            {!hideFragranceProfile && (notesData?.length > 0 || fragranceSummaryData?.length > 0) && (
                 <AccordionItem
                     title={t("accordion.fragranceProfile")}
                     id="Two"

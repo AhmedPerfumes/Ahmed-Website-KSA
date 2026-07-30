@@ -1,167 +1,122 @@
-"use client";
+﻿"use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
 /**
- * FragranceBreakdown — Section 6
+ * FragranceBreakdown — Section 5 (Scent Journey / Fragrance Notes)
  *
- * Clean 3-column note pyramid: Top / Heart / Base
- * No clutter — image, tier label, name, optional long description on tap.
- * Falls back gracefully if only top_note is present (Notes & Accords mode).
- *
- * API fields:
- *   top_note, top_note_ar, top_note_description, top_note_description_ar, top_note_image
- *   heart_note, heart_note_ar, heart_note_description, heart_note_description_ar, heart_note_image
- *   base_note, base_note_ar, base_note_description, base_note_description_ar, base_note_image
+ * AE site-inspired design:
+ * - Dark background
+ * - Gold spaced eyebrow "FRAGRANCE NOTES"
+ * - 3-col timeline with horizontal connecting line + labeled circle dots
+ * - Full-bleed images below timeline
+ * - Card body with title + description text below image
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-const NOTE_TIER_LABELS = {
-  top: { en: "Top Notes", ar: "النوتات العلوية" },
-  heart: { en: "Heart Notes", ar: "النوتات الوسطى" },
-  base: { en: "Base Notes", ar: "النوتات القاعدية" },
-  accords: { en: "Notes & Accords", ar: "النوتات والأكورد" },
+const NOTE_CONFIG = {
+  top:     { en: "Opening",  ar: "الافتتاح",  subtitle_en: "The First Impression", subtitle_ar: "الانطباع الأول" },
+  heart:   { en: "Heart",    ar: "القلب",      subtitle_en: "The Core Character",   subtitle_ar: "جوهر الرائحة"   },
+  base:    { en: "Legacy",   ar: "الخلاصة",    subtitle_en: "The Lasting Memory",   subtitle_ar: "الذكرى الباقية" },
+  accords: { en: "Notes",    ar: "النوتات",    subtitle_en: "Notes & Accords",      subtitle_ar: "النوتات والأكورد" },
 };
 
-const NoteCard = ({ note, onClick, isExpanded }) => (
-  <div className="pdp-note-card" itemScope itemType="https://schema.org/Thing">
-    <span className="pdp-note-card__tier">{note.tierLabel}</span>
-
-    <div className="pdp-note-card__img-wrap">
-      {note.image ? (
-        <Image
-          src={`${API_URL}storage/${note.image}`}
-          alt={note.name}
-          width={80}
-          height={80}
-          loading="lazy"
-          onError={(e) => { e.target.style.display = "none"; }}
-          style={{ objectFit: "cover", width: "100%", height: "100%" }}
-        />
-      ) : (
-        <span style={{ fontSize: "2rem", color: "#C9A96E" }}>✦</span>
-      )}
-    </div>
-
-    <h3 className="pdp-note-card__name" itemProp="name">{note.name}</h3>
-
-    {note.description && (
-      <p className="pdp-note-card__desc" itemProp="description">
-        {note.description}
-      </p>
-    )}
-
-    {/* Expandable long description */}
-    {note.longDescription && (
-      <button
-        onClick={onClick}
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "0.72rem",
-          color: "#9E7A42",
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-          marginTop: "0.5rem",
-          padding: 0,
-        }}
-        aria-expanded={isExpanded}
-      >
-        {isExpanded ? "Show less ↑" : "Learn more ↓"}
-      </button>
-    )}
-
-    {isExpanded && note.longDescription && (
-      <p
-        className="pdp-note-card__desc"
-        style={{
-          marginTop: "0.5rem",
-          padding: "0.75rem",
-          background: "#F2EDE6",
-          borderRadius: "8px",
-          textAlign: "left",
-        }}
-      >
-        {note.longDescription}
-      </p>
-    )}
-  </div>
-);
-
 const FragranceBreakdown = ({ product }) => {
-  const locale = useLocale();
-  const t = useTranslations("ProductDetails");
-
-  const [expandedNote, setExpandedNote] = useState(null);
-
-  const isAr = locale === "ar";
+  const locale  = useLocale();
+  const t       = useTranslations("ProductDetails");
+  const isAr    = locale === "ar";
   const onlyTop = !product?.heart_note && !product?.base_note;
 
-  // Build notes array dynamically
+  /* ── Build notes array ── */
   const notes = [];
-  const noteTypes = ["top", "heart", "base"];
-
-  noteTypes.forEach((type) => {
-    const nameKey = isAr ? `${type}_note_ar` : `${type}_note`;
+  ["top", "heart", "base"].forEach((type) => {
+    const nameKey = isAr ? `${type}_note_ar`             : `${type}_note`;
     const descKey = isAr ? `${type}_note_description_ar` : `${type}_note_description`;
-    const imgKey = `${type}_note_image`;
+    const imgKey  = `${type}_note_image`;
 
-    if (product?.[nameKey]) {
-      let tierLabel;
-      if (type === "top") {
-        tierLabel = onlyTop
-          ? (isAr ? NOTE_TIER_LABELS.accords.ar : NOTE_TIER_LABELS.accords.en)
-          : (isAr ? NOTE_TIER_LABELS.top.ar : NOTE_TIER_LABELS.top.en);
-      } else {
-        tierLabel = isAr ? NOTE_TIER_LABELS[type].ar : NOTE_TIER_LABELS[type].en;
-      }
+    if (!product?.[nameKey]) return;
 
-      notes.push({
-        id: type,
-        tierLabel,
-        name: product[nameKey],
-        description: product[descKey] || null,
-        longDescription: product[`${type}_note_description`] !== product[descKey]
-          ? product[`${type}_note_description`]
-          : null,
-        image: product[imgKey] || null,
-      });
-    }
+    const cfg  = type === "top" && onlyTop ? NOTE_CONFIG.accords : NOTE_CONFIG[type];
+    const tier = isAr ? cfg.ar  : cfg.en;
+    const sub  = isAr ? cfg.subtitle_ar : cfg.subtitle_en;
+
+    notes.push({
+      id:       type,
+      tier,
+      subtitle: sub,
+      name:     product[nameKey],
+      desc:     product[descKey] || null,
+      image:    product[imgKey]  || null,
+    });
   });
 
   if (notes.length === 0) return null;
 
   return (
-    <section className="pdp-fragrance pdp-fade-in" aria-labelledby="fragrance-heading">
+    <section className="pdp-fragrance-ae" aria-labelledby="fragrance-ae-heading">
       <div className="pdp-container">
-        <header className="pdp-section-header">
-          <span className="pdp-section-eyebrow">Scent Journey</span>
-          <h2 className="pdp-section-title" id="fragrance-heading">
-            {t("accordion.fragranceProfile")}
-          </h2>
+
+        {/* ── Header ── */}
+        <header className="pdp-fragrance-ae__header">
+          <span className="pdp-fragrance-ae__eyebrow" id="fragrance-ae-heading">Fragrance Notes</span>
+          <p className="pdp-fragrance-ae__subtext">
+            Fragrance Notes reveal the essence of a perfume, breaking down its scent
+            journey from the first impression to the lingering aroma, helping you
+            understand its personality and character.
+          </p>
         </header>
 
-        <div
-          className="pdp-fragrance__notes"
-          itemScope
-          itemType="https://schema.org/ItemList"
-        >
-          {notes.map((note, idx) => (
-            <div key={note.id} itemProp="itemListElement">
-              <NoteCard
-                note={note}
-                isExpanded={expandedNote === note.id}
-                onClick={() =>
-                  setExpandedNote(expandedNote === note.id ? null : note.id)
-                }
-              />
+        {/* ── Timeline ── */}
+        <div className="pdp-fragrance-ae__timeline" aria-hidden="true">
+          <div className="pdp-fragrance-ae__line" />
+          {notes.map((note) => (
+            <div key={note.id} className="pdp-fragrance-ae__dot-col">
+              <span className="pdp-fragrance-ae__tier-label">{note.tier}</span>
+              <div className="pdp-fragrance-ae__dot" />
+              <div className="pdp-fragrance-ae__dot-stem" />
             </div>
           ))}
         </div>
+
+        {/* ── Cards ── */}
+        <div className="pdp-fragrance-ae__cards" itemScope itemType="https://schema.org/ItemList">
+          {notes.map((note) => (
+            <div key={note.id} className="pdp-fragrance-ae__card" itemProp="itemListElement">
+
+              {/* Image */}
+              <div className="pdp-fragrance-ae__img-wrap">
+                {note.image ? (
+                  <Image
+                    src={`${API_URL}storage/${note.image}`}
+                    alt={note.name}
+                    width={500}
+                    height={320}
+                    loading="lazy"
+                    style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                ) : (
+                  <div className="pdp-fragrance-ae__placeholder">✦</div>
+                )}
+              </div>
+
+              {/* Card body */}
+              <div className="pdp-fragrance-ae__card-body">
+                <h3 className="pdp-fragrance-ae__card-title" itemProp="name">{note.subtitle}</h3>
+                {note.desc && (
+                  <span className="pdp-fragrance-ae__card-desc" itemProp="description">
+                    {note.desc}
+                  </span>
+                )}
+              </div>
+
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

@@ -7,8 +7,8 @@
   --col-gold: #C5A664;
   --col-gold-light: #D4BC82;
   --col-text: #1a1a1a;
-  --col-text-secondary: #6b6b6b;
-  --col-text-muted: #999;
+  --col-text-secondary: #3d3d3d;
+  --col-text-muted: #777;
   --col-bg: #FDFBF7;
   --col-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }

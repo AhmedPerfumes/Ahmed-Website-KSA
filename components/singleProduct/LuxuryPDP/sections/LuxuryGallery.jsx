@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 
 /**
  * LuxuryGallery — Product Image Gallery
  *
- * Desktop: Vertical thumbnail column (left) + tall main image (right) — Noon/Amazon style
- * Mobile:  Full-width swipeable carousel with thumbnail strip + dot navigation
+ * Desktop: Large main image + horizontal thumbnail strip BELOW it (reef-style)
+ * Mobile:  Full-width swipeable image + bottom dot/thumbnail strip
  *
  * Props:
  *   images[]     — array of storage path strings
@@ -83,62 +83,31 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
 
   return (
     <div className="pdp-gallery" role="region" aria-label="Product images">
-      {/* ═══ DESKTOP: thumb sidebar + main image ══════════════ */}
-      <div className="pdp-gallery__desktop-wrap">
-        {/* Vertical thumbnail column */}
-        {images.length > 1 && (
-          <div
-            className="pdp-gallery__thumb-col"
-            role="tablist"
-            aria-label="Select image"
-          >
-            {images.map((img, idx) => (
-              <button
-                key={idx}
-                className={`pdp-gallery__thumb${activeIndex === idx ? " active" : ""}`}
-                onClick={() => setActiveIndex(idx)}
-                role="tab"
-                aria-selected={activeIndex === idx}
-                aria-label={`Image ${idx + 1}`}
-              >
-                <Image
-                  src={`${API_URL}storage/${img}`}
-                  alt=""
-                  width={76}
-                  height={76}
-                  loading="lazy"
-                  style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                />
-              </button>
-            ))}
-          </div>
-        )}
 
-        {/* Main image */}
-        <div
-          className="pdp-gallery__main"
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-          role="img"
-          aria-label={`${product?.product_name || "Product"} — image ${activeIndex + 1} of ${images.length}`}
-        >
-          <Image
-            src={imgSrc}
-            alt={product?.product_name || "Product"}
-            fill
-            sizes="(max-width: 991px) 100vw, 48vw"
-            priority={activeIndex === 0}
-            loading={activeIndex === 0 ? "eager" : "lazy"}
-            style={{ objectFit: "cover" }}
-          />
-          <Badges product={product} />
-        </div>
+      {/* ═══ MAIN IMAGE — full width ═══════════════════════════ */}
+      <div
+        className="pdp-gallery__main"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        role="img"
+        aria-label={`${product?.product_name || "Product"} — image ${activeIndex + 1} of ${images.length}`}
+      >
+        <Image
+          src={imgSrc}
+          alt={product?.product_name || "Product"}
+          fill
+          sizes="(max-width: 991px) 100vw, 48vw"
+          priority={activeIndex === 0}
+          loading={activeIndex === 0 ? "eager" : "lazy"}
+          style={{ objectFit: "contain" }}
+        />
+        <Badges product={product} />
       </div>
 
-      {/* ═══ MOBILE: horizontal thumbnail strip ════════════════ */}
+      {/* ═══ THUMBNAIL STRIP — below main image ════════════════ */}
       {images.length > 1 && (
         <div
-          className="pdp-gallery__mobile-strip"
+          className="pdp-gallery__thumb-strip"
           role="tablist"
           aria-label="Select image"
         >
@@ -154,28 +123,12 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
               <Image
                 src={`${API_URL}storage/${img}`}
                 alt=""
-                width={60}
-                height={60}
+                width={80}
+                height={80}
                 loading="lazy"
-                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                style={{ objectFit: "contain", width: "100%", height: "100%" }}
               />
             </button>
-          ))}
-        </div>
-      )}
-
-      {/* Mobile dot indicators */}
-      {images.length > 1 && (
-        <div className="pdp-gallery__mobile-dots" role="tablist" aria-label="Image navigation">
-          {images.map((_, idx) => (
-            <button
-              key={idx}
-              className={`pdp-gallery__mobile-dot${activeIndex === idx ? " active" : ""}`}
-              onClick={() => setActiveIndex(idx)}
-              role="tab"
-              aria-selected={activeIndex === idx}
-              aria-label={`Go to image ${idx + 1}`}
-            />
           ))}
         </div>
       )}

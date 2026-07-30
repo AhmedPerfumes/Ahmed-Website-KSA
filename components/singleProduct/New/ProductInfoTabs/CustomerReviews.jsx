@@ -9,27 +9,60 @@ import styles from './CustomerReviews.module.css';
 // ====================================================================
 const useHasMounted = () => {
     const [hasMounted, setHasMounted] = useState(false);
-    useEffect(() => {
-        setHasMounted(true);
-    }, []);
+    useEffect(() => { setHasMounted(true); }, []);
     return hasMounted;
 };
 
 // ====================================================================
-//  HELPER: StarRating
+//  HELPER: StarRating (display only)
 // ====================================================================
-const StarRating = ({ rating, size = '1rem' }) => {
+const StarRating = ({ rating, size = '1rem' }) => (
+    <div className={styles.starRatingContainer}>
+        {[1, 2, 3, 4, 5].map((i) => (
+            <span
+                key={i}
+                className={styles.starRatingItem}
+                style={{ color: i <= rating ? '#C7944B' : '#D9D2CA', fontSize: size }}
+            >★</span>
+        ))}
+    </div>
+);
+
+// ====================================================================
+//  HELPER: StarPicker (interactive, premium)
+// ====================================================================
+const RATING_LABELS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+const StarPicker = ({ value, onChange, error }) => {
+    const [hover, setHover] = useState(0);
+    const active = hover || value;
+
     return (
-        <div className={styles.starRatingContainer}>
-            {[1, 2, 3, 4, 5].map((i) => (
-                <span
-                    key={i}
-                    className={styles.starRatingItem}
-                    style={{ color: i <= rating ? '#C7944B' : '#444', fontSize: size }}
-                >
-                    ★
-                </span>
-            ))}
+        <div className={styles.starPickerWrapper}>
+            <span className={styles.starPickerLabel}>Your Rating</span>
+            <div className={styles.starPickerRow} role="group" aria-label="Select star rating">
+                {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                        key={s}
+                        type="button"
+                        className={`${styles.starPickerItem} ${s <= active ? styles.starFilled : styles.starEmpty} ${s <= value ? styles.starActive : ''}`}
+                        onMouseEnter={() => setHover(s)}
+                        onMouseLeave={() => setHover(0)}
+                        onClick={() => onChange(s)}
+                        aria-label={`${s} star${s > 1 ? 's' : ''}`}
+                        aria-pressed={value === s}
+                    >
+                        {/* SVG star for crisp rendering */}
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                    </button>
+                ))}
+            </div>
+            <span className={styles.starRatingHint}>
+                {active > 0 ? RATING_LABELS[active] : 'Tap a star to rate'}
+            </span>
+            {error && <span className={styles.starErrorText}>{error}</span>}
         </div>
     );
 };
@@ -37,71 +70,66 @@ const StarRating = ({ rating, size = '1rem' }) => {
 // ====================================================================
 //  COMPONENT: ReviewSummary (Top Section)
 // ====================================================================
-const ReviewSummary = ({ averageRating, reviewCount, distribution, onWriteClick, t, loading }) => {
-    return (
-        <div className={`row align-items-center pb-5 border-bottom ${styles.borderDarkSubtle}`}>
-            {/* Left: Big Score */}
-            <div className="col-md-3 text-center text-md-left mb-4 mb-md-0">
-                {loading ? (
-                    <>
-                        <Skeleton variant="text" width={80} height={60} className="mx-auto mx-md-0 bg-white" />
-                        <Skeleton variant="text" width={120} height={30} className="mx-auto mx-md-0 bg-white" />
-                        <Skeleton variant="text" width={140} height={20} className="mx-auto mx-md-0 bg-white" />
-                    </>
-                ) : (
-                    <>
-                        <div className="display-4 font-weight-bold">{reviewCount > 0 ? averageRating.toFixed(1) : '0.0'}</div>
-                        <div className="mb-2"><StarRating rating={Math.round(averageRating)} size="1.2rem" /></div>
-                        <div className="text-white">{t('basedOn', { count: reviewCount })}</div>
-                    </>
-                )}
-            </div>
-
-            {/* Middle: Bars */}
-            <div className="col-md-6 mb-4 mb-md-0 px-md-5">
-                {loading ? (
-                    [1, 2, 3, 4, 5].map((i) => <Skeleton key={i} height={20} className="bg-white mb-2" />)
-                ) : (
-                    [5, 4, 3, 2, 1].map((star) => {
-                        const count = distribution[star] || 0;
-                        const percent = reviewCount > 0 ? (count / reviewCount) * 100 : 0;
-                        return (
-                            <div key={star} className="d-flex align-items-center mb-2">
-                                <span className="small mr-3" style={{ width: '10px' }}>{star}</span>
-                                <span className="small mr-3">★</span>
-                                <div className={`flex-grow-1 ${styles.progressThin}`}>
-                                    <div
-                                        className={`h-100 ${styles.progressBarGold}`}
-                                        style={{ width: `${percent}%`, borderRadius: '3px' }}
-                                    ></div>
-                                </div>
-                                <span className="small ml-3" style={{ width: '20px', textAlign: 'right' }}>{count}</span>
-                            </div>
-                        );
-                    })
-                )}
-            </div>
-
-            {/* Right: Button */}
-            <div className="col-md-3 text-center text-md-right">
-                {loading ? (
-                    <Skeleton variant="text" width={180} height={100} className="mx-auto mx-md-0 bg-white" />
-                ) : (
-                    <button
-                        className="btn btn-outline-light px-4 py-3 text-uppercase font-weight-bold"
-                        style={{ letterSpacing: '1px', borderRadius: '0' }}
-                        onClick={onWriteClick}
-                    >
-                        {t('writeReviewTitle')}
-                    </button>
-                )}
-            </div>
+const ReviewSummary = ({ averageRating, reviewCount, distribution, onWriteClick, t, loading }) => (
+    <div className={`row align-items-center pb-5 border-bottom ${styles.borderDarkSubtle}`}>
+        {/* Left: Big Score */}
+        <div className="col-md-3 text-center text-md-left mb-4 mb-md-0">
+            {loading ? (
+                <>
+                    <Skeleton variant="text" width={80} height={60} className="mx-auto mx-md-0" />
+                    <Skeleton variant="text" width={120} height={30} className="mx-auto mx-md-0" />
+                    <Skeleton variant="text" width={140} height={20} className="mx-auto mx-md-0" />
+                </>
+            ) : (
+                <>
+                    <div className="display-4 font-weight-bold" style={{ color: '#1a1a1a', fontFamily: "'Inter', sans-serif" }}>
+                        {reviewCount > 0 ? averageRating.toFixed(1) : '0.0'}
+                    </div>
+                    <div className="mb-2"><StarRating rating={Math.round(averageRating)} size="1.2rem" /></div>
+                    <div style={{ fontSize: '0.82rem', color: '#888', fontFamily: "'Inter', sans-serif" }}>
+                        {t('basedOn', { count: reviewCount })}
+                    </div>
+                </>
+            )}
         </div>
-    );
-};
+
+        {/* Middle: Bars */}
+        <div className="col-md-6 mb-4 mb-md-0 px-md-5">
+            {loading ? (
+                [1, 2, 3, 4, 5].map((i) => <Skeleton key={i} height={20} className="mb-2" />)
+            ) : (
+                [5, 4, 3, 2, 1].map((star) => {
+                    const count = distribution[star] || 0;
+                    const percent = reviewCount > 0 ? (count / reviewCount) * 100 : 0;
+                    return (
+                        <div key={star} className="d-flex align-items-center mb-2" style={{ gap: '8px' }}>
+                            <span style={{ width: '10px', fontSize: '0.78rem', color: '#555', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{star}</span>
+                            <span style={{ color: '#C7944B', fontSize: '0.78rem', lineHeight: 1 }}>★</span>
+                            <div className={`flex-grow-1 ${styles.progressThin}`}>
+                                <div className={styles.progressBarGold} style={{ width: `${percent}%` }} />
+                            </div>
+                            <span style={{ width: '20px', fontSize: '0.78rem', color: '#888', textAlign: 'right', fontFamily: "'Inter', sans-serif" }}>{count}</span>
+                        </div>
+                    );
+                })
+            )}
+        </div>
+
+        {/* Right: Button */}
+        <div className="col-md-3 text-center text-md-right">
+            {loading ? (
+                <Skeleton variant="text" width={180} height={60} className="mx-auto" />
+            ) : (
+                <button className={styles.writeReviewBtn} onClick={onWriteClick}>
+                    {t('writeReviewTitle')}
+                </button>
+            )}
+        </div>
+    </div>
+);
 
 // ====================================================================
-//  COMPONENT: ReviewList (Bottom Section)
+//  COMPONENT: ReviewList
 // ====================================================================
 const ReviewList = ({ reviews, loading, t }) => {
     const hasMounted = useHasMounted();
@@ -111,50 +139,53 @@ const ReviewList = ({ reviews, loading, t }) => {
             {[1, 2, 3].map((i) => (
                 <div key={i} className={`row py-4 border-top ${styles.borderDarkSubtle}`}>
                     <div className="col-md-3 mb-3 mb-md-0">
-                        <Skeleton variant="text" width="70%" height={24} className="mb-1 bg-white" />
-                        <Skeleton variant="text" width="40%" height={20} className='bg-white' />
+                        <Skeleton variant="text" width="70%" height={24} className="mb-1" />
+                        <Skeleton variant="text" width="40%" height={20} />
                     </div>
                     <div className="col-md-9">
                         <div className="d-flex justify-content-between align-items-start mb-2">
-                            <Skeleton variant="text" width={140} height={24} className='bg-white' />
-                            <Skeleton variant="text" width={80} height={20} className='bg-white' />
+                            <Skeleton variant="text" width={140} height={24} />
+                            <Skeleton variant="text" width={80} height={20} />
                         </div>
-                        <div className="mt-2">
-                            <Skeleton variant="text" width="100%" height={20} className="mb-1 bg-white" />
-                            <Skeleton variant="text" width="90%" height={20} className="mb-1 bg-white" />
-                            <Skeleton variant="text" width="60%" height={20} className='bg-white' />
-                        </div>
+                        <Skeleton variant="text" width="100%" height={20} className="mb-1" />
+                        <Skeleton variant="text" width="85%" height={20} />
                     </div>
                 </div>
             ))}
         </div>
     );
 
-    if (!reviews || reviews.length === 0) return <div className="text-center py-5">{t('beFirst')}</div>;
+    if (!reviews || reviews.length === 0) return (
+        <div className="text-center py-5" style={{ color: '#888', fontFamily: "'Inter', sans-serif", fontSize: '0.9rem' }}>
+            {t('beFirst')}
+        </div>
+    );
 
     return (
         <div className={`custom-scroll ${styles.reviewList} ${styles.customScroll} ${styles.pxResponsiveList}`}>
             {reviews.map((review) => (
                 <div key={review.id} className={`row py-4 border-top ${styles.borderDarkSubtle}`}>
                     <div className="col-md-3 mb-3 mb-md-0">
-                        <h6 className="font-weight-bold mb-1 text-white">{review.customer_name}</h6>
+                        <h6 className={`font-weight-bold mb-1 ${styles.reviewerName}`}>{review.customer_name}</h6>
                         <div className={styles.verifiedBadge}>
                             <span className={styles.checkmarkCircle}>✓</span> Verified Buyer
                         </div>
                     </div>
                     <div className="col-md-9">
                         <div className="d-flex justify-content-between align-items-start mb-2">
-                            <div className="d-flex align-items-center">
+                            <div className="d-flex align-items-center" style={{ gap: '8px' }}>
                                 <StarRating rating={review.star} size="0.9rem" />
-                                <span className="ml-3 font-weight-bold small text-uppercase text-white">
-                                    {review.star === 5 ? 'Excellent' : 'Review'}
+                                <span className={`font-weight-bold small text-uppercase ${styles.reviewLabel}`}>
+                                    {review.star === 5 ? 'Excellent' : review.star >= 4 ? 'Very Good' : review.star >= 3 ? 'Good' : 'Review'}
                                 </span>
                             </div>
-                            <small>
+                            <small style={{ color: '#999', fontFamily: "'Inter', sans-serif", fontSize: '0.75rem' }}>
                                 {hasMounted ? new Date(review.created_at).toLocaleDateString() : ''}
                             </small>
                         </div>
-                        <p style={{ lineHeight: '1.7', opacity: 0.9 }}>{review.comment}</p>
+                        <p style={{ lineHeight: '1.75', opacity: 0.85, fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', color: '#333', margin: 0 }}>
+                            {review.comment}
+                        </p>
                     </div>
                 </div>
             ))}
@@ -163,17 +194,17 @@ const ReviewList = ({ reviews, loading, t }) => {
 };
 
 // ====================================================================
-//  COMPONENT: ReviewFormModal
+//  COMPONENT: ReviewFormModal — Fully Revamped
 // ====================================================================
 const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => {
     const [formData, setFormData] = useState({ rating: 0, name: '', email: '', phone: '', comment: '' });
-    const [hoverRating, setHoverRating] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [isAnonymous, setIsAnonymous] = useState(false);
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
+        if (!show) return;
         if (typeof window !== 'undefined') {
             const userStr = localStorage.getItem('user');
             if (userStr) {
@@ -183,7 +214,7 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                 } catch (e) { }
             }
         }
-    }, [show]); // Refill when modal opens
+    }, [show]);
 
     const handleAnonToggle = (e) => {
         setIsAnonymous(e.target.checked);
@@ -200,22 +231,14 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
     const validate = () => {
         const newErrors = {};
         if (formData.rating === 0) newErrors.rating = t('selectRatingAlert');
-        if (!formData.name.trim()) { newErrors.customer_name = ["Name is required"]; }
+        if (!formData.name.trim()) newErrors.customer_name = ['Name is required'];
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!formData.email.trim()) {
-            newErrors.customer_email = ["Email is required"];
-        } else if (!emailRegex.test(formData.email)) {
-            newErrors.customer_email = ["Please enter a valid email address"];
-        }
+        if (!formData.email.trim()) newErrors.customer_email = ['Email is required'];
+        else if (!emailRegex.test(formData.email)) newErrors.customer_email = ['Please enter a valid email address'];
         const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
-        if (!formData.phone.trim()) {
-            newErrors.customer_phone = ["Mobile number is required for the coupon"];
-        } else if (formData.phone.length < 8 || !phoneRegex.test(formData.phone)) {
-            newErrors.customer_phone = ["Please enter a valid mobile number"];
-        }
-        if (!formData.comment.trim()) {
-            newErrors.comment = ["Please write your review"];
-        }
+        if (!formData.phone.trim()) newErrors.customer_phone = ['Mobile number is required for the coupon'];
+        else if (formData.phone.length < 8 || !phoneRegex.test(formData.phone)) newErrors.customer_phone = ['Please enter a valid mobile number'];
+        if (!formData.comment.trim()) newErrors.comment = ['Please write your review'];
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -238,9 +261,7 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                     comment: formData.comment
                 })
             });
-
             const result = await res.json();
-
             if (res.ok) {
                 setSuccess(true);
                 setTimeout(() => {
@@ -249,15 +270,15 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                     setSuccess(false);
                     setFormData(prev => ({ ...prev, comment: '', rating: 0 }));
                     setErrors({});
-                }, 2000);
+                }, 2200);
             } else {
                 setErrors(result.errors || { form: result.message || 'Something went wrong.' });
             }
         } catch (err) {
-            console.error(err);
             setErrors({ form: 'Network error. Please try again later.' });
+        } finally {
+            setIsSubmitting(false);
         }
-        finally { setIsSubmitting(false); }
     };
 
     const handleBackdropClick = (e) => {
@@ -273,76 +294,75 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
     return (
         <div className={styles.modalBackdropCustom} onClick={handleBackdropClick}>
             <div className={styles.modalContentDark}>
-                <button type="button" onClick={onClose} className={styles.closeButton}>&times;</button>
+                <button type="button" onClick={onClose} className={styles.closeButton} aria-label="Close">×</button>
 
                 <div className={styles.modalBodyScrollable}>
-                    <h4 className={`text-center mb-4 ${styles.textGold}`} style={{ letterSpacing: '2px', textTransform: 'uppercase' }}>
-                        {t('writeReviewTitle')}
-                    </h4>
+
+                    {/* Header */}
+                    <p className={styles.modalTitle}>{t('writeReviewTitle')}</p>
+                    <p className={styles.modalSubtitle}>Your honest opinion helps others choose confidently.</p>
 
                     {success ? (
-                        <div className="text-center py-5">
-                            <h2 className={`${styles.textGold} mb-3`}>✓</h2>
-                            <p>{t('successMessage')}</p>
-                            <p className="small">Your <strong>exclusive reward</strong> will be sent to your email upon approval.</p>
+                        <div className={styles.successScreen}>
+                            <div className={styles.successIcon}>✓</div>
+                            <h4 style={{ color: '#1a1a1a', fontFamily: "'Inter', sans-serif", fontWeight: 700, marginBottom: '0.5rem' }}>
+                                {t('successMessage')}
+                            </h4>
+                            <p style={{ color: '#888', fontFamily: "'Inter', sans-serif", fontSize: '0.85rem' }}>
+                                Your <strong style={{ color: '#C7944B' }}>exclusive reward</strong> will be sent to your email upon approval.
+                            </p>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} noValidate>
+
+                            {/* Guidelines */}
                             <div className={styles.rulesBox}>
-                                <h6 className={`${styles.textGold} font-weight-bold small text-uppercase mb-2 text-center`}>Guidelines & Rewards</h6>
-                                <ul className="text-white small mb-0 pl-3" style={{ lineHeight: 1.6 }}>
-                                    <li className="mb-1">Reviews must be <strong>relevant</strong> to this product. Focus on the scent, longevity, projection and <strong>your experience.</strong></li>
-                                    <li className="mb-1"><strong>Log in</strong> to your account to autofill your details and ensure they match your profile.</li>
-                                    <li className="mb-1">Upon admin approval, you will unlock a <strong>special surprise</strong> sent to your email.</li>
-                                    <li><span className={styles.textGold}>Important:</span> The surprise is strictly linked to your <strong>Mobile Number</strong> and sent to you via <strong>Email</strong>. Please enter it carefully.</li>
+                                <h6>Guidelines & Rewards</h6>
+                                <ul>
+                                    <li>Reviews must be <strong>relevant</strong> to this product — focus on the scent, longevity, and <strong>your experience.</strong></li>
+                                    <li><strong>Log in</strong> to your account to autofill your details and ensure they match your profile.</li>
+                                    <li>Upon admin approval, you will unlock a <strong>special surprise</strong> sent to your email.</li>
+                                    <li><span className={styles.textGold}>Important:</span> The surprise is linked to your <strong>Mobile Number</strong> and sent via <strong>Email.</strong></li>
                                 </ul>
                             </div>
 
-                            <div className="text-center mb-4">
-                                <div className="d-inline-block" style={{ fontSize: '2.5rem', cursor: 'pointer' }}>
-                                    {[1, 2, 3, 4, 5].map((s) => (
-                                        <span key={s}
-                                            className={`${styles.starInput} ${styles.starHover}`}
-                                            style={{ color: s <= (hoverRating || formData.rating) ? '#C7944B' : '#444', padding: '0 8px' }}
-                                            onMouseEnter={() => setHoverRating(s)}
-                                            onMouseLeave={() => setHoverRating(0)}
-                                            onClick={() => {
-                                                setFormData({ ...formData, rating: s });
-                                                setErrors(prev => ({ ...prev, rating: null }));
-                                            }}
-                                        >★</span>
-                                    ))}
-                                </div>
-                                <p className="small">{t('yourRatingLabel')}</p>
-                                {errors.rating && <div className={`${styles.textError} font-weight-bold`}>{errors.rating}</div>}
-                            </div>
+                            {/* Star Picker */}
+                            <StarPicker
+                                value={formData.rating}
+                                onChange={(s) => {
+                                    setFormData({ ...formData, rating: s });
+                                    setErrors(prev => ({ ...prev, rating: null }));
+                                }}
+                                error={errors.rating}
+                            />
 
-                            <div className="row">
-                                <div className="col-md-6 mb-3">
-                                    <label className="small text-uppercase">{t('yourNameLabel')}</label>
+                            {/* Name + Phone */}
+                            <div className={styles.formRow}>
+                                <div>
+                                    <label className={styles.formLabel}>{t('yourNameLabel')}</label>
                                     <input
                                         type="text"
-                                        className={`form-control ${styles.formControlDark} ${errors.customer_name ? styles.isInvalid : ''}`}
+                                        className={`${styles.formControlDark} ${errors.customer_name ? styles.isInvalid : ''}`}
                                         disabled={isAnonymous}
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     />
-
-                                    <div className="d-flex align-items-center mt-3">
+                                    {errors.customer_name && <div className={styles.textError}>{errors.customer_name[0]}</div>}
+                                    {/* Anonymous toggle */}
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.65rem', gap: '8px' }}>
                                         <input type="checkbox" id="anonSwitch" className={styles.toggleCheckbox} onChange={handleAnonToggle} checked={isAnonymous} />
-                                        <label htmlFor="anonSwitch" className={styles.toggleSwitch}></label>
+                                        <label htmlFor="anonSwitch" className={styles.toggleSwitch} />
                                         <label htmlFor="anonSwitch" className={styles.toggleLabelText}>Post Anonymously</label>
                                     </div>
                                 </div>
-
-                                <div className="col-md-6 mb-3">
-                                    <label className="small text-uppercase d-flex justify-content-between">
-                                        <span>Mobile Number</span>
-                                        <span className={styles.textGold} style={{ fontSize: '0.7rem' }}>Required for Coupon</span>
+                                <div>
+                                    <label className={styles.formLabel}>
+                                        Mobile Number&nbsp;
+                                        <span className={styles.formLabelGold}>· Required for coupon</span>
                                     </label>
                                     <input
                                         type="tel"
-                                        className={`form-control ${styles.formControlDark} ${errors.customer_phone ? styles.isInvalid : ''}`}
+                                        className={`${styles.formControlDark} ${errors.customer_phone ? styles.isInvalid : ''}`}
                                         placeholder="050 123 4567"
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
@@ -351,39 +371,41 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                                 </div>
                             </div>
 
-                            <div className="form-group mb-3">
-                                <label className="small text-uppercase d-flex justify-content-between">
-                                    <span>{t('yourEmailLabel')}</span>
-                                    <span className={styles.textGold} style={{ fontSize: '0.7rem' }}>Required for Coupon</span>
+                            {/* Email */}
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>
+                                    {t('yourEmailLabel')}&nbsp;
+                                    <span className={styles.formLabelGold}>· Required for coupon</span>
                                 </label>
                                 <input
-                                    type="text"
-                                    className={`form-control ${styles.formControlDark} ${errors.customer_email ? styles.isInvalid : ''}`}
+                                    type="email"
+                                    className={`${styles.formControlDark} ${errors.customer_email ? styles.isInvalid : ''}`}
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                 />
                                 {errors.customer_email && <div className={styles.textError}>{errors.customer_email[0]}</div>}
                             </div>
 
-                            <div className="form-group mb-4">
-                                <label className="small text-uppercase">{t('yourReviewLabel')}</label>
+                            {/* Review text */}
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>{t('yourReviewLabel')}</label>
                                 <textarea
-                                    className={`form-control ${styles.formControlDark} ${errors.comment ? styles.isInvalid : ''}`}
+                                    className={`${styles.formControlDark} ${errors.comment ? styles.isInvalid : ''}`}
                                     rows="4"
+                                    placeholder="Describe the scent, longevity, sillage..."
                                     value={formData.comment}
                                     onChange={e => setFormData({ ...formData, comment: e.target.value })}
-                                ></textarea>
+                                />
                                 {errors.comment && <div className={styles.textError}>{errors.comment[0]}</div>}
                             </div>
 
-                            {errors.form && <div className="alert alert-danger text-center">{errors.form}</div>}
+                            {errors.form && (
+                                <div style={{ background: '#fdf0f0', border: '1px solid #f5c6cb', color: '#721c24', borderRadius: 8, padding: '10px 14px', fontSize: '0.85rem', fontFamily: "'Inter', sans-serif", marginBottom: '1rem' }}>
+                                    {errors.form}
+                                </div>
+                            )}
 
-                            <button
-                                type="submit"
-                                className="btn btn-light btn-block font-weight-bold text-uppercase py-3"
-                                disabled={isSubmitting}
-                                style={{ letterSpacing: '1px' }}
-                            >
+                            <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
                                 {isSubmitting ? t('submitting') : t('submit')}
                             </button>
                         </form>
@@ -428,7 +450,6 @@ const CustomerReviews = ({ product, reviews, loading, onReviewSubmitted }) => {
                     t={t}
                     loading={loading}
                 />
-
                 <ReviewList reviews={reviews} loading={loading} t={t} />
             </div>
 

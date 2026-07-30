@@ -15,6 +15,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
   const [orderData, setOrderData] = useState(initialOrderDetails);
   const [isVerifying, setIsVerifying] = useState(false);
   const isPollingRef = useRef(false);
+  const hasFiredPurchase = useRef(false); // prevents analytics firing more than once
 
   // 1. POLLING EFFECT: Check status if it's not final (From your UAE code)
   useEffect(() => {
@@ -73,8 +74,10 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
 
   // 2. ANALYTICS EFFECT: Only fire if payment is actually completed
   useEffect(() => {
-    if (orderData?.payment_status === "completed" && orderData?.id) {
-      // ---- GA4 Purchase ----
+    if (orderData?.payment_status === "completed" && orderData?.id && !hasFiredPurchase.current) {
+      hasFiredPurchase.current = true; // lock — never fires again even if orderData re-renders
+
+      // ---- GA4 Purchase (TikTok listener in layout.jsx maps this to ttq.track("Purchase")) ----
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: "purchase",
@@ -85,23 +88,25 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
           currency: currency?.code || "SAR",
           items: orderData.products.map((item) => ({
             item_id: item.product_id?.toString(),
-            item_name: he.decode(item.product_name),
+            item_name: he.decode(item.product_name || item.name || ""),
             price: parseFloat(item.price),
             quantity: item.qty,
           })),
         },
       });
 
-      // ---- TikTok Purchase ----
-      if (typeof window.ttq === "object" && typeof window.ttq.track === "function") {
-        window.ttq.track("Purchase", {
+      // ---- Meta (Facebook) Pixel Purchase ----
+      if (typeof window.fbq === "function") {
+        window.fbq("track", "Purchase", {
+          content_ids: orderData.products.map((item) => item.product_id?.toString()),
+          content_type: "product",
           contents: orderData.products.map((item) => ({
-            content_id: item.product_id?.toString(),
-            content_type: "product",
-            content_name: he.decode(item.product_name),
+            id: item.product_id?.toString(),
+            quantity: item.qty,
           })),
           value: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
+          order_id: orderData.order_id,
         });
       }
 
