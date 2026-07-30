@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -22,7 +22,7 @@ export default function PremiumBreadcrumb({ items = [] }) {
         maxWidth: "1440px",
         margin: "0 auto",
         padding: "0.75rem 1rem 0",
-        fontFamily: "'Poppins', 'Segoe UI', sans-serif",
+        fontFamily: "inherit",
       }}
     >
       <ol style={{

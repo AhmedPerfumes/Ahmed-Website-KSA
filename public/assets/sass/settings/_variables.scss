@@ -72,15 +72,6 @@ $h5-font-size: 1rem;
 $h6-font-size: 0.9375rem;
 $strock-font-size: 5.625rem;
 
-/* ── Font family — 2-font system (Playfair Display + DM Sans) ──────
-   Using CSS custom property with string fallback so:
-   1. Bootstrap $-variable system compiles correctly (SCSS sees opaque string)
-   2. At runtime: Next.js-optimized WOFF2 via --font-dm-sans / --font-playfair
-   3. Fallback: browser downloads "DM Sans"/"Playfair Display" from system or cache
-   ─────────────────────────────────────────────────────────────────── */
-$font-family-base:    var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
-$headings-font-family: var(--font-playfair, "Playfair Display"), "Georgia", serif;
-
 $font-weight-base: 400;
 $font-weight-heading: 600;        /* Stronger weight for crisp headings */
 

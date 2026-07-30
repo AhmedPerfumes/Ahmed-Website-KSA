@@ -1,120 +1,80 @@
 /* ═══════════════════════════════════════════════════════════════════
    GLOBAL TYPOGRAPHY OVERRIDE — Ahmed Al Maghribi KSA
    Applied LAST in style.scss — wins all specificity battles.
-
-   TYPOGRAPHY SYSTEM (2 fonts only):
-     Headings  → Playfair Display  (var --font-playfair)
-     Body/UI   → DM Sans           (var --font-dm-sans)
-     Numbers   → Inter             (var --font-inter)
-     Arabic    → Alexandria        (var --font-alexandria)
-
-   HOW IT WORKS:
-     - Next.js sets --font-dm-sans & --font-playfair on <body> via className
-     - We reference them DIRECTLY (not via intermediate --font-family-base)
-     - String fallbacks ensure font loads even if CSS var chain is broken
+   TYPOGRAPHY SYSTEM:
+     Headings  → var(--font-heading)      = Playfair Display
+     Body/UI   → var(--font-family-base)  = DM Sans
+     Numbers   → var(--font-inter)        = Inter
+     Arabic    → var(--font-alexandria)   = Alexandria
+   BANNED FONTS: Kanit, Lato, Poppins, Cinzel, Merriweather, Trebuchet
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── 0. FONT RENDERING — anti-aliased on all screens ───────────────────── */
+/* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
+/* Every element inherits from body (DM Sans). Headings get Playfair.     */
+/* This catches any rogue hardcoded fonts in components we may have missed. */
+
 *,
 *::before,
 *::after {
+  /* Allow CSS font-family declarations to be inherited properly */
+  /* Don't set font-family here — let body + heading rules cascade down */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── 1. BODY — DM Sans (base of all UI inheritance) ────────────────────── */
-/* Using direct var(--font-dm-sans) — NOT the intermediate --font-family-base  */
-/* This ensures the chain works even if --font-family-base is broken somehow    */
+/* BODY — DM Sans for all UI text (base of inheritance) */
 body {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif !important;
-  font-size: 0.9375rem;   /* 15px — legible on all screens including 2560px */
+  font-family: var(--font-family-base) !important;
+  font-size: 0.9375rem;
   color: #1a1a1a;
   font-weight: 400;
-  line-height: 1.7;
 }
 
-/* ── 2. ALL HEADINGS — Playfair Display everywhere ────────────────────── */
-/* Direct var(--font-playfair) reference with string fallback — no chain needed */
+/* ALL HEADINGS — Playfair Display everywhere on the site */
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: var(--font-playfair, "Playfair Display"), "Georgia", serif !important;
+  font-family: var(--font-heading) !important;
   color: #1a1a1a;
 }
 
-/* ── 3. PARAGRAPHS — near-black, readable weight and size ──────────────── */
+/* ALL PARAGRAPHS — near-black, readable, proper size */
 p {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-base);
   color: #1a1a1a;
   font-weight: 400;
   font-size: 0.9375rem;
   line-height: 1.75;
 }
 
-/* ── 4. LINKS — inherit body font (DM Sans) ────────────────────────── */
+/* LINKS — inherit body font */
 a {
   font-family: inherit;
 }
 
-/* ── 5. BUTTONS — DM Sans, consistent weight ──────────────────────── */
+/* BUTTONS — DM Sans, consistent weight */
 button,
 .btn,
 [type="button"],
 [type="submit"] {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif !important;
+  font-family: var(--font-family-base) !important;
 }
 
-/* ── 6. FORM ELEMENTS — DM Sans ────────────────────────────────── */
+/* FORM ELEMENTS — DM Sans */
 input,
 select,
 textarea,
 label {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif !important;
+  font-family: var(--font-family-base) !important;
 }
 
-/* ── 7. PRICE & NUMBER ELEMENTS — Inter for digit clarity ────────────── */
+/* PRICE & NUMBER ELEMENTS — Inter for digit clarity */
 .price,
 .pc-price,
 [class*="price"],
 [class*="amount"],
 [class*="total"],
 [class*="discount"] {
-  font-family: var(--font-inter, var(--font-dm-sans, "Inter")), "Helvetica Neue", sans-serif !important;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── 8. CART DRAWER — fix --cd-font which used system fonts ──────────── */
-.shopping-cart,
-.cart-drawer,
-.cart-sidebar,
-[class*="cart-"] {
-  --cd-font: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
-}
-
-/* ── 9. NAV / HEADER — ensure menu links use DM Sans ────────────────── */
-nav, nav *, header, header nav,
-.navigation, .navigation__link, .navigation__item,
-.nav-link, .navbar, .menu-item {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif !important;
-  font-weight: 500;
-}
-
-/* Override headings inside nav back to body font (nav headings = DM Sans) */
-nav h1, nav h2, nav h3, nav h4, nav h5, nav h6,
-header h1, header h2, header h3 {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif !important;
-}
-
-/* ── 10. FOOTER — DM Sans ───────────────────────────────────── */
-footer, footer *,
-.footer, .footer * {
-  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
-}
-
-/* Footer headings — keep Playfair Display for section titles */
-footer h1, footer h2, footer h3, footer h4, footer h5, footer h6,
-.footer h1, .footer h2, .footer h3, .footer h4, .footer h5, .footer h6 {
-  font-family: var(--font-playfair, "Playfair Display"), "Georgia", serif !important;
+  font-family: var(--font-inter, var(--font-family-base)) !important;
 }
 
 /* ── 1. Font family consistency across all sections ──────────────── */

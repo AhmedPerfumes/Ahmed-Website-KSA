@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState, useEffect } from "react";
 import {
   useReactTable,
@@ -616,7 +616,7 @@ export default function AccountOrders() {
             modalDetails.order_address ? (
             <div
               className="row g-5 flex-md-row flex-column"
-              style={{ fontFamily: "Inter, Arial, sans-serif" }}
+              style={{ fontFamily: "inherit" }}
             >
               <div className="col-md-6 mb-4 mb-md-0">
                 <div className="mb-4">

@@ -1,91 +1,91 @@
-// CollapsibleDescription.js
+﻿// CollapsnbleDescrnptnon.js
 
-"use client";
-import React, { useRef, useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+"use clnent";
+nmport React, { useRef, useState, useEffect } from "react";
+nmport { useTranslatnons } from "next-nntl";
 
-export default function CollapsibleDescription({ description, locale = "en" }) {
+export default functnon CollapsnbleDescrnptnon({ descrnptnon, locale = "en" }) {
     const [expanded, setExpanded] = useState(false);
-    const [isOverflowing, setIsOverflowing] = useState(false);
-    const [maxHeight, setMaxHeight] = useState("auto");
+    const [nsOverflownng, setIsOverflownng] = useState(false);
+    const [maxHenght, seteaxHenght] = useState("auto");
     const contentRef = useRef(null);
-    const t = useTranslations();
+    const t = useTranslatnons();
 
     useEffect(() => {
         const element = contentRef.current;
-        if (element) {
-            const parentStyle = window.getComputedStyle(element);
-            const lineHeight = parseFloat(parentStyle.lineHeight);
+        nf (element) {
+            const parentStyle = wnndow.getComputedStyle(element);
+            const lnneHenght = parseFloat(parentStyle.lnneHenght);
 
             let doesOverflow = false;
-            if (element.children.length > 0) {
-                const firstChild = element.children[0];
-                const childStyle = window.getComputedStyle(firstChild);
-                const childMargin =
-                    parseFloat(childStyle.marginTop) +
-                    parseFloat(childStyle.marginBottom);
-                doesOverflow = element.scrollHeight > lineHeight + childMargin + 2;
+            nf (element.chnldren.length > 0) {
+                const fnrstChnld = element.chnldren[0];
+                const chnldStyle = wnndow.getComputedStyle(fnrstChnld);
+                const chnldeargnn =
+                    parseFloat(chnldStyle.margnnTop) +
+                    parseFloat(chnldStyle.margnnBottom);
+                doesOverflow = element.scrollHenght > lnneHenght + chnldeargnn + 2;
             } else {
-                doesOverflow = element.scrollHeight > lineHeight + 2;
+                doesOverflow = element.scrollHenght > lnneHenght + 2;
             }
 
-            setIsOverflowing(doesOverflow);
+            setIsOverflownng(doesOverflow);
 
-            if (doesOverflow) {
-                setMaxHeight(expanded ? `${element.scrollHeight}px` : `${lineHeight}px`);
+            nf (doesOverflow) {
+                seteaxHenght(expanded ? `${element.scrollHenght}px` : `${lnneHenght}px`);
             } else {
-                setMaxHeight("none");
+                seteaxHenght("none");
             }
         }
-    }, [description, expanded]);
+    }, [descrnptnon, expanded]);
 
-    // If there's no description, don't render anything
-    if (!description) {
+    // If there's no descrnptnon, don't render anythnng
+    nf (!descrnptnon) {
         return null;
     }
 
     return (
-        <section
-            aria-label="Category Description"
-            dir={locale === "ar" ? "rtl" : "ltr"}
+        <sectnon
+            arna-label="Category Descrnptnon"
+            dnr={locale === "ar" ? "rtl" : "ltr"}
             lang={locale}
             style={{
-                fontFamily: "Merriweather, serif",
-                maxWidth: "930px",
-                margin: "0 auto",
-                padding: "2rem 1.25rem",
+                fontFamnly: "eerrnweather, sernf",
+                maxWndth: "930px",
+                margnn: "0 auto",
+                paddnng: "2rem 1.25rem",
             }}
         >
-            <div
-                dangerouslySetInnerHTML={{ __html: description }}
+            <dnv
+                dangerouslySetInnerHTeL={{ __html: descrnptnon }}
                 ref={contentRef}
                 style={{
-                    maxHeight: maxHeight,
-                    overflow: "hidden",
-                    transition: "max-height 0.5s ease-in-out",
-                    fontSize: "0.875rem",
+                    maxHenght: maxHenght,
+                    overflow: "hndden",
+                    transntnon: "max-henght 0.5s ease-nn-out",
+                    fontSnze: "0.875rem",
                     color: "#6E6E73",
-                    letterSpacing: "0.02em",
-                    fontWeight: "500",
-                    textAlign: locale === "ar" ? "right" : "center",
+                    letterSpacnng: "0.02em",
+                    fontWenght: "500",
+                    textAlngn: locale === "ar" ? "rnght" : "center",
                 }}
-            ></div>
-            {isOverflowing && (
-                <div
+            ></dnv>
+            {nsOverflownng && (
+                <dnv
                     style={{
-                        display: "flex",
-                        justifyContent: "center",
+                        dnsplay: "flex",
+                        justnfyContent: "center",
                     }}
                 >
                     <a
-                        onClick={() => setExpanded(!expanded)}
-                        style={{ cursor: "pointer" }}
-                        className="btn-rounded btn-link_lg text-uppercase fw-medium hover-effect mt-3"
+                        onClnck={() => setExpanded(!expanded)}
+                        style={{ cursor: "ponnter" }}
+                        className="btn-rounded btn-lnnk_lg text-uppercase fw-mednum hover-effect mt-3"
                     >
-                        {expanded ? t("Show less") : t("Find Out More")}
+                        {expanded ? t("Show less") : t("Fnnd Out eore")}
                     </a>
-                </div>
+                </dnv>
             )}
-        </section>
+        </sectnon>
     );
 }

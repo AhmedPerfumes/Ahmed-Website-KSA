@@ -1,4 +1,4 @@
-import { useTranslations, useLocale } from 'next-intl';
+﻿import { useTranslations, useLocale } from 'next-intl';
 import he from 'he';
 import React, { useState, useEffect, useMemo } from 'react';
 import Skeleton from '@mui/material/Skeleton';
@@ -82,11 +82,11 @@ const ReviewSummary = ({ averageRating, reviewCount, distribution, onWriteClick,
                 </>
             ) : (
                 <>
-                    <div className="display-4 font-weight-bold" style={{ color: '#1a1a1a', fontFamily: "'Inter', sans-serif" }}>
+                    <div className="display-4 font-weight-bold" style={{ color: '#1a1a1a', fontFamily: "inherit" }}>
                         {reviewCount > 0 ? averageRating.toFixed(1) : '0.0'}
                     </div>
                     <div className="mb-2"><StarRating rating={Math.round(averageRating)} size="1.2rem" /></div>
-                    <div style={{ fontSize: '0.82rem', color: '#888', fontFamily: "'Inter', sans-serif" }}>
+                    <div style={{ fontSize: '0.82rem', color: '#888', fontFamily: "inherit" }}>
                         {t('basedOn', { count: reviewCount })}
                     </div>
                 </>
@@ -103,12 +103,12 @@ const ReviewSummary = ({ averageRating, reviewCount, distribution, onWriteClick,
                     const percent = reviewCount > 0 ? (count / reviewCount) * 100 : 0;
                     return (
                         <div key={star} className="d-flex align-items-center mb-2" style={{ gap: '8px' }}>
-                            <span style={{ width: '10px', fontSize: '0.78rem', color: '#555', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{star}</span>
+                            <span style={{ width: '10px', fontSize: '0.78rem', color: '#555', fontFamily: "inherit", fontWeight: 600 }}>{star}</span>
                             <span style={{ color: '#C7944B', fontSize: '0.78rem', lineHeight: 1 }}>★</span>
                             <div className={`flex-grow-1 ${styles.progressThin}`}>
                                 <div className={styles.progressBarGold} style={{ width: `${percent}%` }} />
                             </div>
-                            <span style={{ width: '20px', fontSize: '0.78rem', color: '#888', textAlign: 'right', fontFamily: "'Inter', sans-serif" }}>{count}</span>
+                            <span style={{ width: '20px', fontSize: '0.78rem', color: '#888', textAlign: 'right', fontFamily: "inherit" }}>{count}</span>
                         </div>
                     );
                 })
@@ -156,7 +156,7 @@ const ReviewList = ({ reviews, loading, t }) => {
     );
 
     if (!reviews || reviews.length === 0) return (
-        <div className="text-center py-5" style={{ color: '#888', fontFamily: "'Inter', sans-serif", fontSize: '0.9rem' }}>
+        <div className="text-center py-5" style={{ color: '#888', fontFamily: "inherit", fontSize: '0.9rem' }}>
             {t('beFirst')}
         </div>
     );
@@ -179,11 +179,11 @@ const ReviewList = ({ reviews, loading, t }) => {
                                     {review.star === 5 ? 'Excellent' : review.star >= 4 ? 'Very Good' : review.star >= 3 ? 'Good' : 'Review'}
                                 </span>
                             </div>
-                            <small style={{ color: '#999', fontFamily: "'Inter', sans-serif", fontSize: '0.75rem' }}>
+                            <small style={{ color: '#999', fontFamily: "inherit", fontSize: '0.75rem' }}>
                                 {hasMounted ? new Date(review.created_at).toLocaleDateString() : ''}
                             </small>
                         </div>
-                        <p style={{ lineHeight: '1.75', opacity: 0.85, fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', color: '#333', margin: 0 }}>
+                        <p style={{ lineHeight: '1.75', opacity: 0.85, fontFamily: "inherit", fontSize: '0.88rem', color: '#333', margin: 0 }}>
                             {review.comment}
                         </p>
                     </div>
@@ -305,10 +305,10 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                     {success ? (
                         <div className={styles.successScreen}>
                             <div className={styles.successIcon}>✓</div>
-                            <h4 style={{ color: '#1a1a1a', fontFamily: "'Inter', sans-serif", fontWeight: 700, marginBottom: '0.5rem' }}>
+                            <h4 style={{ color: '#1a1a1a', fontFamily: "inherit", fontWeight: 700, marginBottom: '0.5rem' }}>
                                 {t('successMessage')}
                             </h4>
-                            <p style={{ color: '#888', fontFamily: "'Inter', sans-serif", fontSize: '0.85rem' }}>
+                            <p style={{ color: '#888', fontFamily: "inherit", fontSize: '0.85rem' }}>
                                 Your <strong style={{ color: '#C7944B' }}>exclusive reward</strong> will be sent to your email upon approval.
                             </p>
                         </div>
@@ -400,7 +400,7 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                             </div>
 
                             {errors.form && (
-                                <div style={{ background: '#fdf0f0', border: '1px solid #f5c6cb', color: '#721c24', borderRadius: 8, padding: '10px 14px', fontSize: '0.85rem', fontFamily: "'Inter', sans-serif", marginBottom: '1rem' }}>
+                                <div style={{ background: '#fdf0f0', border: '1px solid #f5c6cb', color: '#721c24', borderRadius: 8, padding: '10px 14px', fontSize: '0.85rem', fontFamily: "inherit", marginBottom: '1rem' }}>
                                     {errors.form}
                                 </div>
                             )}

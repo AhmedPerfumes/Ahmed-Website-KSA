@@ -1,4 +1,4 @@
-import { useContextElement } from "@/context/Context";
+﻿import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
 import { useLocale, useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
@@ -315,7 +315,7 @@ const Checkout = ({ product }) => {
             {/* <div className="w-100 mt-3">
                 <div
                     className="d-flex justify-content-between border-bottom pb-1"
-                    style={{ fontFamily: "Georgia, serif" }}
+                    style={{ fontFamily: "inherit" }}
                 >
                     <label
                         htmlFor="size-select"
@@ -389,7 +389,7 @@ const Checkout = ({ product }) => {
             {/* CHANGED: Condition now checks for a non-empty 'tags' array */}
             {product?.tags && Array.isArray(product.tags) && product.tags.length > 0 && (
                 <div className="w-100 mb-3">
-                    <div className="d-flex justify-content-between align-items-center border-bottom pb-1" style={{ fontFamily: "Georgia, serif" }} >
+                    <div className="d-flex justify-content-between align-items-center border-bottom pb-1" style={{ fontFamily: "inherit" }} >
                         <label htmlFor="size-select" className="text-muted me-2 mb-0 h6" >
                             Size:
                         </label>

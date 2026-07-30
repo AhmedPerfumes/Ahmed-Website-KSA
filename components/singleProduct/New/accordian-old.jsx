@@ -1,4 +1,4 @@
-import "./accordian-old.css";
+﻿import "./accordian-old.css";
 import InfoCard from "./Common/InfoCard";
 
 const ProductAccordion = ({ product }) => {
@@ -142,7 +142,7 @@ const ProductAccordion = ({ product }) => {
                 backgroundColor: "#FAF9F7",
                 maxWidth: "600px",
                 margin: "0 auto",
-                fontFamily: "serif",
+                fontFamily: "inherit",
                 display: "flex",
                 flexDirection: "column",
                 minHeight: "100vh",
@@ -161,7 +161,7 @@ const ProductAccordion = ({ product }) => {
                         style={{
                             backgroundColor: "#FAF9F7",
                             color: "#222",
-                            fontFamily: "Cinzel, serif",
+                            fontFamily: "inherit",
                             border: "none",
                             borderBottom: "1px solid #ddd",
                         }}
@@ -253,7 +253,7 @@ const ProductAccordion = ({ product }) => {
                         style={{
                             backgroundColor: "#FAF9F7",
                             color: "#222",
-                            fontFamily: "Cinzel, serif",
+                            fontFamily: "inherit",
                             border: "none",
                             borderBottom: "1px solid #ddd",
                         }}
@@ -440,7 +440,7 @@ const ProductAccordion = ({ product }) => {
                                         fontSize: "18px",
                                         fontWeight: "600",
                                         color: "#222",
-                                        fontFamily: "Cinzel, serif",
+                                        fontFamily: "inherit",
                                         marginBottom: "8px",
                                     }}
                                 >
@@ -450,7 +450,7 @@ const ProductAccordion = ({ product }) => {
                                     style={{
                                         fontSize: "14px",
                                         color: "#444",
-                                        fontFamily: "Merriweather, serif",
+                                        fontFamily: "inherit",
                                         lineHeight: "1.5",
                                     }}
                                 >
@@ -475,7 +475,7 @@ const ProductAccordion = ({ product }) => {
                         style={{
                             backgroundColor: "#FAF9F7",
                             color: "#222",
-                            fontFamily: "Cinzel, serif",
+                            fontFamily: "inherit",
                             border: "none",
                             borderBottom: "1px solid #ddd",
                         }}
@@ -561,7 +561,7 @@ const ProductAccordion = ({ product }) => {
                         style={{
                             backgroundColor: "#FAF9F7",
                             color: "#222",
-                            fontFamily: "Cinzel, serif",
+                            fontFamily: "inherit",
                             border: "none",
                             borderBottom: "1px solid #ddd",
                         }}
@@ -657,7 +657,7 @@ const ProductAccordion = ({ product }) => {
                         style={{
                             backgroundColor: "#FAF9F7",
                             color: "#222",
-                            fontFamily: "Cinzel, serif",
+                            fontFamily: "inherit",
                             border: "none",
                             borderBottom: "1px solid #ddd",
                         }}
@@ -743,7 +743,7 @@ const ProductAccordion = ({ product }) => {
                         style={{
                             backgroundColor: "#FAF9F7",
                             color: "#222",
-                            fontFamily: "Cinzel, serif",
+                            fontFamily: "inherit",
                             border: "none",
                             borderBottom: "1px solid #ddd",
                         }}

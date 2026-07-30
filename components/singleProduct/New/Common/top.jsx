@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+﻿import React, { useMemo } from "react";
 import he from "he";
 import { useTranslations } from "next-intl";
 import BreadCumb from "../../BreadCumb";
@@ -23,7 +23,7 @@ const Top = ({ product }) => {
             {/* <h1
         className="text-dark mb-1"
         style={{
-          fontFamily: "Lobster, cursive",
+          fontFamily: "inherit",
           fontSize: "calc(1.375rem + 1.5vw)",
         }}
       >

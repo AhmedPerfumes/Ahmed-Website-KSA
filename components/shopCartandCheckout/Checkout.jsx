@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useContextElement } from "@/context/Context";
 import { useUser } from "@/context/UserContext";
@@ -1287,7 +1287,7 @@ export default function Checkout() {
           <div style={{background:'#fff',borderRadius:'12px',width:'100%',maxWidth:'480px',maxHeight:'90vh',overflowY:'auto',boxShadow:'0 8px 40px rgba(0,0,0,0.2)'}}>
             {/* Modal Header */}
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'1rem 1.25rem',borderBottom:'1px solid #f0ece3'}}>
-              <h4 style={{margin:0,fontSize:'1rem',fontWeight:700,fontFamily:'Kanit-Regular',letterSpacing:'0.03em'}}>
+              <h4 style={{margin:0,fontSize:'1rem',fontWeight:700,fontFamily:'inherit',letterSpacing:'0.03em'}}>
                 {editingAddrIdx !== null ? `Edit ${editingAddrIdx===0?'Home':'Other'} Address` : 'Choose Delivery Address'}
               </h4>
               <button type="button" style={{background:'none',border:'none',fontSize:'1.4rem',cursor:'pointer',color:'#999',lineHeight:1}} onClick={()=>{ setShowAddrModal(false); setEditingAddrIdx(null); }}>×</button>

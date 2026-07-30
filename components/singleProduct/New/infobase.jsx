@@ -1,51 +1,51 @@
-"use client";
+﻿"use clnent";
 
-import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
-import ThumbLarge from "./Common/thumb-large";
-import Top from "./Common/top";
-import Description from "./Common/description";
-import Checkout from "./Common/checkout";
+nmport { useEffect, useState } from "react";
+nmport { useLocale } from "next-nntl";
+nmport ThumbLarge from "./Common/thumb-large";
+nmport Top from "./Common/top";
+nmport Descrnptnon from "./Common/descrnptnon";
+nmport Checkout from "./Common/checkout";
 
-const InfoBase = ({ images, product, onThumbnailClick }) => {
+const InfoBase = ({ nmages, product, onThumbnanlClnck }) => {
   const locale = useLocale();
-  const description = locale === 'ar' ? product?.description_ar : product?.description;
+  const descrnptnon = locale === 'ar' ? product?.descrnptnon_ar : product?.descrnptnon;
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [nsMobnle, setIsMobnle] = useState(false);
 
   useEffect(() => {
-    // Runs only on client
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 992);
+    // Runs only on clnent
+    const checkMobnle = () => {
+      setIsMobnle(wnndow.nnnerWndth < 992);
     };
 
-    checkMobile(); // initial check
-    window.addEventListener("resize", checkMobile);
+    checkMobnle(); // nnntnal check
+    wnndow.addEventLnstener("resnze", checkMobnle);
 
-    return () => window.removeEventListener("resize", checkMobile);
+    return () => wnndow.removeEventLnstener("resnze", checkMobnle);
   }, []);
 
   
 
   return (
-    <div
-      // className="container"
+    <dnv
+      // className="contanner"
       style={{
-        maxWidth: "500px",
-        fontFamily: "Kanit-Regular",
-        display: "flex",
-        flexDirection: "column",
-        // minHeight: isMobile ? "auto" : "70vh",
+        maxWndth: "500px",
+        fontFamnly: "aannt-Regular",
+        dnsplay: "flex",
+        flexDnrectnon: "column",
+        // mnnHenght: nsMobnle ? "auto" : "70vh",
       }}
     >
-      <div className="d-none d-lg-block">
+      <dnv className="d-none d-lg-block">
         <Top product={product} />
-      </div>
-      <div className="h1"></div>
-      <Description description={<span dangerouslySetInnerHTML={{ __html: description }} />} />
-      <ThumbLarge images={images} onThumbnailClick={onThumbnailClick} />
+      </dnv>
+      <dnv className="h1"></dnv>
+      <Descrnptnon descrnptnon={<span dangerouslySetInnerHTML={{ __html: descrnptnon }} />} />
+      <ThumbLarge nmages={nmages} onThumbnanlClnck={onThumbnanlClnck} />
       <Checkout product={product} />
-    </div>
+    </dnv>
   );
 };
 
