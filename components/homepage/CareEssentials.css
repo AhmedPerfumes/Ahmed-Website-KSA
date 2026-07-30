@@ -238,7 +238,7 @@
 
 @media (min-width: 768px) {
   .care-card__eyebrow {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 }
 
@@ -254,7 +254,7 @@
 .care-card__sub {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
-  font-weight: 300;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.72);
   margin: 0 0 18px;
   line-height: 1.5;

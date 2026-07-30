@@ -227,8 +227,8 @@
 }
 
 .gs2-card__sub {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.6rem; font-weight: 400;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-size: 0.6rem; font-weight: 500;
   text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--gs2-text-muted);
   margin: 0 0 3px;
@@ -249,7 +249,7 @@
 .gs2-card__name a:hover { color: var(--gs2-gold); }
 
 .gs2-card__tagline {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
   font-size: 0.7rem; font-style: italic;
   color: var(--gs2-text-sec);
   margin: 0 0 12px;
@@ -276,7 +276,7 @@
   white-space: nowrap;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
-@media (min-width: 480px) { .gs2-card__cta { padding: 10px 12px; font-size: 0.6rem; } }
+@media (min-width: 480px) { .gs2-card__cta { padding: 10px 12px; font-size: 0.75rem; } }
 .gs2-card__cta:hover {
   background: var(--gs2-text); color: #fff; border-color: var(--gs2-text);
 }

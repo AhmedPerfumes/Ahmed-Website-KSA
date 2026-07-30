@@ -7,11 +7,11 @@
 .pdp-accordion-wrap {
     --color-background: #faf9f7;
     --color-text-primary: #1a1a1a;
-    --color-text-secondary: #666;
+    --color-text-secondary: #3a3a3a;  /* was #666 — strengthened for readability */
     --color-border-subtle: #e5e5e5;
-    --color-accent: #c9b49a;
-    --font-heading: "Kanit-Regular";
-    --font-body: "Kanit-Regular";
+    --color-accent: #C9A96E;           /* match PDP gold */
+    --font-heading: var(--font-heading, "Playfair Display", "Georgia", serif);
+    --font-body: var(--font-dm-sans, "Helvetica Neue", Arial, sans-serif);
     --space-sm: 0.5rem;
     --space-md: 1rem;
     --space-lg: 1.5rem;
@@ -49,7 +49,7 @@
     cursor: pointer;
     text-align: left;
     font-size: 0.82rem;
-    font-family: 'Inter', var(--font-heading);
+    font-family: var(--font-heading);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -95,7 +95,7 @@
 /* Inner padding */
 .pdp-acc-content {
     padding: var(--space-sm) var(--space-md) var(--space-xl);
-    font-family: 'Inter', var(--font-body);
+    font-family: var(--font-body);
     font-size: 0.875rem;
     line-height: 1.7;
     color: var(--color-text-secondary);
@@ -152,7 +152,7 @@
 
 .note-item-desc {
     font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     line-height: 1.6;
 }
 
@@ -186,7 +186,7 @@
 
 .highlight-desc {
     font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     margin: 0;
     line-height: 1.6;
 }

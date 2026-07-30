@@ -16,8 +16,9 @@
   /* Neutral palette */
   --pdp-ink: #1A1A1A;
   --pdp-charcoal: #2C2C2C;
-  --pdp-slate: #6B6B6B;
-  --pdp-ash: #9A9A9A;
+  --pdp-slate: #3a3a3a;        /* was #6B6B6B — too pale gray, now strong dark */
+  --pdp-slate-light: #666666;  /* for truly secondary/muted only */
+  --pdp-ash: #777777;          /* was #9A9A9A — barely visible, now readable */
   --pdp-line: #E5E0D8;
   --pdp-sand: #F4EFE8;
   --pdp-mist: #FAF9F7;
@@ -48,21 +49,17 @@
   /* Transition */
   --ease: .24s cubic-bezier(.25, .46, .45, .94);
 
-  /* ── Typography Scale ─────────────────────────── */
-  --t-xs: .68rem;
-  /* badges, labels  */
-  --t-sm: .78rem;
-  /* secondary text  */
-  --t-md: .88rem;
-  /* body            */
-  --t-base: .95rem;
-  /* emphasis body   */
-  --t-lg: 1rem;
-  /* card headings   */
-  --t-xl: 1.125rem;
-  /* sub-headings    */
-  --t-2xl: 1.5rem;
-  /* section titles  */
+  /* ── Typography Scale ─────────────────────────────────────────
+     All sizes bumped up for legibility on 2560px / large screens.
+     Previous values were too small (0.68rem = 10.9px on big screens).
+     ─────────────────────────────────────────────────────────── */
+  --t-xs: .8rem;       /* 12.8px  — badges, labels   (was .68rem = 10.9px) */
+  --t-sm: .875rem;     /* 14px    — secondary text   (was .78rem = 12.5px) */
+  --t-md: .9375rem;    /* 15px    — body             (was .88rem = 14.1px) */
+  --t-base: 1rem;      /* 16px    — emphasis body    (was .95rem) */
+  --t-lg: 1.0625rem;   /* 17px    — card headings    (was 1rem) */
+  --t-xl: 1.125rem;    /* 18px    — sub-headings     (unchanged) */
+  --t-2xl: 1.5rem;     /* 24px    — section titles   (unchanged) */
 }
 
 /* ── Container ─────────────────────────────────────────────────── */
@@ -95,17 +92,25 @@
   font-weight: inherit;
   line-height: 1.2;
   margin: 0;
+  font-family: var(--font-heading);
 }
 
-.luxury-pdp h1 { font-size: clamp(1.6rem, 3vw, 2.2rem);  font-weight: 300; letter-spacing: -.01em; }
-.luxury-pdp h2 { font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 400; letter-spacing: -.005em; }
-.luxury-pdp h3 { font-size: clamp(0.95rem, 1.4vw, 1.1rem);  font-weight: 600; }
-.luxury-pdp h4 { font-size: 0.9rem;  font-weight: 500; }
-.luxury-pdp h5 { font-size: 0.82rem; font-weight: 500; }
-.luxury-pdp h6 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+/* Product title — elegant, not ultra-thin (300 looks washed out on Windows) */
+.luxury-pdp h1 { font-size: clamp(1.7rem, 3.2vw, 2.5rem);  font-weight: 400; letter-spacing: -.01em; color: var(--pdp-ink); }
+.luxury-pdp h2 { font-size: clamp(1.3rem, 2.4vw, 1.9rem);  font-weight: 500; letter-spacing: -.005em; color: var(--pdp-ink); }
+.luxury-pdp h3 { font-size: clamp(1rem, 1.6vw, 1.2rem);    font-weight: 600; color: var(--pdp-ink); }
+.luxury-pdp h4 { font-size: 1rem;    font-weight: 600; color: var(--pdp-ink); }
+.luxury-pdp h5 { font-size: 0.9rem;  font-weight: 500; color: var(--pdp-charcoal); }
+.luxury-pdp h6 { font-size: 0.8rem;  font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--pdp-charcoal); }
 
-/* Base body text inside PDP */
-.luxury-pdp p,
+/* Base body text inside PDP — paragraphs, spans, list items */
+.luxury-pdp p {
+  font-size: var(--t-md);
+  line-height: 1.75;
+  color: var(--pdp-charcoal); /* #2C2C2C — near-black, readable */
+  font-weight: 400;
+}
+
 .luxury-pdp span,
 .luxury-pdp li {
   font-size: var(--t-md);
@@ -463,13 +468,13 @@
   gap: .75rem;
   flex-wrap: wrap;
   margin-bottom: .35rem;
-  font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
 }
 
 .pdp-price {
   font-size: clamp(1.1rem, 1.6vw, 1.4rem) !important;
   font-weight: 600;
-  font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
   color: var(--pdp-ink);
   letter-spacing: -.01em;
   line-height: 1;
@@ -478,7 +483,7 @@
 .pdp-price--sale {
   color: var(--pdp-gold-dark) !important;
   font-size: clamp(1.1rem, 1.6vw, 1.4rem) !important;
-  font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
 }
 
 .pdp-price--old {
@@ -504,7 +509,7 @@
   font-size: var(--t-sm);
   color: var(--pdp-success);
   font-weight: 500;
-  font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
   margin-bottom: 1.25rem;
 }
 
@@ -1875,7 +1880,7 @@
   font-size: var(--t-base);
   color: var(--pdp-ink);
   font-weight: 700;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
   transition: color var(--ease);
 }
 

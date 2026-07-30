@@ -204,7 +204,7 @@
   position: absolute;
   top: 10px; left: 10px; z-index: 3;
   padding: 3px 8px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
   font-size: 0.55rem; font-weight: 600;
   letter-spacing: 0.1em; text-transform: uppercase;
   background: var(--so-gold); color: #fff;
@@ -220,7 +220,7 @@
 
 .so-card__sub {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
-  font-size: 0.6rem; font-weight: 400;
+  font-size: 0.6rem; font-weight: 500;
   text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--so-text-muted);
   margin: 0 0 3px;
@@ -277,7 +277,7 @@
   white-space: nowrap;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
-@media (min-width: 480px) { .so-card__atc { padding: 10px 12px; font-size: 0.6rem; } }
+@media (min-width: 480px) { .so-card__atc { padding: 10px 12px; font-size: 0.75rem; } }
 
 .so-card__atc:hover {
   background: var(--so-text); color: #fff; border-color: var(--so-text);

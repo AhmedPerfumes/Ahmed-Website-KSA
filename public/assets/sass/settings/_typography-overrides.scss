@@ -173,14 +173,57 @@
   font-weight: 400 !important;
 }
 
-/* ── 6. Global body baseline (final pass) ─────────────────────────── */
-/* Ensure body base never falls below a legible size on large screens */
+/* ── 6. Global body + paragraph baseline (final pass) ──────────── */
+/* All paragraphs site-wide: near-black, readable weight, proper size */
 
 body {
   font-family: var(--font-family-base);
-  /* Minimum legible size at 2560px display zoom levels */
-  font-size: 0.9375rem; /* 15px (up from 14px) */
+  font-size: 0.9375rem; /* 15px — up from 14px for large-screen legibility */
+  color: #1a1a1a;       /* near-black — NOT gray */
+  font-weight: 400;
+}
+
+p {
   color: #1a1a1a;
+  font-weight: 400;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+/* Descriptions, subtitles: strong dark — not pale gray */
+[class*="__desc"],
+[class*="-desc"],
+[class*="__text"]:not([class*="__text-muted"]),
+[class*="-text"]:not([class*="-text-muted"]),
+[class*="__sub"]:not([class*="__eyebrow"]),
+[class*="-sub"]:not([class*="-eyebrow"]) {
+  color: #1a1a1a;
+  font-weight: 400;
+}
+
+/* Product card category sub-labels — use gold (like AE site) */
+.bs-card__sub,
+.so-card__sub,
+.oe-card__sub,
+.gs2-card__sub,
+.dk-card__sublabel,
+.na2-banner__sub,
+.care-card__sub {
+  color: #a67b30 !important;  /* brand gold */
+  font-weight: 500 !important;
+  font-size: 0.72rem !important;
+}
+
+/* Muted text — still visible but secondary */
+[class*="__muted"],
+[class*="-muted"],
+[class*="text-muted"]:not(.btn) {
+  color: #666 !important;
+}
+
+/* Gold utility class — for accent text like AE uses */
+.text-gold {
+  color: #a67b30 !important;
 }
 
 /* Navigation menu items */

@@ -216,7 +216,7 @@
   position: absolute;
   top: 14px; left: 14px; z-index: 5;
   padding: 4px 10px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
   font-size: 0.5rem; font-weight: 700;
   letter-spacing: 0.14em; text-transform: uppercase;
   background: var(--na2-gold); color: #fff;
@@ -264,12 +264,12 @@
 /* Sub label */
 .na2-banner__sub {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
-  font-size: 0.56rem; font-weight: 400;
+  font-size: 0.75rem; font-weight: 500;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(255,255,255,0.65);
   margin: 0;
 }
-@media (min-width: 768px) { .na2-banner__sub { font-size: 0.6rem; } }
+@media (min-width: 768px) { .na2-banner__sub { font-size: 0.75rem; } }
 
 /* Product name */
 .na2-banner__name {
@@ -300,7 +300,7 @@
 /* Price */
 .na2-banner__price {
   display: flex; align-items: baseline; gap: 6px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
 }
 .na2-banner__price-cur  { font-size: 0.82rem; font-weight: 500; color: #fff; }
 .na2-banner__price-old  { font-size: 0.68rem; font-weight: 400; color: rgba(255,255,255,0.5); text-decoration: line-through; }
@@ -325,7 +325,7 @@
   flex-shrink: 0;
   transition: background 0.25s ease, color 0.25s ease;
 }
-@media (min-width: 768px) { .na2-banner__atc { padding: 8px 16px; font-size: 0.56rem; } }
+@media (min-width: 768px) { .na2-banner__atc { padding: 8px 16px; font-size: 0.75rem; } }
 .na2-banner__atc:hover { background: var(--na2-gold); color: #fff; }
 .na2-banner__atc.active { background: var(--na2-gold); color: #fff; }
 .na2-banner__atc--out { background: rgba(255,255,255,0.4); color: rgba(255,255,255,0.6); cursor: default; pointer-events: none; }
