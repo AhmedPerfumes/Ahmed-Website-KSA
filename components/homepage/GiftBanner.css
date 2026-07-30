@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    GIFT BANNER — Contained editorial image block
    Same width as the GiftSets carousel (max-width: 1440px,
    padded 0 56px on desktop). Eyebrow + title + CTA on image.
@@ -104,7 +104,7 @@
 
 /* Title */
 .gbnr__title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: clamp(1.6rem, 4vw, 3.4rem);
   font-weight: 400;
   color: #fff;

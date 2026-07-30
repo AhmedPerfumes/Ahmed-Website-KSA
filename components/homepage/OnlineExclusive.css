@@ -118,7 +118,7 @@
 }
 
 .oe-title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: 1.55rem;
   font-weight: 400;
   text-transform: uppercase;

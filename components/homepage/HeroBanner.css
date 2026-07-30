@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    HERO BANNER — FK-style
    Panoramic strip (≈55vh), horizontal slide, split text layout
    Left: multi-line serif title | Bottom-right: collection label + CTA
@@ -305,7 +305,7 @@
 
 /* ── FK-style Title — large multi-line serif, white ── */
 .hero-slide__title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: clamp(1.9rem, 5vw, 3.8rem);
   font-weight: 400;
   font-style: normal;
@@ -346,7 +346,7 @@
 
 /* ── Subtitle — bold accent line below title ── */
 .hero-slide__subtitle {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: clamp(1rem, 2vw, 2rem);
   font-weight: 700;
   font-style: italic;

@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    ONLINE EXCLUSIVE BANNER — Contained editorial image block
    Mirrors GiftBanner layout and sizing exactly.
    ============================================================ */
@@ -104,7 +104,7 @@
 
 /* Title */
 .oebnr__title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: clamp(1.6rem, 4vw, 3.4rem);
   font-weight: 400;
   color: #fff;

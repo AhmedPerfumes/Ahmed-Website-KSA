@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    NEW ARRIVALS v3 — Editorial banner cards
    Desktop: 3-col grid of tall banner cards (image fills card,
             text overlays bottom with gradient)
@@ -74,7 +74,7 @@
 @media (min-width: 768px) { .na2__eyebrow { font-size: 0.75rem; } }
 
 .na2__title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: 1.7rem;
   font-weight: 400;
   color: var(--na2-text);
@@ -273,7 +273,7 @@
 
 /* Product name */
 .na2-banner__name {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: 1.05rem; font-weight: 400;
   color: #fff;
   margin: 0 0 8px;

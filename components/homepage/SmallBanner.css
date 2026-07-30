@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    SMALL BANNER — Ahmed Al Maghribi Perfumes
    Dark cinematic band with text + CTA
    ============================================================ */
@@ -98,7 +98,7 @@
 
 /* Title */
 .small-banner__title {
-  font-family: var(--font-heading);
+  font-family: var(--font-family-base);
   font-size: 1.6rem;
   font-weight: 400;
   color: var(--sb-text);

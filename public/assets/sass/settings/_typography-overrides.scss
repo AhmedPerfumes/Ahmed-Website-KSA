@@ -1,8 +1,8 @@
-/* ═══════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════
    GLOBAL TYPOGRAPHY OVERRIDE — Ahmed Al Maghribi KSA
    Applied LAST in style.scss — wins all specificity battles.
    TYPOGRAPHY SYSTEM:
-     Headings  → var(--font-heading)      = Playfair Display
+     Headings  → var(--font-family-base)      = Playfair Display
      Body/UI   → var(--font-family-base)  = DM Sans
      Numbers   → var(--font-inter)        = Inter
      Arabic    → var(--font-alexandria)   = Alexandria
@@ -84,7 +84,7 @@ label {
 /* correctly resolve to our Next.js-optimized local WOFF2 copies.     */
 /* We also patch them here via CSS inheritance for extra safety.       */
 
-/* Section heading elements across all homepage components */
+/* Section heading elements across all homepage components — DM Sans, no serif */
 .bs2__title,
 .na2__title,
 .so__title,
@@ -95,7 +95,7 @@ label {
 .oebnr__title,
 .gs2__title,
 .oe__section-title {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-family-base) !important;
 }
 
 /* Eyebrow / label elements across all sections */

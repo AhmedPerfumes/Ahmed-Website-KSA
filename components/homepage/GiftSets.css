@@ -51,7 +51,7 @@
 @media (min-width: 768px) { .gs2-head { margin-bottom: 48px; } }
 
 .gs2-lead {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: clamp(1rem, 2vw, 1.35rem);
   font-style: italic;
   color: var(--gs2-text);

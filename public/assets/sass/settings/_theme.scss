@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --theme-color: #c32929;
 
   --theme-color-secondary: #b9a16b;
@@ -13,7 +13,7 @@
    * --font-inter   : Inter (Google) — prices, labels, UI numbers
    * --font-alexandria : Alexandria (Arabic locale only)
    */
-  --font-heading: var(--font-playfair), var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-special: "Allura", cursive;
 }
@@ -36,7 +36,7 @@
 }
 
 .theme-1 {
-  --font-heading: var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-special: "Allura", cursive;
   --theme-color: #c32929;
@@ -48,7 +48,7 @@
   --theme-color: #193174;
   --theme-color-secondary: #ebb73f;
   --theme-color-third: #86bc42;
-  --font-heading: var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-special: "Allura", cursive;
 }
@@ -57,13 +57,13 @@
   --theme-color: #193174;
   --theme-color-secondary: #ebb73f;
   --theme-color-third: #86bc42;
-  --font-heading: var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-special: "Allura", cursive;
 }
 
 .theme-16 {
-  --font-heading: "Rajdhani", var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-family-base: "Rajdhani", var(--font-dm-sans), Arial, sans-serif;
   --font-special: "Allura", cursive;
   --theme-color: #ed1d24;
@@ -123,7 +123,7 @@
   --theme-color: #f09c38;
   --theme-color-secondary: #d6001c;
   --theme-color-third: #0f2041;
-  --font-heading: var(--font-wulkan), "Georgia", serif;
+  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   --font-special: "Allura", cursive;
 }

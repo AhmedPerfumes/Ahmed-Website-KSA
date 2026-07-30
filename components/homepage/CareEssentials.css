@@ -100,7 +100,7 @@
 }
 
 .care__title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: 1.7rem;
   font-weight: 400;
   text-transform: uppercase;
@@ -243,7 +243,7 @@
 }
 
 .care-card__title {
-  font-family: var(--font-playfair, 'Georgia', serif);
+  font-family: var(--font-family-base);
   font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 400;
   color: #fff;
