@@ -22,7 +22,7 @@ import ProductAdditionalInformation from "@/components/asides/ProductAdditionalI
 import ProductReviews from "@/components/asides/ProductReviews";
 import MobileFooter1 from "@/components/footers/MobileFooter1";
 import localFont from "next/font/local";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Playfair_Display, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
