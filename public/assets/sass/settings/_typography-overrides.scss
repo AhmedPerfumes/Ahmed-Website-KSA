@@ -1,13 +1,81 @@
 /* ═══════════════════════════════════════════════════════════════════
    GLOBAL TYPOGRAPHY OVERRIDE — Ahmed Al Maghribi KSA
-   Applied LAST in style.scss to override all component-level weaknesses.
-   Professional audit fixes:
-   1. Replace hardcoded 'Playfair Display' / 'Inter' with CSS variables
-   2. Fix eyebrow text: 0.58rem → 0.72rem (visible on 2560px)
-   3. Fix section headings: scale up clamp() for large displays
-   4. Fix pale gray (#999, #aaa, #6b6b6b) → stronger dark values
-   5. Fix product card typography: stronger names, better weight
+   Applied LAST in style.scss — wins all specificity battles.
+   TYPOGRAPHY SYSTEM:
+     Headings  → var(--font-heading)      = Playfair Display
+     Body/UI   → var(--font-family-base)  = DM Sans
+     Numbers   → var(--font-inter)        = Inter
+     Arabic    → var(--font-alexandria)   = Alexandria
+   BANNED FONTS: Kanit, Lato, Poppins, Cinzel, Merriweather, Trebuchet
    ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
+/* Every element inherits from body (DM Sans). Headings get Playfair.     */
+/* This catches any rogue hardcoded fonts in components we may have missed. */
+
+*,
+*::before,
+*::after {
+  /* Allow CSS font-family declarations to be inherited properly */
+  /* Don't set font-family here — let body + heading rules cascade down */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* BODY — DM Sans for all UI text (base of inheritance) */
+body {
+  font-family: var(--font-family-base) !important;
+  font-size: 0.9375rem;
+  color: #1a1a1a;
+  font-weight: 400;
+}
+
+/* ALL HEADINGS — Playfair Display everywhere on the site */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-heading) !important;
+  color: #1a1a1a;
+}
+
+/* ALL PARAGRAPHS — near-black, readable, proper size */
+p {
+  font-family: var(--font-family-base);
+  color: #1a1a1a;
+  font-weight: 400;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+/* LINKS — inherit body font */
+a {
+  font-family: inherit;
+}
+
+/* BUTTONS — DM Sans, consistent weight */
+button,
+.btn,
+[type="button"],
+[type="submit"] {
+  font-family: var(--font-family-base) !important;
+}
+
+/* FORM ELEMENTS — DM Sans */
+input,
+select,
+textarea,
+label {
+  font-family: var(--font-family-base) !important;
+}
+
+/* PRICE & NUMBER ELEMENTS — Inter for digit clarity */
+.price,
+.pc-price,
+[class*="price"],
+[class*="amount"],
+[class*="total"],
+[class*="discount"] {
+  font-family: var(--font-inter, var(--font-family-base)) !important;
+}
 
 /* ── 1. Font family consistency across all sections ──────────────── */
 /* The CSS variables are set by Next.js font optimization on <body>.   */

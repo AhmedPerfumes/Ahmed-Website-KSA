@@ -98,7 +98,7 @@
 
 /* Title */
 .small-banner__title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
   font-size: 1.6rem;
   font-weight: 400;
   color: var(--sb-text);

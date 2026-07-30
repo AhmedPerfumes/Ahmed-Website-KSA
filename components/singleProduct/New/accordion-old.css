@@ -75,14 +75,14 @@
     font-weight: 600;
     color: #222;
     margin-bottom: 4px;
-    font-family: "Cinzel", serif;
+    font-family: var(--font-heading);
 }
 
 .note-ingredients {
     font-size: 12px;
     color: #555;
     margin-bottom: 8px;
-    font-family: "Merriweather", serif;
+    font-family: var(--font-heading);
 }
 
 .note-click {
@@ -102,7 +102,7 @@
 .usage-head {
     font-size: 18px;
     font-weight: 600;
-    font-family: "Cinzel", serif;
+    font-family: var(--font-heading);
     color: #8b7d6f; /* luxury gold-brown accent */
     margin-bottom: 14px;
     text-align: left;
@@ -111,7 +111,7 @@
 .usage-body {
     font-size: 13px;
     line-height: 1.7;
-    font-family: "Merriweather", serif;
+    font-family: var(--font-heading);
     color: #333;
     margin-bottom: 12px;
     padding-left: 16px;
@@ -215,7 +215,7 @@
 .scent-summary-desc {
   font-size: 0.9rem;
   font-weight: 600;
-  /* font-family: 'Cinzel', serif; */
+  /* font-family: var(--font-heading); */
 }
 
 
@@ -268,7 +268,7 @@
 }
 
 .note-item-title {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-weight: 600;
   margin-bottom: 0.25rem;
   font-size: 1rem;

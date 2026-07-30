@@ -84,7 +84,7 @@
 }
 
 .collections__title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
   font-size: 2rem;
   font-weight: 400;
   color: var(--col-text);
@@ -249,7 +249,7 @@
 
 /* Card Title */
 .collections__card-title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
   font-size: 1.15rem;
   font-weight: 500;
   color: var(--col-text);
@@ -266,7 +266,7 @@
 
 /* Card subtitle / italic */
 .collections__card-subtitle {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
   font-size: 1rem;
   font-weight: 300;
   font-style: italic;

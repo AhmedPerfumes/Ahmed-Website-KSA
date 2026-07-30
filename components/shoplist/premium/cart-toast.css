@@ -68,7 +68,7 @@
 }
 
 .cart-toast__added-label {
-  font-family: 'Poppins', -apple-system, sans-serif;
+  font-family: var(--font-family-base);
   font-size: 0.64rem;
   font-weight: 700;
   color: #2a7a4a;
@@ -78,7 +78,7 @@
 }
 
 .cart-toast__name {
-  font-family: 'Poppins', -apple-system, sans-serif;
+  font-family: var(--font-family-base);
   font-size: 0.73rem;
   font-weight: 500;
   color: #1a1a1a;
@@ -92,7 +92,7 @@
 }
 
 .cart-toast__qty {
-  font-family: 'Poppins', -apple-system, sans-serif;
+  font-family: var(--font-family-base);
   font-size: 0.64rem;
   color: #888;
   margin: 0.04rem 0 0;
@@ -101,7 +101,7 @@
 }
 
 .cart-toast__view {
-  font-family: 'Poppins', -apple-system, sans-serif;
+  font-family: var(--font-family-base);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.1em;

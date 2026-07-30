@@ -9,7 +9,7 @@
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    font-family: var(--font-body);
+    font-family: var(--font-family-base);
     background-position: top;
     background-size: auto;
     display: flex;

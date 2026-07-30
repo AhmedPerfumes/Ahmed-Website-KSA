@@ -3,12 +3,12 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400&display=swap'); */
 
 .serifFont {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading, 'Georgia', serif);
   font-weight: 700;
 }
 
 /* .sansFont {
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-family-base, 'Helvetica Neue', sans-serif);
 } */
 
 /* --- Brand Colors --- */
@@ -89,7 +89,7 @@
 }
 
 .textWatermark {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading, 'Georgia', serif);
   font-size: 15rem; /* Massive size */
   font-weight: 700;
   color: rgba(255, 255, 255, 0.358); /* Almost invisible */
@@ -274,7 +274,7 @@
 }
 
 .textWatermark {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading, 'Georgia', serif);
   font-size: 15rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.358);

@@ -55,7 +55,7 @@
     /* --- Styles changed to match .scent-summary-desc --- */
     font-size: 0.9rem;
     font-weight: 600;
-    font-family: 'Cinzel', serif; /* Key change */
+    font-family: var(--font-heading); /* Key change */
     color: #222; /* Changed from grey to primary text color */
     margin: 0;
     line-height: 1.4;

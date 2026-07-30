@@ -1,5 +1,5 @@
 @font-face {
-  font-family: "Kanit-Regular";
+  font-family: var(--font-family-base);
   src: url(/assets/fonts/kanit/Kanit-Regular.ttf);
 }
 
@@ -39,7 +39,7 @@ h6 {
 }
 
 .font-sofia {
-  font-family: "Kanit-Regular";
+  font-family: var(--font-family-base);
 }
 
 .third-color {

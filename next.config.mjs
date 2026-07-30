@@ -11,7 +11,8 @@ const nextConfig = {
     },
     images: {
         formats: ['image/avif', 'image/webp'],
-        minimumCacheTTL: 3600, // 1 hour — reduces repeat-visit CDN round-trips
+        minimumCacheTTL: 86400, // 24h — product images rarely change
+        quality: 90,            // Up from default 75 — crisper images on large screens
         // Full range including large/4K/retina — prevents upscaling on 2560-3840px displays
         deviceSizes: [390, 640, 750, 828, 1080, 1200, 1440, 1920, 2560, 3840],
         // Extended so product card thumbnails don't upscale on large monitors

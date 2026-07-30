@@ -25,7 +25,7 @@
 }
 
 .founderTitle {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-heading, 'Georgia', serif);
   font-weight: 700;
   font-size: 3rem;
   letter-spacing: 0.15em;

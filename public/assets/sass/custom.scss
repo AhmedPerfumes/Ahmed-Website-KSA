@@ -27,7 +27,7 @@
 }
 
 .out-of-stock {
-  font-family: 'Lato', 'Kanit-Regular';
+  font-family: var(--font-family-base);
 }
 
 .badge {
@@ -601,7 +601,7 @@ footer {
 }
 
 .sub-title {
-  font-family: Lato, sans-serif, Serif;
+  font-family: var(--font-family-base);
   font-size: 1rem;
   text-transform: uppercase;
   text-align: center;
@@ -610,7 +610,7 @@ footer {
 }
 
 .para-sec {
-  font-family: Lato, sans-serif, Serif;
+  font-family: var(--font-family-base);
   font-size: 1rem;
   text-align: center;
   text-wrap: balance;

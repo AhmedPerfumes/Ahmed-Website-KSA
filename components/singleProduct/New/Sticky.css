@@ -28,7 +28,7 @@
 
 .sticky-container .flex-grow-1 p:last-child {
   font-size: clamp(0.625rem, 1.5vw, 0.75rem);
-  font-family: "Cinzel", serif;
+  font-family: var(--font-heading);
   color: #4b5563;
   white-space: nowrap;
 }
