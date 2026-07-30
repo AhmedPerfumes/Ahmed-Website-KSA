@@ -1,5 +1,6 @@
 "use client";
 
+import "./Footer14.css";
 import * as React from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionActions from "@mui/material/AccordionActions";

@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    SPECIAL OFFERS — Ahmed Al Maghribi Perfumes
    Layout mirrors BestSellers (centered heading + carousel)
    ============================================================ */
@@ -230,12 +230,12 @@
 
 .so-card__name {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
-  font-size: 0.83rem; font-weight: 500; font-style: normal;
+  font-size: 0.95rem; font-weight: 500; font-style: normal;
   color: var(--so-text);
   margin: 0 0 5px;
   line-height: 1.4; letter-spacing: 0.01em;
 }
-@media (min-width: 768px) { .so-card__name { font-size: 0.88rem; } }
+@media (min-width: 768px) { .so-card__name { font-size: 1.05rem; } }
 
 .so-card__name a {
   color: inherit; text-decoration: none;

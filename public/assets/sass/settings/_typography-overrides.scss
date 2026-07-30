@@ -30,11 +30,12 @@ body {
   font-weight: 400;
 }
 
-/* ALL HEADINGS — Playfair Display everywhere on the site */
+/* ALL HEADINGS — DM Sans everywhere (NO serif) */
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-family-base) !important;  /* DM Sans — user requested no serif anywhere */
   color: #1a1a1a;
+  font-weight: 600;
 }
 
 /* ALL PARAGRAPHS — near-black, readable, proper size */
@@ -42,7 +43,7 @@ p {
   font-family: var(--font-family-base);
   color: #1a1a1a;
   font-weight: 400;
-  font-size: 0.9375rem;
+  font-size: 1rem;      /* bumped from 0.9375rem — more readable everywhere */
   line-height: 1.75;
 }
 

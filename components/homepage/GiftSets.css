@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    GIFT SETS v2 — "The Art of Gifting"
    Layout mirrors Exclusive Offers: centered heading + carousel
    Cards show video thumbnail, plays on hover
@@ -237,7 +237,7 @@
 
 .gs2-card__name {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
-  font-size: 0.88rem; font-weight: 500; font-style: normal;
+  font-size: 1.05rem; font-weight: 500; font-style: normal;
   color: var(--gs2-text);
   margin: 0 0 4px;
   line-height: 1.4;

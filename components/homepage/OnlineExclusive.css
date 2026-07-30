@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    ONLINE EXCLUSIVE — Product carousel section
    Mirrors SpecialOffers.css with oe- namespace.
    Key difference: "Online Only" gold badge on every card.
@@ -445,7 +445,7 @@
 
 .oe-card__name {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
-  font-size: 0.83rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--oe-text);
   margin: 0 0 5px;

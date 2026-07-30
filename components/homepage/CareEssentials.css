@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    CARE ESSENTIALS — 2-column editorial grid
    Full-bleed images with text overlay — Body Care + Hair Mist
    ============================================================ */
@@ -262,7 +262,7 @@
 
 @media (min-width: 768px) {
   .care-card__sub {
-    font-size: 0.78rem;
+    font-size: 0.95rem;
   }
 }
 

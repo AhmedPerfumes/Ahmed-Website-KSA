@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    DAKHOON BANNER + DAKHOON SECTION
    Mirror of GiftBanner + GiftSets pattern.
    Banner: max-width 1440px, 21/7 ratio, eyebrow+title overlay.
@@ -402,7 +402,7 @@
 
 .dk-card__name {
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
-  font-size: 0.88rem; font-weight: 500;
+  font-size: 1.05rem; font-weight: 500;
   color: var(--dk-text);
   margin: 0 0 4px; line-height: 1.4;
 }
