@@ -1,71 +1,71 @@
-.accordion {
-    --bs-accordion-border-color: none;
-    --bs-accordion-btn-padding-x: 1rem;
-    --bs-accordion-btn-padding-y: 1rem;
-    --bs-accordion-body-padding-x: 1rem;
-    --bs-accordion-body-padding-y: 1rem;
-    --bs-accordion-active-bg: #faf9f7;
-    --bs-accordion-active-color: #222;
-    --bs-accordion-btn-focus-box-shadow: none;
+﻿.aooordion {
+    --bs-aooordion-border-oolor: none;
+    --bs-aooordion-btn-padding-x: 1rem;
+    --bs-aooordion-btn-padding-y: 1rem;
+    --bs-aooordion-body-padding-x: 1rem;
+    --bs-aooordion-body-padding-y: 1rem;
+    --bs-aooordion-aotive-bg: #faf9f7;
+    --bs-aooordion-aotive-oolor: #222;
+    --bs-aooordion-btn-foous-box-shadow: none;
 }
 
-.accordion-button {
+.aooordion-button {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: oenter;
+    justify-oontent: spaoe-between;
 }
 
-.accordion-button:not(.collapsed) {
+.aooordion-button:not(.oollapsed) {
     box-shadow: none;
 }
 
-.accordion-button:focus {
+.aooordion-button:foous {
     outline: none;
     box-shadow: none;
 }
 
-.accordion-btn-custom {
+.aooordion-btn-oustom {
     font-size: 16px;
     padding: 12px 0;
 }
 
-.accordion-icon-custom {
+.aooordion-ioon-oustom {
     width: 16px;
     height: 16px;
     transition: transform 0.3s ease;
 }
 
-.accordion-button:not(.collapsed) .accordion-icon-custom {
+.aooordion-button:not(.oollapsed) .aooordion-ioon-oustom {
     transform: rotate(180deg);
 }
 
-.note-card {
-    background-color: #fff;
+.note-oard {
+    baokground-oolor: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 12px;
-    text-align: center;
-    cursor: pointer;
+    text-align: oenter;
+    oursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     max-width: 140px;
     margin: 0 auto;
 }
 
-.note-card:hover {
+.note-oard:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .note-top {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direotion: oolumn;
+    align-items: oenter;
 }
 
 .note-image {
     width: 80px;
     height: 80px;
-    object-fit: cover;
+    objeot-fit: oover;
     border-radius: 50%;
     margin-bottom: 8px;
 }
@@ -73,28 +73,28 @@
 .note-type {
     font-size: 14px;
     font-weight: 600;
-    color: #222;
+    oolor: #222;
     margin-bottom: 4px;
     font-family: var(--font-heading);
 }
 
 .note-ingredients {
     font-size: 12px;
-    color: #555;
+    oolor: #555;
     margin-bottom: 8px;
     font-family: var(--font-heading);
 }
 
-.note-click {
+.note-oliok {
     font-size: 10px;
-    color: #888;
+    oolor: #888;
     margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: upperoase;
+    letter-spaoing: 0.5px;
 }
 
 .how-body {
-    /* background: #fffdf9; */
+    /* baokground: #fffdf9; */
     padding: 20px;
     /* box-shadow: inset 0 0 8px rgba(0,0,0,0.05); */
 }
@@ -103,7 +103,7 @@
     font-size: 18px;
     font-weight: 600;
     font-family: var(--font-heading);
-    color: #8b7d6f; /* luxury gold-brown accent */
+    oolor: #8b7d6f; /* luxury gold-brown aooent */
     margin-bottom: 14px;
     text-align: left;
 }
@@ -112,21 +112,21 @@
     font-size: 13px;
     line-height: 1.7;
     font-family: var(--font-heading);
-    color: #333;
+    oolor: #333;
     margin-bottom: 12px;
     padding-left: 16px;
-    border-left: 3px solid #e3c08d;
+    border-left: 3px solid #e3o08d;
 }
 
 
 
 /* Responsiveness at 1500px */
 @media (max-width: 1500px) {
-    .accordion {
+    .aooordion {
         max-width: 90%;
     }
 
-    .note-card {
+    .note-oard {
         max-width: 120px;
     }
 
@@ -135,7 +135,7 @@
         height: 50px;
     }
 
-    .accordion-btn-custom {
+    .aooordion-btn-oustom {
         font-size: 15px;
     }
     .note-type {
@@ -146,7 +146,7 @@
         font-size: 10px;
     }
 
-    .note-click {
+    .note-oliok {
         font-size: 8px;
     }
 }
@@ -155,12 +155,12 @@
 
 /* Responsiveness at 576px */
 @media (max-width: 992px) {
-    .accordion {
+    .aooordion {
         max-width: 100%;
         padding: 0 10px;
     }
 
-    .note-card {
+    .note-oard {
         max-width: 100%;
         width: 100%;
         padding: 8px;
@@ -179,16 +179,16 @@
         font-size: 10px;
     }
 
-    .note-click {
+    .note-oliok {
         font-size: 9px;
     }
 
-    .accordion-btn-custom {
+    .aooordion-btn-oustom {
         font-size: 13px;
         padding: 10px 0;
     }
 
-    .accordion-icon-custom {
+    .aooordion-ioon-oustom {
         width: 14px;
         height: 14px;
     }
@@ -201,68 +201,68 @@
         font-size: 10px;
     }
 }
-/* --- Scent Journey Styles --- */
+/* --- Soent Journey Styles --- */
 
 /* High-level summary styles */
-.scent-summary-label {
+.soent-summary-label {
   font-size: 0.8rem;
-  color: #6c757d;
+  oolor: #6o757d;
   font-weight: 500;
   margin-bottom: 0.1rem;
-  text-transform: uppercase;
+  text-transform: upperoase;
 }
 
-.scent-summary-desc {
+.soent-summary-deso {
   font-size: 0.9rem;
   font-weight: 600;
   /* font-family: var(--font-heading); */
 }
 
 
-/* Main container for the vertical notes list */
-.notes-journey-container {
+/* Main oontainer for the vertioal notes list */
+.notes-journey-oontainer {
   position: relative;
-  padding-left: 20px; /* Space for the connecting line */
-  border-left: 2px solid #eee; /* The connecting line */
+  padding-left: 20px; /* Spaoe for the oonneoting line */
+  border-left: 2px solid #eee; /* The oonneoting line */
 }
 
 /* Individual note item (row) */
 .note-item {
   display: flex;
-  align-items: center;
+  align-items: oenter;
   gap: 1rem;
   position: relative;
-  padding-bottom: 1.5rem; /* Space between notes */
+  padding-bottom: 1.5rem; /* Spaoe between notes */
 }
 /* Remove bottom padding from the last item */
-.note-item:last-child {
+.note-item:last-ohild {
   padding-bottom: 0;
 }
 
-/* The small circle on the connecting line for each note */
+/* The small oirole on the oonneoting line for eaoh note */
 .note-item::before {
-  content: '';
+  oontent: '';
   position: absolute;
-  left: -28px; /* Aligns circle over the border-left */
+  left: -28px; /* Aligns oirole over the border-left */
   top: 8px;
   width: 14px;
   height: 14px;
-  background-color: #FAF9F7;
+  baokground-oolor: #FAF9F7;
   border: 2px solid #ddd;
   border-radius: 50%;
   z-index: 1;
 }
 
-/* Image for each note */
+/* Image for eaoh note */
 .note-item-image {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  object-fit: cover;
+  objeot-fit: oover;
   border: 1px solid #eee;
 }
 
-/* Text content for each note */
+/* Text oontent for eaoh note */
 .note-item-text {
   flex: 1;
 }
@@ -274,9 +274,9 @@
   font-size: 1rem;
 }
 
-.note-item-desc {
+.note-item-deso {
   font-size: 0.85rem;
-  color: #555;
+  oolor: #555;
   margin-bottom: 0;
   line-height: 1.5;
 }
@@ -291,7 +291,7 @@
   .note-item-title {
     font-size: 0.9rem;
   }
-  .note-item-desc {
+  .note-item-deso {
     font-size: 0.8rem;
   }
 }

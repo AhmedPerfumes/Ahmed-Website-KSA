@@ -1,8 +1,8 @@
-﻿/* ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════
    GLOBAL TYPOGRAPHY OVERRIDE — Ahmed Al Maghribi KSA
    Applied LAST in style.scss — wins all specificity battles.
    TYPOGRAPHY SYSTEM:
-     Headings  → var(--font-family-base)      = Playfair Display
+     Headings  → var(--font-heading)      = Playfair Display
      Body/UI   → var(--font-family-base)  = DM Sans
      Numbers   → var(--font-inter)        = Inter
      Arabic    → var(--font-alexandria)   = Alexandria
@@ -10,7 +10,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
-/* Every element inherits from body (DM Sans). Headings also use DM Sans. */
+/* Every element inherits from body (DM Sans). Headings get Playfair.     */
 /* This catches any rogue hardcoded fonts in components we may have missed. */
 
 *,
@@ -30,12 +30,11 @@ body {
   font-weight: 400;
 }
 
-/* ALL HEADINGS — DM Sans everywhere (NO serif) */
+/* ALL HEADINGS — Playfair Display everywhere on the site */
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: var(--font-family-base) !important;  /* DM Sans — user requested no serif anywhere */
+  font-family: var(--font-heading) !important;
   color: #1a1a1a;
-  font-weight: 600;
 }
 
 /* ALL PARAGRAPHS — near-black, readable, proper size */
@@ -43,7 +42,7 @@ p {
   font-family: var(--font-family-base);
   color: #1a1a1a;
   font-weight: 400;
-  font-size: 1rem;      /* bumped from 0.9375rem — more readable everywhere */
+  font-size: 0.9375rem;
   line-height: 1.75;
 }
 
@@ -80,11 +79,11 @@ label {
 
 /* ── 1. Font family consistency across all sections ──────────────── */
 /* The CSS variables are set by Next.js font optimization on <body>.   */
-/* Any explicit font-family in CSS files will                          */
+/* Any explicit 'Playfair Display' or 'Inter' in CSS files will        */
 /* correctly resolve to our Next.js-optimized local WOFF2 copies.     */
 /* We also patch them here via CSS inheritance for extra safety.       */
 
-/* Section heading elements across all homepage components — DM Sans, no serif */
+/* Section heading elements across all homepage components */
 .bs2__title,
 .na2__title,
 .so__title,
@@ -95,7 +94,7 @@ label {
 .oebnr__title,
 .gs2__title,
 .oe__section-title {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-heading) !important;
 }
 
 /* Eyebrow / label elements across all sections */
@@ -303,4 +302,194 @@ p {
   font-weight: 500 !important;
   letter-spacing: 0.04em;
   font-size: 0.8rem !important;
+}
+
+/* ── 7. EYEBROW / LABEL elements — minimum readable size ──────────── */
+/* Section eyebrow labels: "NEW ARRIVALS", "BESTSELLERS" etc.          */
+/* Uppercase + letter-spacing means 0.72rem reads visually bigger.     */
+
+[class*="__eyebrow"],
+[class*="-eyebrow"],
+[class*="__label"],
+[class*="-label"] {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+/* ── 8. PALE GRAY FIX — globally raise low-contrast text ─────────── */
+/* Any element with very pale gray colors (#aaa, #bbb, #ccc)           */
+/* gets forced to a stronger readable dark tone.                       */
+
+/* Star rating empty stars — slightly muted is OK, but #bbb is too pale */
+[class*="star"]:not([class*="filled"]):not([class*="active"]),
+[class*="rating"] [class*="empty"] {
+  color: #ccc !important; /* keep muted for empty stars — intentional */
+}
+
+/* Accordion body text — was #999 */
+.pdp-acc-item .note-detail,
+.pdp-acc-item .pdp-acc-body p,
+[class*="acc-body"] p {
+  color: #2c2c2c !important;
+}
+
+/* Cart toast muted text — was #888 / #bbb */
+.cart-toast__qty,
+.cart-toast__sku,
+[class*="toast__sub"],
+[class*="toast__meta"] {
+  color: #555 !important;
+}
+
+/* ── 9. FOOTER typography ─────────────────────────────────────────── */
+/* Footer sub-menu titles and newsletter button text                   */
+
+.footer .sub-menu__title,
+.footer [class*="sub-menu__title"] {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em;
+}
+
+.footer .footer-newsletter__form [type="submit"],
+.footer [class*="newsletter"] [type="submit"] {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+}
+
+/* Footer link text — readable size */
+.footer a,
+.footer__link,
+[class*="footer-link"] {
+  font-size: 0.875rem !important;
+  font-weight: 400;
+}
+
+/* Footer copyright + legal */
+.footer__copyright,
+.footer [class*="copyright"],
+.footer [class*="legal"] {
+  font-size: 0.8rem !important;
+  color: #666 !important;
+}
+
+/* ── 10. SHOP LISTING page typography ────────────────────────────── */
+/* Product breadcrumb */
+.breadcrumb-item,
+.breadcrumb-link,
+[class*="breadcrumb"] a,
+[class*="breadcrumb"] span {
+  font-size: 0.8rem !important;
+  font-family: var(--font-family-base) !important;
+}
+
+/* Filter sidebar labels */
+[class*="filter__title"],
+[class*="filter-title"],
+[class*="sidebar__title"] {
+  font-family: var(--font-heading) !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+}
+
+/* ── 11. BLOG PAGE typography ────────────────────────────────────── */
+[class*="blog"] h1,
+[class*="post"] h1,
+.blog-title,
+.post-title {
+  font-family: var(--font-heading) !important;
+  color: #1a1a1a !important;
+}
+
+[class*="blog"] p,
+[class*="blog"] li,
+[class*="post"] p,
+[class*="post"] li {
+  font-family: var(--font-family-base) !important;
+  color: #1a1a1a !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.8 !important;
+}
+
+[class*="blog__meta"],
+[class*="post__meta"],
+[class*="blog__date"],
+[class*="post__date"] {
+  font-family: var(--font-family-base) !important;
+  font-size: 0.8rem !important;
+  color: #666 !important;
+}
+
+/* ── 12. ACCOUNT / INNER PAGES typography ────────────────────────── */
+/* Order pages, account dashboard, address forms */
+
+[class*="order"] h2,
+[class*="account"] h2,
+[class*="dashboard"] h2 {
+  font-family: var(--font-heading) !important;
+  color: #1a1a1a !important;
+}
+
+[class*="order"] p,
+[class*="order"] span,
+[class*="account"] p,
+[class*="account"] label {
+  font-family: var(--font-family-base) !important;
+  color: #1a1a1a !important;
+}
+
+/* ── 13. REVIEWS / CUSTOMER FEEDBACK ────────────────────────────── */
+.reviews-rating__score,
+[class*="review__score"],
+[class*="rating__number"] {
+  font-family: var(--font-inter, var(--font-family-base)) !important;
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
+}
+
+[class*="review__text"],
+[class*="review__body"],
+[class*="review__content"] {
+  font-family: var(--font-family-base) !important;
+  color: #2c2c2c !important;
+  font-size: 0.9375rem !important;
+}
+
+[class*="review__date"],
+[class*="review__author"],
+[class*="review__meta"] {
+  color: #555 !important;
+  font-size: 0.8rem !important;
+}
+
+/* ── 14. PDP (Product Detail Page) typography consistency ────────── */
+
+/* Product info sub-labels — e.g. "Brand", "Category" */
+.pdp-info [class*="__label"],
+.pdp-info [class*="-label"] {
+  font-size: 0.75rem !important;
+  color: #666 !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Product description body text */
+.pdp-info p,
+.pdp-desc p,
+[class*="pdp-desc"] p,
+[class*="product-desc"] p {
+  font-family: var(--font-family-base) !important;
+  color: #2c2c2c !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.8 !important;
+}
+
+/* Trust bar / shipping text */
+[class*="trust"] span,
+[class*="trust"] p,
+[class*="shipping"] span {
+  font-size: 0.8rem !important;
+  color: #2c2c2c !important;
 }

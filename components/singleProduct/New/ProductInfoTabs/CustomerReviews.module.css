@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    CustomerReviews Module CSS — Premium Redesign v2
    Light cream theme (#FAF8F4), elegant modal with gold accents
    Inter/sans-serif font for all text, accessible star rating
@@ -62,12 +62,12 @@
 }
 
 .formControlDark::placeholder {
-    color: #bbb !important;
+    color: #999 !important;
 }
 
 .formControlDark:disabled {
     background-color: #f5f2ef !important;
-    color: #aaa !important;
+    color: #999 !important;
     cursor: not-allowed !important;
 }
 

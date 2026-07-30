@@ -77,7 +77,7 @@
 /* ── Column Headers ── */
 .footer.footer_type_1.dark .sub-menu__title {
   font-family: var(--font-family-base) !important;
-  font-size: 0.68rem !important;
+  font-size: 0.78rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.14em !important;
   color: var(--ft-gold) !important;
@@ -149,7 +149,7 @@
 .footer.footer_type_1.dark .footer-newsletter__form .form-control::placeholder { color: var(--ft-muted) !important; }
 .footer.footer_type_1.dark .footer-newsletter__form [type="submit"] {
   background: var(--ft-gold) !important; color: #0d0d0d !important;
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
   border: none; height: 44px; padding: 0 1.25rem; cursor: pointer;
   transition: background var(--ft-ease); border-radius: 0 !important;
 }
@@ -185,7 +185,7 @@
   font-family: var(--font-family-base), sans-serif;
 }
 .MobileFooter .sub-menu__title {
-  font-size: 0.68rem !important; font-weight: 700 !important;
+  font-size: 0.78rem !important; font-weight: 700 !important;
   letter-spacing: 0.14em !important; color: var(--ft-gold) !important;
   text-transform: uppercase !important; margin-bottom: 0.75rem !important;
 }
@@ -199,7 +199,7 @@
 .MobileFooter .footer-newsletter__form .form-control::placeholder { color: var(--ft-muted) !important; }
 .MobileFooter .footer-newsletter__form [type="submit"] {
   background: var(--ft-gold) !important; color: #0d0d0d !important;
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
   height: 44px; border: none; padding: 0 1rem;
 }
 

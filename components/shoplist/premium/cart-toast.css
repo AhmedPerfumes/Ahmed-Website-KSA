@@ -1,4 +1,4 @@
-/* =============================================================
+﻿/* =============================================================
    CartToast — bottom-right add-to-cart notification
    ============================================================= */
 
@@ -94,7 +94,7 @@
 .cart-toast__qty {
   font-family: var(--font-family-base);
   font-size: 0.64rem;
-  color: #888;
+  color: #555;
   margin: 0.04rem 0 0;
   font-weight: 500;
   letter-spacing: 0.03em;
@@ -128,7 +128,7 @@
   background: transparent;
   font-size: 1.1rem;
   line-height: 1;
-  color: #bbb;
+  color: #777;
   cursor: pointer;
   padding: 0;
   display: flex;

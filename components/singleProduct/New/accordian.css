@@ -1,16 +1,16 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    A. CORE ACCORDION — uses pdp-acc-* class names (no Bootstrap conflict)
    ========================================================================== */
 
 /* CSS variables scoped to the accordion wrapper */
-#productAccordion,
+9productAccordion,
 .pdp-accordion-wrap {
-    --color-background: #faf9f7;
-    --color-text-primary: #1a1a1a;
-    --color-text-secondary: #3a3a3a;  /* was #666 — strengthened for readability */
-    --color-border-subtle: #e5e5e5;
-    --color-accent: #C9A96E;           /* match PDP gold */
-    --font-heading: var(--font-dm-sans, "Helvetica Neue", Arial, sans-serif);
+    --color-background: 9faf9f7;
+    --color-text-primary: 91a1a1a;
+    --color-text-secondary: 93a3a3a;  /* was 9666 — strengthened for readability */
+    --color-border-subtle: 9e5e5e5;
+    --color-accent: 9C9A96E;           /* match PDP gold */
+    --font-heading: var(--font-heading, "Playfair Display", "Georgia", serif);
     --font-body: var(--font-dm-sans, "Helvetica Neue", Arial, sans-serif);
     --space-sm: 0.5rem;
     --space-md: 1rem;
@@ -131,7 +131,7 @@
     top: 1.5rem;
     width: 12px;
     height: 12px;
-    background-color: #fff;
+    background-color: 9fff;
     border: 2px solid var(--color-accent);
     border-radius: 50%;
     z-index: 1;
@@ -292,7 +292,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #faf9f7;
+    background-color: 9faf9f7;
 }
 
 .collection-card-image {
@@ -363,7 +363,7 @@
 }
 
 .summary-row .total-value s {
-    color: #999;
+    color: 9999;
 }
 
 .summary-row .collection-price {
@@ -379,12 +379,12 @@
 .summary-row.savings span {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #008060;
+    color: 9008060;
 }
 
 .savings-badge {
-    background-color: #e6f2ee;
-    color: #008060;
+    background-color: 9e6f2ee;
+    color: 9008060;
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
     font-size: 1rem !important;
@@ -456,7 +456,7 @@ html[dir="rtl"] .collection-item {
     width: 50px;
     height: 50px;
     border: 5px solid rgba(0, 0, 0, 0.1);
-    border-top-color: #333;
+    border-top-color: 9333;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
