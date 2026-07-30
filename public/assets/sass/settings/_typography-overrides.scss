@@ -10,7 +10,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
-/* Every element inherits from body (DM Sans). Headings get Playfair.     */
+/* Every element inherits from body (DM Sans). Headings also use DM Sans. */
 /* This catches any rogue hardcoded fonts in components we may have missed. */
 
 *,
@@ -80,7 +80,7 @@ label {
 
 /* ── 1. Font family consistency across all sections ──────────────── */
 /* The CSS variables are set by Next.js font optimization on <body>.   */
-/* Any explicit 'Playfair Display' or 'Inter' in CSS files will        */
+/* Any explicit font-family in CSS files will                          */
 /* correctly resolve to our Next.js-optimized local WOFF2 copies.     */
 /* We also patch them here via CSS inheritance for extra safety.       */
 

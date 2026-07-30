@@ -10,7 +10,7 @@
     --color-text-secondary: #3a3a3a;  /* was #666 — strengthened for readability */
     --color-border-subtle: #e5e5e5;
     --color-accent: #C9A96E;           /* match PDP gold */
-    --font-heading: var(--font-heading, "Playfair Display", "Georgia", serif);
+    --font-heading: var(--font-dm-sans, "Helvetica Neue", Arial, sans-serif);
     --font-body: var(--font-dm-sans, "Helvetica Neue", Arial, sans-serif);
     --space-sm: 0.5rem;
     --space-md: 1rem;
