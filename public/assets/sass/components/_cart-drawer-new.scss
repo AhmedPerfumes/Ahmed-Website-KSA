@@ -12,7 +12,7 @@
   --cd-light: #888;
   --cd-border: #eeebe5;
   --cd-bg: #fff;
-  --cd-font: -apple-system, 'Segoe UI', sans-serif;
+  --cd-font: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
   --cd-radius: 8px;
   --cd-t: 0.2s ease;
 }
