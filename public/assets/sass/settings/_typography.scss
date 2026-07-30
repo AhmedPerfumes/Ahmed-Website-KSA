@@ -10,11 +10,19 @@ body {
   @include font-size($font-size-base);
   font-weight: $font-weight-base;
   line-height: $line-height-base;
-  /* ── Retina/HiDPI font rendering ─────────────────────── */
+
+  /* ── High-quality font rendering (all screens, esp. large/HiDPI) ── */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
+
+  /* Professional OpenType features: kerning + standard ligatures */
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-kerning: normal;
+
+  /* Optical sizing — browser adjusts letterform at display vs text sizes */
+  font-optical-sizing: auto;
 }
 
 /*============================================*/

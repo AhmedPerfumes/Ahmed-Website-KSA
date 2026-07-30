@@ -22,6 +22,7 @@ import ProductAdditionalInformation from "@/components/asides/ProductAdditionalI
 import ProductReviews from "@/components/asides/ProductReviews";
 import MobileFooter1 from "@/components/footers/MobileFooter1";
 import localFont from "next/font/local";
+import { DM_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -101,8 +102,7 @@ export async function generateMetadata({ params: { locale } }) {
   };
 }
 
-// Import English font — adjustFontFallback calculates size-adjust/ascent-override
-// automatically to minimize layout shift when the custom font swaps in.
+// Import English display font — used for headings (Wulkan Display)
 const englishFont = localFont({
     src: [
         { path: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.woff2",      weight: "400", style: "normal" },
@@ -116,6 +116,17 @@ const englishFont = localFont({
     adjustFontFallback: true,
     preload: true,
     variable: "--font-wulkan",
+});
+
+// DM Sans — body/UI font. Clean humanist sans-serif, designed for screens.
+// Renders crisply on Windows at all sizes including large displays.
+const dmSans = DM_Sans({
+    subsets: ["latin"],
+    weight: ["300", "400", "500", "600", "700"],
+    style: ["normal", "italic"],
+    display: "swap",
+    preload: true,
+    variable: "--font-dm-sans",
 });
 
 // Import Arabic font
@@ -138,9 +149,10 @@ export default async function LocaleLayout({ children, params: { locale } }) {
     }
 
     // Select the font based on locale
-    let selectedFont = englishFont;
+    // Both variables are registered so SCSS can reference --font-wulkan and --font-dm-sans
+    let fontClasses = `${englishFont.variable} ${dmSans.variable}`;
     if (locale === "ar") {
-        selectedFont = arabicFont;
+        fontClasses = `${arabicFont.variable} ${dmSans.variable}`;
     }
 
     // Fetch translation messages
@@ -208,7 +220,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                 />
             </head>
             
-            <body className={selectedFont.className}>
+            <body className={fontClasses}>
             {/* GTM — lazyOnload: fires after page is idle, not during TBT window */}
             <Script id="gtm-script" strategy="lazyOnload">
                 {`
