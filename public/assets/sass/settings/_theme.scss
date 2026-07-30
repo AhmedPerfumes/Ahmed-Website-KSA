@@ -6,16 +6,26 @@
   --theme-color-third: #86bc42;
 
   /*
-   * Font variables — resolved via Next.js localFont/googleFont CSS vars.
-   * --font-playfair : Playfair Display (Google, luxury serif — all major headings)
-   * --font-wulkan  : Wulkan Display (self-hosted WOFF2 — display/editorial accents)
-   * --font-dm-sans : DM Sans (Google, optimised WOFF2) — clean body/UI text font
-   * --font-inter   : Inter (Google) — prices, labels, UI numbers
-   * --font-alexandria : Alexandria (Arabic locale only)
+   * Fallback font variables at :root level.
+   * These use simple strings as fallbacks — the real values are set on body below
+   * because Next.js registers --font-playfair and --font-dm-sans on body's className.
    */
+  --font-heading: "Georgia", serif;
+  --font-family-base: "Helvetica Neue", Arial, sans-serif;
+  --font-special: "Allura", cursive;
+}
+
+/*
+ * CRITICAL: Font variable overrides on body.
+ * Next.js registers --font-playfair, --font-dm-sans, --font-inter, --font-wulkan
+ * as CSS custom properties on the <body> element (via className).
+ * We MUST define --font-heading and --font-family-base here (on body, not :root)
+ * so that var(--font-playfair) and var(--font-dm-sans) resolve correctly.
+ * If defined on :root, these inner var() calls are undefined → empty string → Times New Roman.
+ */
+body {
   --font-heading: var(--font-playfair), var(--font-wulkan), "Georgia", serif;
   --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
-  --font-special: "Allura", cursive;
 }
 
 .theme-11 {

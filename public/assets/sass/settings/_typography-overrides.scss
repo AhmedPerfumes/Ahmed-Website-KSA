@@ -10,36 +10,36 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
-/* Every element inherits from body (DM Sans). Headings get Playfair.     */
-/* This catches any rogue hardcoded fonts in components we may have missed. */
+/* CRITICAL: Use direct var(--font-dm-sans) and var(--font-playfair) here. */
+/* Next.js sets these on body's className — body can resolve them directly. */
+/* Do NOT chain through --font-family-base here: var() in var() at :root    */
+/* fails because --font-dm-sans is undefined at :root scope.                */
 
 *,
 *::before,
 *::after {
-  /* Allow CSS font-family declarations to be inherited properly */
-  /* Don't set font-family here — let body + heading rules cascade down */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* BODY — DM Sans for all UI text (base of inheritance) */
+/* BODY — DM Sans directly (Next.js sets --font-dm-sans on body className) */
 body {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif !important;
   font-size: 0.9375rem;
   color: #1a1a1a;
   font-weight: 400;
 }
 
-/* ALL HEADINGS — Playfair Display everywhere on the site */
+/* ALL HEADINGS — Playfair Display directly */
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-playfair), var(--font-wulkan), "Georgia", serif !important;
   color: #1a1a1a;
 }
 
 /* ALL PARAGRAPHS — near-black, readable, proper size */
 p {
-  font-family: var(--font-family-base);
+  font-family: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
   color: #1a1a1a;
   font-weight: 400;
   font-size: 0.9375rem;
@@ -51,12 +51,12 @@ a {
   font-family: inherit;
 }
 
-/* BUTTONS — DM Sans, consistent weight */
+/* BUTTONS — DM Sans */
 button,
 .btn,
 [type="button"],
 [type="submit"] {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif !important;
 }
 
 /* FORM ELEMENTS — DM Sans */
@@ -64,7 +64,7 @@ input,
 select,
 textarea,
 label {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif !important;
 }
 
 /* PRICE & NUMBER ELEMENTS — Inter for digit clarity */
@@ -74,7 +74,7 @@ label {
 [class*="amount"],
 [class*="total"],
 [class*="discount"] {
-  font-family: var(--font-inter, var(--font-family-base)) !important;
+  font-family: var(--font-inter, var(--font-dm-sans)), "Helvetica Neue", Arial, sans-serif !important;
 }
 
 /* ── 1. Font family consistency across all sections ──────────────── */
