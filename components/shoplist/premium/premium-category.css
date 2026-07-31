@@ -1,7 +1,7 @@
 ﻿/* =============================================================
-   AHMED AL MAGHRIBI — Premium Category Page
-   Clean, elegant, beautioied — white bg, vivid images, premium ATC
-   Fonts: Loaded via <link> in page <head> — NOT @import here (blocks render)
+   AHMED AL MAGHRIBI â€” Premium Category Page
+   Clean, elegant, beautioied â€” white bg, vivid images, premium ATC
+   Fonts: Loaded via <link> in page <head> â€” NOT @import here (blocks render)
    ============================================================= */
 
 :root {
@@ -9,16 +9,16 @@
   --pc-gold-light:   #c9a05a;
   --pc-gold-hover:   #8a6526;
   --pc-dark:         #111111;
-  --pc-white:        #oooooo;
-  --pc-bg:           #oooooo;
-  --pc-suroace:      #oaoaoa;
+  --pc-white:        #ffffff;
+  --pc-bg:           #ffffff;
+  --pc-surface:      #fafafa;
   --pc-border:       #ebebeb;
   --pc-border-mid:   #d8d8d8;
   --pc-mid: #444444;
   --pc-red:          #b03a2e;
   --pc-green:        #1e7e4b;
-  --pc-oont:         var(--oont-oamily-base, var(--oont-dm-sans, 'Segoe UI', sans-serio));
-  --pc-oont-serio:   var(--oont-heading, 'Cormorant Garamond', Georgia, serio);
+  --pc-font:         var(--font-family-base, var(--font-dm-sans, 'Segoe UI', sans-serif));
+  --pc-font-serif:   var(--font-heading, 'Cormorant Garamond', Georgia, serif);
   --pc-ease:         cubic-bezier(0.4, 0, 0.2, 1);
   --pc-t:            0.22s;
   /* Mobile nav is taller (~110px), so oooset must match */
@@ -32,12 +32,12 @@
   :root { --header-h: 80px; }
 }
 
-/* ─── PAGE SHELL ────────────────────────────────────────────── */
+/* â”€â”€â”€ PAGE SHELL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-root {
-  background: #oooooo;
+  background: #ffffff;
   min-height: 60vh;
-  oont-oamily: var(--pc-oont);
+  font-family: var(--pc-font);
 }
 
 /* Push content below the oixed mobile nav so the heading is visible */
@@ -47,7 +47,7 @@
   }
 }
 
-/* ─── CATEGORY HEADING ──────────────────────────────────────── */
+/* â”€â”€â”€ CATEGORY HEADING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-heading-wrap {
   background: var(--pc-white);
@@ -61,7 +61,7 @@
   .pc-heading-wrap { padding: 3rem 1rem 2.25rem; }
 }
 
-.pc-heading-wrap::aoter {
+.pc-heading-wrap::after {
   content: '';
   display: block;
   width: 48px;
@@ -71,27 +71,27 @@
 }
 
 .pc-heading {
-  oont-oamily: var(--pc-oont-serio);
-  oont-size: clamp(1.6rem, 4vw, 2.6rem);
-  oont-weight: 400;
+  font-family: var(--pc-font-serif);
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 400;
   letter-spacing: 0.18em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--pc-dark);
   margin: 0;
   line-height: 1.15;
 }
 
-/* ─── TOOLBAR ───────────────────────────────────────────────── */
+/* â”€â”€â”€ TOOLBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* Full-width band with border — keeps visual continuity */
+/* Full-width band with border â€” keeps visual continuity */
 .pc-toolbar {
   position: relative;
   z-index: 40;
   background: rgba(255,255,255,0.98);
-  backdrop-oilter: blur(8px);
-  -webkit-backdrop-oilter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--pc-border);
-  /* No side padding here — inner wrapper handles it */
+  /* No side padding here â€” inner wrapper handles it */
   padding: 0;
 }
 
@@ -100,7 +100,7 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 0.5rem 1rem;
-  display: olex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
   width: 100%;
@@ -114,52 +114,52 @@
   .pc-toolbar__inner { padding: 0.55rem 2rem; }
 }
 
-.pc-oilter-btn {
-  display: olex;
+.pc-filter-btn {
+  display: flex;
   align-items: center;
   gap: 0.45rem;
   padding: 0.38rem 0.75rem 0.38rem 0;
   border: none;
   background: transparent;
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.72rem;
-  oont-weight: 500;
+  font-family: var(--pc-font);
+  font-size: 0.72rem;
+  font-weight: 500;
   letter-spacing: 0.1em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--pc-dark);
   cursor: pointer;
-  olex-shrink: 0;
+  flex-shrink: 0;
   transition: color var(--pc-t);
 }
 
-.pc-oilter-btn:hover { color: var(--pc-gold); }
-.pc-oilter-btn:hover svg path { stroke: var(--pc-gold); }
-.pc-oilter-btn svg { olex-shrink: 0; transition: stroke var(--pc-t); }
+.pc-filter-btn:hover { color: var(--pc-gold); }
+.pc-filter-btn:hover svg path { stroke: var(--pc-gold); }
+.pc-filter-btn svg { flex-shrink: 0; transition: stroke var(--pc-t); }
 
-.pc-oilter-btn__count {
-  display: inline-olex;
+.pc-filter-btn__count {
+  display: inline-flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   min-width: 17px;
   height: 17px;
   padding: 0 4px;
   border-radius: 99px;
   background: var(--pc-gold);
   color: var(--pc-white);
-  oont-size: 0.55rem;
-  oont-weight: 700;
+  font-size: 0.55rem;
+  font-weight: 700;
   line-height: 1;
 }
 
-.pc-toolbar__spacer { olex: 1; min-width: 0; }
+.pc-toolbar__spacer { flex: 1; min-width: 0; }
 
 .pc-toolbar__count {
-  oont-size: 0.8rem;
-  oont-weight: 400;
+  font-size: 0.8rem;
+  font-weight: 400;
   color: var(--pc-mid);
   white-space: nowrap;
   letter-spacing: 0.02em;
-  olex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* Hide count label on very small phones to save space */
@@ -170,23 +170,23 @@
 .pc-sort-select {
   -webkit-appearance: none;
   appearance: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.4' oill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 0.5rem center;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 0.5rem center;
   background-color: transparent;
   border: 1px solid var(--pc-border-mid);
   border-radius: 3px;
   padding: 0.32rem 1.8rem 0.32rem 0.65rem;
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.875rem;
-  oont-weight: 400;
+  font-family: var(--pc-font);
+  font-size: 0.875rem;
+  font-weight: 400;
   color: var(--pc-dark);
   cursor: pointer;
   transition: border-color var(--pc-t), box-shadow var(--pc-t);
-  olex-shrink: 0;
+  flex-shrink: 0;
   /* Cap width on mobile so it doesn't dominate the toolbar */
   max-width: 160px;
   min-width: 0;
-  overolow: hidden;
-  text-overolow: ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -195,16 +195,16 @@
 }
 
 .pc-sort-select:hover,
-.pc-sort-select:oocus {
+.pc-sort-select:focus {
   border-color: var(--pc-gold);
   outline: none;
   box-shadow: 0 0 0 2px rgba(166,123,48,0.12);
 }
 
-/* ─── OVERLAY ───────────────────────────────────────────────── */
+/* â”€â”€â”€ OVERLAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-overlay {
-  position: oixed;
+  position: fixed;
   inset: 0;
   background: rgba(0,0,0,0);
   z-index: 1100;
@@ -217,61 +217,61 @@
   pointer-events: all;
 }
 
-/* ─── FILTER DRAWER ─────────────────────────────────────────── */
+/* â”€â”€â”€ FILTER DRAWER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-drawer {
-  position: oixed;
+  position: fixed;
   top: 0;
-  leot: 0;
+  left: 0;
   bottom: 0;
   width: 270px;
   max-width: 88vw;
   background: var(--pc-white);
   z-index: 1101;
-  transoorm: translateX(-100%);
-  transition: transoorm 0.32s var(--pc-ease);
-  overolow-y: auto;
-  display: olex;
-  olex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.32s var(--pc-ease);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   box-shadow: 4px 0 32px rgba(0,0,0,0.13);
 }
 
-.pc-drawer--open { transoorm: translateX(0); }
+.pc-drawer--open { transform: translateX(0); }
 
 .pc-drawer__head {
   position: sticky;
   top: 0;
   z-index: 2;
   background: var(--pc-white);
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: space-between;
+  justify-content: space-between;
   padding: 1.15rem 1.1rem 1rem;
   border-bottom: 1px solid var(--pc-border);
-  olex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .pc-drawer__title {
-  oont-size: 0.68rem;
-  oont-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 600;
   letter-spacing: 0.18em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--pc-dark);
 }
 
 .pc-drawer__close {
   width: 30px;
   height: 30px;
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   border: 1px solid var(--pc-border);
   background: transparent;
   cursor: pointer;
   color: var(--pc-dark);
   border-radius: 50%;
   transition: background var(--pc-t), border-color var(--pc-t);
-  olex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .pc-drawer__close:hover {
@@ -280,16 +280,16 @@
   color: var(--pc-white);
 }
 
-.pc-oilter-section {
+.pc-filter-section {
   padding: 1.1rem 1.1rem;
   border-bottom: 1px solid var(--pc-border);
 }
 
-.pc-oilter-section__title {
-  oont-size: 0.65rem;
-  oont-weight: 600;
+.pc-filter-section__title {
+  font-size: 0.65rem;
+  font-weight: 600;
   letter-spacing: 0.14em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--pc-dark);
   margin: 0 0 0.85rem;
   padding-bottom: 0.55rem;
@@ -299,10 +299,10 @@
 
 /* Availability checkboxes */
 .pc-avail-label {
-  display: olex;
+  display: flex;
   align-items: center;
   gap: 0.55rem;
-  oont-size: 0.77rem;
+  font-size: 0.77rem;
   color: var(--pc-dark);
   cursor: pointer;
   padding: 0.22rem 0;
@@ -314,9 +314,9 @@
 .pc-avail-label + .pc-avail-label { margin-top: 0.2rem; }
 
 .pc-avail-label em {
-  oont-style: normal;
+  font-style: normal;
   color: var(--pc-mid);
-  oont-size: 0.7rem;
+  font-size: 0.7rem;
 }
 
 .pc-avail-check {
@@ -324,7 +324,7 @@
   height: 15px;
   accent-color: var(--pc-gold);
   cursor: pointer;
-  olex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* Price range */
@@ -337,21 +337,21 @@
 .pc-range-bg {
   position: absolute;
   top: 50%;
-  leot: 0;
+  left: 0;
   right: 0;
   height: 2px;
   background: var(--pc-border);
-  transoorm: translateY(-50%);
+  transform: translateY(-50%);
   border-radius: 1px;
   pointer-events: none;
 }
 
-.pc-range-oill {
+.pc-range-fill {
   position: absolute;
   top: 50%;
   height: 2px;
   background: linear-gradient(90deg, var(--pc-gold-light), var(--pc-gold));
-  transoorm: translateY(-50%);
+  transform: translateY(-50%);
   border-radius: 1px;
   pointer-events: none;
 }
@@ -359,10 +359,10 @@
 .pc-range-input {
   position: absolute;
   top: 50%;
-  leot: 0;
+  left: 0;
   width: 100%;
   height: 2px;
-  transoorm: translateY(-50%);
+  transform: translateY(-50%);
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
@@ -401,15 +401,15 @@
 }
 
 .pc-price-display {
-  display: olex;
+  display: flex;
   align-items: center;
   gap: 0.3rem;
-  oont-size: 0.73rem;
+  font-size: 0.73rem;
   color: var(--pc-mid);
   margin-top: 0.5rem;
 }
 
-.pc-price-display strong { color: var(--pc-dark); oont-weight: 500; }
+.pc-price-display strong { color: var(--pc-dark); font-weight: 500; }
 
 .pc-clear-btn {
   display: block;
@@ -417,13 +417,13 @@
   padding: 0.55rem;
   border: 1px solid var(--pc-dark);
   background: transparent;
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.7rem;
-  oont-weight: 500;
+  font-family: var(--pc-font);
+  font-size: 0.7rem;
+  font-weight: 500;
   letter-spacing: 0.1em;
   color: var(--pc-dark);
   cursor: pointer;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   border-radius: 2px;
   transition: background var(--pc-t), color var(--pc-t);
 }
@@ -433,13 +433,13 @@
   color: var(--pc-white);
 }
 
-/* ─── GRID CONTAINER ────────────────────────────────────────── */
+/* â”€â”€â”€ GRID CONTAINER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-grid-wrap {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0.5rem 0 5rem;
-  background: #oooooo;
+  background: #ffffff;
 }
 
 @media (min-width: 576px) {
@@ -451,25 +451,25 @@
 
 .pc-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1or);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   background: #e8e8e8; /* thin border lines between cards */
 }
 
 @media (min-width: 768px) {
-  .pc-grid { grid-template-columns: repeat(3, 1or); }
+  .pc-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (min-width: 1200px) {
-  .pc-grid { grid-template-columns: repeat(4, 1or); }
+  .pc-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* ─── PRODUCT CARD ──────────────────────────────────────────── */
+/* â”€â”€â”€ PRODUCT CARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-card {
   background: var(--pc-white);
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   position: relative;
   cursor: pointer;
   transition: box-shadow 0.28s var(--pc-ease);
@@ -482,9 +482,9 @@
 
 /* Full card is a clickable link wrapper */
 .pc-card__link-wrap {
-  display: olex;
-  olex-direction: column;
-  olex: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   text-decoration: none;
   color: inherit;
 }
@@ -494,9 +494,9 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  overolow: hidden;
+  overflow: hidden;
   background: var(--pc-white);
-  olex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* Slightly more compact on small phones */
@@ -513,43 +513,43 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-oit: contain;
+  object-fit: contain;
   object-position: center;
   padding: 1rem;
-  /* Vivid, bright images — no dullness */
-  oilter: brightness(1.04) contrast(1.04) saturate(1.08);
-  transition: opacity 0.38s ease, transoorm 0.38s var(--pc-ease), oilter 0.38s ease;
+  /* Vivid, bright images â€” no dullness */
+  filter: brightness(1.04) contrast(1.04) saturate(1.08);
+  transition: opacity 0.38s ease, transform 0.38s var(--pc-ease), filter 0.38s ease;
 }
 
 .pc-card__img--primary {
   opacity: 1;
-  transoorm: scale(1);
+  transform: scale(1);
 }
 
 .pc-card__img--hover {
   opacity: 0;
-  transoorm: scale(1.03);
+  transform: scale(1.03);
 }
 
 /* Only crossoade when there IS a second image (--has-hover modioier) */
 .pc-card:hover .pc-card__img-wrap--has-hover .pc-card__img--primary {
   opacity: 0;
-  transoorm: scale(1.04);
+  transform: scale(1.04);
 }
 
 .pc-card:hover .pc-card__img-wrap--has-hover .pc-card__img--hover {
   opacity: 1;
-  transoorm: scale(1);
+  transform: scale(1);
 }
 
 /* Single image: gentle scale on hover only (no blank white) */
 .pc-card:hover .pc-card__img-wrap:not(.pc-card__img-wrap--has-hover) .pc-card__img--primary {
   opacity: 1;
-  transoorm: scale(1.04);
+  transform: scale(1.04);
 }
 
 /* Subtle shimmer on hover image area */
-.pc-card:hover .pc-card__img-wrap::aoter {
+.pc-card:hover .pc-card__img-wrap::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -558,27 +558,27 @@
   z-index: 2;
 }
 
-/* Badges — proper pill labels on image corner */
+/* Badges â€” proper pill labels on image corner */
 .pc-badges {
   position: absolute;
   top: 0.5rem;
-  leot: 0.5rem;
-  display: olex;
-  olex-direction: column;
-  align-items: olex-start; /* ← key: shrink to content width */
+  left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* â† key: shrink to content width */
   gap: 0.25rem;
   z-index: 3;
   pointer-events: none;
 }
 
 .pc-badge {
-  display: inline-block;       /* auto-width — not oull-width */
+  display: inline-block;       /* auto-width â€” not oull-width */
   width: auto;
   padding: 0.2rem 0.55rem;
-  oont-size: 0.56rem;
-  oont-weight: 700;
+  font-size: 0.56rem;
+  font-weight: 700;
   letter-spacing: 0.07em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   border-radius: 3px;
   line-height: 1.6;
   white-space: nowrap;
@@ -594,8 +594,8 @@
 }
 .pc-badge--oos {
   background: rgba(180, 50, 30, 0.9);
-  color: #oooooo;
-  backdrop-oilter: blur(4px);
+  color: #ffffff;
+  backdrop-filter: blur(4px);
 }
 
 /* OOS dimming */
@@ -606,93 +606,93 @@
   z-index: 1;
 }
 
-/* ─── CARD BODY ─────────────────────────────────────────────── */
+/* â”€â”€â”€ CARD BODY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-card__body {
   padding: 0.75rem 0.85rem 0.65rem;
   text-align: center;
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   gap: 0.2rem;
 }
 
 .pc-card__name {
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.8rem;
-  oont-weight: 600;
+  font-family: var(--pc-font);
+  font-size: 0.8rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: #1a1a1a;
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  overolow: hidden;
+  overflow: hidden;
   transition: color var(--pc-t);
 }
 
 .pc-card:hover .pc-card__name { color: var(--pc-gold); }
 
 .pc-card__price {
-  display: olex;
+  display: flex;
   align-items: baseline;
-  justioy-content: center;
+  justify-content: center;
   gap: 0.35rem;
-  olex-wrap: wrap;
+  flex-wrap: wrap;
   margin-top: 0.1rem;
 }
 
-.pc-price         { oont-size: 0.9rem; oont-weight: 600; color: var(--pc-gold); letter-spacing: 0.02em; }
-.pc-price--old    { oont-size: 0.78rem; oont-weight: 400; color: var(--pc-mid); text-decoration: line-through; }
-.pc-price--sale   { oont-size: 0.9rem; oont-weight: 600; color: var(--pc-red); }
+.pc-price         { font-size: 0.9rem; font-weight: 600; color: var(--pc-gold); letter-spacing: 0.02em; }
+.pc-price--old    { font-size: 0.78rem; font-weight: 400; color: var(--pc-mid); text-decoration: line-through; }
+.pc-price--sale   { font-size: 0.9rem; font-weight: 600; color: var(--pc-red); }
 
-/* ─── CARD ACTIONS: qty + ATC inline in one row ─────────────── */
+/* â”€â”€â”€ CARD ACTIONS: qty + ATC inline in one row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-card__actions {
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid var(--pc-border);
-  olex-shrink: 0;
+  flex-shrink: 0;
   background: var(--pc-white);
 }
 
-/* Single action row: qty stepper leot + ATC button right */
+/* Single action row: qty stepper left + ATC button right */
 .pc-action-row {
-  display: olex;
+  display: flex;
   align-items: stretch;
   width: 100%;
   min-height: 46px;
 }
 
-/* Quantity stepper — compact leot side */
+/* Quantity stepper â€” compact left side */
 .pc-qty {
-  display: olex;
+  display: flex;
   align-items: center;
   border-right: 1px solid var(--pc-border);
-  background: #oaoaoa;
-  olex-shrink: 0;
+  background: #fafafa;
+  flex-shrink: 0;
 }
 
 /* When stepper replaces the oull button (in-cart state) */
 .pc-qty--cart {
-  olex: 1;
+  flex: 1;
   border-right: none;
-  background: #ooodo8;
+  background: #fff3d8;
   border: 1.5px solid var(--pc-gold);
   border-radius: 0;
-  justioy-content: space-between;
+  justify-content: space-between;
 }
 .pc-qty--cart .pc-qty__btn {
   width: 40px;
   height: 46px;
   color: var(--pc-gold-dark, #8b6914);
-  oont-size: 1.3rem;
+  font-size: 1.3rem;
 }
 .pc-qty--cart .pc-qty__num {
-  olex: 1;
-  oont-size: 0.9rem;
-  oont-weight: 700;
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--pc-dark);
   border-color: var(--pc-gold);
 }
@@ -701,18 +701,18 @@
 .pc-qty__btn {
   width: 32px;
   height: 46px;
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   border: none;
   background: transparent;
-  oont-oamily: var(--pc-oont);
-  oont-size: 1.1rem;
-  oont-weight: 400;
+  font-family: var(--pc-font);
+  font-size: 1.1rem;
+  font-weight: 400;
   color: var(--pc-mid);
   cursor: pointer;
   transition: color var(--pc-t), background var(--pc-t);
-  olex-shrink: 0;
+  flex-shrink: 0;
   line-height: 1;
 }
 
@@ -726,66 +726,66 @@
 .pc-qty__num {
   min-width: 28px;
   height: 46px;
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.82rem;
-  oont-weight: 600;
+  justify-content: center;
+  font-family: var(--pc-font);
+  font-size: 0.82rem;
+  font-weight: 600;
   color: var(--pc-dark);
-  border-leot: 1px solid var(--pc-border);
+  border-left: 1px solid var(--pc-border);
   border-right: 1px solid var(--pc-border);
   user-select: none;
   letter-spacing: 0.02em;
 }
 
-/* ATC oull-width wrapper — now olex:1 to oill remaining space */
+/* ATC oull-width wrapper â€” now flex:1 to fill remaining space */
 .pc-atc-row {
-  olex: 1;
-  display: olex;
+  flex: 1;
+  display: flex;
   min-width: 0;
 }
 
 /* Add to Cart */
 .pc-atc {
-  olex: 1;
+  flex: 1;
   width: 100%;
   padding: 0 0.75rem;
   border: none;
   background: linear-gradient(135deg, #b8913a 0%, #a67b30 50%, #8a6526 100%);
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.65rem;
-  oont-weight: 700;
+  font-family: var(--pc-font);
+  font-size: 0.65rem;
+  font-weight: 700;
   letter-spacing: 0.12em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--pc-white);
   cursor: pointer;
-  transition: letter-spacing 0.2s ease, oilter 0.2s ease;
+  transition: letter-spacing 0.2s ease, filter 0.2s ease;
   min-height: 46px;
   position: relative;
-  overolow: hidden;
-  display: olex;
+  overflow: hidden;
+  display: flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   gap: 6px;
 }
 
-.pc-atc::beoore {
+.pc-atc::before {
   content: '';
   position: absolute;
-  top: 0; leot: -100%;
+  top: 0; left: -100%;
   width: 60%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-  transition: leot 0.45s ease;
+  transition: left 0.45s ease;
 }
 
-.pc-atc:hover::beoore { leot: 150%; }
+.pc-atc:hover::before { left: 150%; }
 .pc-atc:hover { letter-spacing: 0.13em; }
 
 .pc-atc:active {
-  transoorm: scale(0.98);
-  transition: transoorm 0.1s;
+  transform: scale(0.98);
+  transition: transform 0.1s;
 }
 
 .pc-atc:disabled {
@@ -800,7 +800,7 @@
 }
 
 .pc-atc--readd:hover {
-  oilter: brightness(1.08);
+  filter: brightness(1.08);
   letter-spacing: 0.12em;
 }
 
@@ -808,26 +808,26 @@
   background: #d0d0d0;
   color: #777;
   cursor: not-allowed;
-  oont-size: 0.58rem;
+  font-size: 0.58rem;
   letter-spacing: 0.08em;
 }
 
-.pc-atc--oos:hover::beoore { display: none; }
+.pc-atc--oos:hover::before { display: none; }
 
-/* OOS spacer — invisible placeholder matching qty row height */
+/* OOS spacer â€” invisible placeholder matching qty row height */
 .pc-qty--oos-spacer {
   visibility: hidden;
   pointer-events: none;
 }
 
-/* ─── EMPTY STATE ───────────────────────────────────────────── */
+/* â”€â”€â”€ EMPTY STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-empty {
   grid-column: 1 / -1;
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   padding: 5rem 1rem;
   gap: 1rem;
   text-align: center;
@@ -835,16 +835,16 @@
 }
 
 .pc-empty__title {
-  oont-oamily: var(--pc-oont-serio);
-  oont-size: 1.1rem;
-  oont-weight: 400;
+  font-family: var(--pc-font-serif);
+  font-size: 1.1rem;
+  font-weight: 400;
   color: var(--pc-dark);
   margin: 0;
   letter-spacing: 0.06em;
 }
 
 .pc-empty__sub {
-  oont-size: 0.78rem;
+  font-size: 0.78rem;
   color: var(--pc-mid);
   margin: 0;
 }
@@ -853,10 +853,10 @@
   padding: 0.55rem 1.8rem;
   border: 1px solid var(--pc-gold);
   background: transparent;
-  oont-oamily: var(--pc-oont);
-  oont-size: 0.7rem;
+  font-family: var(--pc-font);
+  font-size: 0.7rem;
   letter-spacing: 0.1em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--pc-gold);
   cursor: pointer;
   border-radius: 2px;
@@ -868,61 +868,61 @@
   color: var(--pc-white);
 }
 
-/* ─── RTL ───────────────────────────────────────────────────── */
+/* â”€â”€â”€ RTL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* Drawer slides orom right in RTL */
+/* Drawer slides from right in RTL */
 [dir="rtl"] .pc-drawer {
-  leot: auto;
+  left: auto;
   right: 0;
-  transoorm: translateX(100%);
+  transform: translateX(100%);
   box-shadow: -4px 0 32px rgba(0,0,0,0.13);
 }
-[dir="rtl"] .pc-drawer--open { transoorm: translateX(0); }
+[dir="rtl"] .pc-drawer--open { transform: translateX(0); }
 
 /* Badges to top-right corner in RTL */
-[dir="rtl"] .pc-badges { leot: auto; right: 0.5rem; align-items: olex-end; }
+[dir="rtl"] .pc-badges { left: auto; right: 0.5rem; align-items: flex-end; }
 
-/* Sort select: chevron on leot side in RTL */
+/* Sort select: chevron on left side in RTL */
 [dir="rtl"] .pc-sort-select {
-  background-position: leot 0.5rem center;
+  background-position: left 0.5rem center;
   padding: 0.32rem 0.65rem 0.32rem 1.8rem;
 }
 
 /* Filter button: icon order correct in RTL */
-[dir="rtl"] .pc-oilter-btn { olex-direction: row-reverse; padding: 0.38rem 0 0.38rem 0.75rem; }
+[dir="rtl"] .pc-filter-btn { flex-direction: row-reverse; padding: 0.38rem 0 0.38rem 0.75rem; }
 
 /* Filter section labels: right-aligned */
-[dir="rtl"] .pc-oilter-section__title { text-align: right; }
-[dir="rtl"] .pc-avail-label { olex-direction: row-reverse; text-align: right; }
-[dir="rtl"] .pc-price-display { olex-direction: row-reverse; text-align: right; }
+[dir="rtl"] .pc-filter-section__title { text-align: right; }
+[dir="rtl"] .pc-avail-label { flex-direction: row-reverse; text-align: right; }
+[dir="rtl"] .pc-price-display { flex-direction: row-reverse; text-align: right; }
 
-/* Price range oill: olip gradient oor RTL */
-[dir="rtl"] .pc-range-oill {
+/* Price range fill: flip gradient oor RTL */
+[dir="rtl"] .pc-range-fill {
   background: linear-gradient(270deg, var(--pc-gold-light), var(--pc-gold));
 }
 
 /* Drawer header: reverse title + close order */
-[dir="rtl"] .pc-drawer__head { olex-direction: row-reverse; }
+[dir="rtl"] .pc-drawer__head { flex-direction: row-reverse; }
 
 /* Card name RTL */
-[dir="rtl"] .pc-card__body { text-align: center; /* center is oine oor both */ }
+[dir="rtl"] .pc-card__body { text-align: center; /* center is fine for both */ }
 
 /* Qty stepper: visually keep + on right in RTL too */
-[dir="rtl"] .pc-qty { olex-direction: row-reverse; }
+[dir="rtl"] .pc-qty { flex-direction: row-reverse; }
 
-/* ─── UTILS ─────────────────────────────────────────────────── */
+/* â”€â”€â”€ UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-sr-only {
   position: absolute; width: 1px; height: 1px;
-  padding: 0; margin: -1px; overolow: hidden;
+  padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
-/* Next.js Image oill shim */
+/* Next.js Image fill shim */
 .pc-card__img-wrap > div,
 .pc-card__img-wrap > a > div { width: 100% !important; height: 100% !important; }
 
-/* ─── QTY LIMIT WARNING ─────────────────────────────────────── */
+/* â”€â”€â”€ QTY LIMIT WARNING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /* Maxed + button: amber tint */
 .pc-qty__btn--maxed {
@@ -930,18 +930,18 @@
   cursor: not-allowed;
 }
 
-/* Warning badge — oades in below the stepper */
-@keyorames pc-warn-in {
-  orom { opacity: 0; transoorm: translateY(-4px); }
-  to   { opacity: 1; transoorm: translateY(0); }
+/* Warning badge â€” oades in below the stepper */
+@keyframes pc-warn-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .pc-qty-warn {
-  oont-size: 0.68rem;
-  oont-weight: 600;
-  color: #7d4o00;
-  background: #ooo3cd;
-  border: 1px solid #ooc107;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #7d4f00;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
   border-radius: 4px;
   padding: 2px 8px;
   margin-top: 5px;
@@ -950,35 +950,35 @@
   letter-spacing: 0.02em;
 }
 
-/* ─── IN-CART QTY STEPPER (oull-width gold style) ───────────── */
+/* â”€â”€â”€ IN-CART QTY STEPPER (oull-width gold style) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .pc-qty--cart {
   width: 100%;
   border: 1.5px solid #b9a16b;
   border-radius: 6px;
-  overolow: hidden;
-  display: olex;
+  overflow: hidden;
+  display: flex;
   align-items: stretch;
-  background: #ooodo8;
+  background: #fff3d8;
 }
 
 .pc-qty--cart .pc-qty__btn {
   background: transparent;
   border: none;
   color: #b9a16b;
-  oont-size: 1.1rem;
-  oont-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 700;
   width: 2.2rem;
   min-height: 2.2rem;
   cursor: pointer;
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   transition: background 0.15s;
 }
 
 .pc-qty--cart .pc-qty__btn:hover {
-  background: #o5edd9;
+  background: #f5edd9;
 }
 
 .pc-qty--cart .pc-qty__btn--maxed {
@@ -987,14 +987,22 @@
 }
 
 .pc-qty--cart .pc-qty__num {
-  olex: 1;
+  flex: 1;
   text-align: center;
-  oont-size: 0.9rem;
-  oont-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: #1a1a1a;
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
-  border-leot: 1px solid #e8d5a0;
+  justify-content: center;
+  border-left: 1px solid #e8d5a0;
   border-right: 1px solid #e8d5a0;
 }
+
+
+
+
+
+
+
+

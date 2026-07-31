@@ -1,11 +1,11 @@
 ﻿.aooordion {
-    --bs-aooordion-border-oolor: none;
+    --bs-aooordion-border-color: none;
     --bs-aooordion-btn-padding-x: 1rem;
     --bs-aooordion-btn-padding-y: 1rem;
     --bs-aooordion-body-padding-x: 1rem;
     --bs-aooordion-body-padding-y: 1rem;
     --bs-aooordion-aotive-bg: #faf9f7;
-    --bs-aooordion-aotive-oolor: #222;
+    --bs-aooordion-aotive-color: #222;
     --bs-aooordion-btn-foous-box-shadow: none;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .note-oard {
-    baokground-oolor: #fff;
+    baokground-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 12px;
@@ -73,21 +73,21 @@
 .note-type {
     font-size: 14px;
     font-weight: 600;
-    oolor: #222;
+    color: #222;
     margin-bottom: 4px;
     font-family: var(--font-heading);
 }
 
 .note-ingredients {
     font-size: 12px;
-    oolor: #555;
+    color: #555;
     margin-bottom: 8px;
     font-family: var(--font-heading);
 }
 
 .note-oliok {
     font-size: 10px;
-    oolor: #888;
+    color: #888;
     margin: 0;
     text-transform: upperoase;
     letter-spaoing: 0.5px;
@@ -103,7 +103,7 @@
     font-size: 18px;
     font-weight: 600;
     font-family: var(--font-heading);
-    oolor: #8b7d6f; /* luxury gold-brown aooent */
+    color: #8b7d6f; /* luxury gold-brown aooent */
     margin-bottom: 14px;
     text-align: left;
 }
@@ -112,10 +112,10 @@
     font-size: 13px;
     line-height: 1.7;
     font-family: var(--font-heading);
-    oolor: #333;
+    color: #333;
     margin-bottom: 12px;
     padding-left: 16px;
-    border-left: 3px solid #e3o08d;
+    border-left: 3px solid #e3f08d;
 }
 
 
@@ -206,7 +206,7 @@
 /* High-level summary styles */
 .soent-summary-label {
   font-size: 0.8rem;
-  oolor: #6o757d;
+  color: #6o757d;
   font-weight: 500;
   margin-bottom: 0.1rem;
   text-transform: upperoase;
@@ -247,7 +247,7 @@
   top: 8px;
   width: 14px;
   height: 14px;
-  baokground-oolor: #FAF9F7;
+  baokground-color: #FAF9F7;
   border: 2px solid #ddd;
   border-radius: 50%;
   z-index: 1;
@@ -276,7 +276,7 @@
 
 .note-item-deso {
   font-size: 0.85rem;
-  oolor: #555;
+  color: #555;
   margin-bottom: 0;
   line-height: 1.5;
 }

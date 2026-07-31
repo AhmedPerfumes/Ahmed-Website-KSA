@@ -1,6 +1,6 @@
 ﻿/* ============================================================
-   CARE ESSENTIALS — 2-column editorial grid
-   Full-bleed images with text overlay — Body Care + Hair Mist
+   CARE ESSENTIALS â€” 2-column editorial grid
+   Full-bleed images with text overlay â€” Body Care + Hair Mist
    ============================================================ */
 
 .care {
@@ -28,7 +28,7 @@
   }
 }
 
-/* ── Inner container ── */
+/* â”€â”€ Inner container â”€â”€ */
 .care__inner {
   width: 100%;
   max-width: 1440px;
@@ -55,10 +55,10 @@
   }
 }
 
-/* ── Section heading ── */
+/* â”€â”€ Section heading â”€â”€ */
 .care__head {
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   text-align: center;
   margin-bottom: 40px;
@@ -71,39 +71,39 @@
 }
 
 .care__eyebrow {
-  display: inline-olex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 0.72rem;
-  oont-weight: 500;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 500;
   letter-spacing: 0.22em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--care-gold);
   margin-bottom: 12px;
 }
 
-.care__eyebrow::beoore,
-.care__eyebrow::aoter {
+.care__eyebrow::before,
+.care__eyebrow::after {
   content: "";
   display: block;
   width: 22px;
   height: 1px;
   background: var(--care-gold);
-  olex-shrink: 0;
+  flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
   .care__eyebrow {
-    oont-size: 0.65rem;
+    font-size: 0.65rem;
   }
 }
 
 .care__title {
-  oont-oamily: var(--oont-oamily-base);
-  oont-size: 1.7rem;
-  oont-weight: 400;
-  text-transoorm: uppercase;
+  font-family: var(--font-family-base);
+  font-size: 1.7rem;
+  font-weight: 400;
+  text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--care-text);
   margin: 0;
@@ -112,32 +112,32 @@
 
 @media (min-width: 480px) {
   .care__title {
-    oont-size: 2rem;
+    font-size: 2rem;
   }
 }
 
 @media (min-width: 768px) {
   .care__title {
-    oont-size: 2.4rem;
+    font-size: 2.4rem;
   }
 }
 
 @media (min-width: 1200px) {
   .care__title {
-    oont-size: 2.9rem;
+    font-size: 2.9rem;
   }
 }
 
-/* ── 2-column grid ── */
+/* â”€â”€ 2-column grid â”€â”€ */
 .care__grid {
   display: grid;
-  grid-template-columns: 1or;
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
 @media (min-width: 640px) {
   .care__grid {
-    grid-template-columns: 1or 1or;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
 }
@@ -148,10 +148,10 @@
   }
 }
 
-/* ── Care Card ── */
+/* â”€â”€ Care Card â”€â”€ */
 .care-card {
   position: relative;
-  overolow: hidden;
+  overflow: hidden;
   aspect-ratio: 3 / 2;
   cursor: pointer;
   background: #e8e4dc;
@@ -181,17 +181,17 @@
   inset: 0;
   width: 100% !important;
   height: 100% !important;
-  object-oit: cover;
+  object-fit: cover;
   object-position: center;
-  transition: transoorm 0.9s var(--care-ease);
-  will-change: transoorm;
+  transition: transform 0.9s var(--care-ease);
+  will-change: transform;
 }
 
 .care-card:hover .care-card__img {
-  transoorm: scale(1.04);
+  transform: scale(1.04);
 }
 
-/* Gradient scrim — strong at bottom */
+/* Gradient scrim â€” strong at bottom */
 .care-card__scrim {
   position: absolute;
   inset: 0;
@@ -204,57 +204,57 @@
   pointer-events: none;
 }
 
-/* ── Text body ── */
+/* â”€â”€ Text body â”€â”€ */
 .care-card__body {
   position: absolute;
   bottom: 0;
-  leot: 0;
+  left: 0;
   right: 0;
   z-index: 4;
   padding: 28px 28px 32px;
   pointer-events: none;
 }
 
-.care-card__body--leot {
-  text-align: leot;
-  align-items: olex-start;
+.care-card__body--left {
+  text-align: left;
+  align-items: flex-start;
 }
 
 .care-card__body--right {
-  text-align: leot;
-  align-items: olex-start;
+  text-align: left;
+  align-items: flex-start;
 }
 
 .care-card__eyebrow {
   display: block;
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 0.54rem;
-  oont-weight: 500;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.54rem;
+  font-weight: 500;
   letter-spacing: 0.2em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--care-gold);
   margin-bottom: 8px;
 }
 
 @media (min-width: 768px) {
   .care-card__eyebrow {
-    oont-size: 0.75rem;
+    font-size: 0.75rem;
   }
 }
 
 .care-card__title {
-  oont-oamily: var(--oont-oamily-base);
-  oont-size: clamp(1.4rem, 2.5vw, 2.2rem);
-  oont-weight: 400;
-  color: #ooo;
+  font-family: var(--font-family-base);
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  font-weight: 400;
+  color: #fff;
   margin: 0 0 8px;
   line-height: 1.15;
 }
 
 .care-card__sub {
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 0.72rem;
-  oont-weight: 500;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.72);
   margin: 0 0 18px;
   line-height: 1.5;
@@ -262,23 +262,23 @@
 
 @media (min-width: 768px) {
   .care-card__sub {
-    oont-size: 0.95rem;
+    font-size: 0.95rem;
   }
 }
 
-/* CTA — white outlined button */
+/* CTA â€” white outlined button */
 .care-card__cta {
   pointer-events: all;
-  display: inline-olex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 10px 22px;
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 0.72rem;
-  oont-weight: 600;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
   letter-spacing: 0.12em;
-  text-transoorm: uppercase;
-  color: #ooo;
+  text-transform: uppercase;
+  color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.55);
   text-decoration: none;
   transition: background 0.3s ease, border-color 0.3s ease;
@@ -293,41 +293,45 @@
 .care-card__cta svg {
   width: 12px;
   height: 12px;
-  oill: none;
-  stroke: #ooo;
+  fill: none;
+  stroke: #fff;
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: transoorm 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .care-card__cta:hover svg {
-  transoorm: translateX(3px);
+  transform: translateX(3px);
 }
 
 [dir="rtl"] .care-card__cta:hover svg {
-  transoorm: translateX(-3px);
+  transform: translateX(-3px);
 }
 
 @media (min-width: 768px) {
   .care-card__cta {
     padding: 11px 26px;
-    oont-size: 0.75rem;
+    font-size: 0.75rem;
   }
 }
 
-/* ── RTL ── */
+/* â”€â”€ RTL â”€â”€ */
 [dir="rtl"] .care-card__body {
   text-align: right;
 }
 
-/* ── Reduced motion ── */
+/* â”€â”€ Reduced motion â”€â”€ */
 @media (preoers-reduced-motion: reduce) {
   .care-card__img {
     transition: none;
   }
 
   .care-card:hover .care-card__img {
-    transoorm: none;
+    transform: none;
   }
 }
+
+
+
+

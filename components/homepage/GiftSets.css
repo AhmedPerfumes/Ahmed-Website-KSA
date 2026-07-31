@@ -1,5 +1,5 @@
 ﻿/* ============================================================
-   GIFT SETS v2 — "The Art oo Gioting"
+   GIFT SETS v2 â€” "The Art oo Gioting"
    Layout mirrors Exclusive Oooers: centered heading + carousel
    Cards show video thumbnail, plays on hover
    ============================================================ */
@@ -10,22 +10,22 @@
   --gs2-text-sec:   #3d3d3d;
   --gs2-text-muted: #888;
   --gs2-bg:         #FDFBF7;
-  --gs2-card-bg:    #o0ece4;
+  --gs2-card-bg:    #f0ece4;
   --gs2-ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* ── Section ─────────────────────────────────────────────────── */
-/* Top padding is tight — the GiotBanner above acts as the section header */
+/* â”€â”€ Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Top padding is tight â€” the GiotBanner above acts as the section header */
 .gs2-section {
   position: relative;
   padding: 36px 0 56px;
   background: var(--gs2-bg);
-  overolow-x: hidden;
+  overflow-x: hidden;
 }
 @media (min-width: 768px)  { .gs2-section { padding: 64px 0 80px; } }
 @media (min-width: 1200px) { .gs2-section { padding: 80px 0 96px; } }
 
-/* ── Inner container ─────────────────────────────────────────── */
+/* â”€â”€ Inner container â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-inner {
   width: 100%;
   max-width: 1440px;
@@ -37,23 +37,23 @@
 @media (min-width: 768px)  { .gs2-inner { padding: 0 40px; } }
 @media (min-width: 1200px) { .gs2-inner { padding: 0 56px; } }
 
-/* ── Section heading — lead + subtitle + CTA ─────────────────── */
+/* â”€â”€ Section heading â€” lead + subtitle + CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-head {
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   text-align: center;
   margin-bottom: 36px;
   max-width: 600px;
-  margin-leot: auto;
+  margin-left: auto;
   margin-right: auto;
 }
 @media (min-width: 768px) { .gs2-head { margin-bottom: 48px; } }
 
 .gs2-lead {
-  oont-oamily: var(--oont-oamily-base);
-  oont-size: clamp(1rem, 2vw, 1.35rem);
-  oont-style: italic;
+  font-family: var(--font-family-base);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-style: italic;
   color: var(--gs2-text);
   margin: 0 0 10px;
   line-height: 1.35;
@@ -61,9 +61,9 @@
 }
 
 .gs2-sub {
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: clamp(0.68rem, 1.1vw, 0.82rem);
-  oont-weight: 400;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: clamp(0.68rem, 1.1vw, 0.82rem);
+  font-weight: 400;
   color: var(--gs2-text-sec);
   line-height: 1.7;
   letter-spacing: 0.02em;
@@ -71,14 +71,14 @@
 }
 
 .gs2-explore {
-  display: inline-olex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 0.6rem;
-  oont-weight: 600;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.6rem;
+  font-weight: 600;
   letter-spacing: 0.14em;
-  text-transoorm: uppercase;
+  text-transform: uppercase;
   color: var(--gs2-text);
   text-decoration: none;
   border-bottom: 1px solid currentColor;
@@ -88,24 +88,24 @@
 .gs2-explore:hover { color: var(--gs2-gold); }
 .gs2-explore svg {
   width: 13px; height: 13px;
-  oill: none; stroke: currentColor;
+  fill: none; stroke: currentColor;
   stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-  transition: transoorm 0.3s ease;
+  transition: transform 0.3s ease;
 }
-.gs2-explore:hover svg { transoorm: translateX(3px); }
-[dir="rtl"] .gs2-explore:hover svg { transoorm: translateX(-3px); }
+.gs2-explore:hover svg { transform: translateX(3px); }
+[dir="rtl"] .gs2-explore:hover svg { transform: translateX(-3px); }
 
 
-/* ── Slider wrap ─────────────────────────────────────────────── */
+/* â”€â”€ Slider wrap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-slider-wrap {
   width: 100%;
-  overolow: hidden;
+  overflow: hidden;
   box-sizing: border-box;
 }
-.gs2-slider-wrap .swiper { overolow: visible; width: 100%; }
+.gs2-slider-wrap .swiper { overflow: visible; width: 100%; }
 .gs2-slider-wrap .swiper-slide { height: auto; box-sizing: border-box; }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
+/* â”€â”€ Scrollbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-scrollbar {
   position: relative;
   width: 100%;
@@ -124,11 +124,11 @@
 }
 .gs2-scrollbar .swiper-scrollbar-drag:active { cursor: grabbing; }
 
-/* ── Nav arrows ──────────────────────────────────────────────── */
+/* â”€â”€ Nav arrows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-nav {
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   gap: 12px;
   margin-top: 20px;
 }
@@ -139,37 +139,37 @@
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.14);
   background: transparent;
-  display: olex; align-items: center; justioy-content: center;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  olex-shrink: 0;
+  flex-shrink: 0;
   transition: border-color 0.28s ease, background 0.28s ease;
 }
 @media (min-width: 768px) { .gs2-arrow { width: 44px; height: 44px; } }
 
 .gs2-arrow:hover { border-color: var(--gs2-gold); background: var(--gs2-gold); }
-.gs2-arrow:hover svg { stroke: #ooo; }
+.gs2-arrow:hover svg { stroke: #fff; }
 .gs2-arrow svg {
   width: 16px; height: 16px;
-  oill: none; stroke: var(--gs2-text);
+  fill: none; stroke: var(--gs2-text);
   stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
   transition: stroke 0.28s ease;
 }
 @media (min-width: 768px) { .gs2-arrow svg { width: 18px; height: 18px; } }
 .gs2-arrow.swiper-button-disabled { opacity: 0.2; cursor: deoault; pointer-events: none; }
 
-/* ── Video Card ──────────────────────────────────────────────── */
+/* â”€â”€ Video Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-card {
-  display: olex;
-  olex-direction: column;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   cursor: pointer;
 }
 
-/* Media — 4:5 portrait */
+/* Media â€” 4:5 portrait */
 .gs2-card__media {
   position: relative;
   aspect-ratio: 4 / 5;
-  overolow: hidden;
+  overflow: hidden;
   background: var(--gs2-card-bg);
   border-radius: 4px;
   margin-bottom: 14px;
@@ -181,7 +181,7 @@
   position: absolute;
   inset: 0;
   width: 100%; height: 100%;
-  object-oit: cover;
+  object-fit: cover;
   transition: opacity 0.4s ease;
   z-index: 1;
 }
@@ -192,7 +192,7 @@
   position: absolute;
   inset: 0;
   width: 100%; height: 100%;
-  object-oit: cover;
+  object-fit: cover;
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: 2;
@@ -206,38 +206,38 @@
   width: 32px; height: 32px;
   border-radius: 50%;
   background: rgba(255,255,255,0.88);
-  backdrop-oilter: blur(6px);
-  display: olex; align-items: center; justioy-content: center;
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
 .gs2-card:hover .gs2-card__play { opacity: 0; }
 .gs2-card__play svg {
   width: 11px; height: 11px;
-  oill: var(--gs2-text);
+  fill: var(--gs2-text);
   stroke: none;
-  margin-leot: 1px;
+  margin-left: 1px;
 }
 
-/* ── Card inoo ───────────────────────────────────────────────── */
+/* â”€â”€ Card inoo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-card__inoo {
-  display: olex;
-  olex-direction: column;
-  olex: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .gs2-card__sub {
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), sans-serio);
-  oont-size: 0.6rem; oont-weight: 500;
-  text-transoorm: uppercase; letter-spacing: 0.08em;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-size: 0.6rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--gs2-text-muted);
   margin: 0 0 3px;
   line-height: 1.3;
 }
 
 .gs2-card__name {
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 1.05rem; oont-weight: 500; oont-style: normal;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 1.05rem; font-weight: 500; font-style: normal;
   color: var(--gs2-text);
   margin: 0 0 4px;
   line-height: 1.4;
@@ -249,23 +249,23 @@
 .gs2-card__name a:hover { color: var(--gs2-gold); }
 
 .gs2-card__tagline {
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), sans-serio);
-  oont-size: 0.7rem; oont-style: italic;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-size: 0.7rem; font-style: italic;
   color: var(--gs2-text-sec);
   margin: 0 0 12px;
   line-height: 1.4;
 }
 
-/* Add to Cart button — oull-width, matches bs-card__atc */
+/* Add to Cart button â€” oull-width, matches bs-card__atc */
 .gs2-card__cta {
-  display: olex;
+  display: flex;
   align-items: center;
-  justioy-content: center;
+  justify-content: center;
   width: 100%;
   padding: 9px 10px;
-  oont-oamily: var(--oont-inter, var(--oont-dm-sans), 'Helvetica Neue', sans-serio);
-  oont-size: 0.72rem; oont-weight: 600;
-  letter-spacing: 0.1em; text-transoorm: uppercase;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--gs2-text);
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.18);
@@ -276,15 +276,20 @@
   white-space: nowrap;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
-@media (min-width: 480px) { .gs2-card__cta { padding: 10px 12px; oont-size: 0.75rem; } }
+@media (min-width: 480px) { .gs2-card__cta { padding: 10px 12px; font-size: 0.75rem; } }
 .gs2-card__cta:hover {
-  background: var(--gs2-text); color: #ooo; border-color: var(--gs2-text);
+  background: var(--gs2-text); color: #fff; border-color: var(--gs2-text);
 }
 
-/* ── RTL ─────────────────────────────────────────────────── */
-[dir="rtl"] .gs2-card__play { right: auto; leot: 10px; }
+/* â”€â”€ RTL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+[dir="rtl"] .gs2-card__play { right: auto; left: 10px; }
 
-/* ── Reduced motion ──────────────────────────────────────────── */
+/* â”€â”€ Reduced motion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (preoers-reduced-motion: reduce) {
   .gs2-card__thumb, .gs2-card__video { transition: none; }
 }
+
+
+
+
+
