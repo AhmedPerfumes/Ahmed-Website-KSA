@@ -175,27 +175,39 @@ label {
   }
 }
 
-/* ── 3. Section title scale for large displays ────────────────────── */
-/* On 2560px, fixed rem values look small. Using clamp() with wider   */
-/* upper bounds ensures titles scale confidently on 50-inch screens.  */
+/* ── 3. Section title font-weight 600 ────────────────────────────── */
+/* EXPLORE BY CATEGORY | COLLECTIONS | Buy 3 Get 1 Free | Care Essentials */
+/* Real class names from component CSS (previously mis-targeted).         */
 
-.bs2__title {
-  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important;
+/* "EXPLORE BY CATEGORY" — Best Sellers section */
+.best-sellers__title {
   font-weight: 600 !important;
 }
 
+/* "New Arrivals" section title */
 .na2__title {
   font-size: clamp(1.7rem, 2.5vw, 4.5rem) !important;
   font-weight: 600 !important;
 }
 
-.so__title {
-  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important;
+/* "Buy 3 Get 1 Free" — Special Offers section */
+.so-title {
+  font-weight: 600 !important;
+}
+
+/* "COLLECTIONS" — Collection Showcase section */
+.collections__title {
+  font-weight: 600 !important;
+}
+
+/* "CARE ESSENTIALS" — Care Essentials section */
+.care__title {
   font-weight: 600 !important;
 }
 
 /* NOTE: .hb__title removed — hero banner uses .hero-slide__title, not this class */
 
+/* "COLLECTIONS" sub-heading in CollectionShowcase side panel */
 .col-sec__title {
   font-size: clamp(1.8rem, 2.6vw, 4.8rem) !important;
   font-weight: 600 !important;
