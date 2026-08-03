@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { useEffect, useRef, useCallback } from "react";
@@ -158,8 +158,8 @@ export default function NewsLetter() {
         aria-labelledby="nlp-title"
         onClick={handleOverlayClick}
       >
-        {popUp.map((elm, i) => (
-          <div className="nlp-card" key={i}>
+        {popUp.slice(0, 1).map((elm, i) => (
+          <div className="nlp-card" key={i} onClick={(e) => e.stopPropagation()}>
             <button className="nlp-close" onClick={closePopup} aria-label="Close" type="button">&#x2715;</button>
 
             <div className="nlp-img-panel">

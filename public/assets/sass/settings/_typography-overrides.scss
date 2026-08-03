@@ -181,7 +181,7 @@ label {
 
 .bs2__title {
   font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important;
-  font-weight: 600 !important; /* was 500 */
+  font-weight: 600 !important;
 }
 
 .na2__title {
@@ -194,21 +194,20 @@ label {
   font-weight: 600 !important;
 }
 
-.hb__title {
-  font-size: clamp(2.0rem, 5vw, 6.0rem) !important;
-  font-weight: 600 !important;
-}
+/* NOTE: .hb__title removed — hero banner uses .hero-slide__title, not this class */
 
 .col-sec__title {
   font-size: clamp(1.8rem, 2.6vw, 4.8rem) !important;
   font-weight: 600 !important;
 }
 
+/* Banner image overlay titles — RESTORED to original weight (400) */
+/* These sit on top of photography; 400 weight keeps them elegant.  */
 .dkbnr__title,
 .gbnr__title,
 .oebnr__title {
   font-size: clamp(1.6rem, 4vw, 5.5rem) !important;
-  font-weight: 600 !important;
+  font-weight: 400 !important; /* restored — was incorrectly set to 600 */
 }
 
 /* ── 4. Secondary / muted text contrast fix ───────────────────────── */
