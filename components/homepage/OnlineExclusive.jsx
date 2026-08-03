@@ -41,7 +41,7 @@ export default function OnlineExclusive() {
 
     /* â”€â”€ Helpers â”€â”€ */
     const cleanStr = useCallback((str) =>
-        str?.replace(/&amp;/g, "").replace(/[^\\w\\s-]/g, "").replace(/\\s+/g, " ").trim() ?? "",
+        str?.replace(/\&amp;/g, "").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim() ?? "",
     []);
 
     const getSubcatSlug = useCallback((category, subcategory) => {
