@@ -151,8 +151,9 @@ label {
 .gs2__label,
 [class$="__eyebrow"],
 [class$="-eyebrow"] {
-  font-size: 0.7rem !important;
+  font-size: 1rem !important;  /* was 0.7rem — user request: 1rem */
   letter-spacing: 0.2em !important;
+  font-weight: 700 !important;
 }
 
 @media (min-width: 1024px) {
@@ -168,7 +169,7 @@ label {
   .gs2__label,
   [class$="__eyebrow"],
   [class$="-eyebrow"] {
-    font-size: clamp(0.75rem, 0.85vw, 1.05rem) !important;
+    font-size: clamp(1rem, 1.1vw, 1.25rem) !important; /* 1rem min, scales to 1.25rem on 2560px */
     letter-spacing: 0.24em !important;
     font-weight: 700 !important;
   }
@@ -607,4 +608,52 @@ p {
 .footer.footer_type_1.dark .footer-newsletter p,
 .footer.footer_type_1.dark p {
   color: #e8e4dc !important; /* warm off-white — legible on #0d0d0d footer bg */
+}
+
+/* ── 22. PRODUCT CARD NAMES — bigger + bolder across ALL homepage sections ── */
+/* Best Sellers (.bs-card__name) already set above in rule 18.               */
+/* New Arrivals card name (.na2-banner__name) — currently 1.05–1.3rem/400   */
+
+.na2-banner__name,
+.na2-banner__name a {
+  font-size: clamp(1.2rem, 1.8vw, 1.65rem) !important; /* was 1.05–1.3rem */
+  font-weight: 700 !important; /* was 400 — much bolder */
+  color: #fff !important;
+}
+
+/* Update Best Sellers card name to be bolder still */
+.bs-card__name,
+.bs-card__name a {
+  font-size: clamp(1rem, 1.2vw, 1.2rem) !important; /* was 0.83–1.05rem */
+  font-weight: 700 !important; /* was 600 */
+}
+
+/* ── 23. CARD SUB-LABELS — slightly smaller/lighter (below the name) ──── */
+/* These are the category labels like "ORIENTAL FRAGRANCE", "K-Series·2000" */
+/* They should be clearly subordinate — still readable, just not dominant.  */
+
+.bs-card__sub {
+  font-size: 0.62rem !important; /* was 0.6–0.75rem — slight reduction */
+  font-weight: 400 !important;   /* was 500 — lighter */
+  letter-spacing: 0.06em !important;
+  opacity: 0.75;
+}
+
+.na2-banner__sub {
+  font-size: 0.7rem !important;  /* was 0.75rem */
+  font-weight: 400 !important;   /* was 500 — lighter */
+  letter-spacing: 0.1em !important;
+  color: rgba(255, 255, 255, 0.58) !important; /* slightly dimmer */
+}
+
+/* Cross-section sub-labels (GiftSets, OnlineExclusive, CareEssentials, etc.) */
+.gs2-card__sub,
+.oe-card__sub,
+.care-card__sub,
+.so-card__sub,
+.dk-card__sublabel {
+  font-size: 0.62rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.06em !important;
+  opacity: 0.75;
 }
