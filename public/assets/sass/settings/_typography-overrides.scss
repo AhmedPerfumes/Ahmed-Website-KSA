@@ -9,7 +9,6 @@
      --font-inter   → Inter                                         (prices / numbers)
      --font-alexandria → Alexandria                                  (Arabic locale)
    Legacy aliases: --font-heading = --font-display, --font-family-base = --font-body
-   BANNED FONTS: Kanit, Lato, Poppins, Cinzel, Merriweather, Trebuchet
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
@@ -330,7 +329,7 @@ p {
 [class*="__label"],
 [class*="-label"] {
   font-family: var(--font-label) !important;
-  font-size: 0.80rem !important;
+  font-size: 0.90rem !important;
   font-weight: 600 !important;
 }
 
