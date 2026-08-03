@@ -5,24 +5,28 @@
 
   --theme-color-third: #86bc42;
 
+  --font-special: "Allura", cursive;
+
   /*
    * ── SEMANTIC FONT ROLES ────────────────────────────────────────────────
-   * All font CSS vars below are injected at runtime by Next.js (layout.jsx).
-   *
-   * --font-cormorant   : Cormorant Garamond (Google) — luxury display serif
-   * --font-bodoni      : Bodoni Moda (Google)         — editorial serif fallback
-   * --font-playfair    : Playfair Display (Google)    — body + display fallback
-   * --font-inter       : Inter (Google)               — UI / prices / chrome
-   * --font-ibm-plex-mono: IBM Plex Mono (Google)      — eyebrow labels / SKUs
-   * --font-space-mono  : Space Mono (Google)          — label fallback
-   * --font-dm-sans     : DM Sans (Google)             — legacy (kept for compat)
-   * --font-wulkan      : Wulkan Display (self-hosted) — legacy editorial accent
-   * --font-alexandria  : Alexandria (ar locale only)
-   *
-   * Slot "Rasputin" is reserved as first in --font-display; once the .woff2
-   * file is added, uncomment it and add a localFont() call in layout.jsx.
+   * NOTE: --font-display / --font-body / --font-ui / --font-label are
+   * defined on `body` (not :root) because Next.js injects the raw font
+   * CSS variables (--font-cormorant, --font-playfair, etc.) on <body>
+   * via className. CSS custom properties only cascade downward, so :root
+   * cannot see variables defined on a child element.
    */
+}
 
+/*
+ * ── Font role variables on body ────────────────────────────────────────
+ * All raw font vars (--font-cormorant, --font-playfair, --font-inter,
+ * --font-ibm-plex-mono, --font-space-mono) are injected here at runtime
+ * by Next.js. The semantic roles below reference them directly.
+ *
+ * Slot "Rasputin" is reserved as first in --font-display; once the .woff2
+ * file is added, uncomment it and add a localFont() call in layout.jsx.
+ */
+body {
   /* ── 4 semantic roles ── */
   --font-display: /* "Rasputin", */ var(--font-cormorant), var(--font-bodoni), var(--font-playfair), serif;
   --font-body:    var(--font-playfair), Georgia, serif;
@@ -33,8 +37,6 @@
   --font-heading:      var(--font-display);
   --font-family-base:  var(--font-body);
   --font-dm-sans:      var(--font-ui); /* old dm-sans references now resolve to Inter */
-
-  --font-special: "Allura", cursive;
 }
 
 .theme-11 {
