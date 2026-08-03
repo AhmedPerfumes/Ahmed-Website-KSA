@@ -31,8 +31,18 @@ body {
 }
 
 /* ALL HEADINGS — Playfair Display everywhere on the site */
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   font-family: var(--font-heading) !important;
   color: #1a1a1a;
 }
@@ -137,6 +147,7 @@ label {
 }
 
 @media (min-width: 1024px) {
+
   .bs2__eyebrow,
   .na2__eyebrow,
   .so-eyebrow,
@@ -246,8 +257,10 @@ label {
 
 body {
   font-family: var(--font-family-base);
-  font-size: 0.9375rem; /* 15px — up from 14px for large-screen legibility */
-  color: #1a1a1a;       /* near-black — NOT gray */
+  font-size: 0.9375rem;
+  /* 15px — up from 14px for large-screen legibility */
+  color: #1a1a1a;
+  /* near-black — NOT gray */
   font-weight: 400;
 }
 
@@ -277,7 +290,8 @@ p {
 .dk-card__sublabel,
 .na2-banner__sub,
 .care-card__sub {
-  color: #a67b30 !important;  /* brand gold */
+  color: #a67b30 !important;
+  /* brand gold */
   font-weight: 500 !important;
   font-size: 0.72rem !important;
 }
@@ -295,9 +309,9 @@ p {
 }
 
 /* Navigation menu items */
-.navigation__item > a,
-.header14 .nav-item > a,
-.mainnav__item > a {
+.navigation__item>a,
+.header14 .nav-item>a,
+.mainnav__item>a {
   font-family: var(--font-dm-sans), sans-serif !important;
   font-weight: 500 !important;
   letter-spacing: 0.04em;
@@ -312,7 +326,7 @@ p {
 [class*="-eyebrow"],
 [class*="__label"],
 [class*="-label"] {
-  font-size: 0.72rem !important;
+  font-size: 0.80rem !important;
   font-weight: 600 !important;
 }
 
@@ -323,7 +337,8 @@ p {
 /* Star rating empty stars — slightly muted is OK, but #bbb is too pale */
 [class*="star"]:not([class*="filled"]):not([class*="active"]),
 [class*="rating"] [class*="empty"] {
-  color: #ccc !important; /* keep muted for empty stars — intentional */
+  color: #ccc !important;
+  /* keep muted for empty stars — intentional */
 }
 
 /* Accordion body text — was #999 */
