@@ -179,35 +179,35 @@ label {
 /* upper bounds ensures titles scale confidently on 50-inch screens.  */
 
 .bs2__title {
-  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important; /* was 3.2rem */
-  font-weight: 500 !important;
+  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important;
+  font-weight: 600 !important; /* was 500 */
 }
 
 .na2__title {
-  font-size: clamp(1.7rem, 2.5vw, 4.5rem) !important; /* was 3.4rem */
-  font-weight: 500 !important;
+  font-size: clamp(1.7rem, 2.5vw, 4.5rem) !important;
+  font-weight: 600 !important;
 }
 
 .so__title {
-  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important; /* was 3.2rem */
-  font-weight: 500 !important;
+  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important;
+  font-weight: 600 !important;
 }
 
 .hb__title {
-  font-size: clamp(2.0rem, 5vw, 6.0rem) !important;   /* was 4.8rem */
-  font-weight: 500 !important;
+  font-size: clamp(2.0rem, 5vw, 6.0rem) !important;
+  font-weight: 600 !important;
 }
 
 .col-sec__title {
-  font-size: clamp(1.8rem, 2.6vw, 4.8rem) !important; /* was 3.6rem */
-  font-weight: 500 !important;
+  font-size: clamp(1.8rem, 2.6vw, 4.8rem) !important;
+  font-weight: 600 !important;
 }
 
 .dkbnr__title,
 .gbnr__title,
 .oebnr__title {
-  font-size: clamp(1.6rem, 4vw, 5.5rem) !important;   /* was 4.4rem */
-  font-weight: 500 !important;
+  font-size: clamp(1.6rem, 4vw, 5.5rem) !important;
+  font-weight: 600 !important;
 }
 
 /* ── 4. Secondary / muted text contrast fix ───────────────────────── */
@@ -552,4 +552,59 @@ p {
   font-weight: 500 !important;  /* was 400 — adds stroke on dark bg */
   font-size: clamp(0.9375rem, 1vw, 1.125rem) !important;
   line-height: 1.8 !important;
+}
+
+/* ── 17. CATEGORY TABS (.bs-tab) ─────────────────────────────────── */
+/* Filter tabs "ALL", "PERFUMES", "DAKHOON" etc. in Best Sellers      */
+
+.bs-tab {
+  font-size: 0.75rem !important;  /* was 0.6rem */
+  font-weight: 600 !important;    /* was 400 */
+  letter-spacing: 0.1em;
+}
+
+/* ── 18. PRODUCT CARD NAME (.bs-card__name) ───────────────────────── */
+/* Product names on Best Sellers cards — balanced, not too big/small  */
+
+.bs-card__name,
+.bs-card__name a {
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem) !important; /* was 0.83–0.88rem */
+  font-weight: 600 !important;  /* was 500 */
+  color: #1a1a1a !important;
+}
+
+/* ── 19. GIFT SETS SECTION HEADING (.gs2-head children) ───────────── */
+/* gs2-lead (italic subtitle) and gs2-sub (desc text) were too small  */
+
+.gs2-lead {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem) !important; /* was clamp(1,2vw,1.35rem) */
+  font-weight: 500 !important;
+}
+
+.gs2-sub {
+  font-size: clamp(0.82rem, 1vw, 0.95rem) !important; /* was clamp(0.68,1.1vw,0.82rem) */
+  font-weight: 500 !important; /* was 400 */
+  color: #4a4a4a !important;   /* stronger contrast */
+}
+
+.gs2__title {
+  font-size: clamp(1.6rem, 2.4vw, 4.2rem) !important;
+  font-weight: 600 !important;
+}
+
+/* ── 20. SMALL BANNER DESC — off-white on dark background ─────────── */
+/* .small-banner__desc had rgba(253,251,247,0.85) — too dim at weight 300 */
+
+.small-banner__desc {
+  color: #f0ece4 !important;  /* warm off-white — visible on #1a1a1a dark bg */
+  font-weight: 400 !important; /* up from 300 — strokes thicker */
+}
+
+/* ── 21. FOOTER paragraph text — off-white on dark background ──────── */
+/* --ft-muted = rgba(255,255,255,0.48) is too faded on the dark footer  */
+
+.footer.footer_type_1.dark .footer-address,
+.footer.footer_type_1.dark .footer-newsletter p,
+.footer.footer_type_1.dark p {
+  color: #e8e4dc !important; /* warm off-white — legible on #0d0d0d footer bg */
 }
