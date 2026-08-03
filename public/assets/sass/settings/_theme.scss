@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --theme-color: #c32929;
 
   --theme-color-secondary: #b9a16b;
@@ -6,15 +6,34 @@
   --theme-color-third: #86bc42;
 
   /*
-   * Font variables — resolved via Next.js localFont/googleFont CSS vars.
-   * --font-playfair : Playfair Display (Google, luxury serif — all major headings)
-   * --font-wulkan  : Wulkan Display (self-hosted WOFF2 — display/editorial accents)
-   * --font-dm-sans : DM Sans (Google, optimised WOFF2) — clean body/UI text font
-   * --font-inter   : Inter (Google) — prices, labels, UI numbers
-   * --font-alexandria : Alexandria (Arabic locale only)
+   * ── SEMANTIC FONT ROLES ────────────────────────────────────────────────
+   * All font CSS vars below are injected at runtime by Next.js (layout.jsx).
+   *
+   * --font-cormorant   : Cormorant Garamond (Google) — luxury display serif
+   * --font-bodoni      : Bodoni Moda (Google)         — editorial serif fallback
+   * --font-playfair    : Playfair Display (Google)    — body + display fallback
+   * --font-inter       : Inter (Google)               — UI / prices / chrome
+   * --font-ibm-plex-mono: IBM Plex Mono (Google)      — eyebrow labels / SKUs
+   * --font-space-mono  : Space Mono (Google)          — label fallback
+   * --font-dm-sans     : DM Sans (Google)             — legacy (kept for compat)
+   * --font-wulkan      : Wulkan Display (self-hosted) — legacy editorial accent
+   * --font-alexandria  : Alexandria (ar locale only)
+   *
+   * Slot "Rasputin" is reserved as first in --font-display; once the .woff2
+   * file is added, uncomment it and add a localFont() call in layout.jsx.
    */
-  --font-heading: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
-  --font-family-base: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
+
+  /* ── 4 semantic roles ── */
+  --font-display: /* "Rasputin", */ var(--font-cormorant), var(--font-bodoni), var(--font-playfair), serif;
+  --font-body:    var(--font-playfair), Georgia, serif;
+  --font-ui:      var(--font-inter), "Helvetica Neue", Arial, sans-serif;
+  --font-label:   var(--font-ibm-plex-mono), var(--font-space-mono), monospace;
+
+  /* ── Legacy aliases → zero breakage across existing codebase ── */
+  --font-heading:      var(--font-display);
+  --font-family-base:  var(--font-body);
+  --font-dm-sans:      var(--font-ui); /* old dm-sans references now resolve to Inter */
+
   --font-special: "Allura", cursive;
 }
 

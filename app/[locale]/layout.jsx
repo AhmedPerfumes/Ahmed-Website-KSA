@@ -22,7 +22,7 @@ import ProductAdditionalInformation from "@/components/asides/ProductAdditionalI
 import ProductReviews from "@/components/asides/ProductReviews";
 import MobileFooter1 from "@/components/footers/MobileFooter1";
 import localFont from "next/font/local";
-import { DM_Sans, Playfair_Display, Inter } from "next/font/google";
+import { DM_Sans, Playfair_Display, Inter, Cormorant_Garamond, Bodoni_Moda, IBM_Plex_Mono, Space_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -150,6 +150,47 @@ const dmSans = DM_Sans({
     variable: "--font-dm-sans",
 });
 
+// Cormorant Garamond — luxury display serif. Primary --font-display fallback
+// (replaces Rasputin until the custom file is available).
+const cormorantGaramond = Cormorant_Garamond({
+    subsets: ["latin"],
+    weight: ["300", "400", "500", "600", "700"],
+    style: ["normal", "italic"],
+    display: "swap",
+    preload: true,
+    variable: "--font-cormorant",
+});
+
+// Bodoni Moda — editorial serif, second fallback for --font-display.
+const bodoniModa = Bodoni_Moda({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800", "900"],
+    style: ["normal", "italic"],
+    display: "swap",
+    preload: false,
+    variable: "--font-bodoni",
+});
+
+// IBM Plex Mono — monospace font for eyebrow labels, SKUs, metadata.
+const ibmPlexMono = IBM_Plex_Mono({
+    subsets: ["latin"],
+    weight: ["400", "500", "600"],
+    style: ["normal", "italic"],
+    display: "swap",
+    preload: false,
+    variable: "--font-ibm-plex-mono",
+});
+
+// Space Mono — fallback monospace for --font-label.
+const spaceMono = Space_Mono({
+    subsets: ["latin"],
+    weight: ["400", "700"],
+    style: ["normal", "italic"],
+    display: "swap",
+    preload: false,
+    variable: "--font-space-mono",
+});
+
 // Import Arabic font
 const arabicFont = localFont({
     src: "../../public/assets/fonts/alexandria-arabic/static/Alexandria-Regular.ttf",
@@ -174,9 +215,10 @@ export default async function LocaleLayout({ children, params: { locale } }) {
     // --font-wulkan   : Wulkan Display (editorial display)
     // --font-dm-sans  : DM Sans (body / UI)
     // --font-inter    : Inter (prices, labels)
-    let fontClasses = `${englishFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable}`;
+    const newFontVars = `${cormorantGaramond.variable} ${bodoniModa.variable} ${ibmPlexMono.variable} ${spaceMono.variable}`;
+    let fontClasses = `${englishFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable} ${newFontVars}`;
     if (locale === "ar") {
-        fontClasses = `${arabicFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable}`;
+        fontClasses = `${arabicFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable} ${newFontVars}`;
     }
 
     // Fetch translation messages

@@ -1,11 +1,14 @@
 /* ═══════════════════════════════════════════════════════════════════
    GLOBAL TYPOGRAPHY OVERRIDE — Ahmed Al Maghribi KSA
    Applied LAST in style.scss — wins all specificity battles.
-   TYPOGRAPHY SYSTEM:
-     Headings  → var(--font-heading)      = Playfair Display
-     Body/UI   → var(--font-family-base)  = DM Sans
-     Numbers   → var(--font-inter)        = Inter
-     Arabic    → var(--font-alexandria)   = Alexandria
+   TYPOGRAPHY SYSTEM (4-role semantic font system):
+     --font-display → Cormorant Garamond → Bodoni Moda → Playfair Display (headings)
+     --font-body    → Playfair Display → Georgia, serif             (all body text)
+     --font-ui      → Inter → Helvetica Neue → Arial, sans-serif    (UI / buttons / nav)
+     --font-label   → IBM Plex Mono → Space Mono, monospace         (eyebrows / labels)
+     --font-inter   → Inter                                         (prices / numbers)
+     --font-alexandria → Alexandria                                  (Arabic locale)
+   Legacy aliases: --font-heading = --font-display, --font-family-base = --font-body
    BANNED FONTS: Kanit, Lato, Poppins, Cinzel, Merriweather, Trebuchet
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -22,15 +25,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* BODY — DM Sans for all UI text (base of inheritance) */
+/* BODY — Playfair Display for all body text (luxurious editorial feel) */
 body {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-body) !important;
   font-size: 0.9375rem;
   color: #1a1a1a;
   font-weight: 400;
 }
 
-/* ALL HEADINGS — Playfair Display everywhere on the site */
+/* ALL HEADINGS — Cormorant Garamond (display) everywhere on the site */
 h1,
 h2,
 h3,
@@ -43,13 +46,13 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-display) !important;
   color: #1a1a1a;
 }
 
-/* ALL PARAGRAPHS — near-black, readable, proper size */
+/* ALL PARAGRAPHS — Playfair Display (body font), near-black, readable */
 p {
-  font-family: var(--font-family-base);
+  font-family: var(--font-body);
   color: #1a1a1a;
   font-weight: 400;
   font-size: 0.9375rem;
@@ -61,20 +64,20 @@ a {
   font-family: inherit;
 }
 
-/* BUTTONS — DM Sans, consistent weight */
+/* BUTTONS — UI font (Inter) for clean chrome */
 button,
 .btn,
 [type="button"],
 [type="submit"] {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-ui) !important;
 }
 
-/* FORM ELEMENTS — DM Sans */
+/* FORM ELEMENTS — UI font (Inter) for clarity */
 input,
 select,
 textarea,
 label {
-  font-family: var(--font-family-base) !important;
+  font-family: var(--font-ui) !important;
 }
 
 /* PRICE & NUMBER ELEMENTS — Inter for digit clarity */
@@ -107,7 +110,7 @@ label {
   font-family: var(--font-heading) !important;
 }
 
-/* Eyebrow / label elements across all sections */
+/* Eyebrow / label elements across all sections — IBM Plex Mono */
 .bs2__eyebrow,
 .na2__eyebrow,
 .so-eyebrow,
@@ -117,7 +120,7 @@ label {
 .gbnr__eyebrow,
 .oebnr__eyebrow,
 .gs2__label {
-  font-family: var(--font-dm-sans) !important;
+  font-family: var(--font-label) !important;
 }
 
 /* Price and UI number elements */
@@ -308,11 +311,11 @@ p {
   color: #a67b30 !important;
 }
 
-/* Navigation menu items */
+/* Navigation menu items — UI font (Inter) */
 .navigation__item>a,
 .header14 .nav-item>a,
 .mainnav__item>a {
-  font-family: var(--font-dm-sans), sans-serif !important;
+  font-family: var(--font-ui) !important;
   font-weight: 500 !important;
   letter-spacing: 0.04em;
   font-size: 0.8rem !important;
@@ -320,12 +323,13 @@ p {
 
 /* ── 7. EYEBROW / LABEL elements — minimum readable size ──────────── */
 /* Section eyebrow labels: "NEW ARRIVALS", "BESTSELLERS" etc.          */
-/* Uppercase + letter-spacing means 0.72rem reads visually bigger.     */
+/* IBM Plex Mono gives them a structured, editorial mono feel.         */
 
 [class*="__eyebrow"],
 [class*="-eyebrow"],
 [class*="__label"],
 [class*="-label"] {
+  font-family: var(--font-label) !important;
   font-size: 0.80rem !important;
   font-weight: 600 !important;
 }
