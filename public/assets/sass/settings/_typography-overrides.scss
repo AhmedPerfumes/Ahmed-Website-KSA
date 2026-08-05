@@ -652,26 +652,62 @@ p {
   /* warm off-white — legible on #0d0d0d footer bg */
 }
 
-/* ── 22. PRODUCT CARD NAMES — bigger + bolder across ALL homepage sections ── */
-/* Best Sellers (.bs-card__name) already set above in rule 18.               */
-/* New Arrivals card name (.na2-banner__name) — currently 1.05–1.3rem/400   */
+/* ── 22. PRODUCT CARD NAMES ── font-weight 600, increased size, all sliders ── */
+/* Covers every homepage section that has a product card slider.              */
 
-.na2-banner__name,
-.na2-banner__name a {
-  font-size: clamp(1.2rem, 1.8vw, 1.65rem) !important;
-  /* was 1.05–1.3rem */
-  font-weight: 700 !important;
-  /* was 400 — much bolder */
-  color: #fff !important;
-}
-
-/* Update Best Sellers card name to be bolder still */
+/* Best Sellers — .bs-card__name (was 0.83–0.88rem / 500) */
 .bs-card__name,
 .bs-card__name a {
   font-size: clamp(1rem, 1.2vw, 1.2rem) !important;
-  /* was 0.83–1.05rem */
-  font-weight: 700 !important;
-  /* was 600 */
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+}
+
+/* New Arrivals — .na2-banner__name (was 1.05–1.3rem / 400) */
+.na2-banner__name,
+.na2-banner__name a {
+  font-size: clamp(1.15rem, 1.8vw, 1.6rem) !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+}
+
+/* Special Offers — .so-card__name (was 0.95–1.05rem / 500) */
+.so-card__name,
+.so-card__name a {
+  font-size: clamp(1rem, 1.2vw, 1.2rem) !important;
+  font-weight: 600 !important;
+}
+
+/* Online Exclusive — .oe-card__name (was 0.95rem / 500) */
+.oe-card__name,
+.oe-card__name a {
+  font-size: clamp(1rem, 1.2vw, 1.2rem) !important;
+  font-weight: 600 !important;
+}
+
+/* Dakhoon — .dk-card__name (was 1.05rem / 500) */
+.dk-card__name,
+.dk-card__name a {
+  font-size: clamp(1.05rem, 1.25vw, 1.25rem) !important;
+  font-weight: 600 !important;
+}
+
+/* Gift Sets — .gs2-card__name (was 1.05rem / 500) */
+.gs2-card__name,
+.gs2-card__name a {
+  font-size: clamp(1.05rem, 1.25vw, 1.25rem) !important;
+  font-weight: 600 !important;
+}
+
+/* Care Essentials — .care-card__title (was clamp(1.4,2.5vw,2.2rem) / 400) */
+.care-card__title {
+  font-weight: 600 !important;
+}
+
+/* Collections — .collections__card-title (was 1.15–1.25rem / 500) */
+.collections__card-title {
+  font-size: clamp(1.1rem, 1.4vw, 1.35rem) !important;
+  font-weight: 600 !important;
 }
 
 /* ── 23. CARD SUB-LABELS — slightly smaller/lighter (below the name) ──── */
