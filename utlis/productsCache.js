@@ -96,20 +96,61 @@ export async function fetchProductsByCategory(category) {
 
 /**
  * Fetches products in the Online Exclusive category.
- * Filters allProducts by category_name or subcategory_name containing
- * "online" or "exclusive" (case-insensitive).
+ * First tries a direct API call with category filter.
+ * Falls back to filtering the general cache if needed.
  */
+let _oeCache = null;
+let _oeInFlight = null;
+
 export async function fetchOnlineExclusiveProducts() {
-  const data = await fetchAllProducts();
-  return data.filter((p) => {
-    if ((p.product_qty ?? 0) <= 0) return false;
-    const cat    = (p.category_name ?? "").toLowerCase();
-    const subcat = (p.subcategory?.subcategory_name ?? "").toLowerCase();
-    return (
-      cat.includes("online") ||
-      cat.includes("exclusive") ||
-      subcat.includes("online") ||
-      subcat.includes("exclusive")
-    );
-  });
+  if (_oeCache) return _oeCache;
+  if (_oeInFlight) return _oeInFlight;
+
+  _oeInFlight = (async () => {
+    try {
+      // Try direct category-specific fetch first
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}api/allProducts`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            page: 1,
+            limit: 60,
+            search: '',
+            category: 'Online Exclusive',
+          }),
+        }
+      );
+      const result = await res.json();
+      const direct = (result?.data ?? []).filter(p => (p.product_qty ?? 0) > 0);
+
+      if (direct.length > 0) {
+        _oeCache = direct;
+        return _oeCache;
+      }
+
+      // Fallback: filter from general cache
+      const all = await fetchAllProducts();
+      _oeCache = all.filter((p) => {
+        if ((p.product_qty ?? 0) <= 0) return false;
+        const cat    = (p.category_name ?? "").toLowerCase();
+        const subcat = (p.subcategory?.subcategory_name ?? "").toLowerCase();
+        return (
+          cat.includes("online") ||
+          cat.includes("exclusive") ||
+          subcat.includes("online") ||
+          subcat.includes("exclusive")
+        );
+      });
+      return _oeCache;
+    } catch (e) {
+      console.error('[productsCache] fetchOnlineExclusiveProducts failed:', e);
+      return [];
+    } finally {
+      _oeInFlight = null;
+    }
+  })();
+
+  return _oeInFlight;
 }
