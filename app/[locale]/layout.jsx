@@ -5,6 +5,7 @@ import "../../public/assets/sass/style.scss";
 import LoginFormPopup from "@/components/common/LoginFormPopup";
 import Script from "next/script";
 import ScrollTop from "@/components/common/ScrollTop";
+import SmoothScroll from "@/components/common/SmoothScroll";
 import Context from "@/context/Context";
 import { MenuProvider } from "@/context/MenuContext";
 import { UserProvider } from "@/context/UserContext";
@@ -426,6 +427,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     </Context>
                             </MenuProvider>
                     <div className="page-overlay" id="pageOverlay"></div>
+                    <SmoothScroll />
                     <ScrollTop />
                 </NextIntlClientProvider>
             </body>
