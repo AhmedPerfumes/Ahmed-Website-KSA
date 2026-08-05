@@ -28,7 +28,7 @@
  */
 body {
   /* ── 4 semantic roles ── */
-  --font-display: /* "Rasputin", */ var(--font-cormorant), var(--font-bodoni), var(--font-playfair), serif;
+  --font-display: /* "Rasputin", */ var(--font-playfair), var(--font-bodoni), var(--font-cormorant), serif;
   --font-body:    var(--font-playfair), Georgia, serif;
   --font-ui:      var(--font-inter), "Helvetica Neue", Arial, sans-serif;
   --font-label:   var(--font-ibm-plex-mono), var(--font-space-mono), monospace;
