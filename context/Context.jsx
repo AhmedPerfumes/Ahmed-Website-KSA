@@ -1,7 +1,7 @@
 "use client";
 
 import { allProducts } from "@/data/products";
-import React, { createContext, useContext, useReducer, useEffect, useState } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useState, useRef } from "react";
 import { useMenu } from './MenuContext';
 
 const dataContext = createContext();
@@ -94,16 +94,20 @@ export default function Context({ children }) {
 
   const { shippingServiceCharges } = useMenu() ;
 
+  const isHydratedRef = useRef(false);
+  const prevCartRef = useRef([]);
+
   useEffect(() => {
     try {
       const items = JSON.parse(localStorage.getItem("cartList"));
-      if (Array.isArray(items)) {
-        dispatch({ type: 'SET_PRODUCTS', payload: items });
-      } else {
-        dispatch({ type: 'SET_PRODUCTS', payload: [] });
-      }
+      const initialProducts = Array.isArray(items) ? items : [];
+      dispatch({ type: 'SET_PRODUCTS', payload: initialProducts });
+      prevCartRef.current = initialProducts;
     } catch (error) {
       dispatch({ type: 'SET_PRODUCTS', payload: [] });
+      prevCartRef.current = [];
+    } finally {
+      isHydratedRef.current = true;
     }
   }, []);
 
@@ -184,6 +188,18 @@ export default function Context({ children }) {
   const addProductToCart = (product) => {
     if (state.isProcessing) return;
 
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      const pid = (product.product_id || product.id)?.toString();
+      if (pid) {
+        window.AhmedTracker.track("add_to_cart", {
+          product_id: pid,
+          product_name: product.title || product.name || product.product_name || "",
+          price: parseFloat(product.sale_price || product.price || 0),
+          quantity: product.quantity || 1,
+        });
+      }
+    }
+
     const cartProducts = [...state.products];
 
     // DYNAMIC MAX QUANTITY LOGIC
@@ -204,7 +220,10 @@ export default function Context({ children }) {
         return;
       }
 
-      cartProducts[existingItemIndex].quantity = Math.min(currentQty + 1, MAX_LIMIT);
+      cartProducts[existingItemIndex] = {
+        ...cartProducts[existingItemIndex],
+        quantity: Math.min(currentQty + 1, MAX_LIMIT),
+      };
       dispatch({ type: 'UPDATE_CART', payload: cartProducts });
       
       // Open cart drawer
@@ -239,6 +258,22 @@ export default function Context({ children }) {
 
   const removeProduct = (productId) => {
     if (state.isProcessing) return;
+
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      const removedItem = state.products.find(
+        (p) => p.product_id == productId || p.id == productId
+      );
+      if (removedItem) {
+        const pid = (removedItem.product_id || removedItem.id)?.toString();
+        window.AhmedTracker.track("remove_from_cart", {
+          product_id: pid,
+          product_name: removedItem.title || removedItem.name || removedItem.product_name || "",
+          price: parseFloat(removedItem.sale_price || removedItem.price || 0),
+          quantity: Number(removedItem.quantity || 1),
+        });
+      }
+    }
+
     dispatch({ type: 'SET_PROCESSING', payload: true });
     dispatch({ type: 'REMOVE_PRODUCT', payload: { productId } });
   };
@@ -253,7 +288,6 @@ export default function Context({ children }) {
     }
 
     if (!Array.isArray(newProducts)) return;
-
     dispatch({ type: 'SET_PRODUCTS', payload: newProducts });
   };
 

@@ -67,6 +67,15 @@ export default function Checkout() {
   // USE EFFECTS
 
   useEffect(() => {
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      window.AhmedTracker.track("begin_checkout", {
+        total: parseFloat(totalPrice || 0),
+        items_count: cartProducts ? cartProducts.length : 0,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
       if (isLoggedIn) {
         let customer_id = -1;
         let firstName = "";
@@ -498,7 +507,14 @@ export default function Checkout() {
 
     const additionalFields = { ...cleanFormData, products : mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData }
     const token = localStorage.getItem('token');
-    // console.log('additionalFields', additionalFields);return;
+
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      window.AhmedTracker.track("add_payment_info", {
+        total: parseFloat(finalPrice || totalPrice || 0),
+        payment_type: selectedOption || "cod",
+      });
+    }
+
     try {
       // const formDataa = new FormData(additionalFields);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/storeOrder`, {

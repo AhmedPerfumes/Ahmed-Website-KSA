@@ -74,6 +74,21 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
   // 2. ANALYTICS EFFECT: Only fire if payment is actually completed
   useEffect(() => {
     if (orderData?.payment_status === "completed" && orderData?.id) {
+      // ---- First-Party AhmedTracker ----
+      if (typeof window !== "undefined" && window.AhmedTracker) {
+        window.AhmedTracker.track("purchase", {
+          order_id: orderData.order_id || orderData.id,
+          total: parseFloat(orderData.total),
+          payment_type: orderData.payment_method || orderData.payment_type || "card",
+          items: orderData.products ? orderData.products.map((item) => ({
+            product_id: item.product_id?.toString(),
+            product_name: item.product_name ? he.decode(item.product_name) : "",
+            price: parseFloat(item.price),
+            quantity: item.qty,
+          })) : [],
+        });
+      }
+
       // ---- GA4 Purchase ----
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({

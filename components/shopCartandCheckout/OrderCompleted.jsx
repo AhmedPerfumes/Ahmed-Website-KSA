@@ -20,6 +20,21 @@ export default function OrderCompleted() {
   setCartProducts([]);
 
   if (orderDetails && orderDetails.order_id) {
+    // ---- First-Party AhmedTracker ----
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      window.AhmedTracker.track("purchase", {
+        order_id: orderDetails.order_id,
+        total: parseFloat(orderDetails.total),
+        payment_type: orderDetails.payment_method || orderDetails.payment_type || "cod",
+        items: orderDetails.products ? orderDetails.products.map((item) => ({
+          product_id: item.product_id?.toString(),
+          product_name: item.name ? he.decode(item.name) : "",
+          price: parseFloat(item.price),
+          quantity: item.qty,
+        })) : [],
+      });
+    }
+
     // ---- GA4 Purchase ----
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({

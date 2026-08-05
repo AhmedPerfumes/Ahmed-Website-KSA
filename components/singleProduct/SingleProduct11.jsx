@@ -31,7 +31,20 @@ export default function SingleProduct11({ category, subcategory, product: initia
     if (initialProduct?.product_id !== product?.product_id) {
       setProduct(initialProduct);
     }
+  }, [initialProduct]);
 
+  useEffect(() => {
+    if (product && product.product_id && typeof window !== "undefined" && window.AhmedTracker) {
+      window.AhmedTracker.track("view_item", {
+        product_id: product.product_id,
+        product_name: product.product_name ? he.decode(product.product_name) : "",
+        price: parseFloat(product.sale_price || product.price || 0),
+        category: category || "",
+      });
+    }
+  }, [product?.product_id]);
+
+  useEffect(() => {
     const fetchLiveStatus = async () => {
       if (!initialProduct?.product_id) return;
 

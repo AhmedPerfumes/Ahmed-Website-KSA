@@ -28,30 +28,30 @@ export default function MobileHeader() {
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-        if (searchKeyWord.trim().length < 2) {
-            setSearchSuggestions([]);
-            return;
-        }
+      if (searchKeyWord.trim().length < 2) {
+        setSearchSuggestions([]);
+        return;
+      }
 
-        setIsSearching(true);
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${searchKeyWord}`
-            );
-            const result = await response.json();
-            if (result.success) {
-                setSearchSuggestions(result.data);
-            }
-        } catch (err) {
-            console.error("Mobile search error:", err);
-        } finally {
-            setIsSearching(false);
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${searchKeyWord}`
+        );
+        const result = await response.json();
+        if (result.success) {
+          setSearchSuggestions(result.data);
         }
+      } catch (err) {
+        console.error("Mobile search error:", err);
+      } finally {
+        setIsSearching(false);
+      }
     };
 
     const timeoutId = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(timeoutId);
-}, [searchKeyWord]);
+  }, [searchKeyWord]);
   const handleChange = (event) => {
     setSearchKeyWord(event.target.value);
   };
@@ -117,11 +117,10 @@ export default function MobileHeader() {
 
   return (
     <div
-      className={`header-mobile header_sticky ${
-        scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
-      } `}
+      className={`header-mobile header_sticky ${scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
+        } `}
     >
-       <style jsx global>{`
+      <style jsx global>{`
         @keyframes marquee-ltr {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -194,15 +193,15 @@ export default function MobileHeader() {
         </Link>
 
         <div className="logo">
-          <a href="/">
-          <Image
+          <Link href={`/${locale}`}>
+            <Image
               src="/assets/images/logo/Mobile.svg"
               width={190}
               height={80}
               alt="Ahmed"
               className=""
             />
-          </a>
+          </Link>
         </div>
         {/* <!-- /.logo --> */}
 
@@ -266,55 +265,55 @@ export default function MobileHeader() {
             <div className="position-absolute start-0 top-100 m-0 w-100">
               <div className="search-result"></div>
             </div>
-             {(isSearching || searchSuggestions.length > 0) && (
-        <div className="mobile-search-results position-absolute start-0 top-100 w-100" style={{ zIndex: 999 }}>
-            {isSearching && (
-                <div className="p-3 text-center fs-13 text-muted">
+            {(isSearching || searchSuggestions.length > 0) && (
+              <div className="mobile-search-results position-absolute start-0 top-100 w-100" style={{ zIndex: 999 }}>
+                {isSearching && (
+                  <div className="p-3 text-center fs-13 text-muted">
                     <div className="spinner-border spinner-border-sm me-2" role="status"></div>
                     {t("Searching...")}
-                </div>
-            )}
+                  </div>
+                )}
 
-            {!isSearching && searchSuggestions.map((item, index) => (
-                <Link 
+                {!isSearching && searchSuggestions.map((item, index) => (
+                  <Link
                     key={index}
                     href={`/${locale}${item.url_path}`}
                     className="mobile-suggestion-item"
                     onClick={() => {
-                        setSearchKeyWord("");
-                        setSearchSuggestions([]);
+                      setSearchKeyWord("");
+                      setSearchSuggestions([]);
                     }}
-                >
-                    <img 
-                        src={`${process.env.NEXT_PUBLIC_API_URL}storage/${item.image}`} 
-                        alt={item.name}
-                        className="mobile-suggestion-img"
+                  >
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}storage/${item.image}`}
+                      alt={item.name}
+                      className="mobile-suggestion-img"
                     />
                     <div className="mobile-suggestion-info">
-                        <span className="mobile-suggestion-name">{item.name}</span>
-                        <span className="mobile-suggestion-price">{item.price} {t("ر.س")}</span>
+                      <span className="mobile-suggestion-name">{item.name}</span>
+                      <span className="mobile-suggestion-price">{item.price} {t("ر.س")}</span>
                     </div>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2">
-                        <path d="M9 18l6-6-6-6" />
+                      <path d="M9 18l6-6-6-6" />
                     </svg>
-                </Link>
-            ))}
+                  </Link>
+                ))}
 
-            {/* "View All" Link for Mobile */}
-            {!isSearching && searchSuggestions.length > 0 && (
-                <Link 
+                {/* "View All" Link for Mobile */}
+                {!isSearching && searchSuggestions.length > 0 && (
+                  <Link
                     href={`/${locale}/shop?q=${searchKeyWord}`}
                     className="d-block text-center p-3 fs-13 fw-bold text-uppercase border-top bg-light text-dark"
                     onClick={() => {
-                        setSearchKeyWord("");
-                        setSearchSuggestions([]);
+                      setSearchKeyWord("");
+                      setSearchSuggestions([]);
                     }}
-                >
+                  >
                     {t("View All Results")}
-                </Link>
+                  </Link>
+                )}
+              </div>
             )}
-        </div>
-    )}
           </form>
           {/* <!-- /.header-search --> */}
         </div>
@@ -347,47 +346,47 @@ export default function MobileHeader() {
               My Account
             </span>
           </div> */}
-      <div className="d-flex">
-          <div className="container d-flex align-items-center">
-            <label className="me-2 text-secondary">Language</label>
-            <select
-              className="form-select form-select-sm bg-transparent border-0"
-              aria-label="Default select example"
-              name="store-language"
-              value={locale}
-              onChange={handleLangChange}
-            >
-              {languageOptions.map((option, index) => (
-                <option
-                  key={index}
-                  className="footer-select__option"
-                  value={option.value}
-                >
-                  {option.text}
-                </option>
-              ))}
-            </select>
-          </div>
+          <div className="d-flex">
+            <div className="container d-flex align-items-center">
+              <label className="me-2 text-secondary">Language</label>
+              <select
+                className="form-select form-select-sm bg-transparent border-0"
+                aria-label="Default select example"
+                name="store-language"
+                value={locale}
+                onChange={handleLangChange}
+              >
+                {languageOptions.map((option, index) => (
+                  <option
+                    key={index}
+                    className="footer-select__option"
+                    value={option.value}
+                  >
+                    {option.text}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className="container d-flex align-items-center">
-            <label className="me-2 text-secondary">Country</label>
-            <select
-              className="form-select form-select-sm bg-transparent border-0"
-              aria-label="Default select example"
-              name="store-language"
-              onChange={(e) => window.open(e.target.value,"_self")}
-            >
-              {currencyOptions.map((option, index) => (
-                <option
-                  key={index}
-                  className="footer-select__option"
-                  value={option.link}
-                >
-                  {option.text}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className="container d-flex align-items-center">
+              <label className="me-2 text-secondary">Country</label>
+              <select
+                className="form-select form-select-sm bg-transparent border-0"
+                aria-label="Default select example"
+                name="store-language"
+                onChange={(e) => window.open(e.target.value, "_self")}
+              >
+                {currencyOptions.map((option, index) => (
+                  <option
+                    key={index}
+                    className="footer-select__option"
+                    value={option.link}
+                  >
+                    {option.text}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <ul className="container social-links list-unstyled d-flex flex-wrap mb-0">

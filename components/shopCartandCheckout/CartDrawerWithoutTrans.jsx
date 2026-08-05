@@ -51,28 +51,37 @@ export default function CartDrawer() {
     if (withinStock && withinLimit) {
       setError(null);
 
-      const items = [...cartProducts];
+      const currentItem = cartProducts.find((elm) => elm.product_id == id);
+      if (currentItem && typeof window !== "undefined" && window.AhmedTracker) {
+        const oldQty = Number(currentItem.quantity || 1);
+        const diff = quantity - oldQty;
+        const pid = (currentItem.product_id || currentItem.id)?.toString();
 
-      // Update the paid product
-      const paidItemIndex = items.findIndex(
-        (item) => item.product_id == id && !item.is_gift
-      );
-
-      if (paidItemIndex !== -1) {
-        items[paidItemIndex].quantity = quantity;
+        if (diff > 0) {
+          window.AhmedTracker.track("add_to_cart", {
+            product_id: pid,
+            product_name: currentItem.title || currentItem.name || currentItem.product_name || "",
+            price: parseFloat(currentItem.sale_price || currentItem.price || 0),
+            quantity: diff,
+          });
+        } else if (diff < 0) {
+          window.AhmedTracker.track("remove_from_cart", {
+            product_id: pid,
+            product_name: currentItem.title || currentItem.name || currentItem.product_name || "",
+            price: parseFloat(currentItem.sale_price || currentItem.price || 0),
+            quantity: Math.abs(diff),
+          });
+        }
       }
 
-      // Update the related gift item
-      const giftItemIndex = items.findIndex(
-        (item) =>
-          item.product_id == id &&
-          item.is_gift &&
-          item.selection_rule != "least_expensive"
-      );
-
-      if (giftItemIndex !== -1) {
-        items[giftItemIndex].quantity = quantity;
-      }
+      const items = cartProducts.map((item) => {
+        if (item.product_id == id) {
+          if (!item.is_gift || item.selection_rule != "least_expensive") {
+            return { ...item, quantity: quantity };
+          }
+        }
+        return item;
+      });
 
       setCartProducts(items);
     } else {
@@ -84,6 +93,16 @@ export default function CartDrawer() {
     }
   };
   const removeItem = (id) => {
+    const itemToRemove = cartProducts.find((elm) => elm.product_id == id || elm.id == id);
+    if (itemToRemove && typeof window !== "undefined" && window.AhmedTracker) {
+      const pid = (itemToRemove.product_id || itemToRemove.id)?.toString();
+      window.AhmedTracker.track("remove_from_cart", {
+        product_id: pid,
+        product_name: itemToRemove.title || itemToRemove.name || itemToRemove.product_name || "",
+        price: parseFloat(itemToRemove.sale_price || itemToRemove.price || 0),
+        quantity: Number(itemToRemove.quantity || 1),
+      });
+    }
     setCartProducts((pre) => [...pre.filter((elm) => elm.product_id != id)]);
   };
   useEffect(() => {

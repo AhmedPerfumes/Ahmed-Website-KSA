@@ -16,7 +16,7 @@ export default function Cart() {
   // const [couponCode, setCouponCode] = useState("");
   // const [couponError, setCouponError] = useState(null);
   // const [couponSuccess, setCouponSuccess] = useState(null);
-  const { cartProducts, setCartProducts, totalPrice, freeShippingFlag, setCouponDataContext,removeGiftFromCart } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, freeShippingFlag, setCouponDataContext, removeGiftFromCart } = useContextElement();
   // const setQuantity = async (id, quantity, productQty) => {
   //   if (quantity >= 1 && quantity <= productQty) {
   //     setError(null);
@@ -31,9 +31,28 @@ export default function Cart() {
   //   }
   // };
 
-    useEffect(() => {
+  useEffect(() => {
     setCouponDataContext(null);
     removeGiftFromCart();
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      const items = cartProducts || [];
+      const total = items.reduce((acc, item) => {
+        const price = parseFloat(item.sale_price || item.price || 0);
+        const qty = Number(item.quantity || 1);
+        return acc + price * qty;
+      }, 0);
+
+      window.AhmedTracker.track("view_cart", {
+        total: parseFloat(total.toFixed(2)),
+        items_count: items.length,
+        items: items.map((item) => ({
+          product_id: (item.product_id || item.id)?.toString(),
+          product_name: item.title || item.name || item.product_name || "",
+          price: parseFloat(item.sale_price || item.price || 0),
+          quantity: Number(item.quantity || 1),
+        })),
+      });
+    }
   }, []);
   const setQuantity = async (id, quantity, productQty, maxOrderQty) => {
     // Determine dynamic max allowed per product
@@ -50,6 +69,29 @@ export default function Cart() {
 
     if (withinStock && withinLimit) {
       setError(null);
+
+      const currentItem = cartProducts.find((elm) => elm.product_id == id);
+      if (currentItem && typeof window !== "undefined" && window.AhmedTracker) {
+        const oldQty = Number(currentItem.quantity || 1);
+        const diff = quantity - oldQty;
+        const pid = (currentItem.product_id || currentItem.id)?.toString();
+
+        if (diff > 0) {
+          window.AhmedTracker.track("add_to_cart", {
+            product_id: pid,
+            product_name: currentItem.title || currentItem.name || currentItem.product_name || "",
+            price: parseFloat(currentItem.sale_price || currentItem.price || 0),
+            quantity: diff,
+          });
+        } else if (diff < 0) {
+          window.AhmedTracker.track("remove_from_cart", {
+            product_id: pid,
+            product_name: currentItem.title || currentItem.name || currentItem.product_name || "",
+            price: parseFloat(currentItem.sale_price || currentItem.price || 0),
+            quantity: Math.abs(diff),
+          });
+        }
+      }
 
       const items = [...cartProducts];
       const itemIndex = items.findIndex((elm) => elm.product_id == id);
@@ -70,7 +112,17 @@ export default function Cart() {
       );
     }
   };
-  const removeItem = async(id) => {
+  const removeItem = async (id) => {
+    const itemToRemove = cartProducts.find((elm) => elm.product_id == id || elm.id == id);
+    if (itemToRemove && typeof window !== "undefined" && window.AhmedTracker) {
+      const pid = (itemToRemove.product_id || itemToRemove.id)?.toString();
+      window.AhmedTracker.track("remove_from_cart", {
+        product_id: pid,
+        product_name: itemToRemove.title || itemToRemove.name || itemToRemove.product_name || "",
+        price: parseFloat(itemToRemove.sale_price || itemToRemove.price || 0),
+        quantity: Number(itemToRemove.quantity || 1),
+      });
+    }
     setCartProducts((pre) => [...pre.filter((elm) => elm.product_id != id)]);
   };
 
@@ -128,36 +180,36 @@ export default function Cart() {
   // };
 
   useEffect(() => {
-      // Load the TabbyPromo script
-      const tabbyPromoScript = document.createElement("script");
-      tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
-      tabbyPromoScript.async = true;
-      document.body.appendChild(tabbyPromoScript);
-  
-      tabbyPromoScript.onload = () => {
-        new window.TabbyPromo({
-            selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
-            currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
-            price: !freeShippingFlag ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) : (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
-            lang: 'en', // Optional, en|ar only supported
-            source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
-            publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
-            merchantCode: 'assaaste'  // required
-        });
-      };
+    // Load the TabbyPromo script
+    const tabbyPromoScript = document.createElement("script");
+    tabbyPromoScript.src = "https://checkout.tabby.ai/tabby-promo.js";
+    tabbyPromoScript.async = true;
+    document.body.appendChild(tabbyPromoScript);
 
-      setCouponDataContext(null);
-  
-      return () => {
-        document.body.removeChild(tabbyPromoScript);
-      };
-    }, []);
+    tabbyPromoScript.onload = () => {
+      new window.TabbyPromo({
+        selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
+        currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
+        price: !freeShippingFlag ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) : (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
+        lang: 'en', // Optional, en|ar only supported
+        source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
+        publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
+        merchantCode: 'assaaste'  // required
+      });
+    };
+
+    setCouponDataContext(null);
+
+    return () => {
+      document.body.removeChild(tabbyPromoScript);
+    };
+  }, []);
 
   if (isMenuLoading) {
     return <div><Pagination1 /></div>;
   }
   if (isMenuError) {
-    return <div>{ isMenuError }</div>;
+    return <div>{isMenuError}</div>;
   }
 
   const currentUTC = new Date(); // Current UTC time
@@ -165,30 +217,30 @@ export default function Cart() {
   const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
 
   const subTotalPrice = (elm) => {
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        if(elm.discount.discount_type == "percent") {
-          return <span className="shopping-cart__subtotal">{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
-        } else if(elm.discount.discount_type == "amount") {
-          return <span className="shopping-cart__subtotal">{((elm.price - elm.discount.value) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
+    if (elm?.discount) {
+      if (new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
+        if (elm.discount.discount_type == "percent") {
+          return <span className="shopping-cart__subtotal">{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{currency.symbol}</span>;
+        } else if (elm.discount.discount_type == "amount") {
+          return <span className="shopping-cart__subtotal">{((elm.price - elm.discount.value) * elm.quantity).toFixed(2)}{currency.symbol}</span>;
         }
         // return <span className="shopping-cart__subtotal">{((elm.price - (elm.price / 100 * elm.discount.value)) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
       } else {
-        return <span className="shopping-cart__subtotal">{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
+        return <span className="shopping-cart__subtotal">{(elm.price * elm.quantity).toFixed(2)}{currency.symbol}</span>;
       }
     }
     // else if(elm?.sale_price) {
     //   return <span className="shopping-cart__subtotal">{((elm.sale_price) * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
     // } 
     else {
-      return <span className="shopping-cart__subtotal">{(elm.price * elm.quantity).toFixed(2)}{ currency.symbol }</span>;
+      return <span className="shopping-cart__subtotal">{(elm.price * elm.quantity).toFixed(2)}{currency.symbol}</span>;
     }
   };
 
   const price = (elm) => {
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        if(elm.discount.discount_type == "percent") {
+    if (elm?.discount) {
+      if (new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
+        if (elm.discount.discount_type == "percent") {
           return (
             <>
               <span className="price price-sale">
@@ -199,7 +251,7 @@ export default function Cart() {
               </span>
             </>
           );
-        } else if(elm.discount.discount_type == "amount") {
+        } else if (elm.discount.discount_type == "amount") {
           return (
             <>
               <span className="price price-sale">
@@ -222,13 +274,13 @@ export default function Cart() {
         //   </>
         // );
       } else {
-        return <span className="money price">{elm?.price}{ currency.symbol }</span>;
+        return <span className="money price">{elm?.price}{currency.symbol}</span>;
       }
     }
-     else if(elm?.sale_price) {
-      return <><span className="money price price-old">{currency.symbol}{elm?.price}</span><span className="price price-sale">{ currency.symbol }{(elm.sale_price).toFixed(2)}</span></>;
+    else if (elm?.sale_price) {
+      return <><span className="money price price-old">{currency.symbol}{elm?.price}</span><span className="price price-sale">{currency.symbol}{(elm.sale_price).toFixed(2)}</span></>;
     } else {
-      return <span className="shopping-cart__product-price">{elm.price}{ currency.symbol }</span>;
+      return <span className="shopping-cart__product-price">{elm.price}{currency.symbol}</span>;
     }
   };
 
@@ -273,9 +325,9 @@ export default function Cart() {
                       </div>
                     </td>
                     <td>
-                      
-                        { price(elm) }
-                      
+
+                      {price(elm)}
+
                     </td>
                     <td>
                       {!elm.is_gift ? <div className="qty-control position-relative">
@@ -305,9 +357,9 @@ export default function Cart() {
                       </div> : 1}
                     </td>
                     <td>
-                      
-                        { subTotalPrice(elm) }
-                      
+
+                      {subTotalPrice(elm)}
+
                     </td>
                     <td>
                       <a
@@ -373,7 +425,7 @@ export default function Cart() {
                 <tbody>
                   <tr>
                     <th>Subtotal</th>
-                    <td>{totalPrice.toFixed(2)}{ currency.symbol }</td>
+                    <td>{totalPrice.toFixed(2)}{currency.symbol}</td>
                   </tr>
                   <tr>
                     <th>Shipping</th>
@@ -400,11 +452,11 @@ export default function Cart() {
                             You Got Free Shipping
                           </label>
                         </div> :
-                        <div className="form-check">
-                          <label className="form-check-label" htmlFor="flat_rate">
-                            Shipping Cost: { shippingServiceCharges[0].price }{ currency.symbol }
-                          </label>
-                        </div>
+                          <div className="form-check">
+                            <label className="form-check-label" htmlFor="flat_rate">
+                              Shipping Cost: {shippingServiceCharges[0].price}{currency.symbol}
+                            </label>
+                          </div>
                       }
                       {/* <div className="form-check">
                         <input
@@ -438,7 +490,7 @@ export default function Cart() {
                     <td>
                       {!freeShippingFlag ?
                         (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2) :
-                        (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)}{ currency.symbol } (includes { !freeShippingFlag ? (
+                        (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)}{currency.symbol} (includes {!freeShippingFlag ? (
                           (
                             (parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + parseFloat(vatTax.percentage / 100))) +
                             (parseFloat(totalPrice) - parseFloat(totalPrice) / (1 + parseFloat(vatTax.percentage / 100))) +
@@ -448,13 +500,13 @@ export default function Cart() {
                             0 +
                             (parseFloat(totalPrice) - parseFloat(totalPrice) / (1 + parseFloat(vatTax.percentage / 100))) +
                             (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                          ).toFixed(2)) }{ currency.symbol } VAT)
+                          ).toFixed(2))}{currency.symbol} VAT)
                     </td>
                   </tr>
                 </tbody>
               </table>
               <div id="TabbyPromo" className="mb-2"></div>
-              <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale}/>
+              <TamaraWidget inlineType="6" inlineVariant='outlined' locale={locale} />
             </div>
             <div className="mobile_fixed-btn_wrapper">
               <div className="button-wrapper container">

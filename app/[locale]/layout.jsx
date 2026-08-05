@@ -27,6 +27,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { FacebookPixelEvents } from "@/components/Metapixel";
+import AhmedTrackerComponent from "@/components/common/AhmedTracker";
 import Head from "next/head";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -322,6 +323,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     <Context>
                         <UserProvider>
                             <FacebookPixelEvents />
+                            <AhmedTrackerComponent />
                                 <MobileHeader />
                                 {children}
                                 <MobileFooter1 />
