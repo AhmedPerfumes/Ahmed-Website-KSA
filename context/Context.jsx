@@ -141,23 +141,22 @@ export default function Context({ children }) {
       // Skip free gifts entirely
       if (product?.is_gift) return accumulator;
 
-      if (product?.discount) {
+      if (product?.discount?.value) {
         let discounted = basePrice;
-        if (
-          new Date(current_date_time) >= new Date(product.discount.start_date) &&
-          new Date(current_date_time) <= new Date(product.discount.end_date)
-        ) {
-          if (product.discount.discount_type === 'percent') {
-              discounted = basePrice - (basePrice * Number(product.discount.value || 0)) / 100;
-          } else if (product.discount.discount_type === 'amount') {
-              discounted = Number(product.discount.final_price || 0);
-          }
+        if (product.discount.discount_type === 'percent') {
+          discounted = basePrice - (basePrice * Number(product.discount.value)) / 100;
+        } else if (product.discount.discount_type === 'amount') {
+          discounted = product.discount.final_price
+            ? Number(product.discount.final_price)
+            : basePrice - Number(product.discount.value);
+        }
+        if (discounted < basePrice) {
           return accumulator + qty * Number(discounted.toFixed(2));
         }
       }
 
-      // Legacy flat sale_price field (item_family API items)
-      if (!product?.discount && product?.sale_price && Number(product.sale_price) > 0 && Number(product.sale_price) < basePrice) {
+      // Legacy flat sale_price field
+      if (product?.sale_price && Number(product.sale_price) > 0 && Number(product.sale_price) < basePrice) {
         return accumulator + qty * Number(Number(product.sale_price).toFixed(2));
       }
 

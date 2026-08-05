@@ -162,7 +162,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                     onClick={() => {
                                         if (isAdded) return;
                                         addProductToCart({
-                                            ...elm,
+                                            ...elmWithDiscount,
                                             category_name: elm.category_name,
                                             subcategory_name:
                                                 elm.subcategory?.subcategory_name || "",
