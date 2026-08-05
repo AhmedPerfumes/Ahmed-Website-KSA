@@ -16,9 +16,12 @@
   /* Neutral palette */
   --pdp-ink: #1A1A1A;
   --pdp-charcoal: #2C2C2C;
-  --pdp-slate: #3a3a3a;        /* was #6B6B6B — too pale gray, now strong dark */
-  --pdp-slate-light: #666666;  /* for truly secondary/muted only */
-  --pdp-ash: #777777;          /* was #9A9A9A — barely visible, now readable */
+  --pdp-slate: #3a3a3a;
+  /* was #6B6B6B — too pale gray, now strong dark */
+  --pdp-slate-light: #666666;
+  /* for truly secondary/muted only */
+  --pdp-ash: #777777;
+  /* was #9A9A9A — barely visible, now readable */
   --pdp-line: #E5E0D8;
   --pdp-sand: #F4EFE8;
   --pdp-mist: #FAF9F7;
@@ -30,6 +33,7 @@
   --pdp-success: #2A7A52;
   --pdp-warn: #C9741A;
   --pdp-danger: #C0392B;
+  --pdp-sale: #b03a2e;
 
   /* Radii */
   --r-xs: 4px;
@@ -53,13 +57,20 @@
      All sizes bumped up for legibility on 2560px / large screens.
      Previous values were too small (0.68rem = 10.9px on big screens).
      ─────────────────────────────────────────────────────────── */
-  --t-xs: .8rem;       /* 12.8px  — badges, labels   (was .68rem = 10.9px) */
-  --t-sm: .875rem;     /* 14px    — secondary text   (was .78rem = 12.5px) */
-  --t-md: .9375rem;    /* 15px    — body             (was .88rem = 14.1px) */
-  --t-base: 1rem;      /* 16px    — emphasis body    (was .95rem) */
-  --t-lg: 1.0625rem;   /* 17px    — card headings    (was 1rem) */
-  --t-xl: 1.125rem;    /* 18px    — sub-headings     (unchanged) */
-  --t-2xl: 1.5rem;     /* 24px    — section titles   (unchanged) */
+  --t-xs: .8rem;
+  /* 12.8px  — badges, labels   (was .68rem = 10.9px) */
+  --t-sm: .875rem;
+  /* 14px    — secondary text   (was .78rem = 12.5px) */
+  --t-md: .9375rem;
+  /* 15px    — body             (was .88rem = 14.1px) */
+  --t-base: 1rem;
+  /* 16px    — emphasis body    (was .95rem) */
+  --t-lg: 1.0625rem;
+  /* 17px    — card headings    (was 1rem) */
+  --t-xl: 1.125rem;
+  /* 18px    — sub-headings     (unchanged) */
+  --t-2xl: 1.5rem;
+  /* 24px    — section titles   (unchanged) */
 }
 
 /* ── Container ─────────────────────────────────────────────────── */
@@ -96,18 +107,52 @@
 }
 
 /* Product title — elegant, not ultra-thin (300 looks washed out on Windows) */
-.luxury-pdp h1 { font-size: clamp(1.7rem, 3.2vw, 2.5rem);  font-weight: 400; letter-spacing: -.01em; color: var(--pdp-ink); }
-.luxury-pdp h2 { font-size: clamp(1.3rem, 2.4vw, 1.9rem);  font-weight: 500; letter-spacing: -.005em; color: var(--pdp-ink); }
-.luxury-pdp h3 { font-size: clamp(1rem, 1.6vw, 1.2rem);    font-weight: 600; color: var(--pdp-ink); }
-.luxury-pdp h4 { font-size: 1rem;    font-weight: 600; color: var(--pdp-ink); }
-.luxury-pdp h5 { font-size: 0.9rem;  font-weight: 500; color: var(--pdp-charcoal); }
-.luxury-pdp h6 { font-size: 0.8rem;  font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--pdp-charcoal); }
+.luxury-pdp h1 {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: -.01em;
+  color: var(--pdp-ink);
+}
+
+.luxury-pdp h2 {
+  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+  font-weight: 500;
+  letter-spacing: -.005em;
+  color: var(--pdp-ink);
+}
+
+.luxury-pdp h3 {
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 600;
+  color: var(--pdp-ink);
+}
+
+.luxury-pdp h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pdp-ink);
+}
+
+.luxury-pdp h5 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--pdp-charcoal);
+}
+
+.luxury-pdp h6 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--pdp-charcoal);
+}
 
 /* Base body text inside PDP — paragraphs, spans, list items */
 .luxury-pdp p {
   font-size: var(--t-md);
   line-height: 1.75;
-  color: var(--pdp-charcoal); /* #2C2C2C — near-black, readable */
+  color: var(--pdp-charcoal);
+  /* #2C2C2C — near-black, readable */
   font-weight: 400;
 }
 
@@ -481,7 +526,7 @@
 }
 
 .pdp-price--sale {
-  color: var(--pdp-gold-dark) !important;
+  color: var(--pdp-sale) !important;
   font-size: clamp(1.1rem, 1.6vw, 1.4rem) !important;
   font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
 }
@@ -585,9 +630,11 @@
     grid-template-columns: repeat(3, 1fr);
     gap: .4rem;
   }
+
   .pdp-trust-badge {
     padding: .65rem .4rem;
   }
+
   .pdp-trust-badge__icon {
     width: 24px;
     height: 24px;
@@ -728,13 +775,13 @@
   justify-content: center;
   gap: .5rem;
   transition: background var(--ease), color var(--ease), transform .15s;
-  box-shadow: 0 4px 18px rgba(0,0,0,.12);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
 }
 
 .pdp-atc-btn:hover:not(:disabled) {
   background: var(--pdp-gold-dark);
   color: #fff;
-  box-shadow: 0 8px 32px rgba(0,0,0,.20);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .20);
   transform: translateY(-1px);
 }
 
@@ -936,7 +983,7 @@
 }
 
 .pdp-also-like__card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
   transform: translateY(-2px);
 }
 
@@ -1203,13 +1250,13 @@
   text-transform: uppercase;
   color: var(--note-label, var(--pdp-gold-dark));
   font-weight: 700;
-  background: rgba(255,255,255,.88);
+  background: rgba(255, 255, 255, .88);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   padding: 4px 12px;
   border-radius: var(--r-pill);
-  border: 1px solid rgba(255,255,255,.6);
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  border: 1px solid rgba(255, 255, 255, .6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
 }
 
 /* Accent bar at bottom of image */
@@ -1264,7 +1311,7 @@
 .pdp-note-card__desc--expanded {
   margin-top: .4rem;
   padding: .6rem .75rem;
-  background: rgba(0,0,0,.035);
+  background: rgba(0, 0, 0, .035);
   border-radius: 6px;
 }
 
@@ -1348,7 +1395,8 @@
   padding: 5rem 0 4rem;
   border-top: 1px solid var(--pdp-line);
   border-bottom: 1px solid var(--pdp-line);
-  overflow: hidden; /* prevent horizontal overflow on mobile */
+  overflow: hidden;
+  /* prevent horizontal overflow on mobile */
 }
 
 .pdp-fragrance-ae__header {
@@ -1459,7 +1507,7 @@
 }
 
 .pdp-fragrance-ae__card:hover {
-  box-shadow: 0 12px 36px rgba(0,0,0,.1);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .1);
   transform: translateY(-4px);
 }
 
@@ -1523,6 +1571,7 @@
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
+
   .pdp-fragrance-ae__cards,
   .pdp-fragrance-ae__timeline {
     grid-template-columns: repeat(2, 1fr);
@@ -1998,7 +2047,7 @@ html[dir="rtl"] .pdp-faq__question {
   display: flex;
   align-items: center;
   gap: .75rem;
-  box-shadow: 0 8px 36px rgba(0, 0, 0, .15), 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: 0 8px 36px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .06);
   transition: transform .38s cubic-bezier(.34, 1.4, .64, 1), opacity .3s;
   opacity: 0;
   min-width: 280px;
