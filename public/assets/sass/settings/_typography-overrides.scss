@@ -27,7 +27,8 @@
 /* BODY — Playfair Display for all body text (luxurious editorial feel) */
 body {
   font-family: var(--font-body) !important;
-  font-size: 1rem;        /* 16px — up from 15px */
+  font-size: 1rem;
+  /* 16px — up from 15px */
   color: #1a1a1a;
   font-weight: 400;
 }
@@ -35,7 +36,8 @@ body {
 /* Large display boost: 1920px+ (4K TVs, 50-inch demo screens) */
 @media (min-width: 1920px) {
   body {
-    font-size: 1.0625rem; /* 17px — prevents text looking tiny at viewing distance */
+    font-size: 1.0625rem;
+    /* 17px — prevents text looking tiny at viewing distance */
   }
 }
 
@@ -151,7 +153,8 @@ label {
 .gs2__label,
 [class$="__eyebrow"],
 [class$="-eyebrow"] {
-  font-size: 1rem !important;  /* was 0.7rem — user request: 1rem */
+  font-size: 1rem !important;
+  /* was 0.7rem — user request: 1rem */
   letter-spacing: 0.2em !important;
   font-weight: 700 !important;
 }
@@ -169,7 +172,8 @@ label {
   .gs2__label,
   [class$="__eyebrow"],
   [class$="-eyebrow"] {
-    font-size: clamp(1rem, 1.1vw, 1.25rem) !important; /* 1rem min, scales to 1.25rem on 2560px */
+    font-size: clamp(1rem, 1.1vw, 1.25rem) !important;
+    /* 1rem min, scales to 1.25rem on 2560px */
     letter-spacing: 0.24em !important;
     font-weight: 700 !important;
   }
@@ -219,7 +223,8 @@ label {
 .gbnr__title,
 .oebnr__title {
   font-size: clamp(1.6rem, 4vw, 5.5rem) !important;
-  font-weight: 400 !important; /* restored — was incorrectly set to 600 */
+  font-weight: 400 !important;
+  /* restored — was incorrectly set to 600 */
 }
 
 /* ── 4. Secondary / muted text contrast fix ───────────────────────── */
@@ -250,13 +255,15 @@ label {
 .pc__title,
 .pc-card__name,
 .pc__category {
-  font-weight: 700 !important;  /* was 600 — bolder on 50" */
+  font-weight: 700 !important;
+  /* was 600 — bolder on 50" */
   letter-spacing: 0.02em;
   color: #1a1a1a !important;
 }
 
 .pc__title {
-  font-size: clamp(0.95rem, 1.2vw, 1.2rem) !important; /* was clamp(0.875,1.1vw,1.05) */
+  font-size: clamp(0.95rem, 1.2vw, 1.2rem) !important;
+  /* was clamp(0.875,1.1vw,1.05) */
   font-family: var(--font-dm-sans), sans-serif !important;
 }
 
@@ -264,8 +271,10 @@ label {
 .price,
 .pc-card__price {
   font-family: var(--font-inter, var(--font-dm-sans)), sans-serif !important;
-  font-weight: 700 !important;  /* was 600 */
-  font-size: clamp(0.95rem, 1.1vw, 1.15rem) !important; /* was fixed 0.95rem */
+  font-weight: 700 !important;
+  /* was 600 */
+  font-size: clamp(0.95rem, 1.1vw, 1.15rem) !important;
+  /* was fixed 0.95rem */
   color: #1a1a1a !important;
 }
 
@@ -320,8 +329,10 @@ p {
 .care-card__sub {
   color: #a67b30 !important;
   /* brand gold */
-  font-weight: 600 !important;  /* was 500 */
-  font-size: clamp(0.75rem, 0.85vw, 0.9rem) !important; /* was fixed 0.72rem */
+  font-weight: 600 !important;
+  /* was 500 */
+  font-size: clamp(0.75rem, 0.85vw, 0.9rem) !important;
+  /* was fixed 0.72rem */
   letter-spacing: 0.08em;
 }
 
@@ -344,7 +355,8 @@ p {
   font-family: var(--font-ui) !important;
   font-weight: 500 !important;
   letter-spacing: 0.04em;
-  font-size: clamp(0.8rem, 0.75vw, 0.95rem) !important; /* was fixed 0.8rem */
+  font-size: clamp(0.8rem, 0.75vw, 0.65rem) !important;
+  /* was fixed 0.8rem */
 }
 
 /* ── 7. EYEBROW / LABEL elements — minimum readable size ──────────── */
@@ -391,14 +403,17 @@ p {
 
 .footer .sub-menu__title,
 .footer [class*="sub-menu__title"] {
-  font-size: clamp(0.78rem, 0.8vw, 0.95rem) !important; /* was fixed 0.78rem */
-  font-weight: 700 !important;  /* was 600 */
+  font-size: clamp(0.78rem, 0.8vw, 0.95rem) !important;
+  /* was fixed 0.78rem */
+  font-weight: 700 !important;
+  /* was 600 */
   letter-spacing: 0.08em;
 }
 
 .footer .footer-newsletter__form [type="submit"],
 .footer [class*="newsletter"] [type="submit"] {
-  font-size: clamp(0.78rem, 0.8vw, 0.95rem) !important; /* was fixed 0.78rem */
+  font-size: clamp(0.78rem, 0.8vw, 0.95rem) !important;
+  /* was fixed 0.78rem */
   font-weight: 700 !important;
 }
 
@@ -406,7 +421,8 @@ p {
 .footer a,
 .footer__link,
 [class*="footer-link"] {
-  font-size: clamp(0.875rem, 0.85vw, 1rem) !important;  /* was fixed 0.875rem */
+  font-size: clamp(0.875rem, 0.85vw, 1rem) !important;
+  /* was fixed 0.875rem */
   font-weight: 400;
 }
 
@@ -414,7 +430,8 @@ p {
 .footer__copyright,
 .footer [class*="copyright"],
 .footer [class*="legal"] {
-  font-size: clamp(0.8rem, 0.75vw, 0.9rem) !important;  /* was fixed 0.8rem */
+  font-size: clamp(0.8rem, 0.75vw, 0.9rem) !important;
+  /* was fixed 0.8rem */
   color: #666 !important;
 }
 
@@ -535,7 +552,8 @@ p {
 [class*="trust"] span,
 [class*="trust"] p,
 [class*="shipping"] span {
-  font-size: clamp(0.8rem, 0.85vw, 1rem) !important;  /* was fixed 0.8rem */
+  font-size: clamp(0.8rem, 0.85vw, 1rem) !important;
+  /* was fixed 0.8rem */
   color: #2c2c2c !important;
 }
 
@@ -543,6 +561,7 @@ p {
 /* On 50-inch screens buttons look small — enlarge font + padding     */
 
 @media (min-width: 1920px) {
+
   button.btn,
   .btn,
   [class*="add-to-cart"],
@@ -561,7 +580,8 @@ p {
 .section--dark p,
 [class*="crafted"] p,
 [class*="passion"] p {
-  font-weight: 500 !important;  /* was 400 — adds stroke on dark bg */
+  font-weight: 500 !important;
+  /* was 400 — adds stroke on dark bg */
   font-size: clamp(0.9375rem, 1vw, 1.125rem) !important;
   line-height: 1.8 !important;
 }
@@ -570,8 +590,10 @@ p {
 /* Filter tabs "ALL", "PERFUMES", "DAKHOON" etc. in Best Sellers      */
 
 .bs-tab {
-  font-size: 0.75rem !important;  /* was 0.6rem */
-  font-weight: 600 !important;    /* was 400 */
+  font-size: 0.75rem !important;
+  /* was 0.6rem */
+  font-weight: 600 !important;
+  /* was 400 */
   letter-spacing: 0.1em;
 }
 
@@ -580,8 +602,10 @@ p {
 
 .bs-card__name,
 .bs-card__name a {
-  font-size: clamp(0.9rem, 1.05vw, 1.05rem) !important; /* was 0.83–0.88rem */
-  font-weight: 600 !important;  /* was 500 */
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem) !important;
+  /* was 0.83–0.88rem */
+  font-weight: 600 !important;
+  /* was 500 */
   color: #1a1a1a !important;
 }
 
@@ -589,14 +613,18 @@ p {
 /* gs2-lead (italic subtitle) and gs2-sub (desc text) were too small  */
 
 .gs2-lead {
-  font-size: clamp(1.1rem, 1.8vw, 1.5rem) !important; /* was clamp(1,2vw,1.35rem) */
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem) !important;
+  /* was clamp(1,2vw,1.35rem) */
   font-weight: 500 !important;
 }
 
 .gs2-sub {
-  font-size: clamp(0.82rem, 1vw, 0.95rem) !important; /* was clamp(0.68,1.1vw,0.82rem) */
-  font-weight: 500 !important; /* was 400 */
-  color: #4a4a4a !important;   /* stronger contrast */
+  font-size: clamp(0.82rem, 1vw, 0.95rem) !important;
+  /* was clamp(0.68,1.1vw,0.82rem) */
+  font-weight: 500 !important;
+  /* was 400 */
+  color: #4a4a4a !important;
+  /* stronger contrast */
 }
 
 .gs2__title {
@@ -608,8 +636,10 @@ p {
 /* .small-banner__desc had rgba(253,251,247,0.85) — too dim at weight 300 */
 
 .small-banner__desc {
-  color: #f0ece4 !important;  /* warm off-white — visible on #1a1a1a dark bg */
-  font-weight: 400 !important; /* up from 300 — strokes thicker */
+  color: #f0ece4 !important;
+  /* warm off-white — visible on #1a1a1a dark bg */
+  font-weight: 400 !important;
+  /* up from 300 — strokes thicker */
 }
 
 /* ── 21. FOOTER paragraph text — off-white on dark background ──────── */
@@ -618,7 +648,8 @@ p {
 .footer.footer_type_1.dark .footer-address,
 .footer.footer_type_1.dark .footer-newsletter p,
 .footer.footer_type_1.dark p {
-  color: #e8e4dc !important; /* warm off-white — legible on #0d0d0d footer bg */
+  color: #e8e4dc !important;
+  /* warm off-white — legible on #0d0d0d footer bg */
 }
 
 /* ── 22. PRODUCT CARD NAMES — bigger + bolder across ALL homepage sections ── */
@@ -627,16 +658,20 @@ p {
 
 .na2-banner__name,
 .na2-banner__name a {
-  font-size: clamp(1.2rem, 1.8vw, 1.65rem) !important; /* was 1.05–1.3rem */
-  font-weight: 700 !important; /* was 400 — much bolder */
+  font-size: clamp(1.2rem, 1.8vw, 1.65rem) !important;
+  /* was 1.05–1.3rem */
+  font-weight: 700 !important;
+  /* was 400 — much bolder */
   color: #fff !important;
 }
 
 /* Update Best Sellers card name to be bolder still */
 .bs-card__name,
 .bs-card__name a {
-  font-size: clamp(1rem, 1.2vw, 1.2rem) !important; /* was 0.83–1.05rem */
-  font-weight: 700 !important; /* was 600 */
+  font-size: clamp(1rem, 1.2vw, 1.2rem) !important;
+  /* was 0.83–1.05rem */
+  font-weight: 700 !important;
+  /* was 600 */
 }
 
 /* ── 23. CARD SUB-LABELS — slightly smaller/lighter (below the name) ──── */
@@ -644,17 +679,22 @@ p {
 /* They should be clearly subordinate — still readable, just not dominant.  */
 
 .bs-card__sub {
-  font-size: 0.62rem !important; /* was 0.6–0.75rem — slight reduction */
-  font-weight: 400 !important;   /* was 500 — lighter */
+  font-size: 0.62rem !important;
+  /* was 0.6–0.75rem — slight reduction */
+  font-weight: 400 !important;
+  /* was 500 — lighter */
   letter-spacing: 0.06em !important;
   opacity: 0.75;
 }
 
 .na2-banner__sub {
-  font-size: 0.7rem !important;  /* was 0.75rem */
-  font-weight: 400 !important;   /* was 500 — lighter */
+  font-size: 0.7rem !important;
+  /* was 0.75rem */
+  font-weight: 400 !important;
+  /* was 500 — lighter */
   letter-spacing: 0.1em !important;
-  color: rgba(255, 255, 255, 0.58) !important; /* slightly dimmer */
+  color: rgba(255, 255, 255, 0.58) !important;
+  /* slightly dimmer */
 }
 
 /* Cross-section sub-labels (GiftSets, OnlineExclusive, CareEssentials, etc.) */
