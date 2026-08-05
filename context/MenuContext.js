@@ -11,7 +11,9 @@ export function MenuProvider({ children }) {
   const [homeSliders, setHomeSliders] = useState([]);
   const [homeMobileSliders, setHomeMobileSliders] = useState([]);
  const [popUp, setPopUp] = useState([]);  
-  const [currency, setCurrency] = useState('ر.س');
+  // Default: new official Saudi Riyal symbol (U+20C1, approved 20 Feb 2025)
+  // Stored as an object so currency?.symbol works the same as with API data.
+  const [currency, setCurrency] = useState({ symbol: '\u20C1' });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -73,9 +75,11 @@ export function MenuProvider({ children }) {
 
           if(data && data.currency) {
             setError(null);
-            setCurrency(data.currency);
+            // Always use the new official Saudi Riyal symbol (U+20C1, approved Feb 2025)
+            // regardless of what the backend sends (ر.س or SAR etc.)
+            setCurrency({ ...data.currency, symbol: '\u20C1' });
           } else {
-            setCurrency(null);
+            setCurrency({ symbol: '\u20C1' });
             setError(data);
           }
           if(data && data.home_sliders) {
