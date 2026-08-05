@@ -5,14 +5,27 @@
      --font-display → Cormorant Garamond → Bodoni Moda → Playfair Display (headings)
      --font-body    → Playfair Display → Georgia, serif             (all body text)
      --font-ui      → Inter → Helvetica Neue → Arial, sans-serif    (UI / buttons / nav)
-     --font-label   → IBM Plex Mono → Space Mono, monospace         (eyebrows / labels)
+     --font-label   → Inter → Helvetica Neue → Arial, sans-serif    (eyebrows / labels)
      --font-inter   → Inter                                         (prices / numbers)
      --font-alexandria → Alexandria                                  (Arabic locale)
    Legacy aliases: --font-heading = --font-display, --font-family-base = --font-body
    ═══════════════════════════════════════════════════════════════════ */
 
+/* ── SMOOTH SCROLL — sitewide ─────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Respect reduced-motion preference (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* ── 0. UNIVERSAL FONT NORMALIZATION (enforces 2-font system globally) ── */
 /* Every element inherits from body (DM Sans). Headings get Playfair.     */
+
 /* This catches any rogue hardcoded fonts in components we may have missed. */
 
 *,
