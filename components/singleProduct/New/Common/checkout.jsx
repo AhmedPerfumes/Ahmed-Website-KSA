@@ -1,3 +1,4 @@
+import he from "he";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
 import { useLocale, useTranslations } from "next-intl";
@@ -174,6 +175,16 @@ const Checkout = ({ product }) => {
                 subcategory_name: capitalizeEachWord(subcategory.split("-").join(" ")),
             };
             item.quantity = quantity;
+
+            if (typeof window !== "undefined" && window.AhmedTracker) {
+                window.AhmedTracker.track("add_to_cart", {
+                    product_id: (product?.product_id || product?.id)?.toString(),
+                    product_name: product?.product_name ? he.decode(product.product_name) : (product?.title || product?.name || ""),
+                    price: parseFloat(product?.sale_price || product?.price || 0),
+                    quantity: quantity || 1,
+                });
+            }
+
             setCartProducts((pre) => [...pre, item]);
             setError(null)
             toast.success("Added to Cart", { position: "bottom-right", autoClose: 5000, hideProgressBar: false, closeOnClick: true, pauseOnHover: true, draggable: true, });

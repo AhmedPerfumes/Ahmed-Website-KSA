@@ -60,7 +60,7 @@ export default function SingleProduct11({ category, subcategory, product: initia
         if (!response.ok) return;
 
         const liveData = await response.json();
-                
+
         // If we got data back for this ID
         if (Array.isArray(liveData) && liveData.length > 0) {
           const liveItem = liveData[0];
@@ -126,7 +126,7 @@ export default function SingleProduct11({ category, subcategory, product: initia
         if (itemIndex !== -1) {
           items[itemIndex] = { ...items[itemIndex], quantity, };
         }
-        
+
         setCartProducts(items);
       } else {
         // FAILURE: Show specific error
@@ -144,15 +144,15 @@ export default function SingleProduct11({ category, subcategory, product: initia
       }
     }
   }
-  
+
   const addToCart = () => {
     if (!isIncludeCard()) {
-      const item = {...product, category_name: capitalizeEachWord(category.split('-').join(' ')), subcategory_name: capitalizeEachWord(subcategory.split('-').join(' '))};
+      const item = { ...product, category_name: capitalizeEachWord(category.split('-').join(' ')), subcategory_name: capitalizeEachWord(subcategory.split('-').join(' ')) };
       item.quantity = quantity;
       setCartProducts((pre) => [...pre, item]);
       document
-      .getElementById("cartDrawerOverlay")
-      .classList.add("page-overlay_visible");
+        .getElementById("cartDrawerOverlay")
+        .classList.add("page-overlay_visible");
       document.getElementById("cartDrawer").classList.add("aside_visible");
     }
   };
@@ -160,49 +160,49 @@ export default function SingleProduct11({ category, subcategory, product: initia
   function cleanProductName(productName) {
     // Step 1: Remove any non-alphanumeric characters except for spaces
     const dynamicKey = productName.replace(/[^a-zA-Z0-9\s]/g, '') + ' Description';
-  
+
     // Step 2: Words to remove
     const wordsToRemove = ['&', ' &', '& ', ' & ', 'amp', ' amp', 'amp ', ' amp ', ';', ' ;', '; ', ' ; '];
-  
+
     // Step 3: Remove the words from the dynamic key (case insensitive)
     let cleanString = dynamicKey;
     wordsToRemove.forEach(word => {
       const regex = new RegExp(word, 'gi'); // 'gi' for global and case-insensitive replacement
       cleanString = cleanString.replace(regex, '');
     });
-  
+
     // Step 4: Replace multiple spaces with a single space
     cleanString = cleanString.replace(/\s+/g, ' ').trim(); // Trim to remove leading/trailing spaces
-  
+
     return cleanString;
   }
 
   function capitalizeEachWord(str) {
     return str.split(' ') // Split the sentence into words
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
-              .join(' '); // Join the words back into a sentence
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+      .join(' '); // Join the words back into a sentence
   }
 
   const price = (elm) => {
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-     if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
-        if(elm.discount.discount_type == "percent") {
-          return <><span className="money price price-old">{ currency.symbol }{elm?.price}</span> <span className="money price price-sale"> { currency.symbol }{(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}</span></>;
-        } else if(elm.discount.discount_type == "amount") {
-          return <><span className="money price price-old">{ currency.symbol }{elm?.price}</span> <span className="money price price-sale"> { currency.symbol }{(elm.price - elm.discount.value).toFixed(2)}</span></>;
+    if (elm?.discount) {
+      if (new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
+        if (elm.discount.discount_type == "percent") {
+          return <><span className="money price price-old">{currency.symbol}{elm?.price}</span> <span className="money price price-sale"> {currency.symbol}{(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}</span></>;
+        } else if (elm.discount.discount_type == "amount") {
+          return <><span className="money price price-old">{currency.symbol}{elm?.price}</span> <span className="money price price-sale"> {currency.symbol}{(elm.price - elm.discount.value).toFixed(2)}</span></>;
         }
         // return <><span className="money price price-old">{ currency.symbol }{elm?.price}</span> <span className="money price price-sale"> { currency.symbol }{(elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2)}</span></>;
       } else {
-        return <span className="money price">{elm?.price}{ currency.symbol }</span>;
+        return <span className="money price">{elm?.price}{currency.symbol}</span>;
       }
-    // }  else if(elm?.sale_price) {
-    //   return <><span className="money price price-sale">{ currency.symbol }{(elm.sale_price).toFixed(2)}</span><span className="money price price-old">{ currency.symbol }{elm?.price}</span> </>;
+      // }  else if(elm?.sale_price) {
+      //   return <><span className="money price price-sale">{ currency.symbol }{(elm.sale_price).toFixed(2)}</span><span className="money price price-old">{ currency.symbol }{elm?.price}</span> </>;
     }
-     else {
-      return <span className="money price">{elm?.price}{ currency.symbol }</span>;
+    else {
+      return <span className="money price">{elm?.price}{currency.symbol}</span>;
     }
   };
 
@@ -210,13 +210,13 @@ export default function SingleProduct11({ category, subcategory, product: initia
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-    if(elm?.discount) {
-      if(new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
+    if (elm?.discount) {
+      if (new Date(current_date_time) >= new Date(elm.discount.start_date) && new Date(current_date_time) <= new Date(elm.discount.end_date)) {
         return (elm.price - (elm.price / 100 * elm.discount.value)).toFixed(2);
       } else {
         return elm?.price;
       }
-    } else if(elm?.sale_price) {
+    } else if (elm?.sale_price) {
       return (elm.price - (elm.price / 100 * elm.sale_price)).toFixed(2);
     } else {
       return elm?.price;
@@ -232,13 +232,13 @@ export default function SingleProduct11({ category, subcategory, product: initia
 
     tabbyPromoScript.onload = () => {
       new window.TabbyPromo({
-          selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
-          currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
-          price: tabbyPrice(product), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
-          lang: 'en', // Optional, en|ar only supported
-          source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
-          publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
-          merchantCode: 'assaaste'  // required
+        selector: '#TabbyPromo', // required, content of tabby Promo Snippet will be placed in element with that selector.
+        currency: 'SAR', // required, AED|SAR|KWD only supported, with no spaces or lowercase.
+        price: tabbyPrice(product), // required, price of the product. 2 decimals max for AED|SAR and 3 decimals max for KWD.
+        lang: 'en', // Optional, en|ar only supported
+        source: 'product', // Optional, snippet placement; `product` for product page and `cart` for cart page.
+        publicKey: 'pk_test_019228fd-8e52-3ecd-f813-bf11dc8e2118', // required, Public Key
+        merchantCode: 'assaaste'  // required
       });
     };
 
@@ -249,10 +249,10 @@ export default function SingleProduct11({ category, subcategory, product: initia
 
   return (
     <>
-      {Object.keys(product).length > 0 ? 
-      <>
-      
-        {/* <section className="product-single container product-single__type-9">
+      {Object.keys(product).length > 0 ?
+        <>
+
+          {/* <section className="product-single container product-single__type-9">
           <div className="row">
             <div className="col-lg-7">
               <Slider4 product={ product }/>
@@ -366,14 +366,14 @@ export default function SingleProduct11({ category, subcategory, product: initia
             </div>
           </div>
         </section> */}
-      <div  style={{ backgroundColor: "#FAF9F7" }} >
-        <Base product={{...product, category, subcategory}} />
-      </div>
-      <div style={{ backgroundColor: "#121212" }}>
-        <ProductInfoTabs product={product} category={category} subcategory={subcategory} />
-      </div>
-      <ItemFamilySlider product={product} itemFamilyProds={product.item_family} />
-      </> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>
+          <div style={{ backgroundColor: "#FAF9F7" }} >
+            <Base product={{ ...product, category, subcategory }} />
+          </div>
+          <div style={{ backgroundColor: "#121212" }}>
+            <ProductInfoTabs product={product} category={category} subcategory={subcategory} />
+          </div>
+          <ItemFamilySlider product={product} itemFamilyProds={product.item_family} />
+        </> : <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Product Found</h2>
       }
     </>
   );
