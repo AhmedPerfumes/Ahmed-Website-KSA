@@ -591,32 +591,53 @@ export default function YouMayAlsoLike() {
 
   /* ── Price renderer ─────────────────────────────────────────── */
   const renderPrice = (elm) => {
-    const now = Date.now();
-    if (elm?.discount) {
-      const s  = new Date(elm.discount.start_date).getTime();
-      const e2 = new Date(elm.discount.end_date).getTime();
-      if (now >= s && now <= e2) {
-        const sale = elm.discount.discount_type === "percent"
-          ? (elm.price - elm.price * elm.discount.value / 100).toFixed(2)
-          : Number(elm.discount.final_price ?? elm.price - elm.discount.value).toFixed(2);
+    const sym = currency?.symbol || "";
+
+    // Helper: compute sale price from discount object
+    const calcSale = (d, base) => {
+      if (!d?.value) return null;
+      if (d.discount_type === "percent")
+        return (base - base * Number(d.value) / 100).toFixed(2);
+      if (d.discount_type === "amount")
+        return (base - Number(d.value)).toFixed(2);
+      if (d.final_price)
+        return Number(d.final_price).toFixed(2);
+      return null;
+    };
+
+    const base = Number(elm?.price || 0);
+
+    // 1. Product has a discount object with a computable value → always show it
+    if (elm?.discount?.value) {
+      const sale = calcSale(elm.discount, base);
+      if (sale !== null && Number(sale) < base) {
         return (
           <div className="ymal-card__prices">
-            <span className="ymal-card__price-new">{sale} {currency?.symbol}</span>
-            <span className="ymal-card__price-old">{elm.price} {currency?.symbol}</span>
+            <span className="ymal-card__price-new">{sale}{sym}</span>
+            <span className="ymal-card__price-old">{base.toFixed(2)}{sym}</span>
           </div>
         );
       }
     }
-    if (!elm?.discount && elm?.sale_price && Number(elm.sale_price) > 0 && Number(elm.sale_price) < Number(elm.price)) {
+
+    // 2. sale_price field exists and is lower than base price
+    if (elm?.sale_price && Number(elm.sale_price) > 0 && Number(elm.sale_price) < base) {
       return (
         <div className="ymal-card__prices">
-          <span className="ymal-card__price-new">{Number(elm.sale_price).toFixed(2)} {currency?.symbol}</span>
-          <span className="ymal-card__price-old">{elm.price} {currency?.symbol}</span>
+          <span className="ymal-card__price-new">{Number(elm.sale_price).toFixed(2)}{sym}</span>
+          <span className="ymal-card__price-old">{base.toFixed(2)}{sym}</span>
         </div>
       );
     }
-    return <div className="ymal-card__prices"><span className="ymal-card__price-reg">{elm?.price} {currency?.symbol}</span></div>;
+
+    // 3. No discount — show regular price
+    return (
+      <div className="ymal-card__prices">
+        <span className="ymal-card__price-reg">{base.toFixed(2)}{sym}</span>
+      </div>
+    );
   };
+
 
   const getDiscountBadge = (elm) => {
     const now = Date.now();

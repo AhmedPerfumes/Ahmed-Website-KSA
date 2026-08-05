@@ -135,7 +135,7 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
                   <h6 className="pc__title">
                     <Link href={href}>{item.product_name}</Link>
                   </h6>
-                  <div className="product-card__price d-flex align-items-baseline" style={{color: '#9E7A42', gap: '6px', flexWrap: 'wrap' }}>
+                  <div className="product-card__price d-flex align-items-baseline" style={{ gap: '6px', flexWrap: 'wrap' }}>
                     {(() => {
                       const now = new Date();
                       const d = item.discount;
