@@ -45,10 +45,11 @@ export default function SingleProduct11({ category, subcategory, product: initia
             product_qty: liveItem.product_qty,
             price: liveItem.price,
             sale_price: liveItem.sale_price,
-            // Preserve SSR discount if live-status returns null — live-status
-            // endpoint may not JOIN the discounts table, so null would wipe the
-            // group discount that ItemFamilySlider needs.
-            discount: liveItem.discount ?? prev.discount,
+            // Merge live discount onto SSR discount so fields omitted by
+            // live-status (e.g. apply_to) are preserved from the SSR object.
+            discount: liveItem.discount
+              ? { ...prev.discount, ...liveItem.discount }
+              : prev.discount,
             maximum_order_quantity: liveItem.maximum_order_quantity,
           }));
         }
