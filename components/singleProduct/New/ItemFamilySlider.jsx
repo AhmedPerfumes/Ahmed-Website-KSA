@@ -99,12 +99,19 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                     const name = he.decode(elm?.product_name || "");
                     const isAdded = isAddedToCartProducts(elm?.product_id);
 
-                    // Active discount check
-                    const now = new Date();
-                    const hasDiscount =
-                        elm.discount &&
-                        new Date(elm.discount.start_date) <= now &&
-                        new Date(elm.discount.end_date) >= now;
+                    // item_family items often lack their own discount from the API.
+                    // If the parent product has a group discount, apply it to all family members.
+                    const effectiveDiscount =
+                        elm.discount ??
+                        (product?.discount?.apply_to === "group" ? product.discount : null);
+
+                    // Merge effective discount into elm for renderPrice
+                    const elmWithDiscount = effectiveDiscount
+                        ? { ...elm, discount: effectiveDiscount }
+                        : elm;
+
+                    // Active discount check (for badge only)
+                    const hasDiscount = !!effectiveDiscount?.value;
 
                     return (
                         <div className="ifs-card" key={elm.product_id ?? i}>
@@ -137,7 +144,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                 {/* Badge */}
                                 {hasDiscount && (
                                     <span className="ifs-badge">
-                                        {elm.discount.value}% Off
+                                        {effectiveDiscount.value}% Off
                                     </span>
                                 )}
                                 {!hasDiscount && elm?.label_name && (
@@ -174,7 +181,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                     {name}
                                 </Link>
                                 <div className="ifs-card__price">
-                                    {renderPrice(elm, currency)}
+                                    {renderPrice(elmWithDiscount, currency)}
                                 </div>
                             </div>
                         </div>
