@@ -54,7 +54,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: var(--font-display) !important;
+  font-family: var(--font-body) !important;
   color: #1a1a1a;
 }
 
@@ -186,6 +186,7 @@ label {
 /* "EXPLORE BY CATEGORY" — Best Sellers section */
 .best-sellers__title {
   font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
 }
 
 /* "New Arrivals" section title */
@@ -616,6 +617,7 @@ p {
   font-size: clamp(1.35rem, 2.4vw, 2.2rem) !important;
   /* increased — was clamp(1.1rem,1.8vw,1.5rem) */
   font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
 }
 
 .gs2-sub {

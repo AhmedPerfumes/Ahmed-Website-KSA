@@ -103,7 +103,7 @@ const css = `
 .nlp-skip {
   margin-top: 16px; font-size: 0.72rem; color: #aaa;
   background: none; border: none; cursor: pointer;
-  padding: 0; text-decoration: underline; transition: color 0.18s;
+  padding: 0; text-decoration: underline; transition: color 0.18s; text-align: left;
 }
 .nlp-skip:hover { color: #666; }
 @media (max-width: 640px) {
