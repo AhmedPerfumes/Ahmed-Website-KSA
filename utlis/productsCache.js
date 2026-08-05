@@ -32,7 +32,7 @@ export async function fetchAllProducts() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page: 1, limit: 120, search: '' }),
+          body: JSON.stringify({ page: 1, limit: 250, search: '' }),
         }
       );
       const result = await res.json();
@@ -96,8 +96,10 @@ export async function fetchProductsByCategory(category) {
 
 /**
  * Fetches products in the Online Exclusive category.
- * First tries a direct API call with category filter.
- * Falls back to filtering the general cache if needed.
+ * Filters allProducts (full 250-product fetch) by category_name or
+ * subcategory_name containing "online" or "exclusive" (case-insensitive).
+ * NOTE: the allProducts API does not support server-side category filtering —
+ * we must fetch all products and filter client-side.
  */
 let _oeCache = null;
 let _oeInFlight = null;
@@ -108,29 +110,6 @@ export async function fetchOnlineExclusiveProducts() {
 
   _oeInFlight = (async () => {
     try {
-      // Try direct category-specific fetch first
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}api/allProducts`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            page: 1,
-            limit: 60,
-            search: '',
-            category: 'Online Exclusive',
-          }),
-        }
-      );
-      const result = await res.json();
-      const direct = (result?.data ?? []).filter(p => (p.product_qty ?? 0) > 0);
-
-      if (direct.length > 0) {
-        _oeCache = direct;
-        return _oeCache;
-      }
-
-      // Fallback: filter from general cache
       const all = await fetchAllProducts();
       _oeCache = all.filter((p) => {
         if ((p.product_qty ?? 0) <= 0) return false;
