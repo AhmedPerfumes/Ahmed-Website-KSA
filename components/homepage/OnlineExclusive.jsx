@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
-import { fetchAllProducts } from "@/utlis/productsCache";
+import { fetchAllProducts, fetchOnlineExclusiveProducts } from "@/utlis/productsCache";
 import he from "he";
 import "./OnlineExclusive.css";
 
@@ -81,24 +81,17 @@ export default function OnlineExclusive() {
         } catch { return ""; }
     }, []);
 
-    /* â”€â”€ Fetch online-exclusive products â”€â”€ */
+    /* ── Fetch online-exclusive products ── */
     useEffect(() => {
         (async () => {
             try {
                 setLoading(true);
-                const data = await fetchAllProducts();
-                if (data?.length) {
-                    const oe = data.filter((p) => {
-                        if (p.product_qty <= 0) return false;
-                        const subcat = getSubcatSlug(p.category_name ?? "", p.subcategory);
-                        return subcat === "online-exclusive";
-                    });
-                    setProducts(oe.length > 0 ? oe : data.filter(p => p.product_qty > 0).slice(0, 12));
-                }
+                const oe = await fetchOnlineExclusiveProducts();
+                setProducts(oe);
             } catch (e) { console.error(e); }
             finally     { setLoading(false); }
         })();
-    }, [getSubcatSlug]);
+    }, []);
 
     /* â”€â”€ Wire nav refs after swiper mounts â”€â”€ */
     useEffect(() => {

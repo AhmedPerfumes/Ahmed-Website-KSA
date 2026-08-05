@@ -32,7 +32,7 @@ export async function fetchAllProducts() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page: 1, limit: 60, search: '' }),
+          body: JSON.stringify({ page: 1, limit: 120, search: '' }),
         }
       );
       const result = await res.json();
@@ -94,3 +94,22 @@ export async function fetchProductsByCategory(category) {
   return products.sort((a, b) => (b.sales || 0) - (a.sales || 0));
 }
 
+/**
+ * Fetches products in the Online Exclusive category.
+ * Filters allProducts by category_name or subcategory_name containing
+ * "online" or "exclusive" (case-insensitive).
+ */
+export async function fetchOnlineExclusiveProducts() {
+  const data = await fetchAllProducts();
+  return data.filter((p) => {
+    if ((p.product_qty ?? 0) <= 0) return false;
+    const cat    = (p.category_name ?? "").toLowerCase();
+    const subcat = (p.subcategory?.subcategory_name ?? "").toLowerCase();
+    return (
+      cat.includes("online") ||
+      cat.includes("exclusive") ||
+      subcat.includes("online") ||
+      subcat.includes("exclusive")
+    );
+  });
+}
