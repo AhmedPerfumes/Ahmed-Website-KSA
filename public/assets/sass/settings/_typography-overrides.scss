@@ -710,37 +710,73 @@ p {
   font-weight: 600 !important;
 }
 
-/* ── 23. CARD SUB-LABELS — slightly smaller/lighter (below the name) ──── */
-/* These are the category labels like "ORIENTAL FRAGRANCE", "K-Series·2000" */
-/* They should be clearly subordinate — still readable, just not dominant.  */
+/* ── 23. CARD SUB-LABELS ── font-weight 600, slightly larger ─────────────── */
 
 .bs-card__sub {
-  font-size: 0.62rem !important;
-  /* was 0.6–0.75rem — slight reduction */
-  font-weight: 400 !important;
-  /* was 500 — lighter */
-  letter-spacing: 0.06em !important;
-  opacity: 0.75;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  opacity: 0.85;
 }
 
 .na2-banner__sub {
-  font-size: 0.7rem !important;
-  /* was 0.75rem */
-  font-weight: 400 !important;
-  /* was 500 — lighter */
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
   letter-spacing: 0.1em !important;
-  color: rgba(255, 255, 255, 0.58) !important;
-  /* slightly dimmer */
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
-/* Cross-section sub-labels (GiftSets, OnlineExclusive, CareEssentials, etc.) */
+/* Cross-section sub-labels (GiftSets, OnlineExclusive, CareEssentials, SO, Dakhoon) */
 .gs2-card__sub,
 .oe-card__sub,
 .care-card__sub,
 .so-card__sub,
 .dk-card__sublabel {
-  font-size: 0.62rem !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  opacity: 0.85;
+}
+
+/* ── 24. CARD PRICES ── slightly larger across all slider sections ───────── */
+
+.bs-card__price,
+.so-card__price,
+.oe-card__price {
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem) !important;
+  font-weight: 600 !important;
+}
+
+.na2-banner__price,
+.na2-banner__price-cur,
+.na2-banner__price-sale {
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem) !important;
+  font-weight: 600 !important;
+}
+
+/* Crossed-out old price stays smaller / lighter */
+.bs-card__price-old,
+.so-card__price-old,
+.oe-card__price-old,
+.na2-banner__price-old {
+  font-size: 0.78rem !important;
   font-weight: 400 !important;
-  letter-spacing: 0.06em !important;
-  opacity: 0.75;
+}
+
+/* ── 25. CARD INFO CENTERING ── center-align all card text blocks ──────── */
+
+.bs-card__info,
+.oe-card__info,
+.dk-card__info,
+.gs2-card__inoo,
+.so-card__info {
+  text-align: center !important;
+  align-items: center !important;
+}
+
+.bs-card__price,
+.oe-card__price,
+.so-card__price,
+.dk-card__price {
+  justify-content: center !important;
 }
