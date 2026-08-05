@@ -13,7 +13,8 @@ export function MenuProvider({ children }) {
  const [popUp, setPopUp] = useState([]);  
   // Default: new official Saudi Riyal symbol (U+20C1, approved 20 Feb 2025)
   // Stored as an object so currency?.symbol works the same as with API data.
-  const [currency, setCurrency] = useState({ symbol: '\u20C1' });
+  // Leading space gives "198.00 ⃁" in all fmt() calls without touching each component.
+  const [currency, setCurrency] = useState({ symbol: '\u00A0\u20C1' });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -77,9 +78,9 @@ export function MenuProvider({ children }) {
             setError(null);
             // Always use the new official Saudi Riyal symbol (U+20C1, approved Feb 2025)
             // regardless of what the backend sends (ر.س or SAR etc.)
-            setCurrency({ ...data.currency, symbol: '\u20C1' });
+            setCurrency({ ...data.currency, symbol: '\u00A0\u20C1' });
           } else {
-            setCurrency({ symbol: '\u20C1' });
+            setCurrency({ symbol: '\u00A0\u20C1' });
             setError(data);
           }
           if(data && data.home_sliders) {
