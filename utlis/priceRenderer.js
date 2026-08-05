@@ -1,44 +1,42 @@
-// utils/priceRenderer.js
+// utlis/priceRenderer.js
 import React from "react";
 
 export const renderPrice = (product, currency) => {
-  const now = new Date(new Date().getTime() + 4 * 60 * 60 * 1000); // GST offset
-  const start = new Date(product?.discount?.start_date);
-  const end = new Date(product?.discount?.end_date);
+  const sym = currency?.symbol || "";
+  const base = Number(product?.price || 0);
+  const d = product?.discount;
 
-  if (product?.discount && now >= start && now <= end) {
-    const { discount_type, value } = product.discount;
+  // Show sale price whenever a discount with a computable value exists
+  if (d?.value) {
+    let sale = null;
 
-    if (discount_type === "percent") {
-      const discounted = (product.price - (product.price * value) / 100).toFixed(2);
+    if (d.discount_type === "percent") {
+      sale = (base - (base * Number(d.value)) / 100).toFixed(2);
+    } else if (d.discount_type === "amount") {
+      // prefer final_price if backend provides it, else compute
+      sale = d.final_price
+        ? Number(d.final_price).toFixed(2)
+        : (base - Number(d.value)).toFixed(2);
+    }
+
+    if (sale !== null && Number(sale) < base) {
       return (
         <>
           <span className="money price price-old">
-            {currency.symbol}{product.price}
+            {base.toFixed(2)}{sym}
           </span>
           <span className="money price price-sale">
-            {currency.symbol}{discounted}
-          </span>
-        </>
-      );
-    } else if (discount_type === "amount") {
-      const discounted = product.discount.final_price;
-      return (
-        <>
-          <span className="money price price-old">
-            {currency.symbol}{product.price}
-          </span>
-          <span className="money price price-sale">
-            {currency.symbol}{discounted}
+            {sale}{sym}
           </span>
         </>
       );
     }
   }
 
+  // Fall back: regular price
   return (
     <span className="money price">
-      {product.price}{currency.symbol}
+      {base.toFixed(2)}{sym}
     </span>
   );
 };
