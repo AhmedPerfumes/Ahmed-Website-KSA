@@ -15,6 +15,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
   const [orderData, setOrderData] = useState(initialOrderDetails);
   const [isVerifying, setIsVerifying] = useState(false);
   const isPollingRef = useRef(false);
+  const hasTrackedRef = useRef(false);
 
   // 1. POLLING EFFECT: Check status if it's not final (From your UAE code)
   useEffect(() => {
@@ -71,13 +72,26 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
     }
   }, [orderData?.payment_status, initialOrderCode]);
 
-  // 2. ANALYTICS EFFECT: Only fire if payment is actually completed
+  // 2. ANALYTICS EFFECT: Only fire if payment is actually completed (Strictly ONCE per order)
   useEffect(() => {
     if (orderData?.payment_status === "completed" && orderData?.id) {
+      const orderId = orderData.order_id || orderData.id;
+      const orderKey = `tracked_purchase_${orderId}`;
+
+      // Prevent duplicate tracking in memory or across page reloads for this order
+      if (hasTrackedRef.current === orderKey || (typeof window !== "undefined" && sessionStorage.getItem(orderKey))) {
+        return;
+      }
+
+      hasTrackedRef.current = orderKey;
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(orderKey, "true");
+      }
+
       // ---- First-Party AhmedTracker ----
       if (typeof window !== "undefined" && window.AhmedTracker) {
         window.AhmedTracker.track("purchase", {
-          order_id: orderData.order_id || orderData.id,
+          order_id: orderId,
           total: parseFloat(orderData.total),
           payment_type: orderData.payment_method || orderData.payment_type || "card",
           items: orderData.products ? orderData.products.map((item) => ({
@@ -94,27 +108,27 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       window.dataLayer.push({
         event: "purchase",
         ecommerce: {
-          transaction_id: orderData.order_id,
+          transaction_id: orderId,
           affiliation: "Ahmed Al Maghribi Perfumes KSA",
           value: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
-          items: orderData.products.map((item) => ({
+          items: orderData.products ? orderData.products.map((item) => ({
             item_id: item.product_id?.toString(),
-            item_name: he.decode(item.product_name),
+            item_name: item.product_name ? he.decode(item.product_name) : "",
             price: parseFloat(item.price),
             quantity: item.qty,
-          })),
+          })) : [],
         },
       });
 
       // ---- TikTok Purchase ----
       if (typeof window.ttq === "object" && typeof window.ttq.track === "function") {
         window.ttq.track("Purchase", {
-          contents: orderData.products.map((item) => ({
+          contents: orderData.products ? orderData.products.map((item) => ({
             content_id: item.product_id?.toString(),
             content_type: "product",
-            content_name: he.decode(item.product_name),
-          })),
+            content_name: item.product_name ? he.decode(item.product_name) : "",
+          })) : [],
           value: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
         });
@@ -123,12 +137,12 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       // ---- Snapchat Purchase ----
       if (typeof window.snaptr === "function") {
         window.snaptr("track", "PURCHASE", {
-          transaction_id: orderData.order_id,
+          transaction_id: orderId,
           price: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
-          item_ids: orderData.products.map((item) => item.product_id?.toString()),
+          item_ids: orderData.products ? orderData.products.map((item) => item.product_id?.toString()) : [],
           item_category: "perfume",
-          number_items: orderData.products.length,
+          number_items: orderData.products ? orderData.products.length : 0,
         });
       }
 
@@ -136,7 +150,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       localStorage.removeItem("cartList");
       setCartProducts([]);
     }
-  }, [orderData, currency, setCartProducts]);
+  }, [orderData?.payment_status, orderData?.id, orderData?.order_id, currency?.code]);
   console.log("orderData001",orderData);
   
 
