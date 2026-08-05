@@ -2,7 +2,6 @@ import Footer14 from "@/components/footers/Footer14";
 import HomePage from "@/components/HomePage";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";
-import NewsLetter from "@/components/modals/NewsLetter";
 
 /**
  * Server Component — fetches hero sliders at request time so:
@@ -81,7 +80,6 @@ export default async function HomePage8() {
                 />
             )}
 
-            <NewsLetter />
 
             <div className="d-none d-lg-block" />
             <div className="d-sm-block d-md-none" />
