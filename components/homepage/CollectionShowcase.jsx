@@ -91,16 +91,6 @@ export default function CollectionShowcase() {
                                 <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>
                         </Link>
-
-                        {/* Nav arrows below text on desktop */}
-                        <div className="collections__nav">
-                            <button type="button" ref={prevRef} className="collections__arrow" aria-label="Previous">
-                                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
-                            </button>
-                            <button type="button" ref={nextRef} className="collections__arrow" aria-label="Next">
-                                <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
-                            </button>
-                        </div>
                     </div>
 
                     {/* Right: Swiper Slider */}
@@ -166,6 +156,19 @@ export default function CollectionShowcase() {
                             ))}
                         </Swiper>
                         <div className="collections__scrollbar" />
+
+                        {/* Nav arrows — rendered here so they appear BELOW the slider.
+                            On desktop (≥1024px) they are hidden; desktop uses a CSS
+                            clone injected by the .collections__text::after trick in CSS.
+                            Single source of truth for refs = no duplicate-ref bugs. */}
+                        <div className="collections__nav" aria-label="Collection navigation">
+                            <button type="button" ref={prevRef} className="collections__arrow" aria-label="Previous collection">
+                                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
+                            </button>
+                            <button type="button" ref={nextRef} className="collections__arrow" aria-label="Next collection">
+                                <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
