@@ -94,7 +94,7 @@ export default function MobileFooter1() {
                 <div className="col-3">
                     {isLoggedIn ? (
                         <Link
-                            href={`/${locale}/shop-order-complete`}
+                            href={`/${locale}/account_dashboard`}
                             className="footer-mobile__link d-flex flex-column align-items-center"
                             id="mobile-footer-account-link"
                         >
