@@ -193,6 +193,7 @@ const headerStyles = `
 export default function Header14() {
     const [scrollDirection, setScrollDirection] = useState("down");
     const [scrollState, setScrollState] = useState("visible");
+    const [isCompact, setIsCompact] = useState(false);
     const [searchSuggestions, setSearchSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
      const [searchKeyWord, setSearchKeyWord] = useState("");
@@ -306,6 +307,9 @@ export default function Header14() {
 
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
+
+            // Compact sticky: collapse to single bar when scrolled past 90px
+            setIsCompact(currentScrollY > 90);
 
             if (currentScrollY <= 50) {
                 // Always show at very top
@@ -428,7 +432,7 @@ export default function Header14() {
                     scrollState === "visible"
                         ? "header-visible"
                         : "header-hidden"
-                } ${pathname !== "/" ? "position-sticky w-100" : ""}`}
+                } ${isCompact ? "header--compact" : ""} ${pathname !== "/" ? "position-sticky w-100" : ""}`}
             >
                 {/* <header
                 id="header"
@@ -678,6 +682,55 @@ export default function Header14() {
                                 )}
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                {/* ── Compact sticky bar (UAE-style: logo left | nav center | icons right) ── */}
+                <div className="header-compact-bar">
+                    {/* Small logo */}
+                    <div className="compact-logo">
+                        <Link href="/">
+                            <Image
+                                src="/assets/images/about/ahmed-logo.png"
+                                width={38}
+                                height={38}
+                                alt="Ahmed Al Maghribi"
+                                style={{ objectFit: "contain" }}
+                            />
+                        </Link>
+                    </div>
+
+                    {/* Nav — same component as main nav */}
+                    <nav className="compact-nav">
+                        <ul className="navigation__list list-unstyled d-flex my-0">
+                            <Nav categoriesSubCategories={categoriesSubCategories} />
+                        </ul>
+                    </nav>
+
+                    {/* Icons — account + location + cart */}
+                    <div className="compact-icons">
+                        <div className="header-tools__item hover-account" style={{ position: "relative" }}>
+                            {!isLoggedIn ? (
+                                <Link href={`/${locale}/login_register`} className="account-icon-link d-flex">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" /></svg>
+                                </Link>
+                            ) : (
+                                <Link href={`/${locale}/account_dashboard`} className="account-icon-link d-flex">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" /></svg>
+                                </Link>
+                            )}
+                        </div>
+                        <Link href={`/${locale}/store-locator`} className="d-flex">
+                            <IoLocationOutline size={20} />
+                        </Link>
+                        <a onClick={() => openCart()} className="d-flex" style={{ cursor: "pointer", position: "relative" }}>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_cart" />
+                            </svg>
+                            <span className="cart-amount d-block position-absolute js-cart-items-count">
+                                <CartLength />
+                            </span>
+                        </a>
                     </div>
                 </div>
 
