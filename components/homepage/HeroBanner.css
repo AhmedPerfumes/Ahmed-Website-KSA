@@ -20,7 +20,6 @@
   position: relative;
   width: 100%;
   background: var(--hero-page-bg, #ffffff);
-  padding: 0 16px;
   box-sizing: border-box;
 }
 
