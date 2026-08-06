@@ -27,6 +27,13 @@
 
   &.position-fixed {
     opacity: 1;
+    /* Force GPU compositing layer — prevents iOS fixed element jitter
+       during rubber-band / elastic scroll at page boundaries */
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    will-change: transform;
+    /* Anchor to safe area bottom (notch/home-bar on iPhone) */
+    padding-bottom: max(0.125rem, env(safe-area-inset-bottom));
   }
 
   &.footer-mobile_initialized {

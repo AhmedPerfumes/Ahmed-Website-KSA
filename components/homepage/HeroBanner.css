@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    HERO BANNER — FK-style
    Panoramic strip (≈55vh), horizontal slide, split text layout
    Left: multi-line serif title | Bottom-right: collection label + CTA
@@ -56,9 +56,10 @@
 /* Mobile: tall portrait — cinematic full-height feel */
 @media (max-width: 767px) {
   .hero-banner-inner {
+    /* dvh = dynamic viewport height — tracks iOS address bar without reflow jumps.
+       svh = small viewport height = stable when address bar is visible.
+       We use svh so the hero never resizes as the user scrolls (no reflow). */
     height: 92svh;
-    height: 92vh;
-    /* fallback for older browsers */
     min-height: 520px;
     max-height: 680px;
   }
