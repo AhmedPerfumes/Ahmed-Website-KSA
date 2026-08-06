@@ -223,10 +223,13 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .collections__slider .swiper {
   overflow: visible;
+  width: 100%;  /* Critical: prevent flex-column from breaking Swiper width */
+  flex-shrink: 0;
 }
 
 .collections__slider .swiper-slide {
