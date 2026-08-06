@@ -190,7 +190,9 @@ const headerStyles = `
     letter-spacing: 1px;
 }
 `;
+// Header14 — UAE-style with compact sticky bar
 export default function Header14() {
+
     const [scrollDirection, setScrollDirection] = useState("down");
     const [scrollState, setScrollState] = useState("visible");
     const [isCompact, setIsCompact] = useState(false);
@@ -302,7 +304,7 @@ export default function Header14() {
     // }, []);
 
     useEffect(() => {
-        let hideThreshold = 150; // px distance before hiding
+        let hideThreshold = 200; // px distance before hiding
         let lastShowY = 0; // where header was last shown
 
         const handleScroll = () => {
@@ -315,8 +317,12 @@ export default function Header14() {
                 // Always show at very top
                 setScrollState("visible");
                 lastShowY = currentScrollY;
+            } else if (currentScrollY > 90) {
+                // In compact mode — always keep visible (UAE behavior)
+                setScrollState("visible");
+                lastShowY = currentScrollY;
             } else if (currentScrollY > lastScrollY.current) {
-                // Scrolling down
+                // Scrolling down (not yet compact)
                 if (currentScrollY - lastShowY > hideThreshold) {
                     setScrollState("hidden");
                 }
