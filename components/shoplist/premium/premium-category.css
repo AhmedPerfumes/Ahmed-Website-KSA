@@ -1,4 +1,4 @@
-﻿/* =============================================================
+/* =============================================================
    AHMED AL MAGHRIBI â€” Premium Category Page
    Clean, elegant, beautioied â€” white bg, vivid images, premium ATC
    Fonts: Loaded via <link> in page <head> â€” NOT @import here (blocks render)
@@ -496,8 +496,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  background: #e8e8e8;
-  /* thin border lines between cards */
+  background: #efefef; /* very light — just enough for subtle card dividers */
 }
 
 @media (min-width: 768px) {
