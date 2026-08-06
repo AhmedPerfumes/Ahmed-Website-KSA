@@ -304,35 +304,25 @@ export default function Header14() {
     // }, []);
 
     useEffect(() => {
-        let hideThreshold = 200; // px distance before hiding
-        let lastShowY = 0; // where header was last shown
+        // Hysteresis thresholds — prevents rapid toggling near the boundary
+        // Enter compact at 105px, exit at 80px (25px dead-band = no flicker)
+        const COMPACT_ON  = 105;
+        const COMPACT_OFF = 80;
 
         const handleScroll = () => {
-            const currentScrollY = window.scrollY;
+            const y = window.scrollY;
 
-            // Compact sticky: collapse to single bar when scrolled past 90px
-            setIsCompact(currentScrollY > 90);
+            // Functional updater: only triggers re-render when value actually changes
+            setIsCompact((prev) => {
+                if (!prev && y > COMPACT_ON)  return true;   // enter compact
+                if (prev  && y < COMPACT_OFF) return false;  // exit compact
+                return prev; // stable — no re-render
+            });
 
-            if (currentScrollY <= 50) {
-                // Always show at very top
-                setScrollState("visible");
-                lastShowY = currentScrollY;
-            } else if (currentScrollY > 90) {
-                // In compact mode — always keep visible (UAE behavior)
-                setScrollState("visible");
-                lastShowY = currentScrollY;
-            } else if (currentScrollY > lastScrollY.current) {
-                // Scrolling down (not yet compact)
-                if (currentScrollY - lastShowY > hideThreshold) {
-                    setScrollState("hidden");
-                }
-            } else if (currentScrollY < lastScrollY.current) {
-                // Scrolling up → show header again and reset baseline
-                setScrollState("visible");
-                lastShowY = currentScrollY;
-            }
+            // Always keep header visible (compact bar handles sticky display)
+            setScrollState("visible");
 
-            lastScrollY.current = currentScrollY;
+            lastScrollY.current = y;
         };
 
         window.addEventListener("scroll", handleScroll, { passive: true });

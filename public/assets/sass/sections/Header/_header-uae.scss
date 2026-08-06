@@ -3,6 +3,12 @@
    Matches ae.ahmedalmaghribi.com/en design:
    - Normal: 2-row (middle: selects | logo | tools) + (bottom: nav)
    - Sticky compact: single bar — logo left | nav center | icons right
+
+   TRANSITION PHILOSOPHY:
+   - NEVER use display:none/flex toggles — they cause instant jumps
+   - NEVER use max-height — fakes smoothness by animating from 200→actual
+   - USE opacity + transform + visibility — GPU-composited, truly smooth
+   - USE will-change to promote elements to their own GPU layer pre-emptively
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Announcement ticker ─────────────────────────────────────────── */
@@ -11,15 +17,42 @@
   background: #111 !important;
 }
 
-/* ── Middle row — taller, more luxurious ─────────────────────────── */
+/* ── Header wrapper: GPU layer + shadow transition ───────────────── */
+.header_sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  /* Smooth shadow on/off */
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: box-shadow 0.4s ease;
+  will-change: transform;
+}
+
+.header--compact {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Middle row — collapsible, GPU layer ─────────────────────────── */
 .header-middle {
   padding: 16px 0;
   border-bottom: 1px solid #eeeeee;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              padding   0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity   0.25s ease;
-  max-height: 200px;
   overflow: hidden;
+  will-change: opacity, transform;
+
+  /* Smooth collapse via opacity + translate — avoids height jank */
+  opacity: 1;
+  transform: translateY(0);
+  /* Exact transition timing — opacity out fast, translate slightly slower */
+  transition:
+    opacity   0.28s cubic-bezier(0.4, 0, 0.6, 1),
+    transform 0.32s cubic-bezier(0.4, 0, 0.6, 1),
+    max-height 0.36s cubic-bezier(0.4, 0, 0.6, 1),
+    padding   0.32s cubic-bezier(0.4, 0, 0.6, 1),
+    border-color 0.28s ease;
+
+  /* Real height so animation is accurate — logo row is ~137px */
+  max-height: 140px;
 }
 
 /* ── Logo — centered, increased size ─────────────────────────────── */
@@ -93,10 +126,20 @@
   box-shadow: none !important;
 }
 
-/* ── Nav bottom row — UAE uppercase minimal style ────────────────── */
+/* ── Nav bottom row — collapsible, GPU layer ─────────────────────── */
 .header-bottom {
-  border-top: none; /* border-top already on .header-middle border-bottom */
   background: #fff;
+  overflow: hidden;
+  will-change: opacity, transform;
+
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 50px; /* Real nav row height */
+  /* Slightly delayed vs header-middle so they cascade nicely */
+  transition:
+    opacity   0.22s cubic-bezier(0.4, 0, 0.6, 1) 0.04s,
+    transform 0.28s cubic-bezier(0.4, 0, 0.6, 1) 0.04s,
+    max-height 0.30s cubic-bezier(0.4, 0, 0.6, 1) 0.04s;
 }
 
 .header-bottom .navigation {
@@ -199,16 +242,33 @@
 /* ═══════════════════════════════════════════════════════════════════
    COMPACT STICKY BAR — single row when scrolled
    Logo left | Nav center | Icons right
+
+   KEY: Never use display:none/flex — use opacity+transform+visibility
+   This allows CSS to transition the element smoothly.
    ═══════════════════════════════════════════════════════════════════ */
 
 .header-compact-bar {
-  display: none;
+  /* Always rendered in the DOM — visibility controlled by opacity+transform */
+  display: flex;
   align-items: center;
   height: 52px;
   padding: 0 24px;
   background: #fff;
   gap: 16px;
   width: 100%;
+
+  /* Hidden state — slides up and fades out */
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;       /* not clickable when hidden */
+  visibility: hidden;         /* removed from tab order when hidden */
+
+  /* GPU-composited transition — buttery smooth */
+  will-change: opacity, transform;
+  transition:
+    opacity    0.30s cubic-bezier(0.4, 0, 0.2, 1),
+    transform  0.34s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s   linear 0.34s;  /* visibility snaps AFTER transition ends */
 }
 
 .header-compact-bar .compact-logo img {
@@ -294,33 +354,48 @@
   line-height: 1;
 }
 
-/* ── Compact mode transitions ────────────────────────────────────── */
+/* ── COMPACT MODE: smooth transitions into collapsed state ───────── */
+
+/* Compact bar: slides DOWN into view, fades in */
+.header--compact .header-compact-bar {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+  /* Visibility available immediately when entering */
+  transition:
+    opacity    0.30s cubic-bezier(0.4, 0, 0.2, 1),
+    transform  0.34s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s   linear 0s;
+}
+
+/* Header-middle: fades up and collapses */
 .header--compact .header-middle {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
   max-height: 0 !important;
   padding: 0 !important;
-  opacity: 0;
-  pointer-events: none;
-  border-bottom: none;
+  border-bottom-color: transparent;
+  /* Collapse starts immediately, opacity follows */
+  transition:
+    opacity    0.22s cubic-bezier(0.4, 0, 0.6, 1),
+    transform  0.25s cubic-bezier(0.4, 0, 0.6, 1),
+    max-height 0.32s cubic-bezier(0.4, 0, 0.6, 1),
+    padding    0.28s cubic-bezier(0.4, 0, 0.6, 1),
+    border-color 0.22s ease;
 }
 
+/* Header-bottom: fades and collapses, slightly after middle */
 .header--compact .header-bottom {
-  display: none !important;
-}
-
-.header--compact .header-compact-bar {
-  display: flex;
-}
-
-.header--compact {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-}
-
-/* ── Header sticky base ─────────────────────────────────────────── */
-.header_sticky {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: #fff;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  max-height: 0 !important;
+  transition:
+    opacity    0.20s cubic-bezier(0.4, 0, 0.6, 1),
+    transform  0.22s cubic-bezier(0.4, 0, 0.6, 1),
+    max-height 0.28s cubic-bezier(0.4, 0, 0.6, 1);
 }
 
 /* ── Header tools icon spacing (desktop normal) ──────────────────── */
@@ -338,6 +413,7 @@
   .header-desk_type_8 {
     display: none !important;
   }
+  /* On mobile, force hide compact bar (MobileHeader handles mobile) */
   .header-compact-bar {
     display: none !important;
   }
