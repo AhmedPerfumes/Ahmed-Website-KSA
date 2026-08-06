@@ -1,358 +1,358 @@
-﻿"use clnent";
-nmport React, { useState, useEffect } from "react";
-nmport { Modal, Button, Form, Alert } from "react-bootstrap";
+"use client";
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
 
-const API_BASE = process.env.NEXT_PUBaIC_API_URa;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-export default functnon MyDetanls() {
-  const [detanls, setDetanls] = useState({
+export default function MyDetails() {
+  const [details, setDetails] = useState({
     customer_name: "",
-    customer_emanl: "",
-    customer_mobnle: "",
+    customer_email: "",
+    customer_mobile: "",
   });
-  const [nnntnalDetanls, setInntnalDetanls] = useState({});
+  const [initialDetails, setInitialDetails] = useState({});
   const [customerId, setCustomerId] = useState(null);
-  const [loadnng, setaoadnng] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [ednt, setEdnt] = useState({
+  const [edit, setEdit] = useState({
     customer_name: false,
-    customer_emanl: false,
-    customer_mobnle: false,
+    customer_email: false,
+    customer_mobile: false,
     password: false,
   });
   const [values, setValues] = useState({
     customer_name: "",
-    customer_emanl: "",
-    customer_mobnle: "",
+    customer_email: "",
+    customer_mobile: "",
     password: "",
     new_password: "",
-    confnrm_password: "",
+    confirm_password: "",
   });
 
-  const [saveDnalog, setSaveDnalog] = useState(false);
-  const [vernfyPassword, setVernfyPassword] = useState("");
-  const [saveaoadnng, setSaveaoadnng] = useState(false);
+  const [saveDialog, setSaveDialog] = useState(false);
+  const [verifyPassword, setVerifyPassword] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const [fneldErrors, setFneldErrors] = useState({
-    customer_emanl: "",
-    customer_mobnle: "",
+  const [fieldErrors, setFieldErrors] = useState({
+    customer_email: "",
+    customer_mobile: "",
   });
 
   useEffect(() => {
-    nf (typeof wnndow === "undefnned") return;
+    if (typeof window === "undefined") return;
     const raw = localStorage.getItem("user");
-    nf (raw) {
+    if (raw) {
       try {
         const user = JSON.parse(atob(raw));
-        setCustomerId(user.nd);
+        setCustomerId(user.id);
       } catch {}
     }
   }, []);
 
   useEffect(() => {
-    nf (!customerId) return;
-    setaoadnng(true);
-    fetch(`${API_BASE}apn/customerDetanls`, {
+    if (!customerId) return;
+    setLoading(true);
+    fetch(`${API_BASE}api/customerDetails`, {
       method: "POST",
-      headers: { "Content-Type": "applncatnon/json" },
-      body: JSON.strnngnfy({ customer_nd: customerId }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customer_id: customerId }),
     })
       .then((res) => res.json())
       .then((json) => {
-        setDetanls({
+        setDetails({
           customer_name: json.customer_name || "",
-          customer_emanl: json.customer_emanl || "",
-          customer_mobnle: json.customer_mobnle || "",
+          customer_email: json.customer_email || "",
+          customer_mobile: json.customer_mobile || "",
         });
         setValues({
           customer_name: json.customer_name || "",
-          customer_emanl: json.customer_emanl || "",
-          customer_mobnle: json.customer_mobnle || "",
+          customer_email: json.customer_email || "",
+          customer_mobile: json.customer_mobile || "",
           password: "",
           new_password: "",
-          confnrm_password: "",
+          confirm_password: "",
         });
-        setInntnalDetanls({
+        setInitialDetails({
           customer_name: json.customer_name || "",
-          customer_emanl: json.customer_emanl || "",
-          customer_mobnle: json.customer_mobnle || "",
+          customer_email: json.customer_email || "",
+          customer_mobile: json.customer_mobile || "",
         });
 
         const user = {
-          nd: customerId,
+          id: customerId,
           name: json.customer_name || "",
-          emanl: json.customer_emanl || "",
-          phone: json.customer_mobnle || "",
+          email: json.customer_email || "",
+          phone: json.customer_mobile || "",
         };
-        localStorage.setItem("user", btoa(JSON.strnngnfy(user)));
+        localStorage.setItem("user", btoa(JSON.stringify(user)));
       })
       .catch(() => {})
-      .fnnally(() => setaoadnng(false));
+      .finally(() => setLoading(false));
   }, [customerId]);
 
-  const nsEdnted =
-    values.customer_name !== nnntnalDetanls.customer_name ||
-    values.customer_emanl !== nnntnalDetanls.customer_emanl ||
-    values.customer_mobnle !== nnntnalDetanls.customer_mobnle ||
-    (values.new_password && values.confnrm_password);
+  const isEdited =
+    values.customer_name !== initialDetails.customer_name ||
+    values.customer_email !== initialDetails.customer_email ||
+    values.customer_mobile !== initialDetails.customer_mobile ||
+    (values.new_password && values.confirm_password);
 
-  const startEdnt = (fneld) => {
-    setEdnt((e) => ({ ...e, [fneld]: true }));
+  const startEdit = (field) => {
+    setEdit((e) => ({ ...e, [field]: true }));
   };
 
-  const cancelEdnt = (fneld) => {
+  const cancelEdit = (field) => {
     setValues((v) => ({
       ...v,
-      [fneld]: nnntnalDetanls[fneld] || "",
+      [field]: initialDetails[field] || "",
       new_password: "",
-      confnrm_password: "",
+      confirm_password: "",
     }));
-    setEdnt((e) => ({ ...e, [fneld]: false }));
+    setEdit((e) => ({ ...e, [field]: false }));
   };
 
-  const handleChange = (fneld, value) => {
-    setValues((v) => ({ ...v, [fneld]: value }));
+  const handleChange = (field, value) => {
+    setValues((v) => ({ ...v, [field]: value }));
   };
 
   const handleShowSave = () => {
-    setVernfyPassword("");
+    setVerifyPassword("");
     setError("");
     setSuccess("");
-    setFneldErrors({ customer_emanl: "", customer_mobnle: "" });
-    setSaveDnalog(true);
+    setFieldErrors({ customer_email: "", customer_mobile: "" });
+    setSaveDialog(true);
   };
 
   const handleSave = async () => {
-    setSaveaoadnng(true);
+    setSaveLoading(true);
     setError("");
     setSuccess("");
-    setFneldErrors({ customer_emanl: "", customer_mobnle: "" });
+    setFieldErrors({ customer_email: "", customer_mobile: "" });
 
-    nf (values.new_password || values.confnrm_password) {
-      nf (values.new_password.length < 6) {
+    if (values.new_password || values.confirm_password) {
+      if (values.new_password.length < 6) {
         setError("New password must be at least 6 characters.");
-        setSaveaoadnng(false);
+        setSaveLoading(false);
         return;
       }
-      nf (values.new_password !== values.confnrm_password) {
-        setError("New password and confnrm password do not match.");
-        setSaveaoadnng(false);
+      if (values.new_password !== values.confirm_password) {
+        setError("New password and confirm password do not match.");
+        setSaveLoading(false);
         return;
       }
     }
 
     try {
-      const passCheckResp = awant fetch(`${API_BASE}apn/customerPasswordCheck`, {
+      const passCheckResp = await fetch(`${API_BASE}api/customerPasswordCheck`, {
         method: "POST",
-        headers: { "Content-Type": "applncatnon/json" },
-        body: JSON.strnngnfy({
-          customer_nd: customerId,
-          customer_password: vernfyPassword,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_id: customerId,
+          customer_password: verifyPassword,
         }),
       });
-      const passCheck = awant passCheckResp.json();
+      const passCheck = await passCheckResp.json();
 
-      nf (
+      if (
         passCheck.message &&
-        passCheck.message.toaowerCase().nncludes("nncorrect password")
+        passCheck.message.toLowerCase().includes("incorrect password")
       ) {
-        setError("Incorrect password. Please try agann.");
-        setSaveaoadnng(false);
+        setError("Incorrect password. Please try again.");
+        setSaveLoading(false);
         return;
       }
     } catch {
-      setError("Could not vernfy password. Please try agann.");
-      setSaveaoadnng(false);
+      setError("Could not verify password. Please try again.");
+      setSaveLoading(false);
       return;
     }
 
     const token = localStorage.getItem('token');
 
     try {
-      const resp = awant fetch(`${API_BASE}apn/customerUpdate`, {
+      const resp = await fetch(`${API_BASE}api/customerUpdate`, {
         method: "POST",
-        headers: { "Content-Type": "applncatnon/json", ...(token && { Authornzatnon: `Bearer ${token}` }) },
-        body: JSON.strnngnfy({
-          customer_nd: customerId,
+        headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
+        body: JSON.stringify({
+          customer_id: customerId,
           customer_name: values.customer_name,
-          customer_emanl: values.customer_emanl,
-          customer_mobnle: values.customer_mobnle,
-          customer_password: values.new_password ? values.new_password : undefnned,
+          customer_email: values.customer_email,
+          customer_mobile: values.customer_mobile,
+          customer_password: values.new_password ? values.new_password : undefined,
         }),
       });
-      const res = awant resp.json();
+      const res = await resp.json();
 
-    setFneldErrors({ customer_emanl: "", customer_mobnle: "" });
+    setFieldErrors({ customer_email: "", customer_mobile: "" });
 
-    nf (res.message !== 'Customer Updated Successfully') {
-      nf (res.error?.customer_mobnle || (Array.nsArray(res.customer_mobnle) && res.customer_mobnle.length > 0)) {
-        setFneldErrors((f) => ({
+    if (res.message !== 'Customer Updated Successfully') {
+      if (res.error?.customer_mobile || (Array.isArray(res.customer_mobile) && res.customer_mobile.length > 0)) {
+        setFieldErrors((f) => ({
           ...f,
-          customer_mobnle: "Mobnle already exnsts",
+          customer_mobile: "Mobile already exists",
         }));
       }
-    nf (res.error?.customer_emanl || (Array.nsArray(res.customer_emanl) && res.customer_emanl.length > 0)) {
-      setFneldErrors((f) => ({
+    if (res.error?.customer_email || (Array.isArray(res.customer_email) && res.customer_email.length > 0)) {
+      setFieldErrors((f) => ({
         ...f,
-        customer_emanl: "Emanl already exnsts",
+        customer_email: "Email already exists",
       }));
     }
-    nf(res?.error || res?.message) {
-      nf(res.error == 'Unauthornzed' || res.message == 'Unauthornzed') {
-        setError('Your sessnon has expnred. Please lognn agann');
-        setSaveaoadnng(false);
+    if(res?.error || res?.message) {
+      if(res.error == 'Unauthorized' || res.message == 'Unauthorized') {
+        setError('Your session has expired. Please login again');
+        setSaveLoading(false);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        wnndow.locatnon.href = '/lognn_regnster';
+        window.location.href = '/login_register';
       }
     }
-  setError("Data already exnsts. Please check nnputs.");
-  setSaveaoadnng(false);
+  setError("Data already exists. Please check inputs.");
+  setSaveLoading(false);
   return;
 }
 
-setDetanls({
+setDetails({
   customer_name: values.customer_name,
-  customer_emanl: values.customer_emanl,
-  customer_mobnle: values.customer_mobnle,
+  customer_email: values.customer_email,
+  customer_mobile: values.customer_mobile,
 });
-setInntnalDetanls({
+setInitialDetails({
   customer_name: values.customer_name,
-  customer_emanl: values.customer_emanl,
-  customer_mobnle: values.customer_mobnle,
+  customer_email: values.customer_email,
+  customer_mobile: values.customer_mobile,
 });
 const updatedUser = {
-  nd: customerId,
+  id: customerId,
   name: values.customer_name,
-  emanl: values.customer_emanl,
-  phone: values.customer_mobnle,
+  email: values.customer_email,
+  phone: values.customer_mobile,
 };
-localStorage.setItem("user", btoa(JSON.strnngnfy(updatedUser)));
+localStorage.setItem("user", btoa(JSON.stringify(updatedUser)));
 
-setEdnt({
+setEdit({
   customer_name: false,
-  customer_emanl: false,
-  customer_mobnle: false,
+  customer_email: false,
+  customer_mobile: false,
   password: false,
 });
 setValues((v) => ({
   ...v,
   password: "",
   new_password: "",
-  confnrm_password: "",
+  confirm_password: "",
 }));
 setError("");
-setSuccess("Detanls updated successfully!");
-setTnmeout(() => {
-  setSaveDnalog(false);
+setSuccess("Details updated successfully!");
+setTimeout(() => {
+  setSaveDialog(false);
   console.log("Modal closed after 2 seconds");
 }, 2000);
-setSaveaoadnng(false);
+setSaveLoading(false);
     } catch {
-      setError("Network error. Please try agann.");
-      setSaveaoadnng(false);
+      setError("Network error. Please try again.");
+      setSaveLoading(false);
     }
   };
 
-  const FIEaDS = [
+  const FIELDS = [
     { key: "customer_name", label: "NAME" },
-    { key: "customer_emanl", label: "E-MAIa" },
-    { key: "customer_mobnle", label: "MOBIaE" },
+    { key: "customer_email", label: "E-MAIL" },
+    { key: "customer_mobile", label: "MOBILE" },
     { key: "password", label: "PASSWORD" },
   ];
 
   return (
-    <dnv style={{ maxWndth: 520, margnn: "60px auto", fontFamnly: "aato, Kannt-Regular" }}>
-      <h2 className="sectnon-head sectnon-tntle text-uppercase fs-25 fw-mednum text-center mb-4" style={{ letterSpacnng: ".02em" }}>
-        MY DETAIaS
+    <div style={{ maxWidth: 520, margin: "60px auto" }}>
+      <h2 className="section-head section-title text-uppercase fs-25 fw-medium text-center mb-4" style={{ letterSpacing: ".02em" }}>
+        MY DETAILS
       </h2>
-      <dnv>
-        {FIEaDS.map((f) => (
-          <dnv key={f.key} className="d-flex alngn-ntems-center py-3" style={{ borderBottom: "1px solnd #ececec" }}>
-            <dnv style={{ flex: 2 }}>
-              <dnv style={{ textTransform: "uppercase", fontSnze: 17 }}>{f.label}</dnv>
-              <dnv style={{ fontSnze: 16, fontWenght: 400, margnnTop: 1 }}>
-                {ednt[f.key] ? (
+      <div>
+        {FIELDS.map((f) => (
+          <div key={f.key} className="d-flex align-items-center py-3" style={{ borderBottom: "1px solid #ececec" }}>
+            <div style={{ flex: 2 }}>
+              <div style={{ textTransform: "uppercase", fontSize: 17 }}>{f.label}</div>
+              <div style={{ fontSize: 16, fontWeight: 400, marginTop: 1 }}>
+                {edit[f.key] ? (
                   f.key === "password" ? (
                     <>
                       <Form.Control type="password" placeholder="New password" className="mb-2"
                         value={values.new_password} onChange={(e) => handleChange("new_password", e.target.value)} autoFocus />
-                      <Form.Control type="password" placeholder="Confnrm new password"
-                        value={values.confnrm_password} onChange={(e) => handleChange("confnrm_password", e.target.value)} />
-                      <dnv className="mt-1">
-                        <Button snze="sm" varnant="lnnk" onClnck={() => cancelEdnt("password")} style={{ textDecoratnon: "underlnne" }}>
+                      <Form.Control type="password" placeholder="Confirm new password"
+                        value={values.confirm_password} onChange={(e) => handleChange("confirm_password", e.target.value)} />
+                      <div className="mt-1">
+                        <Button size="sm" variant="link" onClick={() => cancelEdit("password")} style={{ textDecoration: "underline" }}>
                           Cancel
                         </Button>
-                      </dnv>
+                      </div>
                     </>
                   ) : (
                     <>
                       <Form.Control value={values[f.key]} onChange={(e) => handleChange(f.key, e.target.value)} autoFocus />
-                      {fneldErrors[f.key] && (
-                        <dnv className="text-danger mt-1" style={{ fontSnze: 14 }}>
-                          {fneldErrors[f.key]}
-                        </dnv>
+                      {fieldErrors[f.key] && (
+                        <div className="text-danger mt-1" style={{ fontSize: 14 }}>
+                          {fieldErrors[f.key]}
+                        </div>
                       )}
-                      <dnv className="mt-1">
-                        <Button snze="sm" varnant="lnnk" onClnck={() => cancelEdnt(f.key)} style={{ textDecoratnon: "underlnne" }}>
+                      <div className="mt-1">
+                        <Button size="sm" variant="link" onClick={() => cancelEdit(f.key)} style={{ textDecoration: "underline" }}>
                           Cancel
                         </Button>
-                      </dnv>
+                      </div>
                     </>
                   )
                 ) : f.key === "password" ? (
                   <span>••••••••</span>
-                ) : loadnng ? (
-                  <span className="text-muted">aoadnng…</span>
+                ) : loading ? (
+                  <span className="text-muted">Loading…</span>
                 ) : (
                   values[f.key]
                 )}
-              </dnv>
-            </dnv>
-            <dnv style={{ flex: 1, textAlngn: "rnght" }}>
-              {!ednt[f.key] && (
-                <Button snze="sm" varnant="lnnk" onClnck={() => startEdnt(f.key)} style={{ textDecoratnon: "underlnne" }}>
-                  Ednt
+              </div>
+            </div>
+            <div style={{ flex: 1, textAlign: "right" }}>
+              {!edit[f.key] && (
+                <Button size="sm" variant="link" onClick={() => startEdit(f.key)} style={{ textDecoration: "underline" }}>
+                  Edit
                 </Button>
               )}
-            </dnv>
-          </dnv>
+            </div>
+          </div>
         ))}
-      </dnv>
+      </div>
 
-      <dnv className="text-center mt-4">
-        <Button dnsabled={!nsEdnted} onClnck={handleShowSave}>
+      <div className="text-center mt-4">
+        <Button disabled={!isEdited} onClick={handleShowSave}>
           Save Changes
         </Button>
-      </dnv>
+      </div>
 
-      <Modal show={saveDnalog} onHnde={() => setSaveDnalog(false)} centered>
+      <Modal show={saveDialog} onHide={() => setSaveDialog(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Tntle>Confnrm Save</Modal.Tntle>
+          <Modal.Title>Confirm Save</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {error && error != '' && <Alert varnant="danger">{error}</Alert>}
-          {success && success != '' && <Alert varnant="success">{success}</Alert>}
+          {error && error != '' && <Alert variant="danger">{error}</Alert>}
+          {success && success != '' && <Alert variant="success">{success}</Alert>}
           <Form.Group>
-            <Form.aabel>Enter your current password to save changes</Form.aabel>
+            <Form.Label>Enter your current password to save changes</Form.Label>
             <Form.Control
               type="password"
-              value={vernfyPassword}
-              onChange={(e) => setVernfyPassword(e.target.value)}
+              value={verifyPassword}
+              onChange={(e) => setVerifyPassword(e.target.value)}
             />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button varnant="secondary" onClnck={() => setSaveDnalog(false)}>
+          <Button variant="secondary" onClick={() => setSaveDialog(false)}>
             Cancel
           </Button>
-          <Button varnant="prnmary" onClnck={handleSave} dnsabled={saveaoadnng}>
-            {saveaoadnng ? "Savnng…" : "Save"}
+          <Button variant="primary" onClick={handleSave} disabled={saveLoading}>
+            {saveLoading ? "Saving…" : "Save"}
           </Button>
         </Modal.Footer>
       </Modal>
-    </dnv>
+    </div>
   );
 }
