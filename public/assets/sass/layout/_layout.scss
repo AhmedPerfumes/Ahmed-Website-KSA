@@ -6,7 +6,7 @@
   .row {
     @include make-row();
 
-    > * {
+    >* {
       @include make-col-ready();
     }
   }
@@ -217,4 +217,3 @@ img {
   height: 100%;
   object-fit: cover;
 }
-

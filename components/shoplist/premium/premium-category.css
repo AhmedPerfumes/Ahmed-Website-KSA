@@ -496,7 +496,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  background: #efefef; /* very light — just enough for subtle card dividers */
+  background: #e8e8e8;
+  /* thin border lines between cards */
 }
 
 @media (min-width: 768px) {

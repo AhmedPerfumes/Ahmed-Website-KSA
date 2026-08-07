@@ -14,8 +14,6 @@
 /* ── SMOOTH SCROLL — sitewide ─────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
-  /* White background — prevents iOS Safari rubber-band showing gray system bg */
-  background-color: #ffffff;
 
   /* ── iOS Safari scroll jitter fix ────────────────────────────────
      overscroll-behavior: none  →  disables the elastic bounce effect
@@ -26,11 +24,11 @@ html {
   ─────────────────────────────────────────────────────────────────── */
   overscroll-behavior: none;
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch; /* smooth momentum on older iOS */
+  -webkit-overflow-scrolling: touch;
+  /* smooth momentum on older iOS */
 }
 
 body {
-  background-color: #ffffff;
   overscroll-behavior: none;
   overscroll-behavior-y: none;
 }
