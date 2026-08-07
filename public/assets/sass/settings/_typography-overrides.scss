@@ -14,21 +14,22 @@
 /* ── SMOOTH SCROLL — sitewide ─────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  /* White bg — iOS Safari shows html background during rubber-band overscroll
+     and when notification bar is pulled. Default is gray system color.  */
+  background-color: #ffffff;
 
   /* ── iOS Safari scroll jitter fix ────────────────────────────────
      overscroll-behavior: none  →  disables the elastic bounce effect
      that causes fixed elements and vh-sized elements to "jump" when
      the user scrolls past the page boundary on iPhone/iPad.
-     This is the #1 fix for the "scroll to bottom → scroll back up →
-     page jumps up and down" glitch on iOS Safari.
   ─────────────────────────────────────────────────────────────────── */
   overscroll-behavior: none;
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
-  /* smooth momentum on older iOS */
+  -webkit-overflow-scrolling: touch; /* smooth momentum on older iOS */
 }
 
 body {
+  background-color: #ffffff;
   overscroll-behavior: none;
   overscroll-behavior-y: none;
 }

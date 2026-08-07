@@ -568,9 +568,18 @@
   object-fit: contain;
   object-position: center;
   padding: 1rem;
-  /* Vivid, bright images â€” no dullness */
-  filter: brightness(1.04) contrast(1.04) saturate(1.08);
-  transition: opacity 0.38s ease, transform 0.38s var(--pc-ease), filter 0.38s ease;
+  /* NOTE: No CSS filter here — filter forces iOS Safari to create a GPU
+     compositing layer per image. With 20+ cards per page this exhausts
+     GPU memory on iPhones causing all images to flash gray.
+     Visual enhancement moved to desktop-only via media query below. */
+  transition: opacity 0.38s ease, transform 0.38s var(--pc-ease);
+}
+
+/* On desktop where GPU memory is ample, add subtle visual enhancement */
+@media (min-width: 992px) {
+  .pc-card__img {
+    filter: brightness(1.02) contrast(1.02) saturate(1.04);
+  }
 }
 
 .pc-card__img--primary {
