@@ -4,15 +4,30 @@
     "CheckoutDescription": "استخدم أي بطاقة"
   },
   "refund": {
-    "title": "سياسة الإرجاع",
-    "desc": "الإرجاع مجاني لجميع منتجات البيع ضمن 7 أيام من تاريخ الاستلام، شريطة استيفاء شروط الإرجاع المحددة أدناه. يتم توفير تعليمات الإرجاع أدناه.",
-    "instructions": "تعليمات الإرجاع:",
+    "title": "Returns & Exchanges",
+    "effective_date": "Effective: June 4, 2026",
+    "desc": "Returns or exchanges are only accepted in the following cases:",
     "items": [
-      "يجب إرجاع المشتريات من بلد الشحن الأصلي.",
-      "سيتم قبول الإرجاع فقط إذا كان هناك عيب تصنيع في المنتج أو عدم تطابق المنتج. يجب أن تكون العناصر المُرجعة في حالتها الأصلية غير مستخدمة مع جميع علامات عطور أحمد المغربي متصلة وأي قطع تجريبية وكتيبات ذات صلة مدرجة.",
-      "لن يتم قبول الإرجاع غير المكتمل أو التالف أو المتغير أو أي شيء نعتقد أنه قد تم استخدامه، وسيتم إرساله مرة أخرى إلى العميل.",
-      "لا تُطبق رسوم الإرجاع إذا استوفيت الشروط أعلاه."
-    ]
+      "Wrong item received",
+      "Damaged product received",
+      "Defective item received"
+    ],
+    "desc2": "Any return or exchange request must be reported within 48 hours from the date of delivery.",
+    "desc3": "To process the request, customers must provide:",
+    "items2": [
+      "Order number",
+      "Photos/videos of the product",
+      "Clear description of the issue"
+    ],
+    "desc4": "Returned items must:",
+    "items4": [
+      "Be unused and unopened",
+      "Be in original packaging"
+    ],
+    "title2": "Refund Policy",
+    "desc5": "Refunds will only be processed after inspection and approval of the returned item.",
+    "desc6": "Approved refunds will be issued through the original payment method within [7-14] business days depending on bank or payment provider processing timelines.",
+    "desc7": "We reserve the right to reject refund or exchange requests if the returned product does not meet the above conditions."
   },
   "BILLING DETAILS": "تفاصيل الفاتورة",
   "First Name": "الاسم",

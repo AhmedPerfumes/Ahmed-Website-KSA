@@ -6,7 +6,7 @@ export const footerLinks1 = [
   { href: "/contact", text: "Contact Us" },
   // { href: "/export", text:"Worldwide Distributions"},
   { href: "/shipping-and-delivery", text:"Shipping & Delivery"},
-  { href: "/refund-policy", text:"Refund Policy"}
+  { href: "/refund-policy", text: "Return, Refund & Exchange Policy" }
 ];
 export const footerLinks2 = [
   { href: "/shop-2", text: "Eau de Parfum" },

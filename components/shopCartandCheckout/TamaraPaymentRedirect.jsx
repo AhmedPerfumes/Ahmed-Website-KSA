@@ -3,7 +3,7 @@
 
 import { useContextElement } from "@/context/Context";
 import { useMenu } from '@/context/MenuContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import he from 'he';
 import Pagination1 from "../common/Pagination1";
 import FeedbackForm from "../common/Feedback";
@@ -15,6 +15,7 @@ export default function TamaraPaymentRedirect() {
   const [isLoading, setIsLoading] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [apiError, setApiError] = useState(null);
+  const hasTrackedRef = useRef(false);
 
   useEffect(() => {
     const fetchOrderDetails = async (orderId, status) => {
@@ -54,6 +55,86 @@ export default function TamaraPaymentRedirect() {
 
     if (orderId) fetchOrderDetails(orderId, status);
   }, []);
+
+  // 2. ANALYTICS EFFECT: Only fire if Tamara payment is actually successful (Strictly ONCE per order)
+  useEffect(() => {
+    if (paymentStatus === 'success' && orderDetails && (orderDetails.order_id || orderDetails.id)) {
+      const orderId = orderDetails.order_id || orderDetails.id;
+      const orderKey = `tracked_purchase_${orderId}`;
+
+      // Prevent duplicate tracking in memory or across page reloads for this order
+      if (hasTrackedRef.current === orderKey || (typeof window !== "undefined" && sessionStorage.getItem(orderKey))) {
+        return;
+      }
+
+      hasTrackedRef.current = orderKey;
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(orderKey, "true");
+      }
+
+      // ---- First-Party AhmedTracker ----
+      if (typeof window !== "undefined" && window.AhmedTracker) {
+        window.AhmedTracker.track("purchase", {
+          order_id: orderId,
+          total: parseFloat(orderDetails.total),
+          payment_type: "tamara",
+          items: orderDetails.products ? orderDetails.products.map((item) => ({
+            product_id: (item.product_id || item.id)?.toString(),
+            product_name: item.product_name ? he.decode(item.product_name) : (item.name ? he.decode(item.name) : ""),
+            price: parseFloat(item.price),
+            quantity: item.qty || item.quantity || 1,
+          })) : [],
+        });
+      }
+
+      // ---- GA4 Purchase ----
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "purchase",
+        ecommerce: {
+          transaction_id: orderId,
+          affiliation: "Ahmed Al Maghribi Perfumes KSA",
+          value: parseFloat(orderDetails.total),
+          currency: currency?.code || "SAR",
+          items: orderDetails.products ? orderDetails.products.map((item) => ({
+            item_id: (item.product_id || item.id)?.toString(),
+            item_name: item.product_name ? he.decode(item.product_name) : (item.name ? he.decode(item.name) : ""),
+            price: parseFloat(item.price),
+            quantity: item.qty || item.quantity || 1,
+          })) : [],
+        },
+      });
+
+      // ---- TikTok Purchase ----
+      if (typeof window.ttq === "object" && typeof window.ttq.track === "function") {
+        window.ttq.track("Purchase", {
+          contents: orderDetails.products ? orderDetails.products.map((item) => ({
+            content_id: (item.product_id || item.id)?.toString(),
+            content_type: "product",
+            content_name: item.product_name ? he.decode(item.product_name) : (item.name ? he.decode(item.name) : ""),
+          })) : [],
+          value: parseFloat(orderDetails.total),
+          currency: currency?.code || "SAR",
+        });
+      }
+
+      // ---- Snapchat Purchase ----
+      if (typeof window.snaptr === "function") {
+        window.snaptr("track", "PURCHASE", {
+          transaction_id: orderId,
+          price: parseFloat(orderDetails.total),
+          currency: currency?.code || "SAR",
+          item_ids: orderDetails.products ? orderDetails.products.map((item) => (item.product_id || item.id)?.toString()) : [],
+          item_category: "perfume",
+          number_items: orderDetails.products ? orderDetails.products.length : 0,
+        });
+      }
+
+      // Clear local cart after successful Tamara payment and tracking
+      localStorage.removeItem("cartList");
+      setCartProducts([]);
+    }
+  }, [paymentStatus, orderDetails?.order_id, orderDetails?.id, currency?.code]);
 
   const subTotalPrice = (elm) => {
     if (elm.is_gift) return <td>0.00{currency.symbol} (Free Gift)</td>;

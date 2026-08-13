@@ -17,9 +17,7 @@ export default function OrderCompleted() {
   const hasFiredPurchase = useRef(false); // prevents purchase events firing more than once
 
   useEffect(() => {
-  setShowDate(true);
-  localStorage.setItem('cartList', []);
-  setCartProducts([]);
+    setShowDate(true);
 
   // ✅ Fire purchase events exactly once when orderDetails becomes available
   if (orderDetails && orderDetails.order_id && !hasFiredPurchase.current) {
@@ -58,19 +56,73 @@ export default function OrderCompleted() {
       });
     }
 
-    // ---- Snapchat Pixel ----
-    if (window.snaptr) {
-      window.snaptr('track', 'PURCHASE', {
-        transaction_id: orderDetails.order_id,
-        price: parseFloat(orderDetails.total),
-        currency: currency?.code || "SAR",
-        item_ids: orderDetails.products.map((item) => item.product_id?.toString()),
-        item_category: "perfume",
-        number_items: orderDetails.products.length,
+      hasTrackedRef.current = orderKey;
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(orderKey, "true");
+      }
+
+      // ---- First-Party AhmedTracker ----
+      if (typeof window !== "undefined" && window.AhmedTracker) {
+        window.AhmedTracker.track("purchase", {
+          order_id: orderDetails.order_id,
+          total: parseFloat(orderDetails.total),
+          payment_type: orderDetails.payment_method || orderDetails.payment_type || "cod",
+          items: orderDetails.products ? orderDetails.products.map((item) => ({
+            product_id: item.product_id?.toString(),
+            product_name: item.name ? he.decode(item.name) : "",
+            price: parseFloat(item.price),
+            quantity: item.qty,
+          })) : [],
+        });
+      }
+
+      // ---- GA4 Purchase ----
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "purchase",
+        ecommerce: {
+          transaction_id: orderDetails.order_id,
+          affiliation: "Ahmed Al Maghribi Perfumes KSA",
+          value: parseFloat(orderDetails.total),
+          currency: currency?.code || "SAR",
+          items: orderDetails.products ? orderDetails.products.map((item) => ({
+            item_id: item.product_id?.toString(),
+            item_name: item.name ? he.decode(item.name) : "",
+            price: parseFloat(item.price),
+            quantity: item.qty,
+          })) : [],
+        },
       });
+
+      // ---- TikTok Pixel ----
+      if (typeof window.ttq === "object" && typeof window.ttq.track === "function") {
+        window.ttq.track("Purchase", {
+          contents: orderDetails.products ? orderDetails.products.map((item) => ({
+            content_id: item.product_id?.toString(),
+            content_type: "product",
+            content_name: item.name ? he.decode(item.name) : "",
+          })) : [],
+          value: parseFloat(orderDetails.total),
+          currency: currency?.code || "SAR",
+        });
+      }
+
+      // ---- Snapchat Pixel ----
+      if (typeof window.snaptr === "function") {
+        window.snaptr('track', 'PURCHASE', {
+          transaction_id: orderDetails.order_id,
+          price: parseFloat(orderDetails.total),
+          currency: currency?.code || "SAR",
+          item_ids: orderDetails.products ? orderDetails.products.map((item) => item.product_id?.toString()) : [],
+          item_category: "perfume",
+          number_items: orderDetails.products ? orderDetails.products.length : 0,
+        });
+      }
+
+      localStorage.setItem('cartList', JSON.stringify([]));
+      setCartProducts([]);
     }
-  }
-}, [orderDetails]);
+  }, [orderDetails?.order_id, currency?.code]);
 
   if (isMenuLoading) {
     return <div><Pagination1 /></div>;

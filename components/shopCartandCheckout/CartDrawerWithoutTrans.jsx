@@ -39,6 +39,16 @@ export default function CartDrawerWithoutTrans() {
   };
 
   const removeItem = (id) => {
+    const itemToRemove = cartProducts.find((elm) => elm.product_id == id || elm.id == id);
+    if (itemToRemove && typeof window !== "undefined" && window.AhmedTracker) {
+      const pid = (itemToRemove.product_id || itemToRemove.id)?.toString();
+      window.AhmedTracker.track("remove_from_cart", {
+        product_id: pid,
+        product_name: itemToRemove.title || itemToRemove.name || itemToRemove.product_name || "",
+        price: parseFloat(itemToRemove.sale_price || itemToRemove.price || 0),
+        quantity: Number(itemToRemove.quantity || 1),
+      });
+    }
     setCartProducts((pre) => [...pre.filter((elm) => elm.product_id != id)]);
   };
 

@@ -72,7 +72,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
     }
   }, [orderData?.payment_status, initialOrderCode]);
 
-  // 2. ANALYTICS EFFECT: Only fire if payment is actually completed
+  // 2. ANALYTICS EFFECT: Only fire if payment is actually completed (Strictly ONCE per order)
   useEffect(() => {
     if (orderData?.payment_status === "completed" && orderData?.id && !hasFiredPurchase.current) {
       hasFiredPurchase.current = true; // lock — never fires again even if orderData re-renders
@@ -82,16 +82,16 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       window.dataLayer.push({
         event: "purchase",
         ecommerce: {
-          transaction_id: orderData.order_id,
+          transaction_id: orderId,
           affiliation: "Ahmed Al Maghribi Perfumes KSA",
           value: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
-          items: orderData.products.map((item) => ({
+          items: orderData.products ? orderData.products.map((item) => ({
             item_id: item.product_id?.toString(),
             item_name: he.decode(item.product_name || item.name || ""),
             price: parseFloat(item.price),
             quantity: item.qty,
-          })),
+          })) : [],
         },
       });
 
@@ -113,12 +113,12 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       // ---- Snapchat Purchase ----
       if (typeof window.snaptr === "function") {
         window.snaptr("track", "PURCHASE", {
-          transaction_id: orderData.order_id,
+          transaction_id: orderId,
           price: parseFloat(orderData.total),
           currency: currency?.code || "SAR",
-          item_ids: orderData.products.map((item) => item.product_id?.toString()),
+          item_ids: orderData.products ? orderData.products.map((item) => item.product_id?.toString()) : [],
           item_category: "perfume",
-          number_items: orderData.products.length,
+          number_items: orderData.products ? orderData.products.length : 0,
         });
       }
 
@@ -126,7 +126,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       localStorage.removeItem("cartList");
       setCartProducts([]);
     }
-  }, [orderData, currency, setCartProducts]);
+  }, [orderData?.payment_status, orderData?.id, orderData?.order_id, currency?.code]);
   console.log("orderData001",orderData);
   
 

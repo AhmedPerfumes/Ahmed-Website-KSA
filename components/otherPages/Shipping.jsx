@@ -3,20 +3,15 @@ import React from 'react'
 function Shipping() {
   return (
     <div className='container mt-5 pt-5'>
-        <h4>Shipping and Delivery</h4>
-        <p className='mt-5 fs-5'>
-        Presently, Ahmed Al Maghribi Perfume online store is only available for purchase. You are required to choose a preferred country in order to avail the offers and products that are available in your respective countries. 
-        </p>
-        <p className='mt-5 fs-5'>
-        We regret to inform you that if you wish to place an order in any country and request delivery in other countries, we will not be able to process the request 
-        </p>
-        <p className='mt-5 fs-5'>
-        Due to strict International trading agreements and regulations, we are unable to ship the fragrance to other countries except for this country. As of now, we can ship the goods only locally! 
-        </p>
-        {/* <p className='mt-5 fs-5 mb-5 pb-5'>
-        For more details visit: <Link href="https://www.ahmed-perfume.com/en/export">WorldWide Distributions</Link> 
-        </p> */}
-
+      <h4>Shipping & Delivery</h4>
+      <p>Effective: June 4, 2026</p>
+      <h5 className='mt-5'>1.	Orders are processed within [1-3] business days after payment confirmation.</h5>
+      <h5 className='mt-3'>2.	Delivery timelines may vary depending on the destination, public holidays, and weather conditions.</h5>
+      <h5 className='mt-3'>3.	Customers are responsible for providing accurate shipping information including full address, contact number, and recipient details.</h5>
+      <h5 className='mt-3'>4.	We are not responsible for delays, failed deliveries, or additional charges caused by incorrect or incomplete delivery information.</h5>
+      <h5 className='mt-3'>5.	Delivery charges, if applicable, will be displayed during checkout before payment confirmation.</h5>
+      <h5 className='mt-3'>6.	Once the order has been shipped, customers may receive tracking details through SMS, email, or WhatsApp.</h5>
+      <h5 className='mt-3 mb-5 pb-5'>7.	Customers may cancel their order only if the order status is marked as "Not Shipped" . Once the order status changes to "Shipped" then cancellation cannot be guaranteed.</h5>
     </div>
   )
 }

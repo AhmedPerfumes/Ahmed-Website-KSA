@@ -29,6 +29,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { FacebookPixelEvents } from "@/components/Metapixel";
+import AhmedTrackerComponent from "@/components/common/AhmedTracker";
 import Head from "next/head";
 import { ToastContainer } from 'react-toastify';
 import DeferredCSS from "@/components/common/DeferredCSS";
@@ -406,6 +407,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     <Context>
                         <UserProvider>
                             <FacebookPixelEvents />
+                            <AhmedTrackerComponent />
                                 <MobileHeader />
                                 {/* Spacer: compensates for fixed mobile header (5rem nav + 2rem marquee). Hidden on desktop. */}
                                 <div className="d-lg-none" style={{ height: "7rem", flexShrink: 0 }} aria-hidden="true" />

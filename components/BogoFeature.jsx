@@ -862,9 +862,10 @@ const BOGOFeature = () => {
                           loading="lazy"
                         />
                         {isSelected && selection_rule === 'customer_select' ? (
-                          <div className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside flex items-center mt-2 space-x-2">
-                            <span className="text-gray-700 font-medium">Already Selected (Quantity):</span>
-                            <input
+                          <div className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" style={{ cursor: 'not-allowed' }}>
+                            <span className="text-gray-700 font-medium">Already Selected</span>
+                            {/* <span className="text-gray-700 font-medium">Already Selected (Quantity):</span> */}
+                            {/* <input
                               id={`quantity-${product.product_id}`}
                               type="number"
                               min="1"
@@ -873,7 +874,7 @@ const BOGOFeature = () => {
                               onChange={(e) => handleQuantityChange(campaign, product, e.target.value)}
                               className="w-16 p-1 border rounded text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
                               aria-label={`Quantity for ${he.decode(product.product_name)}`}
-                            />
+                            /> */}
                           </div>
                         ) : (
                           <button

@@ -160,6 +160,10 @@ export default function Contact() {
 
           {/* Right Side - Contact Information and Office Timing */}
           <div className="col-lg-6 ">
+            <h4 className="pt-5 mb-4 fs-3">Customer Service</h4>
+            <p className="mb-2 fs-5">1.	Our customer care team aims to respond to all queries within 24 to 48 working hours.</p>
+            <p className="mb-2 fs-5">2.	For any further questions or specific requests regarding refunds and returns, please contact us at <b>'customersupport@ahmedalmaghribi.com'</b>. We are committed to ensuring a smooth and satisfactory shopping experience.</p>
+            <p className="mb-2 fs-5">3.	Your privacy and security are of utmost importance to us, and we strive to ensure your experience with Ahmed Al Maghribi Perfumes LLC is both secure and enjoyable.</p>
             <h4 className="pt-5 mb-4 fs-3">Contact Information</h4>
             <p className="mb-2 fs-5">
               Address: Ahmed Al Maghrebi Perfume Manuf L.L.C, Jurf Industrial
