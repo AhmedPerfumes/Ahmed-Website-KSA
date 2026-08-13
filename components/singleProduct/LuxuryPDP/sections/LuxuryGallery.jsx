@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import Image from "next/image";
+import he from "he";
 
 /**
  * LuxuryGallery — Product Image Gallery
@@ -90,11 +91,11 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         role="img"
-        aria-label={`${product?.product_name || "Product"} — image ${activeIndex + 1} of ${images.length}`}
+        aria-label={`${he.decode(product?.product_name || "Product")} — image ${activeIndex + 1} of ${images.length}`}
       >
         <Image
           src={imgSrc}
-          alt={product?.product_name || "Product"}
+          alt={he.decode(product?.product_name || "Product")}
           fill
           sizes="(max-width: 991px) 100vw, 48vw"
           priority={activeIndex === 0}

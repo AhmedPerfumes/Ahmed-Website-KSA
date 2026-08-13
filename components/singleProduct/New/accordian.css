@@ -47,7 +47,7 @@
     border: none;
     border-top: none;
     cursor: pointer;
-    text-align: left;
+    text-align: start; /* logical: left in LTR, right in RTL */
     font-size: 0.82rem;
     font-family: var(--font-heading);
     font-weight: 700;
@@ -72,8 +72,14 @@
     border-bottom: 2px solid currentColor;
     transform: rotate(45deg);
     transition: transform 0.3s ease;
-    margin-left: auto;
+    margin-inline-start: auto; /* logical: pushes chevron to far edge in both LTR and RTL */
     flex-shrink: 0;
+}
+
+/* RTL: reset the logical margin so chevron sits on the correct side */
+[dir="rtl"] .pdp-acc-btn::after {
+    margin-inline-start: auto;
+    margin-inline-end: 0;
 }
 
 .pdp-acc-btn--open::after {

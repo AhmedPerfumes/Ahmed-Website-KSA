@@ -443,36 +443,65 @@ export default function Header14() {
                 }
                 style={pathname == "/" ? {} : {}}
             > */}
-                <Swiper
-                    className="swiper-container js-swiper-slider slideshow type4 slideshow-navigation-white-sm swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events bg-black"
-                    {...swiperOptions}
-                    style={{ height: "2.5rem" }}
-                >
-                    {top_header?.map((elm, i) => (
-                        <SwiperSlide
-                            key={i}
-                            style={{
-                                textTransform: "uppercase",
-                                fontSize: "12px",
-                            }}
-                            className="swiper-slide text-center"
-                        >
-                            <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
-                                <Link
-                                    href={`/${locale}/${elm.color}`}
-                                    className="animate animate_fade animate_btt animate_delay-5 lh-2rem text-white"
-                                >
-                                    {t(
-                                        elm.title
-                                            .split(" ")
-                                            .slice(0, 13)
-                                            .join(" ")
-                                    )}
-                                </Link>
-                            </div>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                {/* ── Top announcement marquee ── */}
+                {top_header?.length > 0 && (
+                  <div
+                    className="bg-black header-marquee-bar"
+                    style={{ height: "2.5rem", overflow: "hidden" }}
+                  >
+                    {/* Inner container: 40% wide + centered = text only visible in middle of bar */}
+                    <div
+                      className="marquee-container d-flex align-items-center"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
+                      style={{
+                        width: "40%",
+                        margin: "0 auto",
+                        overflow: "hidden",
+                        height: "100%",
+                      }}
+                    >
+                      <div
+                        className="marquee-track"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          whiteSpace: "nowrap",
+                          height: "100%",
+                          animation: `${locale === "ar" ? "marquee-rtl" : "marquee-ltr"} 30s linear infinite`,
+                          willChange: "transform",
+                        }}
+                      >
+                        {/* Doubled for seamless loop (translateX -50% lands exactly at copy 2 start) */}
+                        {[...top_header, ...top_header].map((elm, i) => (
+                          <span key={i} className="d-flex align-items-center">
+                            <Link
+                              href={`/${locale}/${elm.color}`}
+                              className="text-white text-decoration-none text-uppercase fw-bold mx-5"
+                              style={{ fontSize: "12px", whiteSpace: "nowrap" }}
+                            >
+                              {t(elm.title.split(" ").slice(0, 13).join(" "))}
+                            </Link>
+                            <span className="text-white" style={{ opacity: 0.5 }}>-</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <style>{`
+                      @keyframes marquee-ltr {
+                        0%   { transform: translateX(0); }
+                        100% { transform: translateX(-50%); }
+                      }
+                      @keyframes marquee-rtl {
+                        0%   { transform: translateX(-50%); }
+                        100% { transform: translateX(0); }
+                      }
+                      .header-marquee-bar .marquee-container:hover .marquee-track {
+                        animation-play-state: paused;
+                      }
+                    `}</style>
+                  </div>
+                )}
+
 
                 <div
                     ref={containerRef}

@@ -13,13 +13,13 @@
   -webkit-font-smoothing: antialiased;
 }
 
-$gold-light:  #d4a84b;
-$gold-main:   #b9a16b;
-$gold-dark:   #8b6914;
-$gold-bg:     #fdf8ee;
+$gold-light: #d4a84b;
+$gold-main: #b9a16b;
+$gold-dark: #8b6914;
+$gold-bg: #fdf8ee;
 $gold-border: #e8d5a0;
 $gold-gradient: linear-gradient(135deg, $gold-light 0%, $gold-dark 100%);
-$gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken($gold-dark,6%) 100%);
+$gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken($gold-dark, 6%) 100%);
 
 
 // ============================================================
@@ -39,7 +39,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     min-width: 0.75rem;
     transition: background 0.3s ease;
 
-    &.filled { background: $gold-main; }
+    &.filled {
+      background: $gold-main;
+    }
   }
 
   &__step {
@@ -48,13 +50,21 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     gap: 0.6rem;
     flex-shrink: 0;
     text-decoration: none !important;
-    cursor: default;        // pending = default
+    cursor: default; // pending = default
     white-space: nowrap;
 
-    &.completed { cursor: pointer; }  // completed = clickable back-nav
-    &.active    { cursor: default; }
+    &.completed {
+      cursor: pointer;
+    }
 
-    @media (max-width: 479px) { gap: 0; }
+    // completed = clickable back-nav
+    &.active {
+      cursor: default;
+    }
+
+    @media (max-width: 479px) {
+      gap: 0;
+    }
   }
 
   &__icon-circle {
@@ -70,9 +80,16 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     transition: all 0.3s ease;
     color: #c8c8c8;
 
-    @media (max-width: 479px) { width: 2.1rem; height: 2.1rem; }
+    @media (max-width: 479px) {
+      width: 2.1rem;
+      height: 2.1rem;
+    }
 
-    svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      fill: currentColor;
+    }
   }
 
   &__text {
@@ -80,7 +97,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     flex-direction: column;
     line-height: 1.25;
 
-    @media (max-width: 479px) { display: none; }
+    @media (max-width: 479px) {
+      display: none;
+    }
 
     strong {
       font-size: 0.68rem;
@@ -106,8 +125,14 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     color: #fff;
     box-shadow: 0 0 0 3px rgba($gold-dark, 0.15);
   }
-  &__step.active &__text strong { color: $gold-dark; }
-  &__step.active &__text em     { color: #888; }
+
+  &__step.active &__text strong {
+    color: $gold-dark;
+  }
+
+  &__step.active &__text em {
+    color: #888;
+  }
 
   // Completed step styles
   &__step.completed &__icon-circle {
@@ -115,8 +140,14 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     border-color: $gold-main;
     color: #fff;
   }
-  &__step.completed &__text strong { color: $gold-main; }
-  &__step.completed &__text em     { color: #aaa; }
+
+  &__step.completed &__text strong {
+    color: $gold-main;
+  }
+
+  &__step.completed &__text em {
+    color: #aaa;
+  }
 }
 
 
@@ -140,7 +171,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
 
   &.is-active {
     border-color: $gold-border;
-    box-shadow: 0 1px 6px rgba(185,161,107,0.1);
+    box-shadow: 0 1px 6px rgba(185, 161, 107, 0.1);
   }
 
   &.is-completed {
@@ -163,7 +194,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 
-  .is-completed & { background: $gold-bg; }
+  .is-completed & {
+    background: $gold-bg;
+  }
 }
 
 .cc-acc-dot {
@@ -208,7 +241,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   color: #1a1a1a;
   display: block;
 
-  .is-locked & { color: #bbb; }
+  .is-locked & {
+    color: #bbb;
+  }
 }
 
 .cc-acc-summary-line {
@@ -220,7 +255,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   text-overflow: ellipsis;
   max-width: 220px;
 
-  @media (min-width: 420px) { max-width: 280px; }
+  @media (min-width: 420px) {
+    max-width: 280px;
+  }
 }
 
 .cc-acc-edit {
@@ -234,7 +271,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   cursor: pointer;
   flex-shrink: 0;
 
-  &:hover { color: $gold-light; }
+  &:hover {
+    color: $gold-light;
+  }
 }
 
 .cc-acc-chevron {
@@ -254,7 +293,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   display: none;
   background: #fff;
 
-  .is-active & { display: block; }
+  .is-active & {
+    display: block;
+  }
 }
 
 // Continue button inside accordion
@@ -282,7 +323,11 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     transform: translateY(-1px);
   }
 
-  &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
 }
 
 // Inline collapsible toggle (for "Add note", coupon)
@@ -299,7 +344,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   font-weight: 600;
   text-decoration: none;
 
-  &:hover { text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+  }
 
   .cc-toggle-icon {
     font-size: 1rem;
@@ -307,7 +354,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     transition: transform 0.2s ease;
   }
 
-  &.open .cc-toggle-icon { transform: rotate(45deg); }
+  &.open .cc-toggle-icon {
+    transform: rotate(45deg);
+  }
 }
 
 .cc-collapsible {
@@ -315,7 +364,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   overflow: hidden;
   transition: max-height 0.3s ease;
 
-  &.open { max-height: 600px; }
+  &.open {
+    max-height: 600px;
+  }
 }
 
 // ============================================================
@@ -341,7 +392,8 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   box-shadow: 0 4px 16px rgba(139, 105, 20, 0.25);
   text-decoration: none;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background: $gold-gradient-hover;
     color: #fff !important;
     text-decoration: none;
@@ -349,9 +401,12 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     box-shadow: 0 6px 20px rgba(139, 105, 20, 0.35);
   }
 
-  &:active { transform: translateY(0); }
+  &:active {
+    transform: translateY(0);
+  }
 
-  &:disabled, &[disabled] {
+  &:disabled,
+  &[disabled] {
     opacity: 0.55;
     cursor: not-allowed;
     transform: none;
@@ -366,11 +421,13 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   background: #fff;
   border: 1px solid #f0ece3;
   border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   padding: 1rem;
   margin-bottom: 1rem;
 
-  @media (min-width: 768px) { padding: 1.25rem; }
+  @media (min-width: 768px) {
+    padding: 1.25rem;
+  }
 }
 
 .cc-section-header {
@@ -381,9 +438,12 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   padding-bottom: 0.65rem;
   border-bottom: 1px solid #f5f2ec;
 
-  .cc-section-icon { font-size: 1rem; }
+  .cc-section-icon {
+    font-size: 1rem;
+  }
 
-  h4, .cc-section-title {
+  h4,
+  .cc-section-title {
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -433,7 +493,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   margin-bottom: 0;
   position: relative;
 
-  &:first-child { border-top: 1px solid #f0ece3; }
+  &:first-child {
+    border-top: 1px solid #f0ece3;
+  }
 
   &__image {
     flex-shrink: 0;
@@ -443,7 +505,11 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     overflow: hidden;
     background: #faf9f8;
 
-    img { width: 100%; height: 100%; object-fit: cover; }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   &__body {
@@ -470,9 +536,25 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     flex-wrap: wrap;
   }
 
-  &__price-sale { font-size: 0.97rem; font-weight: 700; color: #b03a2e; }
-  &__price-old  { font-size: 0.8rem; color: #1a1a1a; text-decoration: line-through; opacity: 0.5; margin-right: 0.15rem; }
-  &__price-regular { font-size: 0.97rem; font-weight: 700; color: #1a1a1a; }
+  &__price-sale {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: #a67b30;
+  }
+
+  &__price-old {
+    font-size: 0.8rem;
+    color: #1a1a1a;
+    text-decoration: line-through;
+    opacity: 0.5;
+    margin-right: 0.15rem;
+  }
+
+  &__price-regular {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
 
   &__qty-row {
     display: flex;
@@ -484,7 +566,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   &__qty-btn {
     width: 28px;
     height: 28px;
-    border-radius: 2px;          // square, not circle
+    border-radius: 2px; // square, not circle
     border: 1px solid #ddd;
     background: #f7f7f7;
     font-size: 1rem;
@@ -497,8 +579,15 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     transition: all 0.15s ease;
     line-height: 1;
 
-    &:hover { border-color: $gold-main; color: $gold-dark; background: $gold-bg; }
-    &:active { opacity: 0.7; }
+    &:hover {
+      border-color: $gold-main;
+      color: $gold-dark;
+      background: $gold-bg;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
   }
 
   &__qty-num {
@@ -538,7 +627,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     text-decoration: underline;
     transition: color 0.15s ease;
 
-    &:hover { color: #c62828; }
+    &:hover {
+      color: #c62828;
+    }
   }
 }
 
@@ -566,9 +657,24 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   padding: 3.5rem 1.5rem;
   text-align: center;
 
-  &__icon { font-size: 3.5rem; margin-bottom: 0.75rem; opacity: 0.35; }
-  &__title { font-size: 1rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.4rem; }
-  &__sub { font-size: 0.85rem; color: #888; margin-bottom: 1.25rem; }
+  &__icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.35;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.4rem;
+  }
+
+  &__sub {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1.25rem;
+  }
 }
 
 // ============================================================
@@ -601,21 +707,44 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     border-bottom: 1px solid #f7f4ef;
     font-size: 0.82rem;
 
-    &:last-child { border-bottom: 0; }
+    &:last-child {
+      border-bottom: 0;
+    }
 
-    .cc-totals-label { font-weight: 600; color: #666; text-transform: uppercase; font-size: 0.73rem; letter-spacing: 0.04em; }
-    .cc-totals-value { font-weight: 700; color: #1a1a1a; }
+    .cc-totals-label {
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      font-size: 0.73rem;
+      letter-spacing: 0.04em;
+    }
+
+    .cc-totals-value {
+      font-weight: 700;
+      color: #1a1a1a;
+    }
 
     &.cc-totals--total {
       padding-top: 0.7rem;
       border-top: 2px solid $gold-border;
       border-bottom: 0;
 
-      .cc-totals-label { font-size: 0.8rem; color: #1a1a1a; }
-      .cc-totals-value { font-size: 1rem; color: $gold-dark; }
+      .cc-totals-label {
+        font-size: 0.8rem;
+        color: #1a1a1a;
+      }
+
+      .cc-totals-value {
+        font-size: 1rem;
+        color: $gold-dark;
+      }
     }
 
-    .cc-free-ship { color: #2e7d32; font-weight: 700; font-size: 0.78rem; }
+    .cc-free-ship {
+      color: #2e7d32;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
   }
 }
 
@@ -637,7 +766,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     border-top: 1px solid #f0ece3;
     padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
     z-index: 800;
-    box-shadow: 0 -3px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.1);
   }
 
   &__summary {
@@ -648,13 +777,19 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     color: #888;
     margin-bottom: 0.25rem;
 
-    strong { color: $gold-dark; font-size: 0.95rem; }
+    strong {
+      color: $gold-dark;
+      font-size: 0.95rem;
+    }
   }
 }
 
 .cc-sticky-spacer {
   height: 0;
-  @media (max-width: 1199px) { height: 90px; }
+
+  @media (max-width: 1199px) {
+    height: 90px;
+  }
 }
 
 // ============================================================
@@ -679,7 +814,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   background: #fff;
   position: relative;
 
-  &:hover { border-color: $gold-light; background: $gold-bg; }
+  &:hover {
+    border-color: $gold-light;
+    background: $gold-bg;
+  }
 
   &.cc-payment-card--selected {
     border-color: $gold-main;
@@ -687,7 +825,12 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     box-shadow: 0 0 0 1px $gold-main;
   }
 
-  input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
 
   &__radio {
     width: 1.1rem;
@@ -708,16 +851,39 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
       transition: background 0.15s ease;
     }
 
-    .cc-payment-card--selected & { border-color: $gold-main; }
-    .cc-payment-card--selected &::after { background: $gold-main; }
+    .cc-payment-card--selected & {
+      border-color: $gold-main;
+    }
+
+    .cc-payment-card--selected &::after {
+      background: $gold-main;
+    }
   }
 
-  &__icon { font-size: 1.25rem; flex-shrink: 0; width: 1.75rem; text-align: center; }
+  &__icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    width: 1.75rem;
+    text-align: center;
+  }
 
-  &__content { flex: 1; min-width: 0; }
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
 
-  &__title { font-size: 0.82rem; font-weight: 700; color: #1a1a1a; display: block; }
-  &__subtitle { font-size: 0.7rem; color: #999; display: block; }
+  &__title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: block;
+  }
+
+  &__subtitle {
+    font-size: 0.7rem;
+    color: #999;
+    display: block;
+  }
 
   &__logos {
     display: flex;
@@ -741,9 +907,26 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   align-items: flex-start;
   gap: 0.4rem;
 
-  &--error   { background: #fff5f5; color: #c62828; border: 1px solid #ffcdd2; border-left: 3px solid #e53935; }
-  &--success { background: #f1f8e9; color: #2e7d32; border: 1px solid #c8e6c9; border-left: 3px solid #43a047; }
-  &--info    { background: $gold-bg; color: $gold-dark; border: 1px solid $gold-border; border-left: 3px solid $gold-main; }
+  &--error {
+    background: #fff5f5;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+    border-left: 3px solid #e53935;
+  }
+
+  &--success {
+    background: #f1f8e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+    border-left: 3px solid #43a047;
+  }
+
+  &--info {
+    background: $gold-bg;
+    color: $gold-dark;
+    border: 1px solid $gold-border;
+    border-left: 3px solid $gold-main;
+  }
 }
 
 // ============================================================
@@ -767,10 +950,17 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     text-transform: uppercase;
     letter-spacing: 0.04em;
 
-    span { color: $gold-dark; }
-    svg { transition: transform 0.2s ease; }
+    span {
+      color: $gold-dark;
+    }
 
-    &.open svg { transform: rotate(180deg); }
+    svg {
+      transition: transform 0.2s ease;
+    }
+
+    &.open svg {
+      transform: rotate(180deg);
+    }
   }
 
   &__items {
@@ -778,9 +968,11 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     overflow: hidden;
     transition: max-height 0.35s ease;
 
-    &.open { max-height: 600px; }
+    &.open {
+      max-height: 600px;
+    }
 
-    > div {
+    >div {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -822,7 +1014,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     border-top: 1px solid #e8d5a0;
     padding-top: 0.5rem;
 
-    > div {
+    >div {
       display: flex;
       justify-content: space-between;
       font-size: 0.8rem;
@@ -871,8 +1063,14 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
 
 // Focus ring for form inputs
 .cc-checkout-layout {
-  .form-control:focus { border-color: $gold-main; box-shadow: 0 0 0 2px rgba($gold-main, 0.15); }
-  .form-floating > .form-control:focus ~ label { color: $gold-dark; }
+  .form-control:focus {
+    border-color: $gold-main;
+    box-shadow: 0 0 0 2px rgba($gold-main, 0.15);
+  }
+
+  .form-floating>.form-control:focus~label {
+    color: $gold-dark;
+  }
 }
 
 // ============================================================
@@ -907,10 +1105,31 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
       flex-shrink: 0;
     }
 
-    &.active { color: $gold-dark; &::before { background: $gold-main; color: #fff; } }
-    &.done   { color: #2e7d32;   &::before { background: #e8f5e9; color: #2e7d32; content: '✓'; } }
+    &.active {
+      color: $gold-dark;
 
-    &:not(:last-child)::after { content: '›'; color: #ddd; font-size: 0.85rem; margin-left: 0.25rem; }
+      &::before {
+        background: $gold-main;
+        color: #fff;
+      }
+    }
+
+    &.done {
+      color: #2e7d32;
+
+      &::before {
+        background: #e8f5e9;
+        color: #2e7d32;
+        content: '✓';
+      }
+    }
+
+    &:not(:last-child)::after {
+      content: '›';
+      color: #ddd;
+      font-size: 0.85rem;
+      margin-left: 0.25rem;
+    }
   }
 }
 
@@ -918,14 +1137,30 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
 // ORDER COMPLETE — ANIMATED CHECK
 // ============================================================
 @keyframes cc-ring-pop {
-  0%   { transform: scale(0.5); opacity: 0; }
-  65%  { transform: scale(1.08); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  65% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes cc-check-draw {
-  0%   { stroke-dashoffset: 80; }
-  100% { stroke-dashoffset: 0; }
+  0% {
+    stroke-dashoffset: 80;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 .cc-success-ring {
@@ -939,18 +1174,42 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   &__svg {
     animation: cc-ring-pop 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
 
-    .cc-ring-bg     { fill: $gold-bg; }
-    .cc-ring-circle { fill: none; stroke: $gold-main; stroke-width: 3.5; }
-    .cc-check-path  {
-      fill: none; stroke: $gold-dark; stroke-width: 3.5;
-      stroke-linecap: round; stroke-linejoin: round;
-      stroke-dasharray: 80; stroke-dashoffset: 80;
+    .cc-ring-bg {
+      fill: $gold-bg;
+    }
+
+    .cc-ring-circle {
+      fill: none;
+      stroke: $gold-main;
+      stroke-width: 3.5;
+    }
+
+    .cc-check-path {
+      fill: none;
+      stroke: $gold-dark;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
       animation: cc-check-draw 0.4s 0.4s ease forwards;
     }
   }
 
-  h3 { font-size: 1.4rem; font-weight: 700; color: #1a1a1a; text-align: center; margin: 0; }
-  p  { color: #666; text-align: center; font-size: 0.875rem; margin: 0; }
+  h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-align: center;
+    margin: 0;
+  }
+
+  p {
+    color: #666;
+    text-align: center;
+    font-size: 0.875rem;
+    margin: 0;
+  }
 }
 
 .cc-order-badge {
@@ -967,7 +1226,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   letter-spacing: 0.04em;
   text-transform: uppercase;
 
-  span { font-size: 0.85rem; color: #1a1a1a; }
+  span {
+    font-size: 0.85rem;
+    color: #1a1a1a;
+  }
 }
 
 .cc-whats-next {
@@ -987,14 +1249,36 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     border-bottom: 1px solid #eee;
   }
 
-  &__list { display: flex; flex-direction: column; gap: 0.7rem; list-style: none; padding: 0; margin: 0; }
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 
-  &__item { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.82rem; color: #444; line-height: 1.4; }
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    color: #444;
+    line-height: 1.4;
+  }
 
   &__step-num {
-    display: flex; align-items: center; justify-content: center;
-    width: 1.5rem; height: 1.5rem; border-radius: 50%;
-    background: $gold-main; color: #fff; font-size: 0.65rem; font-weight: 700; flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: $gold-main;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
   }
 }
 
@@ -1027,7 +1311,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     letter-spacing: 0.06em;
     color: $gold-dark;
 
-    svg { flex-shrink: 0; }
+    svg {
+      flex-shrink: 0;
+    }
   }
 
   &__edit-btn {
@@ -1039,7 +1325,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     cursor: pointer;
     transition: color 0.15s ease;
 
-    &:hover { color: darken($gold-dark, 10%) !important; }
+    &:hover {
+      color: darken($gold-dark, 10%) !important;
+    }
   }
 
   &__body {
@@ -1094,10 +1382,28 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     border-radius: 6px;
     align-items: flex-start;
 
-    &__content { display: flex; flex-direction: column; gap: 0.15rem; }
-    &__title { font-size: 0.78rem; font-weight: 700; color: #1a1a1a; }
-    &__logos { margin-top: 0.3rem; gap: 0.25rem; }
-    &__icon { display: none; }  // hide big emoji in compact mode
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    &__title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    &__logos {
+      margin-top: 0.3rem;
+      gap: 0.25rem;
+    }
+
+    &__icon {
+      display: none;
+    }
+
+    // hide big emoji in compact mode
   }
 }
 
@@ -1120,7 +1426,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   background: #fffdf8;
   transition: border-color 0.15s;
 
-  &:focus-within { border-color: $gold-main; box-shadow: 0 0 0 2px rgba($gold-main, 0.12); }
+  &:focus-within {
+    border-color: $gold-main;
+    box-shadow: 0 0 0 2px rgba($gold-main, 0.12);
+  }
 }
 
 .cc-coupon-icon {
@@ -1140,7 +1449,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   outline: none;
   font-family: inherit;
 
-  &::placeholder { color: #bbb; font-style: italic; }
+  &::placeholder {
+    color: #bbb;
+    font-style: italic;
+  }
 }
 
 .cc-coupon-apply-btn {
@@ -1160,7 +1472,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   display: flex;
   align-items: center;
 
-  &:hover { background: $gold-dark; }
+  &:hover {
+    background: $gold-dark;
+  }
 }
 
 .cc-coupon-view-btn {
@@ -1174,7 +1488,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   align-self: stretch;
   transition: color 0.15s;
 
-  &:hover { color: $gold-dark; }
+  &:hover {
+    color: $gold-dark;
+  }
 }
 
 .cc-coupon-applied {
@@ -1187,7 +1503,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   border-radius: 8px;
   padding: 0.5rem 0.65rem;
 
-  &__icon { font-size: 1rem; flex-shrink: 0; }
+  &__icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
 
   &__text {
     flex: 1;
@@ -1220,7 +1539,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
     flex-shrink: 0;
     transition: color 0.15s;
 
-    &:hover { color: #e53935; }
+    &:hover {
+      color: #e53935;
+    }
   }
 }
 
@@ -1231,8 +1552,17 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   margin-top: 0.4rem;
   font-weight: 500;
 
-  &--err { color: #c62828; background: #fff5f5; border: 1px solid #ffcdd2; }
-  &--ok  { color: #2e7d32; background: #f1f8e9; border: 1px solid #c8e6c9; }
+  &--err {
+    color: #c62828;
+    background: #fff5f5;
+    border: 1px solid #ffcdd2;
+  }
+
+  &--ok {
+    color: #2e7d32;
+    background: #f1f8e9;
+    border: 1px solid #c8e6c9;
+  }
 }
 
 .cc-trust-bar--right {
@@ -1268,7 +1598,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   border-bottom: 1px solid #f0ece3;
   transition: background 0.15s;
 
-  &:hover { background: #fafaf8; }
+  &:hover {
+    background: #fafaf8;
+  }
 }
 
 .cc-osr__title {
@@ -1296,7 +1628,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   transition: transform 0.2s ease;
   flex-shrink: 0;
 
-  &--open { transform: rotate(180deg); }
+  &--open {
+    transform: rotate(180deg);
+  }
 }
 
 .cc-osr__body {
@@ -1361,7 +1695,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   color: #333;
   font-size: 0.84rem;
 
-  strong { font-weight: 700; color: #1a1a1a; }
+  strong {
+    font-weight: 700;
+    color: #1a1a1a;
+  }
 }
 
 .cc-osr__product-price {
@@ -1442,7 +1779,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
   text-underline-offset: 2px;
   transition: color 0.15s;
 
-  &:hover { color: darken($gold-dark, 10%); }
+  &:hover {
+    color: darken($gold-dark, 10%);
+  }
 }
 
 // ============================================================
@@ -1491,7 +1830,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
 .row.g-2 {
   .col-6 {
     .form-floating {
-      > label {
+      >label {
         font-size: 0.72rem;
         white-space: nowrap;
         overflow: visible;
@@ -1502,8 +1841,8 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light,6%) 0%, darken(
       }
 
       // When input has value/focus, the label floats — keep it visible
-      > .form-control:focus ~ label,
-      > .form-control:not(:placeholder-shown) ~ label {
+      >.form-control:focus~label,
+      >.form-control:not(:placeholder-shown)~label {
         font-size: 0.65rem;
         transform: scale(0.85) translateY(-0.6rem) translateX(0.15rem);
         color: #888;

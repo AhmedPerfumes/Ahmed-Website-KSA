@@ -142,7 +142,7 @@ export default function CartDrawer() {
                       {imgSrc ? (
                         <Image
                           src={imgSrc}
-                          alt={elm?.product_name || "product"}
+                          alt={he.decode(elm?.product_name || "product")}
                           width={80}
                           height={100}
                           className="cd-item__img"

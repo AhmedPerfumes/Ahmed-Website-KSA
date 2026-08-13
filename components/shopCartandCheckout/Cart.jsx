@@ -8,6 +8,7 @@ import { useMenu } from '../../context/MenuContext';
 import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "../TamaraWidget";
 import dynamic from "next/dynamic";
+import he from "he";
 const YouMayAlsoLike = dynamic(() => import("@/components/cart/YouMayAlsoLike"), { ssr: false });
 
 export default function Cart() {
@@ -100,12 +101,12 @@ export default function Cart() {
                         src={elm.image
                           ? `${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`
                           : `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}`}
-                        width={72} height={72} alt={elm.product_name} loading="lazy"
+                        width={72} height={72} alt={he.decode(elm.product_name || "")} loading="lazy"
                         style={{objectFit:'cover'}}
                       />
                     </div>
                     <div className="cc-cart-item__body">
-                      <p className="cc-cart-item__name">{elm.product_name}</p>
+                      <p className="cc-cart-item__name">{he.decode(elm.product_name || "")}</p>
                       {isGift && <span className="cc-gift-badge">🎁 Free Gift</span>}
                       <div className="cc-cart-item__price-row">
                         {disc !== null ? (

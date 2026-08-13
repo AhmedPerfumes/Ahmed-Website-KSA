@@ -46,11 +46,11 @@
 }
 
 /* Push content below the oixed mobile nav so the heading is visible */
-@media (max-width: 767px) {
+/* @media (max-width: 767px) {
   .pc-root {
     padding-top: var(--header-h);
   }
-}
+} */
 
 /* â”€â”€â”€ CATEGORY HEADING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
@@ -476,7 +476,7 @@
 .pc-grid-wrap {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0.5rem 0 5rem;
+  padding: 0.5rem 0 0;
   background: #ffffff;
 }
 
@@ -552,6 +552,13 @@
   .pc-card__img-wrap {
     aspect-ratio: 3 / 4;
   }
+
+  /* Smaller font on tiny 2-col mobile so names wrap less */
+  .pc-card__name {
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    /* height uses 'em' so it auto-scales with font-size — no override needed */
+  }
 }
 
 @media (min-width: 768px) {
@@ -623,11 +630,11 @@
 .pc-badges {
   position: absolute;
   top: 0.5rem;
-  left: 0.5rem;
+  inset-inline-start: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* â† key: shrink to content width */
+  /* â†  key: shrink to content width */
   gap: 0.25rem;
   z-index: 3;
   pointer-events: none;
@@ -655,6 +662,8 @@
 .pc-badge--sale {
   background: var(--pc-gold);
   color: var(--pc-white);
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .pc-badge--oos {
@@ -690,6 +699,12 @@
   color: #1a1a1a;
   margin: 0;
   line-height: 1.4;
+  /* ─── Alignment fix: always reserve exactly 2 lines of height ──
+     Short names (1 line) get whitespace below.
+     Long names (3+ lines) get truncated with ellipsis.
+     This keeps all cards in a row perfectly aligned on mobile. */
+  height: calc(2 * 1em * 1.4);
+  /* = 2.8rem at font-size:1rem */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -978,12 +993,6 @@
   transform: translateX(0);
 }
 
-/* Badges to top-right corner in RTL */
-[dir="rtl"] .pc-badges {
-  left: auto;
-  right: 0.5rem;
-  align-items: flex-end;
-}
 
 /* Sort select: chevron on left side in RTL */
 [dir="rtl"] .pc-sort-select {
@@ -1012,7 +1021,7 @@
   text-align: right;
 }
 
-/* Price range fill: flip gradient oor RTL */
+/* Price range fill: flip gradient for RTL */
 [dir="rtl"] .pc-range-fill {
   background: linear-gradient(270deg, var(--pc-gold-light), var(--pc-gold));
 }
@@ -1022,10 +1031,19 @@
   flex-direction: row-reverse;
 }
 
-/* Card name RTL */
+/* ── Card body: centered text works for both LTR and RTL cards ── */
 [dir="rtl"] .pc-card__body {
   text-align: center;
-  /* center is fine for both */
+}
+
+/* Arabic product name:
+   - Remove letter-spacing (breaks Arabic script joining)
+   - Remove text-transform uppercase (mangles Arabic characters)
+   - Use a larger font since Arabic is naturally slightly smaller visually */
+[dir="rtl"] .pc-card__name {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.95rem;
 }
 
 /* Qty stepper: visually keep + on right in RTL too */

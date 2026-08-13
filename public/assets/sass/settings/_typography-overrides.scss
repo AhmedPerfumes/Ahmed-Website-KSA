@@ -25,7 +25,8 @@ html {
   ─────────────────────────────────────────────────────────────────── */
   overscroll-behavior: none;
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch; /* smooth momentum on older iOS */
+  -webkit-overflow-scrolling: touch;
+  /* smooth momentum on older iOS */
 }
 
 body {
@@ -294,7 +295,7 @@ label {
 }
 
 .pc__title {
-  font-size: clamp(0.95rem, 1.2vw, 1.2rem) !important;
+  font-size: clamp(0.95rem, 1.2vw, 1rem) !important;
   /* was clamp(0.875,1.1vw,1.05) */
   font-family: var(--font-dm-sans), sans-serif !important;
 }
@@ -409,9 +410,10 @@ p {
 /* gets forced to a stronger readable dark tone.                       */
 
 /* Star rating empty stars — slightly muted is OK, but #bbb is too pale */
+/* NOTE: no !important here — inline color styles on individual stars must win */
 [class*="star"]:not([class*="filled"]):not([class*="active"]),
 [class*="rating"] [class*="empty"] {
-  color: #ccc !important;
+  color: #ccc;
   /* keep muted for empty stars — intentional */
 }
 
@@ -585,8 +587,7 @@ p {
 [class*="trust"] p,
 [class*="shipping"] span {
   font-size: clamp(0.8rem, 0.85vw, 1rem) !important;
-  /* was fixed 0.8rem */
-  color: #2c2c2c !important;
+  color: var(--pdp-gold-light) !important;
 }
 
 /* ── 15. LARGE SCREEN (1920px+) button boost ─────────────────────── */
@@ -812,4 +813,17 @@ p {
 .so-card__price,
 .dk-card__price {
   justify-content: center !important;
+}
+
+/* ── 26. CHECKOUT FORM — prevent floating labels overflowing on mobile ─ */
+/* On narrow (col-6) columns the label can overflow the field boundary.   */
+/* Clip with ellipsis so it never escapes the field box on any screen.    */
+@media (max-width: 575.98px) {
+  .form-floating>label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 1rem);
+    /* leave room for Bootstrap's internal padding */
+  }
 }

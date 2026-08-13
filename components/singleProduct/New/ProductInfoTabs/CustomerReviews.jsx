@@ -1,4 +1,4 @@
-﻿import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import he from 'he';
 import React, { useState, useEffect, useMemo } from 'react';
 import Skeleton from '@mui/material/Skeleton';
@@ -13,16 +13,20 @@ const useHasMounted = () => {
     return hasMounted;
 };
 
-// ====================================================================
-//  HELPER: StarRating (display only)
-// ====================================================================
+// Progressive star colors: lightest gold → deep amber (position 1 → 5)
+const STAR_COLORS = ['#E5C07A', '#D4A84B', '#C9903A', '#B87730', '#8B5E10'];
+const STAR_EMPTY  = '#D9D2CA';
+
 const StarRating = ({ rating, size = '1rem' }) => (
     <div className={styles.starRatingContainer}>
         {[1, 2, 3, 4, 5].map((i) => (
             <span
                 key={i}
                 className={styles.starRatingItem}
-                style={{ color: i <= rating ? '#C7944B' : '#D9D2CA', fontSize: size }}
+                style={{
+                    color: i <= rating ? STAR_COLORS[i - 1] : STAR_EMPTY,
+                    fontSize: size,
+                }}
             >★</span>
         ))}
     </div>
@@ -104,7 +108,7 @@ const ReviewSummary = ({ averageRating, reviewCount, distribution, onWriteClick,
                     return (
                         <div key={star} className="d-flex align-items-center mb-2" style={{ gap: '8px' }}>
                             <span style={{ width: '10px', fontSize: '0.78rem', color: '#555', fontFamily: "inherit", fontWeight: 600 }}>{star}</span>
-                            <span style={{ color: '#C7944B', fontSize: '0.78rem', lineHeight: 1 }}>★</span>
+                            <span style={{ color: STAR_COLORS[star - 1], fontSize: '0.78rem', lineHeight: 1 }}>★</span>
                             <div className={`flex-grow-1 ${styles.progressThin}`}>
                                 <div className={styles.progressBarGold} style={{ width: `${percent}%` }} />
                             </div>

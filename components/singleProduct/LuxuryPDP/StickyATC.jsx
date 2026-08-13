@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
 import { renderPrice } from "@/utlis/priceRenderer";
 import { ShoppingCart } from "@mui/icons-material";
+import he from "he";
 
 /** Fires the global cart toast — same event that CartToast listens to */
 function fireCartToast(name, image, qty, category, subcategory) {
@@ -43,8 +44,8 @@ const StickyATC = ({ product }) => {
 
   const productName =
     locale === "ar"
-      ? product?.product_name_ar || product?.product_name
-      : product?.product_name;
+      ? he.decode(product?.product_name_ar?.trim() || product?.product_name || "")
+      : he.decode(product?.product_name || "");
 
   const isOutOfStock = product?.product_qty <= 0;
 

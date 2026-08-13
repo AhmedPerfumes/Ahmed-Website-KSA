@@ -133,7 +133,7 @@ export default function CartDrawerWithoutTrans() {
                   <div className="cd-item">
                     <div className="cd-item__img-wrap">
                       {imgSrc ? (
-                        <Image src={imgSrc} alt={elm?.product_name || "product"} width={80} height={100} className="cd-item__img" style={{ objectFit: 'cover' }} loading="lazy" />
+                        <Image src={imgSrc} alt={he.decode(elm?.product_name || "product")} width={80} height={100} className="cd-item__img" style={{ objectFit: 'cover' }} loading="lazy" />
                       ) : (
                         <div className="cd-item__img-placeholder" />
                       )}

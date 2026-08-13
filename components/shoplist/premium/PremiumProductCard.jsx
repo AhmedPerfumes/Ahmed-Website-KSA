@@ -139,8 +139,11 @@ export default function PremiumProductCard({
     .join("-")
     .toLowerCase()}`;
 
+  // Arabic name with English fallback — prevents blank names when product_name_ar is null/empty
   const displayName =
-    locale === "ar" ? elm?.product_name_ar : he.decode(elm?.product_name || "");
+    locale === "ar"
+      ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ""))
+      : he.decode(elm?.product_name || "");
 
   const salePercent =
     activeDiscount?.discount_type === "percent"

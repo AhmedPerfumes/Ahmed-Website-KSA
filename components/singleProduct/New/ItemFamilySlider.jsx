@@ -155,24 +155,24 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                         {elm.label_name}
                                     </span>
                                 )}
-
-                                {/* Quick-add */}
-                                <button
-                                    className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
-                                    onClick={() => {
-                                        if (isAdded) return;
-                                        addProductToCart({
-                                            ...elmWithDiscount,
-                                            category_name: elm.category_name,
-                                            subcategory_name:
-                                                elm.subcategory?.subcategory_name || "",
-                                        });
-                                        fireCartToast(name, img0, 1);
-                                    }}
-                                >
-                                    {isAdded ? "✓ Added" : "Add to Bag"}
-                                </button>
                             </div>
+
+                            {/* Quick-add — outside the image wrapper so it's never clipped */}
+                            <button
+                                className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
+                                onClick={() => {
+                                    if (isAdded) return;
+                                    addProductToCart({
+                                        ...elmWithDiscount,
+                                        category_name: elm.category_name,
+                                        subcategory_name:
+                                            elm.subcategory?.subcategory_name || "",
+                                    });
+                                    fireCartToast(name, img0, 1);
+                                }}
+                            >
+                                {isAdded ? "✓ Added" : "Add to Bag"}
+                            </button>
 
                             {/* Info */}
                             <div className="ifs-card__info">

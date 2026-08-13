@@ -120,7 +120,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
     setReviewsLoading(true);
 
     fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}api/reviews/${product.product_id}`
+      `${process.env.NEXT_PUBLIC_API_URL}api/products/${product.product_id}/reviews`
     )
       .then((r) => r.json())
       .then((data) => {
@@ -179,6 +179,8 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
                 product={product}
                 category={category}
                 subcategory={subcategory}
+                reviews={reviews}
+                reviewsLoading={reviewsLoading}
               />
 
               {/* Product Accordion (fragrance notes, delivery, etc.) */}
@@ -203,7 +205,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
       <FragranceBreakdown product={product} />
 
       {/* ── Section 6: Trust Pillars ── */}
-      <TrustPillars />
+      {/* <TrustPillars /> */}
 
       {/* ── Section 7: Performance Metrics ── */}
       <PerformanceMetrics product={product} />

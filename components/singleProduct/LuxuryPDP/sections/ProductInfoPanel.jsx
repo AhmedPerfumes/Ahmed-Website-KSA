@@ -34,6 +34,10 @@ import he from "he";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 /* ─── Star Rating Display ─── */
+// Progressive star colors: lightest gold → deep amber (position 1 → 5)
+const STAR_COLORS = ['#E5C07A', '#D4A84B', '#C9903A', '#B87730', '#8B5E10'];
+const STAR_EMPTY  = '#D9D2CA';
+
 const StarDisplay = ({ rating = 0, count = 0 }) => {
   const stars = [1, 2, 3, 4, 5];
   const rounded = Math.round(rating);
@@ -44,6 +48,7 @@ const StarDisplay = ({ rating = 0, count = 0 }) => {
           <span
             key={s}
             className={`pdp-star ${s <= rounded ? "" : "pdp-star--empty"}`}
+            style={{ color: s <= rounded ? STAR_COLORS[s - 1] : STAR_EMPTY }}
             aria-hidden="true"
           >
             ★
@@ -224,7 +229,7 @@ const ShareRow = ({ productName }) => {
 };
 
 /* ─── Main Component ─── */
-const ProductInfoPanel = ({ product, category, subcategory }) => {
+const ProductInfoPanel = ({ product, category, subcategory, reviews = [], reviewsLoading = false }) => {
   const locale = useLocale();
   const t = useTranslations();
   const { currency } = useMenu();
@@ -362,9 +367,19 @@ const ProductInfoPanel = ({ product, category, subcategory }) => {
   const isOutOfStock = product?.product_qty <= 0;
   const tags = Array.isArray(product?.tags) ? product.tags : [];
 
-  /* ── Average rating from product object or passed in ── */
-  const avgRating = parseFloat(product?.average_rating || 0);
-  const reviewCount = parseInt(product?.review_count || 0, 10);
+  /* ── Rating from live reviews (falls back to product API while loading) ── */
+  const avgRating = useMemo(() => {
+    if (reviews.length > 0) {
+      const sum = reviews.reduce((acc, r) => acc + (r.star || 0), 0);
+      return sum / reviews.length;
+    }
+    // Fallback to pre-aggregated value while reviews are still fetching
+    return parseFloat(product?.average_rating || 0);
+  }, [reviews, product?.average_rating]);
+
+  const reviewCount = reviews.length > 0
+    ? reviews.length
+    : parseInt(product?.review_count || 0, 10);
 
   /* ── Breadcrumb labels ── */
   const catLabel = capitalizeEachWord(category?.split("-").join(" ") || "");

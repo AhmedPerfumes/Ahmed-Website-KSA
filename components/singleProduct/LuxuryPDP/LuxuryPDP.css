@@ -33,7 +33,7 @@
   --pdp-success: #2A7A52;
   --pdp-warn: #C9741A;
   --pdp-danger: #C0392B;
-  --pdp-sale: #b03a2e;
+  --pdp-sale: #a67b30;
 
   /* Radii */
   --r-xs: 4px;
@@ -142,6 +142,7 @@
 .luxury-pdp h6 {
   font-size: 0.8rem;
   font-weight: 600;
+  text-align: center;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--pdp-charcoal);
@@ -194,6 +195,8 @@
   justify-content: center;
   gap: 1.5rem;
   flex-wrap: wrap;
+  color: var(--pdp-gold-light);
+  /* #E8D5B0 */
 }
 
 .pdp-trust-bar__sep {
@@ -221,6 +224,22 @@
 
 .pdp-trust-bar__close:hover {
   opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .pdp-trust-bar {
+    padding: 9px 2.5rem 9px 1rem;
+    overflow: hidden;
+  }
+
+  .pdp-trust-bar__text {
+    gap: 0.75rem;
+    font-size: 0.7rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 /* ================================================================
@@ -2034,8 +2053,22 @@ html[dir="rtl"] .pdp-faq__question {
 /* ================================================================
    STICKY MOBILE ATC BAR
    ================================================================ */
+
+/*
+  The sticky ATC sits above the page-level mobile bottom nav (.footer-mobile).
+  .footer-mobile  → position:fixed; bottom:0; z-index:1000; height≈54-70px
+  .pdp-sticky-atc → must sit ABOVE it: z-index:1001; bottom > nav height
+
+  On desktop there is no bottom nav, so bottom:1rem is fine.
+  On mobile we use:
+    bottom = env(safe-area-inset-bottom)  ← iPhone home-bar safe zone
+           + 64px                          ← .footer-mobile measured height
+           + 10px                          ← breathing gap between the two bars
+*/
+
 .pdp-sticky-atc {
   position: fixed;
+  /* Default (desktop): small gap from bottom edge, no bottom nav */
   bottom: 1rem;
   left: 50%;
   transform: translateX(-50%) translateY(calc(100% + 2rem));
@@ -2056,6 +2089,21 @@ html[dir="rtl"] .pdp-faq__question {
   pointer-events: none;
 }
 
+/* ── Mobile: lift the bar above the fixed bottom nav ── */
+@media (max-width: 767px) {
+  .pdp-sticky-atc {
+    /* env(safe-area-inset-bottom) accounts for iPhone notch/home indicator.
+       64px = measured height of .footer-mobile bottom tab bar.
+       10px = comfortable breathing gap. */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 64px + 10px);
+    z-index: 1001;
+    /* above .footer-mobile z-index:1000 */
+    /* Slightly more compact on narrow screens */
+    padding: .5rem .5rem .5rem .875rem;
+    gap: 2.5rem;
+  }
+}
+
 .pdp-sticky-atc.visible {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
@@ -2070,6 +2118,13 @@ html[dir="rtl"] .pdp-faq__question {
   flex-shrink: 0;
   border: 2px solid var(--pdp-line);
   background: var(--pdp-sand);
+}
+
+@media (max-width: 767px) {
+  .pdp-sticky-atc__thumb {
+    width: 38px;
+    height: 38px;
+  }
 }
 
 .pdp-sticky-atc__info {
@@ -2110,6 +2165,13 @@ html[dir="rtl"] .pdp-faq__question {
   flex-shrink: 0;
   box-shadow: var(--sh-gold);
   transition: background var(--ease), box-shadow var(--ease), transform .15s;
+}
+
+@media (max-width: 767px) {
+  .pdp-sticky-atc__btn {
+    padding: 9px 14px;
+    font-size: 0.72rem;
+  }
 }
 
 .pdp-sticky-atc__btn:disabled {

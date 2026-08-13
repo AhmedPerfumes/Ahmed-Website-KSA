@@ -12,13 +12,15 @@ import Link from "next/link";
 
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "../../i18n/routing";
+import { useMenu } from "../../context/MenuContext";
 export default function MobileHeader() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations();
+  const { top_header } = useMenu();
 
-  const [scrollDirection, setScrollDirection] = useState("down");
+  const [isVisible, setIsVisible] = useState(true);
 
   const [searchKeyWord, setSearchKeyWord] = useState("");
 
@@ -57,34 +59,27 @@ export default function MobileHeader() {
   };
 
   useEffect(() => {
+    const lastScrollY = { current: window.scrollY };
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > 250) {
-        if (currentScrollY > lastScrollY.current) {
-          // Scrolling down
-          setScrollDirection("down");
-        } else {
-          // Scrolling up
-          setScrollDirection("up");
-        }
+      if (currentScrollY <= 250) {
+        // Always visible near the top of the page
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY.current) {
+        // Scrolling down past threshold — hide
+        setIsVisible(false);
       } else {
-        // Below 250px
-        setScrollDirection("down");
+        // Scrolling up — show as sticky
+        setIsVisible(true);
       }
 
       lastScrollY.current = currentScrollY;
     };
 
-    const lastScrollY = { current: window.scrollY };
-
-    // Add scroll event listener
-    window.addEventListener("scroll", handleScroll);
-
-    // Cleanup: remove event listener when component unmounts
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleLangChange = (e) => {
@@ -117,9 +112,17 @@ export default function MobileHeader() {
 
   return (
     <div
-      className={`header-mobile header_sticky ${
-        scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
-      } `}
+      className="header-mobile header_sticky"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 999,
+        transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+        transition: "transform 0.3s ease",
+        willChange: "transform",
+      }}
     >
        <style jsx global>{`
         @keyframes marquee-ltr {
@@ -129,6 +132,14 @@ export default function MobileHeader() {
         @keyframes marquee-rtl {
           0% { transform: translateX(-50%); } 
           100% { transform: translateX(0); }
+        }
+        @keyframes headerMarqueeLtr {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        @keyframes headerMarqueeRtl {
+          from { transform: translateX(-50%); }
+          to   { transform: translateX(0); }
         }
           .mobile-search-results {
     background: white;
@@ -179,6 +190,49 @@ export default function MobileHeader() {
     font-weight: 600;
 }
       `}</style>
+      {/* ── Top announcement marquee (mobile) ── */}
+      {top_header?.length > 0 && (
+        <div
+          className="bg-black"
+          style={{ height: "2rem", overflow: "hidden" }}
+        >
+          {/* 80% wide centered window — same pattern as UAE desktop */}
+          <div
+            className="d-flex align-items-center"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+            style={{
+              width: "80%",
+              margin: "0 auto",
+              overflow: "hidden",
+              height: "100%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                whiteSpace: "nowrap",
+                height: "100%",
+                animation: `${locale === "ar" ? "marquee-rtl" : "marquee-ltr"} 15s linear infinite`,
+                willChange: "transform",
+              }}
+            >
+              {[...top_header, ...top_header].map((elm, i) => (
+                <span key={i} className="d-flex align-items-center">
+                  <Link
+                    href={`/${locale}/${elm.color}`}
+                    className="text-white text-decoration-none text-uppercase fw-bold"
+                    style={{ fontSize: "10px", whiteSpace: "nowrap", padding: "0 1.2rem" }}
+                  >
+                    {t(elm.title.split(" ").slice(0, 13).join(" "))}
+                  </Link>
+                  <span className="text-white" style={{ opacity: 0.5 }}>-</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="container d-flex align-items-center h-100">
         <Link className="mobile-nav-activator d-block position-relative" href="#">
           <svg

@@ -9,6 +9,8 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import he from "he";
+import { useMenu } from "@/context/MenuContext";
 
 /**
  * RecentlyViewed — Section 14
@@ -30,7 +32,11 @@ const MAX_ITEMS = 10;
 
 const RecentlyViewed = ({ product, category, subcategory }) => {
   const locale = useLocale();
+  const { currency } = useMenu();
   const [viewed, setViewed] = useState([]);
+
+  // Currency symbol — always the new official Saudi Riyal (﷼ U+20C1)
+  const sym = currency?.symbol || "\u00A0\u20C1";
 
   useEffect(() => {
     if (!product?.product_id) return;
@@ -115,60 +121,86 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
               ? `${API_URL}storage/${item.image}`
               : "/assets/images/general_product.png";
 
+            // Compute discount badge & sale price
+            const now = new Date();
+            const d = item.discount;
+            const isDiscountActive = d && new Date(d.start_date) <= now && new Date(d.end_date) >= now;
+            let salePrice = null;
+            let discountLabel = null;
+
+            if (isDiscountActive) {
+              if (d.discount_type === "percent") {
+                salePrice = (item.price - (item.price / 100) * d.value).toFixed(2);
+                discountLabel = `${d.value}% OFF`;
+              } else {
+                salePrice = parseFloat(d.final_price || item.price - d.value).toFixed(2);
+                discountLabel = `${d.value} OFF`;
+              }
+            }
+
             return (
               <SwiperSlide key={idx} className="swiper-slide product-card">
-                <div className="pc__img-wrapper">
+                {/* Image wrapper — badge overlaid on top of image */}
+                <div className="pc__img-wrapper" style={{ position: "relative" }}>
                   <Link href={href}>
                     <Image
                       loading="lazy"
                       src={imgSrc}
                       width={330}
                       height={400}
-                      alt={item.product_name || "Recently viewed product"}
+                      alt={he.decode(item.product_name || "Recently viewed product")}
                       className="pc__img"
                     />
                   </Link>
+
+                  {/* Discount badge — overlaid on image, top-left corner */}
+                  {discountLabel && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "0.5rem",
+                        left: "0.5rem",
+                        backgroundColor: "#198754",
+                        color: "#fff",
+                        fontSize: "0.7rem",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                        padding: "3px 8px",
+                        borderRadius: "4px",
+                        lineHeight: 1.4,
+                        zIndex: 2,
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {discountLabel}
+                    </div>
+                  )}
                 </div>
 
-              <div className="pc__info position-relative">
-                  <p className="pc__category">{locale === "ar" ? "" : "Recently Viewed"}</p>
+                {/* Card info */}
+                <div className="pc__info position-relative">
+                  {/* <p className="pc__category">{locale === "ar" ? "" : "Recently Viewed"}</p> */}
                   <h6 className="pc__title">
-                    <Link href={href}>{item.product_name}</Link>
+                    <Link href={href}>{he.decode(item.product_name || "")}</Link>
                   </h6>
-                  <div className="product-card__price d-flex align-items-baseline" style={{ gap: '6px', flexWrap: 'wrap' }}>
-                    {(() => {
-                      const now = new Date();
-                      const d = item.discount;
-                      if (d && new Date(d.start_date) <= now && new Date(d.end_date) >= now) {
-                        let salePrice;
-                        let label;
-                        if (d.discount_type === "percent") {
-                          salePrice = (item.price - (item.price / 100) * d.value).toFixed(2);
-                          label = `${d.value}% OFF`;
-                        } else {
-                          salePrice = parseFloat(d.final_price || item.price - d.value).toFixed(2);
-                          label = `${d.value} OFF`;
-                        }
-                        return (
-                          <>
-                            <span className="money price" style={{ color: '#9E7A42', fontWeight: 600 }}>
-                              SAR {salePrice}
-                            </span>
-                            <span className="money price" style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.8em', fontWeight: 400 }}>
-                              SAR {parseFloat(item.price).toFixed(2)}
-                            </span>
-                            <span style={{ fontSize: '0.65em', background: '#EAF5EE', color: '#2A7A52', fontWeight: 700, padding: '1px 5px', borderRadius: '3px', letterSpacing: '0.05em' }}>
-                              {label}
-                            </span>
-                          </>
-                        );
-                      }
-                      return (
-                        <span className="money price">
-                          {item.price ? `SAR ${parseFloat(item.price).toFixed(2)}` : ""}
+
+                  {/* Price — uses the official Saudi Riyal symbol, no "SAR" text */}
+                  <div className="product-card__price d-flex align-items-baseline" style={{ gap: "6px", flexWrap: "wrap" }}>
+                    {isDiscountActive && salePrice ? (
+                      <>
+                      <span className="money price" style={{ textDecoration: "line-through", color: "#999", fontSize: "0.8em", fontWeight: 400 }}>
+                          {parseFloat(item.price).toFixed(2)}{sym}
                         </span>
-                      );
-                    })()}
+                        <span className="money price pdp-price--sale" style={{ color: "#08713d !important", fontWeight: 600 }}>
+                          {salePrice}{sym}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="money price">
+                        {item.price ? `${parseFloat(item.price).toFixed(2)}${sym}` : ""}
+                      </span>
+                    )}
                   </div>
                 </div>
               </SwiperSlide>

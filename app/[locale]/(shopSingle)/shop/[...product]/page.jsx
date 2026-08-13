@@ -250,7 +250,7 @@ const ProductDetailsPage16 = async({ params }) => {
                     subcategory={subCategoryName}
                     product={data}
                 />
-        <main className="page-wrapper">
+        <main>
           <div className="mb-md-1 pb-md-3"></div>
           <SingleProduct11 category={ categoryName } subcategory={ subCategoryName } product={ data } />
           <RelatedSlider relatedProds={ data.related_prods }/>

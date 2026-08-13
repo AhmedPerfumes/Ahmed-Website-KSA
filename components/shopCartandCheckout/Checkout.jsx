@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useContextElement } from "@/context/Context";
 import { useUser } from "@/context/UserContext";
@@ -649,8 +649,9 @@ export default function Checkout() {
                           <div className="col-12">
                             <div className="form-floating">
                               <input type="text" pattern="^\d{10}$" className={`form-control${fieldErrors.mobile?' border-danger':''}`} id="bill_mobile" placeholder="Mobile" name="billingAddress.mobile" value={b.mobile} onChange={handleChange} required />
-                              <label htmlFor="bill_mobile">Mobile Number * <span style={{fontSize:'0.7rem',color:'#aaa'}}>(e.g. 0500000000)</span></label>
+                              <label htmlFor="bill_mobile" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Mobile Number *</label>
                             </div>
+                            <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. 0500000000</p>
                             {fieldErrors.mobile && <div className="cc-alert cc-alert--error py-1 mt-1">{fieldErrors.mobile}</div>}
                           </div>
                         </div>
@@ -678,22 +679,35 @@ export default function Checkout() {
                                 <label htmlFor="ship_ln">Last Name *</label>
                               </div>
                             </div>
-                            <div className="col-12">
+                            <div className="col-6">
+                              <div className="form-floating">
+                                <input type="text" className="form-control" id="ship_country" name="shippingAddress.country" value="Saudi Arabia" readOnly />
+                                <label htmlFor="ship_country">Country</label>
+                              </div>
+                            </div>
+                            <div className="col-6">
+                              <div className="form-floating">
+                                <input type="text" className="form-control" id="ship_sna" placeholder="Short National Address" name="shippingAddress.short_national_address" value={formData.shippingAddress.short_national_address || ''} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
+                                <label htmlFor="ship_sna" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Short National Address *</label>
+                              </div>
+                              <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. ABCD1234</p>
+                            </div>
+                            <div className="col-6">
                               <div className="form-floating">
                                 <input type="text" className="form-control" id="ship_area" placeholder="City" name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required/>
                                 <label htmlFor="ship_area">City *</label>
+                              </div>
+                            </div>
+                            <div className="col-6">
+                              <div className="form-floating">
+                                <input type="text" className="form-control" id="ship_prov" placeholder="Province" name="shippingAddress.province" value={formData.shippingAddress.province} onChange={handleChange} required/>
+                                <label htmlFor="ship_prov">Province *</label>
                               </div>
                             </div>
                             <div className="col-12">
                               <div className="form-floating">
                                 <input type="text" className="form-control" id="ship_bldg" placeholder="Full Address" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required/>
                                 <label htmlFor="ship_bldg">Full Address *</label>
-                              </div>
-                            </div>
-                            <div className="col-12">
-                              <div className="form-floating">
-                                <input type="text" className="form-control" id="ship_prov" placeholder="Province" name="shippingAddress.province" value={formData.shippingAddress.province} onChange={handleChange} required/>
-                                <label htmlFor="ship_prov">Province *</label>
                               </div>
                             </div>
                             <div className="col-12">
@@ -705,8 +719,9 @@ export default function Checkout() {
                             <div className="col-12">
                               <div className="form-floating">
                                 <input type="text" pattern="^\d{10}$" className="form-control" id="ship_mob" placeholder="Mobile" name="shippingAddress.mobile" value={formData.shippingAddress.mobile} onChange={handleChange} required/>
-                                <label htmlFor="ship_mob">Mobile *</label>
+                                <label htmlFor="ship_mob" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Mobile Number *</label>
                               </div>
+                              <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. 0500000000</p>
                             </div>
                           </div>
                         )}
@@ -757,8 +772,9 @@ export default function Checkout() {
                         <div className="col-6">
                           <div className="form-floating">
                             <input type="text" className={`form-control${fieldErrors.short_national_address?' border-danger':''}`} id="bill_sna" placeholder="Short National Address" name="billingAddress.short_national_address" value={b.short_national_address} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
-                            <label htmlFor="bill_sna">Short National Address * <span style={{fontSize:'0.65rem',color:'#aaa'}}>(e.g. ABCD1234)</span></label>
+                            <label htmlFor="bill_sna" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Short National Address *</label>
                           </div>
+                          <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. ABCD1234</p>
                           {fieldErrors.short_national_address && <div className="cc-alert cc-alert--error py-1 mt-1" style={{fontSize:'0.72rem'}}>{fieldErrors.short_national_address}</div>}
                         </div>
 
@@ -798,8 +814,9 @@ export default function Checkout() {
                         <div className="col-6">
                           <div className="form-floating">
                             <input type="text" pattern="^\d{10}$" className={`form-control${fieldErrors.mobile?' border-danger':''}`} id="bill_mobile" placeholder="Mobile" name="billingAddress.mobile" value={b.mobile} onChange={handleChange} required />
-                            <label htmlFor="bill_mobile">Mobile Number * <span style={{fontSize:'0.65rem',color:'#aaa'}}>(e.g. 0500000000)</span></label>
+                            <label htmlFor="bill_mobile" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Mobile Number *</label>
                           </div>
+                          <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. 0500000000</p>
                           {fieldErrors.mobile && <div className="cc-alert cc-alert--error py-1 mt-1" style={{fontSize:'0.72rem'}}>{fieldErrors.mobile}</div>}
                         </div>
 
@@ -895,6 +912,19 @@ export default function Checkout() {
                             </div>
                             <div className="col-6">
                               <div className="form-floating">
+                                <input type="text" className="form-control" id="ship_country" name="shippingAddress.country" value="Saudi Arabia" readOnly />
+                                <label htmlFor="ship_country">Country</label>
+                              </div>
+                            </div>
+                            <div className="col-6">
+                              <div className="form-floating">
+                                <input type="text" className="form-control" id="ship_sna2" placeholder="Short National Address" name="shippingAddress.short_national_address" value={formData.shippingAddress.short_national_address || ''} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
+                                <label htmlFor="ship_sna2" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Short National Address *</label>
+                              </div>
+                              <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. ABCD1234</p>
+                            </div>
+                            <div className="col-6">
+                              <div className="form-floating">
                                 <input type="text" className="form-control" id="ship_area" placeholder="City" name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required/>
                                 <label htmlFor="ship_area">City *</label>
                               </div>
@@ -920,8 +950,9 @@ export default function Checkout() {
                             <div className="col-6">
                               <div className="form-floating">
                                 <input type="text" pattern="^\d{10}$" className="form-control" id="ship_mob" placeholder="Mobile" name="shippingAddress.mobile" value={formData.shippingAddress.mobile} onChange={handleChange} required/>
-                                <label htmlFor="ship_mob">Mobile *</label>
+                                <label htmlFor="ship_mob" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Mobile Number *</label>
                               </div>
+                              <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. 0500000000</p>
                             </div>
                           </>
                         )}
@@ -982,6 +1013,72 @@ export default function Checkout() {
                   </div>
 
                   <div className="cc-acc-body">
+                    {/* Mini order summary */}
+                    {/* ── MOBILE-ONLY Collapsible Promo Code ── above order summary ── */}
+                    <div className="d-xl-none" style={{marginBottom:'0.75rem'}}>
+                      {couponData ? (
+                        /* Applied state — always visible, no collapse needed */
+                        <div className="cc-coupon-card" style={{padding:'0.65rem 0.75rem'}}>
+                          <div className="cc-coupon-applied">
+                            <span className="cc-coupon-applied__icon">🏷️</span>
+                            <div className="cc-coupon-applied__text">
+                              <span className="cc-coupon-applied__code">{couponData.code}</span>
+                              <span className="cc-coupon-applied__desc">{couponData.title}</span>
+                            </div>
+                            <button type="button" className="cc-coupon-applied__remove" onClick={removeCoupon} title="Remove coupon">&times;</button>
+                          </div>
+                          {couponError   && <div className="cc-coupon-msg cc-coupon-msg--err">{couponError}</div>}
+                          {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok">{couponSuccess}</div>}
+                        </div>
+                      ) : (
+                        /* Collapsible input state */
+                        <div className="cc-promo-mobile">
+                          {/* Toggle header */}
+                          <button
+                            type="button"
+                            className="cc-promo-mobile__toggle"
+                            onClick={() => setShowCouponPanel(v => !v)}
+                            aria-expanded={showCouponPanel}
+                          >
+                            <span className="cc-promo-mobile__toggle-label">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{flexShrink:0}}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                              Have a Promo Code?
+                            </span>
+                            <svg
+                              className={`cc-promo-mobile__chevron${showCouponPanel ? ' open' : ''}`}
+                              width="12" height="12" viewBox="0 0 10 6" fill="none"
+                            >
+                              <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+
+                          {/* Collapsible body */}
+                          {showCouponPanel && (
+                            <div className="cc-promo-mobile__body">
+                              <div className="cc-coupon-label-row" style={{marginBottom:'0.5rem'}}>
+                                <span style={{fontSize:'0.72rem',color:'#888'}}>Enter your code below</span>
+                                <button type="button" className="cc-coupon-view-offers" onClick={() => setShowCouponModal(true)}>View Offers</button>
+                              </div>
+                              <div className="cc-coupon-input-wrap">
+                                <input
+                                  className="cc-coupon-input"
+                                  type="text"
+                                  placeholder="Promo / Coupon code"
+                                  value={couponCode}
+                                  onChange={handleCouponChange}
+                                  onKeyDown={e => e.key === 'Enter' && applyCoupon(e)}
+                                  autoFocus
+                                />
+                                <button type="button" className="cc-coupon-apply-btn" onClick={applyCoupon}>Apply</button>
+                              </div>
+                              {couponError   && <div className="cc-coupon-msg cc-coupon-msg--err" style={{marginTop:'0.4rem'}}>{couponError}</div>}
+                              {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok" style={{marginTop:'0.4rem'}}>{couponSuccess}</div>}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
                     {/* Mini order summary */}
                     <div className="cc-order-mini">
                       <div className={`cc-order-mini__toggle ${summaryOpen?'open':''}`} onClick={() => setSummaryOpen(v=>!v)} role="button">
@@ -1279,6 +1376,25 @@ export default function Checkout() {
           .coupon-ticket.expired{opacity:.55}
           .coupon-expired-badge{font-size:10px;color:#e53935;font-weight:600}
           .coupon-loading,.coupon-empty{text-align:center;padding:28px;color:#888;font-size:13px}
+
+          /* ── Mobile collapsible promo code ── */
+          .cc-promo-mobile{border:1px solid #e8e0d0;border-radius:8px;overflow:hidden;background:#fff}
+          .cc-promo-mobile__toggle{
+            width:100%;display:flex;align-items:center;justify-content:space-between;
+            padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;
+            font-size:0.82rem;font-weight:600;color:#333;font-family:inherit;
+            gap:0.5rem;
+          }
+          .cc-promo-mobile__toggle:hover{background:#faf8f3}
+          .cc-promo-mobile__toggle-label{display:flex;align-items:center;gap:0.4rem;color:#9a7c40}
+          .cc-promo-mobile__chevron{transition:transform 0.22s ease;flex-shrink:0;color:#aaa}
+          .cc-promo-mobile__chevron.open{transform:rotate(180deg)}
+          .cc-promo-mobile__body{
+            padding:0.65rem 0.85rem 0.85rem;
+            border-top:1px solid #f0ece3;
+            animation:promoSlideIn 0.18s ease;
+          }
+          @keyframes promoSlideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
         `}</style>
 
       {/* ═══ INLINE ADDRESS MODAL (logged-in) ═══ */}
@@ -1351,12 +1467,13 @@ export default function Checkout() {
                     {label:'City *', field:'area', type:'text', err: addrFormErrors.area},
                     {label:'Full Address *', field:'building', type:'text', err: addrFormErrors.building},
                     {label:'Province *', field:'province', type:'text', err: addrFormErrors.province},
-                    {label:'Short National Address * (e.g. ABCD1234)', field:'short_national_address', type:'text', err: addrFormErrors.short_national_address},
-                  ].map(({label,field,type,err})=>(
+                    {label:'Short National Address *', field:'short_national_address', type:'text', err: addrFormErrors.short_national_address, hint:'e.g. ABCD1234'},
+                  ].map(({label,field,type,err,hint})=>(
                     <div key={field}>
                       <label style={{fontSize:'0.72rem',fontWeight:600,textTransform:'uppercase',color:'#888',display:'block',marginBottom:'4px'}}>{label}</label>
                       <input type={type} name={field} value={addrForm[field]||''} onChange={handleAddrFormChange}
                         style={{width:'100%',border:`1px solid ${err?'#e53935':'#ddd'}`,borderRadius:'6px',padding:'0.5rem 0.75rem',fontSize:'0.88rem',outline:'none',fontFamily:'inherit'}} />
+                      {hint && <p style={{margin:'2px 0 0',fontSize:'0.65rem',color:'#aaa',lineHeight:1.3}}>{hint}</p>}
                       {err && <p style={{margin:'3px 0 0',fontSize:'0.75rem',color:'#e53935'}}>{err}</p>}
                     </div>
                   ))}
