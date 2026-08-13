@@ -112,7 +112,6 @@ export default function MobileHeader() {
 
   return (
     <div
-<<<<<<< HEAD
       className="header-mobile header_sticky"
       style={{
         position: "fixed",
@@ -124,10 +123,6 @@ export default function MobileHeader() {
         transition: "transform 0.3s ease",
         willChange: "transform",
       }}
-=======
-      className={`header-mobile header_sticky ${scrollDirection == "up" ? "header_sticky-active" : "position-absolute"
-        } `}
->>>>>>> dev
     >
       <style jsx global>{`
         @keyframes marquee-ltr {
@@ -325,20 +320,9 @@ export default function MobileHeader() {
             <div className="position-absolute start-0 top-100 m-0 w-100">
               <div className="search-result"></div>
             </div>
-<<<<<<< HEAD
              {(isSearching || searchSuggestions.length > 0) && (
         <div className="mobile-search-results position-absolute start-0 top-100 w-100" style={{ zIndex: 999 }}>
             {isSearching && null}
-=======
-            {(isSearching || searchSuggestions.length > 0) && (
-              <div className="mobile-search-results position-absolute start-0 top-100 w-100" style={{ zIndex: 999 }}>
-                {isSearching && (
-                  <div className="p-3 text-center fs-13 text-muted">
-                    <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                    {t("Searching...")}
-                  </div>
-                )}
->>>>>>> dev
 
                 {!isSearching && searchSuggestions.map((item, index) => (
                   <Link

@@ -23,7 +23,6 @@ export default function SingleProduct11({ category, subcategory, product: initia
     if (initialProduct?.product_id !== product?.product_id) {
       setProduct(initialProduct);
     }
-  }, [initialProduct]);
 
     // Live-status hydration: refresh price, stock, discount from server
     const fetchLiveStatus = async () => {
