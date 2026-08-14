@@ -67,10 +67,20 @@ export default function Checkout() {
   // USE EFFECTS
 
   useEffect(() => {
+    let customerPhone = null;
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const u = JSON.parse(atob(userStr));
+        customerPhone = u.phone || u.customer_phone || u.phone_number || null;
+      }
+    } catch (e) {}
+
     if (typeof window !== "undefined" && window.AhmedTracker) {
       window.AhmedTracker.track("begin_checkout", {
         total: parseFloat(totalPrice || 0),
         items_count: cartProducts ? cartProducts.length : 0,
+        phone: customerPhone || formData.billingAddress.mobile || null,
       });
     }
   }, []);
@@ -793,6 +803,13 @@ export default function Checkout() {
         setIsDisabled(false);
         setOTPError(null);
         localStorage.setItem("token", data.access_token);
+
+        if (typeof window !== "undefined" && window.AhmedTracker) {
+          window.AhmedTracker.track("verify_otp", {
+            phone: mobile,
+            total: parseFloat(totalPrice || 0),
+          });
+        }
       } else {
         if(data['mobile']) { setOTPError(data['mobile']); }
         if(data['otp']) { setOTPError(data['otp']); }
