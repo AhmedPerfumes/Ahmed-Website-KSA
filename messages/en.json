@@ -91,7 +91,7 @@
     },
     "delivery": {
       "shipping": "Swift & Complimentary Shipping",
-      "shippingText": "Free delivery on orders over AED {price} in the UAE.",
+      "shippingText": "Free delivery on orders over SAR {price} in the KSA.",
       "payment": "Secure Payment Solutions",
       "paymentText": "Your payments are safe with our secure online system.",
       "track": "Track Your Order",
