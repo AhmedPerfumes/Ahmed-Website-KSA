@@ -305,7 +305,7 @@ export default function Style2({ category, subcategory, products: initialProduct
                           {t("Add To Cart")}
                         </button>
                       )}
-                  <button
+                  {/* <button
                     className="btn btn-primary flex-grow-1 fs-base ps-0 pe-3 pe-xxl-4 border-0 text-uppercase fw-medium js-quick-view"
                     data-bs-toggle="modal"
                     data-bs-target="#quickView"
@@ -313,7 +313,7 @@ export default function Style2({ category, subcategory, products: initialProduct
                     onClick={() => addProductToQuickView({...elm, category_name: capitalizeEachWord(category.split('-').join(' ')), subcategory_name: capitalizeEachWord(subcat.split('-').join(' '))})}
                   >
                     {t("Quick View")}
-                  </button>
+                  </button> */}
                 </div>
               ) : null}
               {/* {i != 1 ? (
