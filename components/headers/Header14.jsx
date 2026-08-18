@@ -190,8 +190,8 @@ export default function Header14() {
     const [scrollState, setScrollState] = useState("visible");
     const [searchSuggestions, setSearchSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-     const [searchKeyWord, setSearchKeyWord] = useState("");
-    
+    const [searchKeyWord, setSearchKeyWord] = useState("");
+
 
     const locale = useLocale();
     // console.log(locale);
@@ -199,7 +199,7 @@ export default function Header14() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isHeaderOpen, setIsHeaderOpen] = useState(false);
     const [couponCount, setCouponCount] = useState(0);
-    
+
     const containerRef = useRef(null);
     const lastScrollY = useRef(0);
 
@@ -215,7 +215,7 @@ export default function Header14() {
 
     const inputRef = useRef(null);
 
-     useEffect(() => {
+    useEffect(() => {
         const fetchSuggestions = async () => {
             if (searchKeyWord.trim().length < 2) {
                 setSearchSuggestions([]);
@@ -329,7 +329,7 @@ export default function Header14() {
 
     const router = useRouter();
     const pathname = usePathname();
-   
+
 
     const handleChange = (event) => {
         setSearchKeyWord(event.target.value);
@@ -416,11 +416,10 @@ export default function Header14() {
             <style>{headerStyles}</style>
             <header
                 id="header"
-                className={`header header_sticky bg-white ${
-                    scrollState === "visible"
-                        ? "header-visible"
-                        : "header-hidden"
-                } ${pathname !== "/" ? "position-sticky w-100" : ""}`}
+                className={`header header_sticky bg-white ${scrollState === "visible"
+                    ? "header-visible"
+                    : "header-hidden"
+                    } ${pathname !== "/" ? "position-sticky w-100" : ""}`}
             >
                 {/* <header
                 id="header"
@@ -468,9 +467,8 @@ export default function Header14() {
 
                 <div
                     ref={containerRef}
-                    className={`header-tools__item hover-container ${
-                        isPopupOpen ? "js-content_visible" : "js-content_hidden"
-                    }`}
+                    className={`header-tools__item hover-container ${isPopupOpen ? "js-content_visible" : "js-content_hidden"
+                        }`}
                 >
                     <div className="search-popup js-hidden-content">
                         {/* Close button */}
@@ -617,14 +615,14 @@ export default function Header14() {
                                                 )}
                                             </ul>
                                             <div className="search-results__footer">
-            <Link
-                href={`/${locale}/shop?q=${searchKeyWord}`}
-                className="view-all-btn"
-                onClick={() => setIsPopupOpen(false)}
-            >
-                {t("View All Results")} ({searchSuggestions.length}+)
-            </Link>
-        </div>
+                                                <Link
+                                                    href={`/${locale}/shop?q=${searchKeyWord}`}
+                                                    className="view-all-btn"
+                                                    onClick={() => setIsPopupOpen(false)}
+                                                >
+                                                    {t("View All Results")} ({searchSuggestions.length}+)
+                                                </Link>
+                                            </div>
                                         </div>
                                     )}
 
@@ -733,10 +731,10 @@ export default function Header14() {
                                 </div>
                             </div>
                             <div className="logo">
-                                <Link href="/">
+                                <Link href={`/${locale}`}>
                                     <Image
                                         loading="lazy"
-                                        src="/assets/images/about/ahmed-logo.png"
+                                        src="/assets/images/logo/Desktop.svg"
                                         width="100"
                                         height="100"
                                         alt="Ahmed Al Maghribi"
@@ -840,7 +838,7 @@ export default function Header14() {
                                     <div
                                         className="account-hover-menu"
                                         role="menu"
-                                         style={{
+                                        style={{
                                             left:
                                                 locale === "ar" ? "0" : "auto",
                                             right:

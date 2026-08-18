@@ -2,6 +2,7 @@
 
 
 import React, { useEffect, useState } from "react";
+import he from "he";
 import { useContextElement } from "@/context/Context";
 // 1. Import useLocale to get the current language
 import { useTranslations, useLocale } from "next-intl";
@@ -44,6 +45,16 @@ const Sticky = ({ image, product }) => {
                 ),
             };
             item.quantity = quantity;
+
+            if (typeof window !== "undefined" && window.AhmedTracker) {
+                window.AhmedTracker.track("add_to_cart", {
+                    product_id: (product?.product_id || product?.id)?.toString(),
+                    product_name: product?.product_name ? he.decode(product.product_name) : (productName || ""),
+                    price: parseFloat(product?.sale_price || product?.price || 0),
+                    quantity: quantity || 1,
+                });
+            }
+
             setCartProducts((pre) => [...pre, item]);
             toast.success("Added to Cart", { 
                 position: "bottom-right", 
