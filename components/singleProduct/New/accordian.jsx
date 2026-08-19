@@ -405,7 +405,7 @@ const ProductAccordion = ({ product }) => {
     const deliveryInfoData = [
         {
             head: t("delivery.shipping"),
-            text: t("delivery.shippingText", { price: 300 }),
+            text: t("delivery.shippingText", {price: locale === "ar" ? "٣٠٠" : "300" }),
             icon: "/assets/svg/package.svg",
         },
         {
