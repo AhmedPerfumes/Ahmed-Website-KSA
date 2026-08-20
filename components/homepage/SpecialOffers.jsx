@@ -62,16 +62,31 @@ export default function SpecialOffers() {
         })();
     }, []);
 
-    /* Wire nav refs after swiper mounts or changes tab */
+    /* Wire nav refs after swiper mounts */
     useEffect(() => {
-        if (swiper && prevRef.current && nextRef.current) {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
-            swiper.navigation.destroy();
-            swiper.navigation.init();
-            swiper.navigation.update();
+        if (swiper && !swiper.destroyed && prevRef.current && nextRef.current) {
+            if (swiper.params?.navigation && swiper.navigation) {
+                swiper.params.navigation.prevEl = prevRef.current;
+                swiper.params.navigation.nextEl = nextRef.current;
+                try {
+                    swiper.navigation.destroy();
+                    swiper.navigation.init();
+                    swiper.navigation.update();
+                } catch (err) {
+                    console.error("Swiper navigation init error:", err);
+                }
+            }
         }
-    }, [swiper, activePromoIndex]);
+    }, [swiper]);
+
+    /* Reset slide on tab change */
+    useEffect(() => {
+        if (swiper && !swiper.destroyed) {
+            try {
+                swiper.slideTo(0, 300);
+            } catch {}
+        }
+    }, [activePromoIndex, swiper]);
 
     /* ── Helpers ──────────────────────────────────────────────── */
     const cleanStr = useCallback((str) =>
@@ -186,7 +201,6 @@ export default function SpecialOffers() {
                 {/* ── Carousel ── */}
                 <div className="so-slider-wrap">
                     <Swiper
-                        key={`so-swiper-${currentPromo?.id || activePromoIndex}`}
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
