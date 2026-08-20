@@ -133,3 +133,35 @@ export async function fetchOnlineExclusiveProducts() {
 
   return _oeInFlight;
 }
+
+/**
+ * Fetches active special offers and dynamic promotions from /api/specialOffers.
+ * Returns { success: true, promotions: [...] }
+ * Cached for the lifetime of the browser tab.
+ */
+let _soCache = null;
+let _soInFlight = null;
+
+export async function fetchSpecialOffers() {
+  if (_soCache) return _soCache;
+  if (_soInFlight) return _soInFlight;
+
+  _soInFlight = (async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}api/specialOffers`
+      );
+      const data = await res.json();
+      _soCache = data?.promotions ?? [];
+      return _soCache;
+    } catch (e) {
+      console.error('[productsCache] fetchSpecialOffers failed:', e);
+      return [];
+    } finally {
+      _soInFlight = null;
+    }
+  })();
+
+  return _soInFlight;
+}
+

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
-import { fetchAllProducts } from "@/utlis/productsCache";
+import { fetchSpecialOffers, fetchAllProducts } from "@/utlis/productsCache";
 import he from "he";
 import "./SpecialOffers.css";
 
@@ -26,32 +26,43 @@ export default function SpecialOffers() {
         window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: elm.product_name, image: img, qty, category: elm.category_name, subcategory: elm.subcategory?.subcategory_name || "" } }));
     };
 
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading]   = useState(true);
-    const [swiper, setSwiper]     = useState(null);
+    const [promotions, setPromotions]               = useState([]);
+    const [activePromoIndex, setActivePromoIndex]   = useState(0);
+    const [fallbackProducts, setFallbackProducts]   = useState([]);
+    const [loading, setLoading]                     = useState(true);
+    const [swiper, setSwiper]                       = useState(null);
 
     const prevRef = useRef(null);
     const nextRef = useRef(null);
 
-    /* ── Fetch discounted products (fallback to all in-stock) ── */
+    /* ── Fetch active promotions & products ── */
     useEffect(() => {
         (async () => {
             try {
                 setLoading(true);
-                const data = await fetchAllProducts();
-                if (data?.length) {
-                    const discounted = data.filter(
-                        (p) => p?.discount?.value && Number(p.discount.value) > 0 && p.product_qty > 0
-                    );
-                    const fallback = data.filter((p) => p.product_qty > 0).slice(0, 12);
-                    setProducts(discounted.length > 0 ? discounted : fallback);
+                const data = await fetchSpecialOffers();
+                if (Array.isArray(data) && data.length > 0) {
+                    setPromotions(data);
+                } else {
+                    // Fallback to fetchAllProducts if no active dynamic promotion
+                    const all = await fetchAllProducts();
+                    if (all?.length) {
+                        const discounted = all.filter(
+                            (p) => p?.discount?.value && Number(p.discount.value) > 0 && p.product_qty > 0
+                        );
+                        const fallback = all.filter((p) => p.product_qty > 0).slice(0, 12);
+                        setFallbackProducts(discounted.length > 0 ? discounted : fallback);
+                    }
                 }
-            } catch (e) { console.error(e); }
-            finally     { setLoading(false); }
+            } catch (e) {
+                console.error("Error fetching special offers:", e);
+            } finally {
+                setLoading(false);
+            }
         })();
     }, []);
 
-    /* Wire nav refs after swiper mounts */
+    /* Wire nav refs after swiper mounts or changes tab */
     useEffect(() => {
         if (swiper && prevRef.current && nextRef.current) {
             swiper.params.navigation.prevEl = prevRef.current;
@@ -60,11 +71,11 @@ export default function SpecialOffers() {
             swiper.navigation.init();
             swiper.navigation.update();
         }
-    }, [swiper]);
+    }, [swiper, activePromoIndex]);
 
     /* ── Helpers ──────────────────────────────────────────────── */
     const cleanStr = useCallback((str) =>
-        str.replace(/&amp;/g, "").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim()
+        (str || "").replace(/&amp;/g, "").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim()
     , []);
 
     const getSubcatSlug = useCallback((category, subcategory) => {
@@ -84,7 +95,8 @@ export default function SpecialOffers() {
 
     const getSalePrice = useCallback((elm) => {
         const base = Number(elm.price);
-        if (!elm?.discount?.value) return base;
+        if (!elm?.discount?.value && !elm?.discount?.final_price) return base;
+        if (elm.discount.final_price) return Number(elm.discount.final_price);
         if (elm.discount.discount_type === "percent")
             return base - (base * Number(elm.discount.value)) / 100;
         if (elm.discount.discount_type === "amount")
@@ -93,12 +105,21 @@ export default function SpecialOffers() {
     }, []);
 
     const getImage = useCallback((elm) => {
-        if (!elm?.images) return "";
+        if (!elm?.images && !elm?.image) return "";
         try {
-            const p = JSON.parse(elm.images);
-            return p[0] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${p[0]}` : "";
-        } catch { return ""; }
+            if (elm.images) {
+                const p = JSON.parse(elm.images);
+                if (p && p[0]) return `${process.env.NEXT_PUBLIC_API_URL}storage/${p[0]}`;
+            }
+            if (elm.image) return `${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}`;
+            return "";
+        } catch {
+            return elm.image ? `${process.env.NEXT_PUBLIC_API_URL}storage/${elm.image}` : "";
+        }
     }, []);
+
+    const currentPromo = promotions[activePromoIndex] || null;
+    const currentProducts = currentPromo?.products?.length ? currentPromo.products : fallbackProducts;
 
     /* ── Skeleton ─────────────────────────────────────────────── */
     if (isMenuLoading || loading) {
@@ -123,6 +144,10 @@ export default function SpecialOffers() {
         );
     }
 
+    if (!currentProducts || currentProducts.length === 0) {
+        return null;
+    }
+
     return (
         <section className="so-section" aria-label="Special Offers" id="special-offers">
             <div className="so-inner">
@@ -130,12 +155,38 @@ export default function SpecialOffers() {
                 {/* ── Centered heading ── */}
                 <div className="so-head">
                     <span className="so-eyebrow">{t("Exclusive Offers")}</span>
-                    <h2 className="so-title">{t("Buy 3 Get 1 Free")}</h2>
+                    <h2 className="so-title">
+                        {currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}
+                    </h2>
+                    {currentPromo?.description && (
+                        <p className="so-desc">{he.decode(currentPromo.description)}</p>
+                    )}
+
+                    {/* ── Promotion Tabs (when multiple promotions active) ── */}
+                    {promotions.length > 1 && (
+                        <div className="so-tabs-wrap">
+                            <div className="so-tabs" role="tablist" aria-label="Special Offer Campaigns">
+                                {promotions.map((promo, idx) => (
+                                    <button
+                                        key={promo.id || idx}
+                                        type="button"
+                                        role="tab"
+                                        aria-selected={activePromoIndex === idx}
+                                        className={`so-tab${activePromoIndex === idx ? " so-tab--active" : ""}`}
+                                        onClick={() => setActivePromoIndex(idx)}
+                                    >
+                                        {promo.name ? he.decode(promo.name) : `${t("Offer")} ${idx + 1}`}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* ── Carousel ── */}
                 <div className="so-slider-wrap">
                     <Swiper
+                        key={`so-swiper-${currentPromo?.id || activePromoIndex}`}
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
@@ -151,19 +202,20 @@ export default function SpecialOffers() {
                             1440: { slidesPerView: 4.5, spaceBetween: 28 },
                         }}
                     >
-                        {products.map((elm) => {
+                        {currentProducts.map((elm) => {
                             const imgSrc  = getImage(elm);
                             const url     = productUrl(elm);
                             const inCart  = isAddedToCartProducts(elm.product_id);
                             const inWish  = isAddedtoWishlist(elm.product_id);
                             const base    = Number(elm.price);
                             const sale    = getSalePrice(elm);
-                            const hasDisc = elm?.discount?.value && Number(elm.discount.value) > 0;
+                            const hasDisc = elm?.discount && (Number(elm.discount.value) > 0 || Number(elm.discount.final_price) > 0);
                             const pctOff  = hasDisc
                                 ? (elm.discount.discount_type === "percent"
                                     ? Math.round(Number(elm.discount.value))
                                     : Math.round(((base - sale) / base) * 100))
                                 : 0;
+                            const prodName = (locale === "ar" && elm.product_name_ar) ? elm.product_name_ar : elm.product_name;
 
                             return (
                                 <SwiperSlide key={elm.product_id}>
@@ -175,7 +227,7 @@ export default function SpecialOffers() {
                                                 {imgSrc && (
                                                     <Image
                                                         src={imgSrc}
-                                                        alt={elm.product_name ? `${he.decode(elm.product_name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offer Perfume"}
+                                                        alt={prodName ? `${he.decode(prodName)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offer Perfume"}
                                                         fill
                                                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                                                         className="so-card__img"
@@ -209,11 +261,11 @@ export default function SpecialOffers() {
                                             </p>
                                             <h3 className="so-card__name">
                                                 <Link href={url}>
-                                                    {elm.product_name && he.decode(elm.product_name)}
+                                                    {prodName && he.decode(prodName)}
                                                 </Link>
                                             </h3>
                                             <div className="so-card__price">
-                                                {hasDisc ? (
+                                                {hasDisc && sale < base ? (
                                                     <>
                                                         <span className="so-card__price-old">{fmt(base)}</span>
                                                         <span className="so-card__price-new">{fmt(sale)}</span>
@@ -230,8 +282,8 @@ export default function SpecialOffers() {
                                                 return cartQty > 0 ? (
                                                     <div className="so-card__stepper">
                                                         <button type="button" className="so-card__step-btn" aria-label="Decrease" onClick={() => {
-                                                            if (cartQty <= 1) { setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id)); }
-                                                            else { setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: cartQty - 1 } : p)); }
+                                                             if (cartQty <= 1) { setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id)); }
+                                                             else { setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: cartQty - 1 } : p)); }
                                                         }}>−</button>
                                                         <span className="so-card__step-num">{cartQty}</span>
                                                         <button type="button" className={`so-card__step-btn${cartQty >= maxQty ? " so-card__step-btn--max" : ""}`} aria-label="Increase" onClick={() => {
@@ -273,3 +325,4 @@ export default function SpecialOffers() {
         </section>
     );
 }
+
