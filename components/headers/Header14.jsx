@@ -22,14 +22,7 @@ const headerStyles = `
 /* ─── Core Header ─── */
 .header { position: relative; z-index: 1040; background-color: white; }
 
-/* ─── Top Announcement Bar (Desktop Default) ─── */
-.header-marquee-bar {
-    height: 2.5rem;
-    background-color: #000;
-    overflow: hidden;
-}
-
-/* ─── Middle Row (Desktop Default) ─── */
+/* ─── Middle Row ─── */
 .header-middle { border-bottom: 1px solid rgba(0,0,0,0.06); }
 .header-middle .container-fluid { padding-top: 0.6rem; padding-bottom: 0.6rem; }
 
@@ -48,15 +41,9 @@ const headerStyles = `
 .heeader-top__right .form-select:hover { color: #111; }
 .heeader-top__right .form-select:focus { box-shadow: none; outline: none; }
 
-/* Logo (Desktop Default) */
+/* Logo */
 .logo a { display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
 .logo a:hover { opacity: 0.8; }
-.header-middle .logo img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    transition: width 0.25s ease, height 0.25s ease;
-}
 
 /* Header Tools Icons */
 .header-tools__item {
@@ -209,7 +196,7 @@ const headerStyles = `
     letter-spacing: 1px;
 }
 
-/* ─── Bottom Navigation (Desktop Default) ─── */
+/* ─── Bottom Navigation ─── */
 .header-bottom {
     border-top: 1px solid rgba(0,0,0,0.04);
     background: #fff;
@@ -264,49 +251,6 @@ const headerStyles = `
     width: 60%;
 }
 
-/* ─── Mega Menu (Maintains Original Desktop Layout & Structure) ─── */
-.mega-menu {
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    background: #ffffff;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-}
-.mega-menu .sub-menu__title {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 1rem;
-}
-.mega-menu .sub-menu__item .menu-link,
-.mega-menu .sub-menu__item a {
-    font-size: 13px;
-    font-weight: 500;
-    color: #222;
-    padding: 4px 0;
-    text-transform: uppercase;
-    transition: color 0.2s ease;
-}
-.mega-menu .sub-menu__item .menu-link:hover,
-.mega-menu .sub-menu__item a:hover {
-    color: #a67b30;
-}
-.mega-menu .mega-menu__media {
-    max-width: 25.625rem;
-    overflow: hidden;
-    border-radius: 6px;
-}
-.mega-menu .mega-menu__img {
-    width: 100%;
-    max-height: 220px;
-    object-fit: cover;
-    border-radius: 6px;
-    transition: transform 0.35s ease;
-}
-.mega-menu .mega-menu__media:hover .mega-menu__img {
-    transform: scale(1.03);
-}
-
 /* ─── Natively Sticky Header Bottom (stays on scroll) ─── */
 .header-bottom-wrapper {
     position: sticky;
@@ -349,11 +293,6 @@ const headerStyles = `
     transform: translateY(-50%);
     inset-inline-start: 1.5rem;
 }
-.sticky-logo img {
-    width: 45px;
-    height: 45px;
-    object-fit: contain;
-}
 
 .sticky-actions {
     display: flex;
@@ -385,14 +324,8 @@ const headerStyles = `
     color: #a67b30;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   LAPTOP RESPONSIVE RULES (Applies ONLY on Laptop & Smaller Screens)
-   ═══════════════════════════════════════════════════════════════════ */
+/* ─── Laptop & Desktop Responsive Scaling ─── */
 @media (max-width: 1550px) {
-    .header-middle .logo img {
-        width: 80px;
-        height: 80px;
-    }
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
@@ -408,56 +341,11 @@ const headerStyles = `
     }
 }
 
-@media (max-width: 1440px) {
-    .header-middle .container-fluid {
-        padding-top: 0.4rem;
-        padding-bottom: 0.4rem;
-    }
-    .header-middle .logo img {
-        width: 72px;
-        height: 72px;
-    }
-    .header-marquee-bar {
-        height: 2.25rem;
-    }
-    .navigation__list > li > a,
-    .navigation__list > li > .menu-link,
-    .navigation__list > li > .navigation__link {
-        padding: 10px 8px;
-        font-size: 11.5px;
-        letter-spacing: 0.02em;
-    }
-    .sticky-logo img {
-        width: 38px;
-        height: 38px;
-    }
-    .mega-menu {
-        padding: 1.5rem 0 1.75rem !important;
-    }
-    .mega-menu .mega-menu__media {
-        max-width: 210px !important;
-    }
-    .mega-menu .mega-menu__img {
-        max-height: 140px !important;
-    }
-}
-
 @media (max-width: 1366px) {
-    .header-middle .logo img {
-        width: 65px;
-        height: 65px;
-    }
-    .header-middle .container-fluid {
-        padding-top: 0.3rem;
-        padding-bottom: 0.3rem;
-    }
-    .header-marquee-bar {
-        height: 2.1rem;
-    }
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 9px 7px;
+        padding: 11px 7px;
         font-size: 11px;
         letter-spacing: 0.02em;
     }
@@ -468,36 +356,22 @@ const headerStyles = `
     .sticky-logo {
         inset-inline-start: 1rem;
     }
-    .sticky-logo img {
-        width: 35px;
-        height: 35px;
-    }
     .sticky-actions {
         inset-inline-end: 1rem;
     }
     .search-minimal form {
-        width: 180px;
+        width: 190px;
     }
     .marquee-container {
         width: 55% !important;
     }
-    .mega-menu .mega-menu__media {
-        max-width: 190px !important;
-    }
-    .mega-menu .mega-menu__img {
-        max-height: 125px !important;
-    }
 }
 
 @media (max-width: 1200px) {
-    .header-middle .logo img {
-        width: 58px;
-        height: 58px;
-    }
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 8px 4px;
+        padding: 10px 4px;
         font-size: 10.5px;
         letter-spacing: 0.01em;
     }
@@ -512,16 +386,14 @@ const headerStyles = `
         inset-inline-end: 0.75rem;
     }
     .search-minimal form {
-        width: 160px;
+        width: 175px;
     }
     .marquee-container {
         width: 65% !important;
     }
-    .mega-menu .mega-menu__media {
-        max-width: 170px !important;
-    }
-    .mega-menu .mega-menu__img {
-        max-height: 115px !important;
+    .header-middle .logo img {
+        width: 85px !important;
+        height: 85px !important;
     }
 }
 
@@ -529,25 +401,19 @@ const headerStyles = `
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 7px 3px;
+        padding: 8px 3px;
         font-size: 10px;
         letter-spacing: 0;
     }
     .search-minimal form {
-        width: 150px;
+        width: 160px;
     }
     .marquee-container {
         width: 75% !important;
     }
     .sticky-logo img {
-        width: 30px;
-        height: 30px;
-    }
-    .mega-menu .mega-menu__media {
-        max-width: 150px !important;
-    }
-    .mega-menu .mega-menu__img {
-        max-height: 100px !important;
+        width: 36px !important;
+        height: 36px !important;
     }
 }
 
@@ -638,7 +504,7 @@ const HeaderSkeleton = () => {
 
             {/* Middle Bar Skeleton */}
             <div className="header-middle border-bottom">
-                <div className="container-fluid d-flex align-items-center px-5 py-2">
+                <div className="container-fluid d-flex align-items-center px-4 px-xl-5 py-2">
                     {/* Left: Currency/Language */}
                     <div className="flex-1 d-flex gap-3">
                         <select className="form-select form-select-sm bg-transparent color-black" name="store-currency" onChange={(e) => window.open(e.target.value, "_blank")}>
@@ -663,8 +529,8 @@ const HeaderSkeleton = () => {
                             <Image
                                 loading="eager"
                                 src="/assets/images/logo/Desktop.svg"
-                                width={100}
-                                height={100}
+                                width="100"
+                                height="100"
                                 alt="Ahmed Al Maghribi"
                             />
                         </Link>
@@ -910,7 +776,10 @@ export default function Header14() {
             <header id="header" className="header bg-white">
                 {/* Top Announcement Marquee */}
                 {topHeaderList.length > 0 && (
-                    <div className="bg-black header-marquee-bar">
+                    <div
+                        className="bg-black header-marquee-bar"
+                        style={{ height: "2.5rem", overflow: "hidden" }}
+                    >
                         <div
                             className="marquee-container d-flex align-items-center"
                             dir="ltr"
@@ -933,7 +802,7 @@ export default function Header14() {
                                         >
                                             <Link
                                                 href={`/${locale}/${elm.color || ""}`}
-                                                className="text-white text-decoration-none text-uppercase fw-bold mx-4 mx-xl-5"
+                                                className="text-white text-decoration-none text-uppercase fw-bold mx-5"
                                                 style={{
                                                     fontSize: "12px",
                                                     whiteSpace: "nowrap",
