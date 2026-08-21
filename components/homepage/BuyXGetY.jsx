@@ -161,19 +161,15 @@ export default function BuyXGetY() {
         return null;
     }
 
-    const badgeLabel = (locale === "ar" && currentPromo?.badge_text_ar)
-        ? currentPromo.badge_text_ar
-        : (currentPromo?.badge_text || "BUY X GET Y FREE");
-
     return (
         <section className="bxy-section" aria-label="Buy X Get Y Offers" id="buy-x-get-y">
             <div className="bxy-inner">
 
                 {/* ── Centered heading ── */}
                 <div className="bxy-head">
-                    <span className="bxy-eyebrow">{badgeLabel}</span>
+                    <span className="bxy-eyebrow">{t("Exclusive Offers")}</span>
                     <h2 className="bxy-title">
-                        {currentPromo?.name ? he.decode(currentPromo.name) : (locale === "ar" ? "اشتري واكسب" : "Buy More Save More")}
+                        {currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}
                     </h2>
                     {currentPromo?.description && (
                         <p className="bxy-desc">{he.decode(currentPromo.description)}</p>
@@ -243,9 +239,6 @@ export default function BuyXGetY() {
                                                     />
                                                 )}
                                             </Link>
-
-                                            {/* Deal badge */}
-                                            <span className="bxy-card__badge">{badgeLabel}</span>
 
                                             {/* Wishlist */}
                                             <button
