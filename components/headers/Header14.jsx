@@ -45,20 +45,198 @@ const headerStyles = `
 .logo a { display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
 .logo a:hover { opacity: 0.8; }
 
-/* Header Tools Icons */
-.header-tools__item {
-    transition: color 0.25s ease, transform 0.25s ease;
-    color: #333;
+/* ─── Header Tools & Icons ─── */
+.header-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-right: 0 !important;
+}
+.header-tools .header-tools__item {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #222;
+    position: relative;
+    transition: color 0.25s ease, transform 0.25s ease;
     cursor: pointer;
+    text-decoration: none;
+    background: transparent;
+    border: none;
 }
-.header-tools__item:hover {
+.header-tools .header-tools__item:hover {
     color: #a67b30;
 }
 
-/* ─── Search ─── */
+/* Cart Badge */
+.header-tools__cart {
+    position: relative;
+}
+.header-tools__cart .cart-amount {
+    position: absolute;
+    top: -6px !important;
+    right: -8px !important;
+    left: auto !important;
+    background: #c5a664;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0 3px;
+}
+[dir="rtl"] .header-tools__cart .cart-amount {
+    right: auto !important;
+    left: -8px !important;
+}
+
+/* ─── Account Hover Menu (Dropdown) ─── */
+.hover-account {
+    position: relative;
+}
+.account-hover-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    min-width: 210px;
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    z-index: 1300;
+}
+[dir="rtl"] .account-hover-menu {
+    right: auto;
+    left: 0;
+}
+.hover-account:hover .account-hover-menu,
+.hover-account:focus-within .account-hover-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+.account-hover-menu::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 12px;
+}
+.account-hover-menu .menu-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    padding: 8px 16px 6px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.account-hover-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+}
+.account-hover-menu ul li a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #222;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.account-hover-menu ul li a:hover {
+    background: #f8f6f1;
+    color: #a67b30;
+}
+.account-hover-menu .divider {
+    border-top: 1px solid #f0f0f0;
+    margin: 4px 0;
+}
+.account-hover-menu .logout a {
+    color: #dc3545 !important;
+}
+.account-hover-menu .logout a:hover {
+    background: #fff5f5 !important;
+    color: #b02a37 !important;
+}
+
+/* ─── Search Minimal (Middle Header) ─── */
+.search-minimal {
+    margin-left: auto;
+    margin-right: 8px;
+}
+[dir="rtl"] .search-minimal {
+    margin-left: 8px;
+    margin-right: auto;
+}
+.search-minimal form {
+    width: 200px;
+    position: relative;
+}
+.search-minimal .form-control {
+    border: none !important;
+    border-bottom: 1.5px solid #222 !important;
+    border-radius: 0 !important;
+    padding: 6px 32px 6px 4px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.06em;
+    box-shadow: none !important;
+    outline: none !important;
+    background-color: transparent !important;
+    color: #111;
+    transition: border-bottom-color 0.25s ease;
+    height: auto !important;
+}
+[dir="rtl"] .search-minimal .form-control {
+    padding: 6px 4px 6px 32px !important;
+}
+.search-minimal .form-control::placeholder {
+    color: #999;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+}
+.search-minimal .form-control:focus {
+    border-bottom-color: #a67b30 !important;
+}
+.search-minimal .search-icon {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #222;
+    pointer-events: none;
+    transition: color 0.25s ease;
+}
+[dir="rtl"] .search-minimal .search-icon {
+    right: auto;
+    left: 4px;
+}
+.search-minimal .form-control:focus ~ .search-icon {
+    color: #a67b30;
+}
+
+/* ─── Search Popup Modal ─── */
 .search-popup {
     position: absolute;
     top: 133%;
@@ -77,40 +255,6 @@ const headerStyles = `
 }
 .js-content_visible .search-popup { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .js-content_hidden .search-popup { opacity: 0; transform: translateY(-50px); pointer-events: none; }
-.search-minimal { margin-left: auto; }
-[dir="rtl"] .search-minimal { margin-left: 0; margin-right: auto; }
-.search-minimal form { width: 220px; }
-.search-minimal .form-control {
-    border: 1px solid #e8e8e8;
-    border-bottom: 1.5px solid #222;
-    border-radius: 0;
-    padding: 9px 40px 9px 14px;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    box-shadow: none;
-    outline: none;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
-    background-color: #fafafa;
-}
-[dir="rtl"] .search-minimal .form-control {
-    padding: 9px 14px 9px 40px;
-}
-.search-minimal .form-control::placeholder { color: #999; font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: 0.12em; }
-.search-minimal .form-control:focus { border-color: #ddd; border-bottom-color: #a67b30; background-color: #fff; }
-.search-minimal .search-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #555;
-    pointer-events: none;
-    transition: color 0.3s ease;
-}
-[dir="rtl"] .search-minimal .search-icon {
-    right: auto;
-    left: 10px;
-}
-.search-minimal .form-control:focus ~ .search-icon { color: #a67b30; }
 .search-popup__close {
     position: absolute;
     top: 10px;
@@ -334,7 +478,7 @@ const headerStyles = `
         letter-spacing: 0.03em;
     }
     .search-minimal form {
-        width: 200px;
+        width: 190px;
     }
     .marquee-container {
         width: 50% !important;
@@ -360,7 +504,7 @@ const headerStyles = `
         inset-inline-end: 1rem;
     }
     .search-minimal form {
-        width: 190px;
+        width: 180px;
     }
     .marquee-container {
         width: 55% !important;
@@ -386,7 +530,7 @@ const headerStyles = `
         inset-inline-end: 0.75rem;
     }
     .search-minimal form {
-        width: 175px;
+        width: 165px;
     }
     .marquee-container {
         width: 65% !important;
@@ -406,7 +550,7 @@ const headerStyles = `
         letter-spacing: 0;
     }
     .search-minimal form {
-        width: 160px;
+        width: 150px;
     }
     .marquee-container {
         width: 75% !important;
@@ -524,21 +668,21 @@ const HeaderSkeleton = () => {
                     </div>
 
                     {/* Center: Logo */}
-                    <div className="logo">
+                    <div className="logo flex-0-0-auto d-flex align-items-center justify-content-center">
                         <Link href="/">
                             <Image
                                 loading="eager"
                                 src="/assets/images/logo/Desktop.svg"
-                                width="100"
-                                height="100"
+                                width={100}
+                                height={100}
                                 alt="Ahmed Al Maghribi"
                             />
                         </Link>
                     </div>
 
                     {/* Right: Search & Tools */}
-                    <div className="header-tools d-flex align-items-center flex-1 justify-content-end gap-3">
-                        <Skeleton variant="rounded" width={215} height={35} sx={{ bgcolor: "rgba(0,0,0,0.05)" }} className="d-none d-lg-block" />
+                    <div className="header-tools d-flex align-items-center flex-1 justify-content-end gap-3 me-2">
+                        <Skeleton variant="rounded" width={200} height={35} sx={{ bgcolor: "rgba(0,0,0,0.05)" }} className="d-none d-lg-block" />
                         <Skeleton variant="circular" width={22} height={22} sx={{ bgcolor: "rgba(0,0,0,0.05)" }} />
                         <Skeleton variant="circular" width={22} height={22} sx={{ bgcolor: "rgba(0,0,0,0.05)" }} />
                         <Skeleton variant="circular" width={22} height={22} sx={{ bgcolor: "rgba(0,0,0,0.05)" }} />
@@ -1075,7 +1219,7 @@ export default function Header14() {
                             </div>
 
                             {/* Center: Main Brand Logo */}
-                            <div className="logo">
+                            <div className="logo flex-0-0-auto d-flex align-items-center justify-content-center">
                                 <Link href="/">
                                     <Image
                                         loading="lazy"
@@ -1088,8 +1232,8 @@ export default function Header14() {
                             </div>
 
                             {/* Right: Search, Account, Track, Locator, Cart */}
-                            <div className="header-tools d-flex align-items-center flex-1 justify-content-end gap-2 gap-xl-3 me-2">
-                                <div className="d-none d-lg-flex search-minimal me-2 me-xl-3">
+                            <div className="header-tools d-flex align-items-center flex-1 justify-content-end me-2">
+                                <div className="d-none d-lg-flex search-minimal">
                                     <form
                                         onSubmit={onSearch}
                                         className="position-relative"
@@ -1105,8 +1249,8 @@ export default function Header14() {
                                         />
                                         <span className="search-icon">
                                             <svg
-                                                width="20"
-                                                height="20"
+                                                width="18"
+                                                height="18"
                                                 viewBox="0 0 24 24"
                                                 aria-hidden="true"
                                             >
@@ -1132,38 +1276,28 @@ export default function Header14() {
                                     </form>
                                 </div>
 
-                                {/* Account Menu */}
-                                <div className="header-tools__item hover-account position-relative">
+                                {/* Account Icon + Hidden Dropdown Menu */}
+                                <div className="header-tools__item hover-account">
                                     {!isLoggedIn ? (
                                         <Link
                                             href="/login_register"
-                                            className="account-icon-link"
+                                            className="account-icon-link d-flex align-items-center"
                                         >
                                             <User />
                                         </Link>
                                     ) : (
                                         <Link
                                             href="/account_dashboard"
-                                            className="account-icon-link"
+                                            className="account-icon-link d-flex align-items-center"
                                             aria-haspopup="true"
                                         >
                                             <UserLoggedIn />
                                         </Link>
                                     )}
-                                    <div
-                                        className="account-hover-menu"
-                                        role="menu"
-                                        style={{
-                                            left:
-                                                locale === "ar" ? "0" : "auto",
-                                            right:
-                                                locale === "ar" ? "auto" : "0",
-                                            minWidth: "200px",
-                                        }}
-                                    >
+                                    <div className="account-hover-menu" role="menu">
                                         {isLoggedIn ? (
                                             <>
-                                                <div className="menu-title text-uppercase fw-medium text-start px-3 py-2 border-bottom">
+                                                <div className="menu-title text-start">
                                                     {locale === "ar"
                                                         ? "إدارة الحساب"
                                                         : "Manage Account"}
@@ -1178,10 +1312,7 @@ export default function Header14() {
                                                                     : ""
                                                             }
                                                         >
-                                                            <Link
-                                                                href={it.href}
-                                                                className="d-flex align-items-center justify-content-between px-3 py-2"
-                                                            >
+                                                            <Link href={it.href}>
                                                                 <span>
                                                                     {it.label}
                                                                 </span>
@@ -1195,8 +1326,6 @@ export default function Header14() {
                                                                                 fontSize: "0.75rem",
                                                                                 minWidth: "1.5rem",
                                                                                 textAlign: "center",
-                                                                                marginRight: locale === "ar" ? "0.5rem" : "0",
-                                                                                marginLeft: locale === "ar" ? "0" : "0.5rem",
                                                                             }}
                                                                         >
                                                                             {couponCount}
@@ -1206,14 +1335,13 @@ export default function Header14() {
                                                         </li>
                                                     ))}
                                                     <li
-                                                        className="divider border-top"
+                                                        className="divider"
                                                         aria-hidden="true"
                                                     />
                                                     <li className="logout">
                                                         <a
                                                             href="#"
                                                             onClick={handleLogout}
-                                                            className="text-danger fw-medium px-3 py-2 d-block"
                                                         >
                                                             {locale === "ar"
                                                                 ? "تسجيل خروج"
@@ -1225,7 +1353,7 @@ export default function Header14() {
                                         ) : (
                                             <ul className="list-unstyled mb-0 text-start">
                                                 <li>
-                                                    <Link href="/login_register" className="px-3 py-2 d-block">
+                                                    <Link href="/login_register">
                                                         {locale === "ar"
                                                             ? "تسجيل الدخول / التسجيل"
                                                             : "Login / Register"}
@@ -1242,7 +1370,7 @@ export default function Header14() {
                                     href={`/${locale}/order-tracking`}
                                     title={t("Track Order") || "Track Order"}
                                 >
-                                    <TbTruckDelivery size={24} strokeWidth={1.5} />
+                                    <TbTruckDelivery size={22} strokeWidth={1.5} />
                                 </Link>
 
                                 {/* Store Locator */}
@@ -1258,6 +1386,7 @@ export default function Header14() {
                                 <a
                                     onClick={() => openCart()}
                                     className="header-tools__item header-tools__cart js-open-aside position-relative"
+                                    style={{ cursor: "pointer" }}
                                 >
                                     <svg
                                         className="d-block"
@@ -1311,7 +1440,7 @@ export default function Header14() {
                                 className="header-tools__item d-none d-md-flex align-items-center justify-content-center"
                                 title={t("Track Order") || "Track Order"}
                             >
-                                <TbTruckDelivery size={24} strokeWidth={1.5} />
+                                <TbTruckDelivery size={22} strokeWidth={1.5} />
                             </Link>
                             <a
                                 onClick={() => openCart()}
