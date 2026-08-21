@@ -11,6 +11,7 @@ const BestSellers         = dynamic(() => import("@/components/homepage/BestSell
 const CollectionShowcase  = dynamic(() => import("@/components/homepage/CollectionShowcase"),  { ssr: false });
 const OffersBanner        = dynamic(() => import("@/components/homepage/OffersBanner"),        { ssr: false });
 const SpecialOffers       = dynamic(() => import("@/components/homepage/SpecialOffers"),       { ssr: false });
+const BuyXGetY            = dynamic(() => import("@/components/homepage/BuyXGetY"),            { ssr: false });
 const NewArrivals         = dynamic(() => import("@/components/homepage/NewArrivals"),         { ssr: false });
 const OnlineExclusiveBanner = dynamic(() => import("@/components/homepage/OnlineExclusiveBanner"), { ssr: false });
 const OnlineExclusive     = dynamic(() => import("@/components/homepage/OnlineExclusive"),     { ssr: false });
@@ -48,6 +49,7 @@ const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
             <CollectionShowcase />
             <OffersBanner />
             <SpecialOffers />
+            <BuyXGetY />
             <NewArrivals />
             <OnlineExclusiveBanner />
             <OnlineExclusive />

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
-import { fetchSpecialOffers, fetchAllProducts } from "@/utlis/productsCache";
+import { fetchDiscountOffers } from "@/utlis/productsCache";
 import he from "he";
 import "./SpecialOffers.css";
 
@@ -28,34 +28,26 @@ export default function SpecialOffers() {
 
     const [promotions, setPromotions]               = useState([]);
     const [activePromoIndex, setActivePromoIndex]   = useState(0);
-    const [fallbackProducts, setFallbackProducts]   = useState([]);
     const [loading, setLoading]                     = useState(true);
     const [swiper, setSwiper]                       = useState(null);
 
     const prevRef = useRef(null);
     const nextRef = useRef(null);
 
-    /* ── Fetch active promotions & products ── */
+    /* ── Fetch active discount promotions ── */
     useEffect(() => {
         (async () => {
             try {
                 setLoading(true);
-                const data = await fetchSpecialOffers();
-                if (Array.isArray(data) && data.length > 0) {
-                    setPromotions(data);
+                const discounts = await fetchDiscountOffers();
+                if (Array.isArray(discounts) && discounts.length > 0) {
+                    setPromotions(discounts);
                 } else {
-                    // Fallback to fetchAllProducts if no active dynamic promotion
-                    const all = await fetchAllProducts();
-                    if (all?.length) {
-                        const discounted = all.filter(
-                            (p) => p?.discount?.value && Number(p.discount.value) > 0 && p.product_qty > 0
-                        );
-                        const fallback = all.filter((p) => p.product_qty > 0).slice(0, 12);
-                        setFallbackProducts(discounted.length > 0 ? discounted : fallback);
-                    }
+                    setPromotions([]);
                 }
             } catch (e) {
-                console.error("Error fetching special offers:", e);
+                console.error("Error fetching discount offers:", e);
+                setPromotions([]);
             } finally {
                 setLoading(false);
             }
@@ -134,7 +126,7 @@ export default function SpecialOffers() {
     }, []);
 
     const currentPromo = promotions[activePromoIndex] || null;
-    const currentProducts = currentPromo?.products?.length ? currentPromo.products : fallbackProducts;
+    const currentProducts = currentPromo?.products ?? [];
 
     /* ── Skeleton ─────────────────────────────────────────────── */
     if (isMenuLoading || loading) {

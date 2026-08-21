@@ -136,7 +136,7 @@ export async function fetchOnlineExclusiveProducts() {
 
 /**
  * Fetches active special offers and dynamic promotions from /api/specialOffers.
- * Returns { success: true, promotions: [...] }
+ * Returns { success: true, discounts: [...], buy_x_get_y: [...], promotions: [...] }
  * Cached for the lifetime of the browser tab.
  */
 let _soCache = null;
@@ -152,11 +152,15 @@ export async function fetchSpecialOffers() {
         `${process.env.NEXT_PUBLIC_API_URL}api/specialOffers`
       );
       const data = await res.json();
-      _soCache = data?.promotions ?? [];
+      _soCache = {
+        discounts: Array.isArray(data?.discounts) ? data.discounts : [],
+        buy_x_get_y: Array.isArray(data?.buy_x_get_y) ? data.buy_x_get_y : [],
+        promotions: Array.isArray(data?.promotions) ? data.promotions : [],
+      };
       return _soCache;
     } catch (e) {
       console.error('[productsCache] fetchSpecialOffers failed:', e);
-      return [];
+      return { discounts: [], buy_x_get_y: [], promotions: [] };
     } finally {
       _soInFlight = null;
     }
@@ -164,4 +168,23 @@ export async function fetchSpecialOffers() {
 
   return _soInFlight;
 }
+
+/**
+ * Fetches active discount promotions only.
+ * Returns Array of discount promotions.
+ */
+export async function fetchDiscountOffers() {
+  const data = await fetchSpecialOffers();
+  return data?.discounts ?? [];
+}
+
+/**
+ * Fetches active Buy X Get Y / BOGO promotions only.
+ * Returns Array of Buy X Get Y promotions.
+ */
+export async function fetchBuyXGetYOffers() {
+  const data = await fetchSpecialOffers();
+  return data?.buy_x_get_y ?? [];
+}
+
 
