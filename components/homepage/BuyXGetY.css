@@ -1,28 +1,25 @@
 /* ============================================================
-   BUY X GET Y (BOGO) SLIDER — Ahmed Al Maghribi Perfumes
-   Layout mirrors luxury homepage sliders with bxy- namespace
+   BUY X GET Y — Ahmed Al Maghribi Perfumes
+   Mirrors SpecialOffers.css with bxy- namespace.
+   Centered heading + Carousel + Scrollbar + Centered Nav Arrows
    ============================================================ */
 
 .bxy-section {
   --bxy-gold: #C5A664;
-  --bxy-gold-dark: #A88A48;
-  --bxy-gold-light: #F7F3EB;
   --bxy-text: #1a1a1a;
   --bxy-text-sec: #3d3d3d;
   --bxy-text-muted: #888;
-  --bxy-bg: #fbf9f6;
-  --bxy-card-bg: #ffffff;
+  --bxy-bg: #ffffff;
+  --bxy-card-bg: #f0ece4;
   --bxy-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* ── Section Container ──────────────────────────────────────── */
+/* ── Section ────────────────────────────────────────────────── */
 .bxy-section {
   position: relative;
   padding: 48px 0 56px;
   background: var(--bxy-bg);
   overflow-x: hidden;
-  border-top: 1px solid rgba(197, 166, 100, 0.15);
-  border-bottom: 1px solid rgba(197, 166, 100, 0.15);
 }
 
 @media (min-width: 768px) {
@@ -37,7 +34,7 @@
   }
 }
 
-/* ── Inner Container ────────────────────────────────────────── */
+/* ── Inner container ────────────────────────────────────────── */
 .bxy-inner {
   width: 100%;
   max-width: 1440px;
@@ -64,7 +61,7 @@
   }
 }
 
-/* ── Centered Heading ──────────────────────────────────────── */
+/* ── Centered heading ──────────────────────────────────────── */
 .bxy-head {
   text-align: center;
   margin-bottom: 32px;
@@ -78,20 +75,14 @@
 }
 
 .bxy-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
   font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bxy-gold-dark);
-  background: var(--bxy-gold-light);
-  padding: 4px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(197, 166, 100, 0.3);
-  margin-bottom: 12px;
+  color: var(--bxy-gold);
+  margin-bottom: 8px;
 }
 
 @media (min-width: 768px) {
@@ -165,13 +156,15 @@
 
 .bxy-tabs {
   display: inline-flex;
-  background: #f0ece4;
+  align-items: center;
+  gap: 8px;
   padding: 4px;
-  border-radius: 999px;
-  gap: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 40px;
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bxy-tabs::-webkit-scrollbar {
@@ -179,363 +172,534 @@
 }
 
 .bxy-tab {
-  border: none;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 20px;
-  border-radius: 999px;
-  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
-  font-size: 0.8rem;
+  border-radius: 30px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.04em;
   color: var(--bxy-text-sec);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.25s var(--bxy-ease);
+  transition: all 0.28s var(--bxy-ease);
 }
 
 @media (min-width: 768px) {
   .bxy-tab {
+    font-size: 0.82rem;
     padding: 10px 24px;
-    font-size: 0.85rem;
   }
 }
 
 .bxy-tab:hover {
   color: var(--bxy-text);
+  background: rgba(255, 255, 255, 0.6);
 }
 
-.bxy-tab--active {
-  background: #ffffff;
-  color: var(--bxy-text);
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+.bxy-tab--active,
+.bxy-tab--active:hover {
+  color: #fff;
+  background: var(--bxy-text);
+  border-color: var(--bxy-text);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* ── Carousel Wrapper ───────────────────────────────────────── */
+/* ── Slider wrap ────────────────────────────────────────────── */
 .bxy-slider-wrap {
-  position: relative;
   width: 100%;
-  margin-top: 24px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .bxy-slider-wrap .swiper {
   overflow: visible;
-  padding-bottom: 24px;
+  width: 100%;
+}
+
+.bxy-slider-wrap .swiper-slide {
+  height: auto;
+  box-sizing: border-box;
+}
+
+/* ── Scrollbar progress line ────────────────────────────────── */
+.bxy-scrollbar {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  margin-top: 28px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
 }
 
 @media (min-width: 768px) {
-  .bxy-slider-wrap {
-    margin-top: 32px;
+  .bxy-scrollbar {
+    margin-top: 36px;
   }
+}
+
+.bxy-scrollbar .swiper-scrollbar-drag {
+  height: 100%;
+  background: var(--bxy-gold);
+  border-radius: 2px;
+  cursor: grab;
+}
+
+.bxy-scrollbar .swiper-scrollbar-drag:active {
+  cursor: grabbing;
+}
+
+/* ── Nav arrows — centered below scrollbar ──────────────────── */
+.bxy-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+  .bxy-nav {
+    gap: 14px;
+    margin-top: 24px;
+  }
+}
+
+.bxy-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.28s ease, background 0.28s ease;
+}
+
+@media (min-width: 768px) {
+  .bxy-arrow {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.bxy-arrow:hover {
+  border-color: var(--bxy-gold);
+  background: var(--bxy-gold);
+}
+
+.bxy-arrow:hover svg {
+  stroke: #fff;
+}
+
+.bxy-arrow svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--bxy-text);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.28s ease;
+}
+
+@media (min-width: 768px) {
+  .bxy-arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.bxy-arrow.swiper-button-disabled {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ── Card ───────────────────────────────────────────────────── */
 .bxy-card {
-  position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--bxy-card-bg);
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-  transition: transform 0.35s var(--bxy-ease), box-shadow 0.35s var(--bxy-ease);
   height: 100%;
 }
 
-.bxy-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(197, 166, 100, 0.12);
-  border-color: rgba(197, 166, 100, 0.3);
-}
-
-/* ── Media ──────────────────────────────────────────────────── */
+/* Image — square on mobile, 4:5 from tablet up */
 .bxy-card__media {
   position: relative;
-  width: 100%;
-  padding-top: 110%;
-  background: #f7f5f0;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
+  background: var(--bxy-card-bg);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .bxy-card__media {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (min-width: 768px) {
+  .bxy-card__media {
+    margin-bottom: 14px;
+  }
 }
 
 .bxy-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center;
-  transition: transform 0.6s var(--bxy-ease);
+  transition: transform 0.7s var(--bxy-ease);
+  will-change: transform;
 }
 
 .bxy-card:hover .bxy-card__img {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
-/* ── Deal Badge ─────────────────────────────────────────────── */
-.bxy-card__badge {
-  position: absolute;
-  top: 12px;
-  inset-inline-start: 12px;
-  z-index: 3;
-  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-  color: #C5A664;
-  font-family: var(--font-inter, sans-serif);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: 1px solid rgba(197, 166, 100, 0.4);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* ── Wishlist Button ────────────────────────────────────────── */
+/* Wishlist */
 .bxy-card__wish {
   position: absolute;
   top: 10px;
-  inset-inline-end: 10px;
-  z-index: 3;
-  width: 32px;
-  height: 32px;
+  right: 10px;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.92);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #1a1a1a;
-  transition: all 0.2s var(--bxy-ease);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
 }
 
-.bxy-card__wish:hover {
-  background: #ffffff;
-  color: #C5A664;
-  transform: scale(1.1);
+@media (hover: none) {
+  .bxy-card__wish {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.bxy-card__wish--active {
-  color: #d9534f;
-  background: #ffffff;
+.bxy-card:hover .bxy-card__wish,
+.bxy-card__wish.active {
+  opacity: 1;
+  transform: scale(1);
 }
 
-/* ── Card Body ──────────────────────────────────────────────── */
-.bxy-card__body {
+.bxy-card__wish svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: #333;
+  stroke-width: 1.6;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.bxy-card__wish.active svg,
+.bxy-card__wish:hover svg {
+  fill: var(--bxy-gold);
+  stroke: var(--bxy-gold);
+}
+
+/* Deal Badge */
+.bxy-card__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  padding: 3px 8px;
+  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--bxy-gold);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* ── Card Info ──────────────────────────────────────────────── */
+.bxy-card__info {
   display: flex;
   flex-direction: column;
-  padding: 16px 14px 18px;
   flex: 1;
 }
 
-.bxy-card__cat {
-  font-family: var(--font-inter, sans-serif);
-  font-size: 0.7rem;
+.bxy-card__sub {
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.6rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--bxy-gold-dark);
-  margin-bottom: 4px;
+  letter-spacing: 0.08em;
+  color: var(--bxy-text-muted);
+  margin: 0 0 3px;
+  line-height: 1.3;
 }
 
-.bxy-card__title {
-  font-family: var(--font-inter, sans-serif);
-  font-size: 0.88rem;
-  font-weight: 600;
+@media (min-width: 768px) {
+  .bxy-card__sub {
+    font-size: 0.75rem;
+  }
+}
+
+.bxy-card__name {
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-style: normal;
   color: var(--bxy-text);
-  line-height: 1.35;
-  margin: 0 0 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2.38em;
+  margin: 0 0 5px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
-.bxy-card__title a {
+@media (min-width: 768px) {
+  .bxy-card__name {
+    font-size: 1.05rem;
+  }
+}
+
+.bxy-card__name a {
   color: inherit;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.bxy-card__title a:hover {
-  color: var(--bxy-gold-dark);
+.bxy-card__name a:hover {
+  color: var(--bxy-gold);
 }
 
-.bxy-card__price-row {
+/* Price */
+.bxy-card__price {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-top: auto;
-  margin-bottom: 12px;
-}
-
-.bxy-card__price {
-  font-family: var(--font-inter, sans-serif);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--bxy-text);
-}
-
-/* ── Action Button ──────────────────────────────────────────── */
-.bxy-card__btn {
-  width: 100%;
-  padding: 9px 12px;
-  background: #1a1a1a;
-  color: #ffffff;
-  border: 1px solid #1a1a1a;
-  border-radius: 6px;
-  font-family: var(--font-inter, sans-serif);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.25s var(--bxy-ease);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 6px;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--bxy-text);
+  margin-bottom: 10px;
 }
 
-.bxy-card__btn:hover {
-  background: var(--bxy-gold);
-  border-color: var(--bxy-gold);
-  color: #1a1a1a;
+@media (min-width: 768px) {
+  .bxy-card__price {
+    font-size: 0.83rem;
+  }
 }
 
-.bxy-card__btn--disabled {
-  background: #e0e0e0;
-  border-color: #e0e0e0;
-  color: #888888;
-  cursor: not-allowed;
+.bxy-card__price-cur {
+  color: var(--bxy-text);
 }
 
-/* ── Navigation Buttons ─────────────────────────────────────── */
-.bxy-nav-btn {
-  position: absolute;
-  top: 40%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(197, 166, 100, 0.3);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+/* ── Add to Cart & Stepper ──────────────────────────────────── */
+.bxy-card__atc {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  padding: 9px 10px;
+  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--bxy-text);
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.25s var(--bxy-ease);
+  margin-top: auto;
+  white-space: nowrap;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
-.bxy-nav-btn:hover {
+@media (min-width: 480px) {
+  .bxy-card__atc {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+.bxy-card__atc:hover {
+  background: var(--bxy-text);
+  color: #fff;
+  border-color: var(--bxy-text);
+}
+
+.bxy-card__atc--out {
+  color: var(--bxy-text-muted);
+  border-color: rgba(0, 0, 0, 0.08);
+  cursor: default;
+  pointer-events: none;
+}
+
+.bxy-card__stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--bxy-gold);
+  border-radius: 3px;
+  background: #ffffff;
+  margin-top: auto;
+  box-sizing: border-box;
+}
+
+.bxy-card__step-btn {
+  background: transparent;
+  border: none;
+  color: var(--bxy-text);
+  font-size: 1rem;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.bxy-card__step-btn:hover {
   background: var(--bxy-gold);
   color: #ffffff;
-  border-color: var(--bxy-gold);
-  box-shadow: 0 6px 18px rgba(197, 166, 100, 0.3);
 }
 
-.bxy-nav-btn--prev {
-  inset-inline-start: -16px;
+.bxy-card__step-btn--max {
+  opacity: 0.3;
+  cursor: default;
 }
 
-.bxy-nav-btn--next {
-  inset-inline-end: -16px;
-}
-
-@media (min-width: 1280px) {
-  .bxy-nav-btn--prev {
-    inset-inline-start: -22px;
-  }
-  .bxy-nav-btn--next {
-    inset-inline-end: -22px;
-  }
-}
-
-/* ── Scrollbar ──────────────────────────────────────────────── */
-.bxy-scrollbar {
-  margin-top: 20px;
-  height: 3px;
-  background: rgba(0, 0, 0, 0.06);
-  border-radius: 999px;
-  position: relative;
-}
-
-.bxy-scrollbar .swiper-scrollbar-drag {
-  background: var(--bxy-gold);
-  border-radius: 999px;
-  height: 100%;
+.bxy-card__step-num {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--bxy-text);
 }
 
 /* ── Skeletons ──────────────────────────────────────────────── */
-.bxy-skel-line {
-  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
-  background-size: 200% 100%;
-  animation: bxyShimmer 1.5s infinite;
+.bxy-skel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bxy-skel-card__img {
+  aspect-ratio: 1 / 1;
+  background: #e8e4dc;
   border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .bxy-skel-card__img {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+.bxy-skel-card__img::after,
+.bxy-skel-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+  animation: bxyShin 1.8s ease-in-out infinite;
+}
+
+.bxy-skel-line {
+  background: #e8e4dc;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
 }
 
 .bxy-skel-line--eyebrow {
-  width: 120px;
-  height: 16px;
-  margin: 0 auto 12px;
-  border-radius: 999px;
+  height: 8px;
+  width: 110px;
+  margin: 0 auto 8px;
 }
 
 .bxy-skel-line--title {
-  width: 240px;
-  height: 32px;
-  margin: 0 auto;
+  height: 22px;
+  width: 200px;
+  margin: 0 auto 32px;
+}
+
+.bxy-skel-line--name {
+  height: 10px;
+  width: 80%;
+}
+
+.bxy-skel-line--sub {
+  height: 8px;
+  width: 50%;
 }
 
 .bxy-skel-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 32px;
+  gap: 14px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
+  .bxy-skel-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
   .bxy-skel-row {
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 22px;
   }
 }
 
-.bxy-skel-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 12px;
-  border: 1px solid #eee;
-}
-
-.bxy-skel-card__img {
-  width: 100%;
-  padding-top: 100%;
-  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
-  background-size: 200% 100%;
-  animation: bxyShimmer 1.5s infinite;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.bxy-skel-line--name {
-  width: 70%;
-  height: 14px;
-  margin-bottom: 8px;
-}
-
-.bxy-skel-line--sub {
-  width: 40%;
-  height: 12px;
-}
-
-@keyframes bxyShimmer {
+@keyframes bxyShin {
   0% {
-    background-position: 200% 0;
+    transform: translateX(-100%);
   }
+
   100% {
-    background-position: -200% 0;
+    transform: translateX(200%);
+  }
+}
+
+/* ── RTL ────────────────────────────────────────────────────── */
+[dir="rtl"] .bxy-card__badge {
+  left: auto;
+  right: 10px;
+}
+
+[dir="rtl"] .bxy-card__wish {
+  right: auto;
+  left: 10px;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .bxy-card__img {
+    transition: none;
+  }
+
+  .bxy-card:hover .bxy-card__img {
+    transform: none;
   }
 }
