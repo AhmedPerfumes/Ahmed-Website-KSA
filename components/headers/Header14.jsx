@@ -468,96 +468,173 @@ const headerStyles = `
     color: #a67b30;
 }
 
-/* ─── Laptop & Desktop Responsive Scaling ─── */
-@media (max-width: 1550px) {
+/* ═══════════════════════════════════════════════════════════════════
+   LAPTOP COMPACT STYLING & TYPOGRAPHY ADJUSTMENTS (992px to 1536px)
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 992px) and (max-width: 1536px) {
+    /* Compact announcement marquee */
+    .header-marquee-bar {
+        height: 2.1rem !important;
+    }
+    .marquee-track a {
+        font-size: 11px !important;
+        letter-spacing: 0.04em !important;
+    }
+
+    /* Compact middle header */
+    .header-middle .container-fluid {
+        padding-top: 0.35rem !important;
+        padding-bottom: 0.35rem !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+    .header-middle .logo img {
+        width: 76px !important;
+        height: 76px !important;
+    }
+    .heeader-top__right .form-select {
+        font-size: 11px !important;
+        padding: 2px 20px 2px 4px !important;
+        letter-spacing: 0.04em !important;
+    }
+    .search-minimal form {
+        width: 175px !important;
+    }
+    .search-minimal .form-control {
+        font-size: 11.5px !important;
+        padding: 4px 28px 4px 2px !important;
+    }
+    .search-minimal .form-control::placeholder {
+        font-size: 10.5px !important;
+    }
+    .header-tools {
+        gap: 13px !important;
+    }
+
+    /* Compact bottom navigation & typography */
+    .header-bottom-wrapper .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    .header-bottom .navigation {
+        padding: 0 !important;
+    }
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 12px 10px;
-        font-size: 12px;
-        letter-spacing: 0.03em;
+        padding: 8px 10px !important;
+        font-size: 11.5px !important;
+        letter-spacing: 0.04em !important;
+        line-height: 1.4 !important;
     }
-    .search-minimal form {
-        width: 190px;
+    .navigation__list > li > a::after,
+    .navigation__list > li > .menu-link::after,
+    .navigation__list > li > .navigation__link::after {
+        height: 1.5px !important;
     }
-    .marquee-container {
-        width: 50% !important;
+
+    /* Compact sticky bar when scrolled */
+    .sticky-logo {
+        inset-inline-start: 1rem !important;
+    }
+    .sticky-logo img {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    .sticky-actions {
+        inset-inline-end: 1rem !important;
+        gap: 11px !important;
+    }
+    .sticky-actions .header-tools__item svg {
+        width: 17px !important;
+        height: 17px !important;
     }
 }
 
+/* Mid-size laptops (≤1366px e.g. standard 13", 14" laptops) */
 @media (max-width: 1366px) {
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 11px 7px;
-        font-size: 11px;
-        letter-spacing: 0.02em;
+        padding: 7px 7px !important;
+        font-size: 11px !important;
+        letter-spacing: 0.02em !important;
     }
-    .header-bottom-wrapper .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    .sticky-logo {
-        inset-inline-start: 1rem;
-    }
-    .sticky-actions {
-        inset-inline-end: 1rem;
+    .header-middle .logo img {
+        width: 72px !important;
+        height: 72px !important;
     }
     .search-minimal form {
-        width: 180px;
+        width: 165px !important;
     }
     .marquee-container {
         width: 55% !important;
     }
 }
 
+/* Smaller laptops & Landscape Tablets (≤1200px) */
 @media (max-width: 1200px) {
+    .header-middle .container-fluid {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    .header-middle .logo img {
+        width: 66px !important;
+        height: 66px !important;
+    }
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 10px 4px;
-        font-size: 10.5px;
-        letter-spacing: 0.01em;
+        padding: 6px 5px !important;
+        font-size: 10.5px !important;
+        letter-spacing: 0.01em !important;
     }
     .header-bottom-wrapper .container {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
     }
     .sticky-logo {
-        inset-inline-start: 0.75rem;
+        inset-inline-start: 0.75rem !important;
     }
     .sticky-actions {
-        inset-inline-end: 0.75rem;
+        inset-inline-end: 0.75rem !important;
     }
     .search-minimal form {
-        width: 165px;
+        width: 145px !important;
+    }
+    .header-tools {
+        gap: 10px !important;
     }
     .marquee-container {
         width: 65% !important;
     }
-    .header-middle .logo img {
-        width: 85px !important;
-        height: 85px !important;
-    }
 }
 
+/* Compact laptops (≤1050px) */
 @media (max-width: 1050px) {
     .navigation__list > li > a,
     .navigation__list > li > .menu-link,
     .navigation__list > li > .navigation__link {
-        padding: 8px 3px;
-        font-size: 10px;
-        letter-spacing: 0;
+        padding: 5px 3px !important;
+        font-size: 10px !important;
+        letter-spacing: 0 !important;
     }
     .search-minimal form {
-        width: 150px;
+        width: 135px !important;
+    }
+    .header-middle .logo img {
+        width: 60px !important;
+        height: 60px !important;
     }
     .marquee-container {
         width: 75% !important;
     }
     .sticky-logo img {
-        width: 36px !important;
-        height: 36px !important;
+        width: 32px !important;
+        height: 32px !important;
     }
 }
 
