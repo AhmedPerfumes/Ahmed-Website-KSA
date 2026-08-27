@@ -1,43 +1,16 @@
 // CollapsibleDescription.js
 
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import React, { useState } from "react";
+import { useLocale } from "next-intl";
+import { Box, Container, Typography, Collapse } from "@mui/material";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
-export default function CollapsibleDescription({ description }) {
+export default function CollapsibleDescription({ description, title: customTitle }) {
     const [expanded, setExpanded] = useState(false);
-    const [isOverflowing, setIsOverflowing] = useState(false);
-    const [maxHeight, setMaxHeight] = useState("auto");
-    const contentRef = useRef(null);
-    const t = useTranslations();
-
-    useEffect(() => {
-        const element = contentRef.current;
-        if (element) {
-            const parentStyle = window.getComputedStyle(element);
-            const lineHeight = parseFloat(parentStyle.lineHeight);
-
-            let doesOverflow = false;
-            if (element.children.length > 0) {
-                const firstChild = element.children[0];
-                const childStyle = window.getComputedStyle(firstChild);
-                const childMargin =
-                    parseFloat(childStyle.marginTop) +
-                    parseFloat(childStyle.marginBottom);
-                doesOverflow = element.scrollHeight > lineHeight + childMargin + 2;
-            } else {
-                doesOverflow = element.scrollHeight > lineHeight + 2;
-            }
-
-            setIsOverflowing(doesOverflow);
-
-            if (doesOverflow) {
-                setMaxHeight(expanded ? `${element.scrollHeight}px` : `${lineHeight}px`);
-            } else {
-                setMaxHeight("none");
-            }
-        }
-    }, [description, expanded]);
+    const locale = useLocale();
+    const isRtl = locale === "ar";
+    const title = customTitle || (isRtl ? "عن هذه المجموعة" : "About this Collection");
 
     // If there's no description, don't render anything
     if (!description) {
@@ -45,43 +18,66 @@ export default function CollapsibleDescription({ description }) {
     }
 
     return (
-        <div
-            style={{
-                fontFamily: "Merriweather, serif",
+        <Box
+            component="section"
+            dir={isRtl ? "rtl" : "ltr"}
+            sx={{
+                py: 3,
+                background: "transparent",
+                borderTop: "1px solid rgba(191, 149, 63, 0.15)",
                 maxWidth: "930px",
                 margin: "0 auto",
             }}
         >
-            <div
-                dangerouslySetInnerHTML={{ __html: description }}
-                ref={contentRef}
-                style={{
-                    maxHeight: maxHeight,
-                    overflow: "hidden",
-                    transition: "max-height 0.5s ease-in-out",
-                    fontSize: "0.875rem",
-                    color: "#6E6E73",
-                    letterSpacing: "0.02em",
-                    fontWeight: "500",
-                    textAlign: "center",
-                }}
-            ></div>
-            {isOverflowing && (
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                    }}
-                >
-                    <a
+            <Container maxWidth="lg">
+                <Box sx={{ textAlign: isRtl ? "right" : "left", opacity: 0.85 }}>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            color: "#5C4A3A",
+                            fontSize: "0.75rem",
+                            fontWeight: "600",
+                            letterSpacing: "1.5px",
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                            userSelect: "none",
+                            textTransform: "uppercase",
+                            transition: "color 0.3s ease",
+                            "&:hover": { color: "#BF953F" }
+                        }}
                         onClick={() => setExpanded(!expanded)}
-                        style={{ cursor: "pointer" }}
-                        className="btn-rounded btn-link_lg text-uppercase fw-medium hover-effect mt-3"
                     >
-                        {expanded ? t("Show less") : t("Find Out More")}
-                    </a>
-                </div>
-            )}
-        </div>
+                        {title} {expanded ? <KeyboardArrowUp sx={{ fontSize: "0.95rem" }} /> : <KeyboardArrowDown sx={{ fontSize: "0.95rem" }} />}
+                    </Typography>
+
+                    <Collapse in={expanded}>
+                        <Box 
+                            sx={{ 
+                                mt: 2,
+                                "& p, & div, & span": {
+                                    color: "#5C4A3A",
+                                    display: "block",
+                                    fontSize: "0.75rem",
+                                    mb: 1.5,
+                                    lineHeight: 1.6,
+                                    textAlign: "justify",
+                                    fontFamily: "Merriweather, serif",
+                                },
+                                "& a": {
+                                    color: "#BF953F",
+                                    textDecoration: "underline",
+                                    textUnderlineOffset: "2px",
+                                    fontWeight: "600",
+                                }
+                            }}
+                        >
+                            <div dangerouslySetInnerHTML={{ __html: description }} />
+                        </Box>
+                    </Collapse>
+                </Box>
+            </Container>
+        </Box>
     );
 }
