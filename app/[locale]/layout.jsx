@@ -174,13 +174,30 @@ const bodoniModa = Bodoni_Moda({
 });
 
 
-// Import Arabic font
+// Import Brando Arabic font — multi-weight, used for the Arabic (ar) locale.
+// Brando Arabic covers Arabic glyphs with a refined, premium letterform.
+// Brando Sans covers Latin/UI characters within the same locale.
 const arabicFont = localFont({
-    src: "../../public/assets/fonts/alexandria-arabic/static/Alexandria-Regular.ttf",
+    src: [
+        // ── Arabic glyphs (primary) ──────────────────────────────────
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Hairline.otf",   weight: "100", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_ExtraLight.otf", weight: "200", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Light.otf",      weight: "300", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_SemiBold.otf",   weight: "600", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Bold.otf",       weight: "700", style: "normal" },
+        // ── Brando Sans (Latin / UI / numbers within Arabic locale) ──
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_ExtraLight.otf",        weight: "200", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_ExtraLight_Italic.otf", weight: "200", style: "italic" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Light.otf",             weight: "300", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Light_Italic.otf",      weight: "300", style: "italic" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Italic.otf",            weight: "400", style: "italic" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_SemiBold.otf",          weight: "600", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Bold.otf",              weight: "700", style: "normal" },
+    ],
     display: "swap",
-    adjustFontFallback: true,
-    preload: false, // only preloaded for ar locale
-    variable: "--font-alexandria",
+    adjustFontFallback: false, // OTF — skip auto fallback metrics; we handle in CSS
+    preload: false,            // only preloaded for ar locale
+    variable: "--font-brando",
 });
 
 // sofiaFont (Kanit-Regular.ttf) REMOVED — it was only used for locale="secondary"
@@ -201,7 +218,8 @@ export default async function LocaleLayout({ children, params: { locale } }) {
     const newFontVars = `${cormorantGaramond.variable} ${bodoniModa.variable}`;
     let fontClasses = `${englishFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable} ${newFontVars}`;
     if (locale === "ar") {
-        fontClasses = `${arabicFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable} ${newFontVars}`;
+        // Brando Arabic is the primary font; keep Inter for prices/numbers.
+        fontClasses = `${arabicFont.variable} ${inter.variable} ${newFontVars}`;
     }
 
     // Fetch translation messages
