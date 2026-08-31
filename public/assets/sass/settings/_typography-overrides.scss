@@ -1014,6 +1014,7 @@ p {
 /* The global Arabic h* rule forces #1a1a1a; these elements sit on
    dark photo/gradient backgrounds so they must stay white, exactly
    as the English locale renders them.                              */
+[lang="ar"] .hero-slide__title,
 [lang="ar"] .oebnr__title,
 [lang="ar"] .gbnr__title,
 [lang="ar"] .dkbnr__title,
