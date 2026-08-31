@@ -1010,6 +1010,18 @@ p {
   letter-spacing: 0 !important;
 }
 
+/* ── Banner / overlay titles — white on dark backgrounds ── */
+/* The global Arabic h* rule forces #1a1a1a; these elements sit on
+   dark photo/gradient backgrounds so they must stay white, exactly
+   as the English locale renders them.                              */
+[lang="ar"] .oebnr__title,
+[lang="ar"] .gbnr__title,
+[lang="ar"] .dkbnr__title,
+[lang="ar"] .care-card__title,
+[lang="ar"] .small-banner__title {
+  color: #ffffff !important;
+}
+
 /* ── Blog / inner page body text ── */
 [lang="ar"] [class*="blog"] p,
 [lang="ar"] [class*="blog"] li,
