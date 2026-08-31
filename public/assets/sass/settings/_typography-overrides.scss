@@ -946,7 +946,7 @@ p {
 [lang="ar"] .header14 .nav-item > a,
 [lang="ar"] .mainnav__item > a {
   font-family: var(--font-brando), "Geeza Pro", Arial, sans-serif !important;
-  font-weight: 400 !important;
+  font-weight: 600 !important;
   letter-spacing: 0 !important;
 }
 
@@ -974,8 +974,9 @@ p {
   letter-spacing: 0 !important;
 }
 
-/* ── Product card names — SemiBold for strong hierarchy ── */
+/* ── Product card names — SemiBold 600 ── */
 [lang="ar"] .pc__title,
+[lang="ar"] .pc-card__name,
 [lang="ar"] .bs-card__name,
 [lang="ar"] .bs-card__name a,
 [lang="ar"] .na2-banner__name,
