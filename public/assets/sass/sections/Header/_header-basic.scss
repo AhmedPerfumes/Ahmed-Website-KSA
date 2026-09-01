@@ -107,7 +107,12 @@
     background: $header-cart-amount-bg;
     color: $header-cart-amount-color;
     font-size: $header-cart-amount-font-size;
-    line-height: $header-cart-amount-width;
+    /* Flexbox centering — pixel-perfect regardless of font metrics.
+       Replaces line-height trick which breaks when font changes.    */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     text-align: center;
   }
 }
