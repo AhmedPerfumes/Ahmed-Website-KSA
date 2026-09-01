@@ -99,6 +99,7 @@
   position: relative;
 
   .cart-amount {
+    position: absolute; /* REQUIRED: top/left do nothing without this */
     top: calc(#{$header-tools-item-padding-y} + 1em);
     left: calc(#{$header-tools-item-padding-x} + 1.4em);
     width: $header-cart-amount-width;
@@ -107,9 +108,7 @@
     background: $header-cart-amount-bg;
     color: $header-cart-amount-color;
     font-size: $header-cart-amount-font-size;
-    /* Flexbox centering — pixel-perfect on all OS/browsers.
-       The old line-height trick shifts the number up due to font
-       descenders and sub-pixel rendering differences per platform. */
+    /* Flexbox centering — pixel-perfect on all OS/browsers */
     display: flex;
     align-items: center;
     justify-content: center;

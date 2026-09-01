@@ -13,6 +13,7 @@
 
   .cart-amount,
   .wishlist-amount {
+    position: absolute;
     top: -5px;
     left: calc(100% - 5px);
     width: $header-cart-amount-width;
@@ -21,8 +22,10 @@
     background: $header-cart-amount-bg;
     color: $header-cart-amount-color;
     font-size: $header-cart-amount-font-size;
-    line-height: $header-cart-amount-width;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 
   &.position-fixed {
