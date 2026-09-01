@@ -107,8 +107,13 @@
     background: $header-cart-amount-bg;
     color: $header-cart-amount-color;
     font-size: $header-cart-amount-font-size;
-    line-height: $header-cart-amount-width;
-    text-align: center;
+    /* Flexbox centering — pixel-perfect on all OS/browsers.
+       The old line-height trick shifts the number up due to font
+       descenders and sub-pixel rendering differences per platform. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 }
 
