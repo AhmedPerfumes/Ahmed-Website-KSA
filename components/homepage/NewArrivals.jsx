@@ -12,25 +12,25 @@ import "./NewArrivals.css";
 /* ── Static editorial new arrival cards ── */
 const NEW_ARRIVAL_ITEMS = [
     {
-        id: "the-roots",
-        label: "K-Series · 2000",
-        name: "The Roots",
-        img: "/assets/images/kseries/PAST_Bottle_Final.jpg",
-        link: "/k-series/2000",
-    },
-    {
         id: "the-alchemy-lab",
-        label: "K-Series · 2025",
+        label: "K Series 2025",
         name: "The Alchemy Lab",
-        img: "/assets/images/kseries/Present_2025.jpg",
+        img: "/assets/images/kseries/alchemy-lab-2025.png",
         link: "/k-series/2025",
     },
     {
         id: "the-beyond",
-        label: "K-Series · 2050",
+        label: "K Series 2050",
         name: "The Beyond",
-        img: "/assets/images/kseries/FUTURE_mobile_1.jpg",
+        img: "/assets/images/kseries/the-beyond-2050.png",
         link: "/k-series/2050",
+    },
+    {
+        id: "the-roots",
+        label: "K Series 2000",
+        name: "The Roots",
+        img: "/assets/images/kseries/the-roots-2000.png",
+        link: "/k-series/2000",
     },
 ];
 
@@ -90,12 +90,9 @@ export default function NewArrivals() {
                     <h3 className="na2-banner__name">
                         <Link href={url}>{item.name}</Link>
                     </h3>
-                    <div className="na2-banner__footer">
-                        <div />
-                        <Link href={url} className="na2-banner__atc">
-                            {t("Shop Now")}
-                        </Link>
-                    </div>
+                    <Link href={url} className="na2-banner__discover">
+                        {t("Discover")}
+                    </Link>
                 </div>
             </article>
         );
