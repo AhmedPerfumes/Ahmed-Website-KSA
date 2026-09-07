@@ -25,6 +25,7 @@ export default function OnlineExclusiveBanner() {
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
                         className="oebnr__img"
+                        quality={100}
                         priority={false}
                         loading="lazy"
                     />
