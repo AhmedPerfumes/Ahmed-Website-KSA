@@ -31,6 +31,7 @@ import AhmedTrackerComponent from "@/components/common/AhmedTracker";
 import Head from "next/head";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import IntlProviderClient from "./IntlProviderClient";
 
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
@@ -317,7 +318,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     style={{ display: "none", visibility: "hidden" }}
                 />
             </noscript>
-                <NextIntlClientProvider messages={messages}>
+                <IntlProviderClient locale={locale} messages={messages}>
                     <Svgs />
                             <MenuProvider>
                     <Context>
@@ -343,7 +344,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                             </MenuProvider>
                     <div className="page-overlay" id="pageOverlay"></div>
                     <ScrollTop />
-                </NextIntlClientProvider>
+                </IntlProviderClient>
             </body>
         </html>
     );
