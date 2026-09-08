@@ -52,6 +52,7 @@ export default function DashboardSidebar() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      localStorage.removeItem("address");
     }
     router.replace("/login_register");
   };

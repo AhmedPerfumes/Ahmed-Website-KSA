@@ -205,6 +205,7 @@ export default function MyDetails() {
         setSaveLoading(false);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('address');
         window.location.href = '/login_register';
       }
     }

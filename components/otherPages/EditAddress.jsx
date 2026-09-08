@@ -36,111 +36,113 @@ export default function EditAddress() {
     const [form, setForm] = useState(addresses[0]);
     const [customerId, setCustomerId] = useState(null);
 
-    // Fetch customer_id and addresses from localStorage / API
-    useEffect(() => {
-    if (typeof window === "undefined") return;
+    const defaultUserInfoRef = React.useRef({ name: "", email: "", mobile: "" });
 
-    const raw = localStorage.getItem("user");
-    let customer_id = null;
-    let defaultUserInfo = { name: "", email: "", mobile: "" }; // 👈 New object to store user info
-
-    if (raw) {
+    const loadAddresses = async (cid, userInfo) => {
+        if (!cid) return;
         try {
-            const user = JSON.parse(atob(raw));
-            customer_id = user.id;
-            // ⭐️ MODIFICATION: Extract name, email, and mobile from the decoded user object
-            defaultUserInfo = {
-                name: user.name || "",
-                email: user.email || "",
-                mobile: user.mobile || user.phone || "" // Use mobile or phone if available
-            };
-        } catch {}
-    }
-    setCustomerId(customer_id);
-
-    if (customer_id) {
-        fetch(`${API_BASE}api/customerAddressDetails`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ customer_id }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.addresses && data.addresses.length) {
-                    // 🔹 Step 1: parse API response
-                    const parsed = data.addresses.map((addr) => ({
-                        id: addr.id,
-                        name: addr.name || defaultUserInfo.name, // 👈 Apply user info as fallback
-                        email: addr.email || defaultUserInfo.email, // 👈 Apply user info as fallback
-                        mobile: addr.phone || defaultUserInfo.mobile, // 👈 Apply user info as fallback
-                        area: addr.city || "",
-                        building: addr.address || "",
-                        province: addr.state || "",
-                        short_national_address: addr.short_national_address || "",
-                        isDefault: addr.is_default === 1,
-                    }));
-
-                    // 🔹 Step 2: check localStorage for last default
-                    const stored = localStorage.getItem("address");
-                    if (stored) {
-                        try {
-                            const def = JSON.parse(atob(stored));
-                            parsed.forEach((a) => {
-                                a.isDefault = a.id === def.id;
-                            });
-                        } catch {}
-                    }
-
-                    // 🔹 Step 3: keep array of exactly 2, using defaultUserInfo for un-filled spots
-                    setAddresses([
-                        parsed[0] || {
-                            id: -1,
-                            ...defaultUserInfo, // 👈 Use defaultUserInfo for the first fallback
-                            area: "",
-                            building: "",
-                            province: "",
-                            short_national_address: "",
-                            isDefault: false,
-                        },
-                        parsed[1] || {
-                            id: -1,
-                            ...defaultUserInfo, // 👈 Use defaultUserInfo for the second fallback
-                            area: "",
-                            building: "",
-                            province: "",
-                            short_national_address: "",
-                            isDefault: false,
-                        },
-                    ]);
-                } else {
-                    // ⭐️ ADDITION: Handle case where API returns NO addresses
-                    setAddresses([
-                        {
-                            id: -1,
-                            ...defaultUserInfo, // 👈 Use defaultUserInfo when no addresses exist
-                            area: "",
-                            building: "",
-                            province: "",
-                            short_national_address: "",
-                            isDefault: false,
-                        },
-                        {
-                            id: -1,
-                            ...defaultUserInfo, // 👈 Use defaultUserInfo when no addresses exist
-                            area: "",
-                            building: "",
-                            province: "",
-                            short_national_address: "",
-                            isDefault: false,
-                        },
-                    ]);
-                }
-            })
-            .catch(() => {
-                /* handle fetch errors */
+            const res = await fetch(`${API_BASE}api/customerAddressDetails`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ customer_id: cid }),
             });
-    }
-}, []);
+            const data = await res.json();
+            if (data?.addresses && data.addresses.length) {
+                // 🔹 Step 1: parse API response
+                const parsed = data.addresses.map((addr) => ({
+                    id: addr.id,
+                    name: addr.name || userInfo.name,
+                    email: addr.email || userInfo.email,
+                    mobile: addr.phone || userInfo.mobile,
+                    area: addr.city || "",
+                    building: addr.address || "",
+                    province: addr.state || "",
+                    short_national_address: addr.short_national_address || "",
+                    isDefault: addr.is_default === 1 || addr.is_default === true,
+                }));
+
+                const hasDefault = parsed.some((a) => a.isDefault);
+                if (!hasDefault && parsed.length > 0) {
+                    parsed[0].isDefault = true;
+                }
+
+                // 🔹 Step 2: keep array of exactly 2, using defaultUserInfo for un-filled spots
+                setAddresses([
+                    parsed[0] || {
+                        id: -1,
+                        ...userInfo,
+                        area: "",
+                        building: "",
+                        province: "",
+                        short_national_address: "",
+                        isDefault: false,
+                    },
+                    parsed[1] || {
+                        id: -1,
+                        ...userInfo,
+                        area: "",
+                        building: "",
+                        province: "",
+                        short_national_address: "",
+                        isDefault: false,
+                    },
+                ]);
+            } else {
+                setAddresses([
+                    {
+                        id: -1,
+                        ...userInfo,
+                        area: "",
+                        building: "",
+                        province: "",
+                        short_national_address: "",
+                        isDefault: false,
+                    },
+                    {
+                        id: -1,
+                        ...userInfo,
+                        area: "",
+                        building: "",
+                        province: "",
+                        short_national_address: "",
+                        isDefault: false,
+                    },
+                ]);
+            }
+        } catch (err) {
+            console.error("Error fetching addresses:", err);
+        }
+    };
+
+    // Fetch customer_id and addresses fresh from API
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        // Clean up legacy localStorage address
+        localStorage.removeItem("address");
+
+        const raw = localStorage.getItem("user");
+        let customer_id = null;
+        let defaultUserInfo = { name: "", email: "", mobile: "" };
+
+        if (raw) {
+            try {
+                const user = JSON.parse(atob(raw));
+                customer_id = user.id;
+                defaultUserInfo = {
+                    name: user.name || "",
+                    email: user.email || "",
+                    mobile: user.mobile || user.phone || ""
+                };
+            } catch { }
+        }
+        defaultUserInfoRef.current = defaultUserInfo;
+        setCustomerId(customer_id);
+
+        if (customer_id) {
+            loadAddresses(customer_id, defaultUserInfo);
+        }
+    }, []);
 
     const openModal = (idx) => {
         setEditingIndex(idx);
@@ -159,7 +161,7 @@ export default function EditAddress() {
         }
     };
 
-    // inside save function where we update localStorage
+    // inside save function where we update customer address
     const save = async () => {
         if (!customerId) return;
 
@@ -191,29 +193,11 @@ export default function EditAddress() {
                 };
             }
 
-            const defaultAddr = updated.find((addr) => addr.isDefault);
-            if (defaultAddr) {
-                localStorage.setItem(
-                    "address",
-                    btoa(
-                        JSON.stringify({
-                            id: defaultAddr.id,
-                            name: defaultAddr.name,
-                            email: defaultAddr.email,
-                            phone: defaultAddr.mobile,
-                            state: defaultAddr.province,
-                            city: defaultAddr.area,
-                            address: defaultAddr.building,
-                            short_national_address: defaultAddr.short_national_address,
-                            customer_id: customerId,
-                            is_default: 1,
-                        })
-                    )
-                );
-            }
-
             return updated;
         });
+
+        // Ensure no stale address remains in localStorage
+        localStorage.removeItem("address");
 
         setShow(false);
 
@@ -238,12 +222,16 @@ export default function EditAddress() {
             });
             const res = await resp.json();
             if (res?.message || res?.error) {
-                if(res.error == 'Unauthorized' || res.message == 'Unauthorized') {
+                if (res.error == 'Unauthorized' || res.message == 'Unauthorized') {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    localStorage.removeItem('address');
                     window.location.href = '/login_register';
+                    return;
                 }
             }
+            // Re-fetch fresh address details from API after update
+            await loadAddresses(customerId, defaultUserInfoRef.current);
         } catch (e) {
             console.error("API update failed", e);
         }
@@ -262,11 +250,10 @@ export default function EditAddress() {
                     {["Home Address", "Other Address"].map((label, idx) => (
                         <div
                             key={label}
-                            className={`p-3 d-flex justify-content-between align-items-start rounded border ${
-                                addresses[idx].isDefault
+                            className={`p-3 d-flex justify-content-between align-items-start rounded border ${addresses[idx].isDefault
                                     ? "border-primary"
                                     : "border-light"
-                            }`}
+                                }`}
                         >
                             <div>
                                 <h6 className="mb-1 fw-medium">{label}</h6>

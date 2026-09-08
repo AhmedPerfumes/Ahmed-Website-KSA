@@ -92,37 +92,89 @@ export default function Checkout() {
         let lastName = "";
         let email = "";
         let mobile = "";
-        let area = "";
-        let building = "";
-        let province = "";
-        let short_national_address = "";
         const userStr = localStorage.getItem("user");
         if (userStr) {
-          const user = JSON.parse(atob(userStr));
-          email = user.email || "";
-          mobile = user.phone || user.mobile || "";
-          customer_id = user.id || -1;
+          try {
+            const user = JSON.parse(atob(userStr));
+            email = user.email || "";
+            mobile = user.phone || user.mobile || "";
+            customer_id = user.id || -1;
 
-          if (user.name) {
-            const [f, ...lArr] = user.name.split(" ");
-            firstName = f || "";
-            lastName = lArr.join(" ") || "";
+            if (user.name) {
+              const [f, ...lArr] = user.name.split(" ");
+              firstName = f || "";
+              lastName = lArr.join(" ") || "";
+            }
+          } catch (e) {
+            console.error("Error parsing user from localStorage:", e);
           }
         }
 
-        const addrStr = localStorage.getItem("address");
-        if (addrStr) {
-          const addr = JSON.parse(atob(addrStr));
-          area = addr.city || "";
-          building = addr.address || "";
-          province = addr.state || "";
-          short_national_address = addr.short_national_address || "";
-        }
+        // Clean up legacy localStorage address
+        localStorage.removeItem("address");
 
         setFormData((prev) => ({ 
           ...prev, 
-          billingAddress: { ...prev.billingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, short_national_address}, 
-          shippingAddress: { ...prev.shippingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province }, }));
+          billingAddress: { ...prev.billingAddress, first_name: firstName, last_name: lastName, email, mobile }, 
+          shippingAddress: { ...prev.shippingAddress, first_name: firstName, last_name: lastName, email, mobile }, 
+        }));
+
+        if (customer_id && customer_id !== -1) {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}api/customerAddressDetails`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ customer_id }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data?.addresses && data.addresses.length) {
+                const defaultAddr = data.addresses.find((addr) => addr.is_default === 1 || addr.is_default === true) || data.addresses[0];
+                if (defaultAddr) {
+                  let addrFirstName = firstName;
+                  let addrLastName = lastName;
+                  if (defaultAddr.name) {
+                    const [f, ...lArr] = defaultAddr.name.trim().split(" ");
+                    addrFirstName = f || firstName;
+                    addrLastName = lArr.join(" ") || lastName;
+                  }
+                  const addrEmail = defaultAddr.email || email;
+                  const addrMobile = defaultAddr.phone || defaultAddr.mobile || mobile;
+                  const area = defaultAddr.city || "";
+                  const building = defaultAddr.address || "";
+                  const province = defaultAddr.state || "";
+                  const short_national_address = defaultAddr.short_national_address || "";
+
+                  setFormData((prev) => ({ 
+                    ...prev, 
+                    billingAddress: { 
+                      ...prev.billingAddress, 
+                      first_name: addrFirstName || prev.billingAddress.first_name, 
+                      last_name: addrLastName || prev.billingAddress.last_name, 
+                      email: addrEmail || prev.billingAddress.email, 
+                      mobile: addrMobile || prev.billingAddress.mobile, 
+                      area, 
+                      building, 
+                      province, 
+                      short_national_address 
+                    }, 
+                    shippingAddress: { 
+                      ...prev.shippingAddress, 
+                      first_name: addrFirstName || prev.shippingAddress.first_name, 
+                      last_name: addrLastName || prev.shippingAddress.last_name, 
+                      email: addrEmail || prev.shippingAddress.email, 
+                      mobile: addrMobile || prev.shippingAddress.mobile, 
+                      area, 
+                      building, 
+                      province 
+                    }, 
+                  }));
+                }
+              }
+            })
+            .catch((err) => {
+              console.error("Error fetching fresh customer addresses:", err);
+            });
+        }
       }
 
       // setCouponLoading(true);
@@ -544,6 +596,7 @@ export default function Checkout() {
         if (localStorage.getItem('token')) {
           localStorage.removeItem('token');
         }
+        localStorage.removeItem('address');
 
         // If they were a guest user verified via OTP, they need to re-verify
         // If they were logged in, they need to re-login
