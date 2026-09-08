@@ -67,10 +67,11 @@ export default function NewArrivals() {
                         alt={`${item.name} — Ahmed Al Maghribi New Arrival Perfume`}
                         fill
                         sizes="(max-width: 767px) 85vw, 33vw"
+                        quality={100}
                         className="na2-banner__img"
                         loading="lazy"
                     />
-                    <span className="na2-banner__overlay" />
+                    {/* <span className="na2-banner__overlay" /> */}
                 </Link>
 
                 <span className="na2-banner__badge">{t("New")}</span>

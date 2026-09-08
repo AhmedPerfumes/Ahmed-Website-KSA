@@ -29,7 +29,7 @@ export default function OnlineExclusiveBanner() {
                         priority={false}
                         loading="lazy"
                     />
-                    <span className="oebnr__scrim" />
+                    {/* <span className="oebnr__scrim" /> */}
                 </Link>
 
                 {/* Text overlay â€” eyebrow + title + CTA */}
