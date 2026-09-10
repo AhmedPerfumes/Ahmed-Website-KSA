@@ -1496,7 +1496,7 @@ export default function Header14() {
                         <div className="sticky-logo align-items-center">
                             <Link href="/">
                                 <Image
-                                    src="/assets/images/logo/Desktop.svg"
+                                    src="/assets/images/logo/ahmed-icon.svg"
                                     width={45}
                                     height={45}
                                     alt="Ahmed Al Maghribi"

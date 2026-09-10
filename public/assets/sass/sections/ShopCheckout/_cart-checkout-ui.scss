@@ -2056,4 +2056,57 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 .cc-ymal-wrapper {
   min-height: 0;
   overflow: hidden;
-}
+}
+
+// ─── Free-shipping progress bar inside Order Summary (cart page) ───
+// Scoped to .cc-osr__body so it never appears in checkout context.
+.cc-osr__ship-bar {
+  background: #fdf8ee;
+  border: 1px solid #e8d5a0;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+
+  &__text {
+    color: #5a4a1a;
+    margin: 0 0 0.4rem;
+    font-size: 0.78rem;
+
+    strong { color: #8b6914; }
+
+    &--done {
+      color: #2e7d32;
+      margin-bottom: 0;
+      font-weight: 600;
+      strong { color: #2e7d32; }
+    }
+  }
+
+  &__track {
+    height: 4px;
+    background: #e8d5a0;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 0.45rem;
+  }
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #d4a84b 0%, #8b6914 100%);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  &__notice {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    color: #8b6914;
+    opacity: 0.8;
+
+    svg { flex-shrink: 0; }
+  }
+}
+
