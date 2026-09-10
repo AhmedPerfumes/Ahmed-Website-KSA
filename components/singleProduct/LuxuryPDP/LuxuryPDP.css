@@ -2584,3 +2584,186 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   background: var(--pdp-line);
   border-radius: 2px;
 }
+
+/* ============================================================
+   FIX 1: Go to Checkout — gold full-width button
+   ============================================================ */
+.pdp-atc-btn--goto-checkout {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  background: linear-gradient(135deg, #c9903a 0%, #a67b30 60%, #8a6526 100%);
+  color: #fff !important;
+  text-decoration: none !important;
+  border: none;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter .2s, transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.pdp-atc-btn--goto-checkout::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  transition: left .45s ease;
+}
+.pdp-atc-btn--goto-checkout:hover::before { left: 150%; }
+.pdp-atc-btn--goto-checkout:hover { filter: brightness(1.07); transform: translateY(-1px); }
+.pdp-atc-btn--goto-checkout:active { transform: translateY(0); }
+
+/* ============================================================
+   FIX 3: Gallery Lightbox (fullscreen overlay on image click)
+   ============================================================ */
+.pdp-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .92);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lbFadeIn .18s ease;
+}
+@keyframes lbFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.pdp-lightbox__img-wrap {
+  position: relative;
+  width: min(90vw, 720px);
+  height: min(88vh, 720px);
+}
+.pdp-lightbox__close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+  z-index: 9001;
+}
+.pdp-lightbox__close:hover { background: rgba(255,255,255,.15); }
+.pdp-lightbox__arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 50%;
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9001;
+  transition: background .15s;
+}
+.pdp-lightbox__arrow:hover { background: rgba(255,255,255,.15); }
+.pdp-lightbox__arrow:disabled { opacity: .3; cursor: default; }
+.pdp-lightbox__arrow--prev { left: 1rem; }
+.pdp-lightbox__arrow--next { right: 1rem; }
+.pdp-lightbox__arrow svg { width: 20px; height: 20px; }
+/* Clickable cursor on main image */
+.pdp-gallery__main { cursor: zoom-in; }
+
+/* ============================================================
+   FIX 4: YMAL — horizontal scroll-snap slider
+   ============================================================ */
+.ifs-slider-wrap {
+  position: relative;
+}
+.ifs-slider {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: .5rem;
+}
+.ifs-slider::-webkit-scrollbar { display: none; }
+.ifs-slider .ifs-card {
+  flex: 0 0 calc(50% - .5rem);     /* 2 per row mobile */
+  scroll-snap-align: start;
+  min-width: 0;
+}
+@media (min-width: 480px) {
+  .ifs-slider .ifs-card { flex: 0 0 calc(33.33% - .67rem); } /* 3 per row */
+}
+@media (min-width: 1024px) {
+  .ifs-slider .ifs-card { flex: 0 0 calc(25% - .75rem); }    /* 4 per row */
+}
+/* Prev/Next arrow buttons for YMAL slider */
+.ifs-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  border: 1px solid #e8e0d0;
+  border-radius: 50%;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  z-index: 2;
+  transition: background .15s, border-color .15s;
+}
+.ifs-arrow:hover { background: #fdf9f2; border-color: #c5a05a; }
+.ifs-arrow:disabled { opacity: .25; cursor: default; }
+.ifs-arrow--prev { left: -1.25rem; }
+.ifs-arrow--next { right: -1.25rem; }
+.ifs-arrow svg { width: 16px; height: 16px; }
+/* Hide old grid rule when slider is used */
+.ifs-grid { display: none; }
+
+/* ============================================================
+   RESPONSIVE POLISH — PDP global
+   ============================================================ */
+@media (max-width: 575px) {
+  /* Tighter hero grid padding on small phones */
+  .pdp-container { padding: 0 .75rem; }
+  .pdp-hero { padding: .75rem 0 0; }
+
+  /* Info panel breathing room */
+  .pdp-info__title { font-size: 1.45rem; }
+  .pdp-info__breadcrumb { font-size: .7rem; }
+
+  /* Checkout button row — stack on very narrow */
+  .pdp-incart-unified__row {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .pdp-atc-btn--goto-checkout { height: 46px; font-size: .76rem; }
+
+  /* Sticky ATC — full width on mobile */
+  .pdp-sticky-atc {
+    left: 0; right: 0;
+    transform: translateY(calc(100% + 2rem));
+    border-radius: 0;
+    min-width: unset;
+    max-width: unset;
+    width: 100%;
+  }
+  .pdp-sticky-atc.visible {
+    transform: translateY(0);
+  }
+
+  /* Gallery thumbnails */
+  .pdp-gallery__thumb-strip { gap: .4rem; }
+  .pdp-gallery__thumb { width: 52px; height: 52px; }
+}

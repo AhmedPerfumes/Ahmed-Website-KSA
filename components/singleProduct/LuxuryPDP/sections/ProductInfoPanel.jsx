@@ -389,7 +389,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
   const buyNow = useCallback(() => {
     if (isInCart) {
       // Already in cart — just go to checkout
-      router.push(`/${locale}/checkout`);
+      router.push(`/${locale}/shop-checkout`);
       return;
     }
     const item = {
@@ -401,7 +401,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
     setCartProducts((prev) => [...prev, item]);
     setError(null);
     fireToast(quantity);
-    router.push(`/${locale}/checkout`);
+    router.push(`/${locale}/shop-checkout`);
   }, [isInCart, product, category, subcategory, quantity, setCartProducts, fireToast, router, locale]);
 
   /* ── Tabby Widget ── */
@@ -644,14 +644,13 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
                 </button>
               </div>
 
-              {/* Buy Now / Go to Checkout */}
-              <button
-                type="button"
-                className="pdp-atc-btn pdp-atc-btn--buynow pdp-atc-btn--buynow-sm"
-                onClick={() => router.push(`/${locale}/checkout`)}
+              {/* Go to Checkout — full gold button, correct route */}
+              <Link
+                href={`/${locale}/shop-checkout`}
+                className="pdp-atc-btn pdp-atc-btn--goto-checkout"
               >
                 Go to Checkout
-              </button>
+              </Link>
             </div>
           </motion.div>
         )}

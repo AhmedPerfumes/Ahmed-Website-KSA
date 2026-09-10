@@ -87,17 +87,28 @@ const StickyATC = ({ product }) => {
     }
   };
 
-  // Watch main ATC button
+  // Watch the ATC block container (always present, never swapped out like the button)
   useEffect(() => {
-    const target = document.getElementById("product-detail-top");
+    // Find the ATC block — it's always rendered regardless of in-cart state
+    const target = document.querySelector(".pdp-atc-block");
     if (!target) return;
 
+    let hasScrolled = false;
+    const onScroll = () => { hasScrolled = window.scrollY > 200; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     const observer = new IntersectionObserver(
-      ([entry]) => setShow(!entry.isIntersecting),
+      ([entry]) => {
+        // Only show sticky when: user has scrolled past 200px AND atc block is out of view
+        setShow(!entry.isIntersecting && hasScrolled);
+      },
       { threshold: 0 }
     );
     observer.observe(target);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   if (!product) return null;

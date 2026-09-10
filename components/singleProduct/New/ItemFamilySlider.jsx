@@ -5,7 +5,7 @@ import Image from "next/image";
 import he from "he";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { renderPrice } from "@/utlis/priceRenderer";
 import "./ItemFamilySlider.css";
 
@@ -61,6 +61,14 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
     const t = useTranslations();
     const tp = useTranslations("ProductDetails");
     const [showAll, setShowAll] = useState(false);
+    const sliderRef = useRef(null);
+
+    const scrollSlider = (dir) => {
+        if (!sliderRef.current) return;
+        const card = sliderRef.current.querySelector(".ifs-card");
+        const step = card ? card.offsetWidth + 16 : 200;
+        sliderRef.current.scrollBy({ left: dir * step, behavior: "smooth" });
+    };
 
     // Guard
     if (!itemFamilyProds || itemFamilyProds.length === 0) return null;
@@ -85,119 +93,92 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                 </h3>
             </div>
 
-            {/* 2-col product grid */}
-            <div className="ifs-grid">
-                {visible.map((elm, i) => {
-                    const imgs = Array.isArray(elm.images) ? elm.images : [];
-                    const img0 = imgs[0]
-                        ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[0]}`
-                        : null;
-                    const img1 = imgs[1]
-                        ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[1]}`
-                        : null;
-                    const url = getProductUrl(locale, elm);
-                    const name = he.decode(elm?.product_name || "");
-                    const isAdded = isAddedToCartProducts(elm?.product_id);
+            {/* Horizontal scroll slider — replaces old 2-col grid */}
+            <div className="ifs-slider-wrap">
+                {/* Prev arrow */}
+                <button
+                    className="ifs-arrow ifs-arrow--prev"
+                    onClick={() => scrollSlider(-1)}
+                    aria-label="Previous products"
+                    type="button"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
 
-                    // item_family items often lack their own discount from the API.
-                    // If the parent product has a group discount, apply it to all family members.
-                    const effectiveDiscount =
-                        elm.discount ??
-                        (product?.discount?.apply_to === "group" ? product.discount : null);
+                <div className="ifs-slider" ref={sliderRef}>
+                    {inStock.map((elm, i) => {
+                        const imgs = Array.isArray(elm.images) ? elm.images : [];
+                        const img0 = imgs[0]
+                            ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[0]}`
+                            : null;
+                        const img1 = imgs[1]
+                            ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[1]}`
+                            : null;
+                        const url = getProductUrl(locale, elm);
+                        const name = he.decode(elm?.product_name || "");
+                        const isAdded = isAddedToCartProducts(elm?.product_id);
+                        const effectiveDiscount = elm.discount ??
+                            (product?.discount?.apply_to === "group" ? product.discount : null);
+                        const elmWithDiscount = effectiveDiscount ? { ...elm, discount: effectiveDiscount } : elm;
+                        const hasDiscount = !!effectiveDiscount?.value;
 
-                    // Merge effective discount into elm for renderPrice
-                    const elmWithDiscount = effectiveDiscount
-                        ? { ...elm, discount: effectiveDiscount }
-                        : elm;
-
-                    // Active discount check (for badge only)
-                    const hasDiscount = !!effectiveDiscount?.value;
-
-                    return (
-                        <div className="ifs-card" key={elm.product_id ?? i}>
-                            {/* Image */}
-                            <div className="ifs-card__img">
-                                <Link href={url} tabIndex={-1} aria-hidden="true">
-                                    {img0 && (
-                                        <Image
-                                            src={img0}
-                                            alt={name}
-                                            fill
-                                            sizes="(max-width: 1024px) 40vw, 200px"
-                                            style={{ objectFit: "cover" }}
-                                            loading="lazy"
-                                        />
+                        return (
+                            <div className="ifs-card" key={elm.product_id ?? i}>
+                                <div className="ifs-card__img">
+                                    <Link href={url} tabIndex={-1} aria-hidden="true">
+                                        {img0 && (
+                                            <Image src={img0} alt={name} fill
+                                                sizes="(max-width:1024px) 40vw,200px"
+                                                style={{ objectFit: "cover" }} loading="lazy"
+                                            />
+                                        )}
+                                        {img1 && (
+                                            <Image src={img1} alt={name} fill
+                                                sizes="(max-width:1024px) 40vw,200px"
+                                                style={{ objectFit: "cover" }} loading="lazy"
+                                                className="ifs-img-secondary"
+                                            />
+                                        )}
+                                    </Link>
+                                    {hasDiscount && (
+                                        <span className="ifs-badge">{effectiveDiscount.value}% Off</span>
                                     )}
-                                    {img1 && (
-                                        <Image
-                                            src={img1}
-                                            alt={name}
-                                            fill
-                                            sizes="(max-width: 1024px) 40vw, 200px"
-                                            style={{ objectFit: "cover" }}
-                                            loading="lazy"
-                                            className="ifs-img-secondary"
-                                        />
+                                    {!hasDiscount && elm?.label_name && (
+                                        <span className="ifs-badge" style={{ background: elm.label_color || "#1A1A1A" }}>
+                                            {elm.label_name}
+                                        </span>
                                     )}
-                                </Link>
-
-                                {/* Badge */}
-                                {hasDiscount && (
-                                    <span className="ifs-badge">
-                                        {effectiveDiscount.value}% Off
-                                    </span>
-                                )}
-                                {!hasDiscount && elm?.label_name && (
-                                    <span
-                                        className="ifs-badge"
-                                        style={{ background: elm.label_color || "#1A1A1A" }}
-                                    >
-                                        {elm.label_name}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Quick-add — outside the image wrapper so it's never clipped */}
-                            <button
-                                className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
-                                onClick={() => {
-                                    if (isAdded) return;
-                                    addProductToCart({
-                                        ...elmWithDiscount,
-                                        category_name: elm.category_name,
-                                        subcategory_name:
-                                            elm.subcategory?.subcategory_name || "",
-                                    });
-                                    fireCartToast(name, img0, 1);
-                                }}
-                            >
-                                {isAdded ? "✓ Added" : "Add to Bag"}
-                            </button>
-
-                            {/* Info */}
-                            <div className="ifs-card__info">
-                                <p className="ifs-card__cat">{t(elm.category_name)}</p>
-                                <Link href={url} className="ifs-card__name" title={name}>
-                                    {name}
-                                </Link>
-                                <div className="ifs-card__price">
-                                    {renderPrice(elmWithDiscount, currency)}
+                                </div>
+                                <button
+                                    className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
+                                    onClick={() => {
+                                        if (isAdded) return;
+                                        addProductToCart({ ...elmWithDiscount, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name || "" });
+                                        fireCartToast(name, img0, 1);
+                                    }}
+                                >
+                                    {isAdded ? "✓ Added" : "Add to Bag"}
+                                </button>
+                                <div className="ifs-card__info">
+                                    <p className="ifs-card__cat">{t(elm.category_name)}</p>
+                                    <Link href={url} className="ifs-card__name" title={name}>{name}</Link>
+                                    <div className="ifs-card__price">{renderPrice(elmWithDiscount, currency)}</div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
 
-            {/* Show more */}
-            {hasMore && !showAll && (
+                {/* Next arrow */}
                 <button
-                    className="ifs-show-more"
-                    onClick={() => setShowAll(true)}
+                    className="ifs-arrow ifs-arrow--next"
+                    onClick={() => scrollSlider(1)}
+                    aria-label="Next products"
+                    type="button"
                 >
-                    Show More ({inStock.length - INITIAL_SHOW} more)
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
-            )}
+            </div>
         </div>
     );
 }

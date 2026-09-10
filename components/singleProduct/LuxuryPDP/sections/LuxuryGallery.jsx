@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import he from "he";
 
 /**
@@ -81,6 +82,24 @@ const ArrowBtn = ({ direction, onClick, disabled }) => (
 /* ─── Main Component ────────────────────────────────────────── */
 const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) => {
   const touchStartX = useRef(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setLightboxOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxOpen]);
+
+  const openLightbox = useCallback((idx) => {
+    setLightboxIndex(idx);
+    setLightboxOpen(true);
+  }, []);
+  const closeLightbox = () => setLightboxOpen(false);
+  const lbPrev = () => setLightboxIndex((i) => Math.max(i - 1, 0));
+  const lbNext = () => setLightboxIndex((i) => Math.min(i + 1, images.length - 1));
 
   /* Navigation helpers */
   const goPrev = useCallback(() => {
@@ -163,6 +182,8 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           onTouchEnd={onTouchEnd}
           role="img"
           aria-label={`${he.decode(product?.product_name || "Product")} — image ${activeIndex + 1} of ${images.length}`}
+          onClick={() => openLightbox(activeIndex)}
+          title="Click to zoom"
         >
           <Image
             src={imgSrc}
@@ -178,8 +199,8 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           {/* Prev / Next arrows — only shown when multiple images exist */}
           {images.length > 1 && (
             <>
-              <ArrowBtn direction="prev" onClick={goPrev} disabled={!hasPrev} />
-              <ArrowBtn direction="next" onClick={goNext} disabled={!hasNext} />
+              <ArrowBtn direction="prev" onClick={(e) => { e.stopPropagation(); goPrev(); }} disabled={!hasPrev} />
+              <ArrowBtn direction="next" onClick={(e) => { e.stopPropagation(); goNext(); }} disabled={!hasNext} />
             </>
           )}
 
@@ -220,6 +241,59 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
             </button>
           ))}
         </div>
+      )}
+
+      {/* ═══ LIGHTBOX PORTAL ═══════════════════════════════════ */}
+      {lightboxOpen && typeof window !== "undefined" && createPortal(
+        <div
+          className="pdp-lightbox"
+          onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image viewer"
+        >
+          {/* Prev arrow */}
+          {images.length > 1 && (
+            <button
+              className="pdp-lightbox__arrow pdp-lightbox__arrow--prev"
+              onClick={(e) => { e.stopPropagation(); lbPrev(); }}
+              disabled={lightboxIndex === 0}
+              aria-label="Previous image"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          )}
+
+          {/* Image */}
+          <div
+            className="pdp-lightbox__img-wrap"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="pdp-lightbox__close" onClick={closeLightbox} aria-label="Close" type="button">&times;</button>
+            <Image
+              src={images[lightboxIndex] ? `${API_URL}storage/${images[lightboxIndex]}` : "/assets/images/general_product.png"}
+              alt={he.decode(product?.product_name || "Product")}
+              fill
+              style={{ objectFit: "contain" }}
+              sizes="90vw"
+            />
+          </div>
+
+          {/* Next arrow */}
+          {images.length > 1 && (
+            <button
+              className="pdp-lightbox__arrow pdp-lightbox__arrow--next"
+              onClick={(e) => { e.stopPropagation(); lbNext(); }}
+              disabled={lightboxIndex >= images.length - 1}
+              aria-label="Next image"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          )}
+        </div>,
+        document.body
       )}
     </div>
   );
