@@ -1902,11 +1902,11 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     align-items: center;
     gap: 0.4rem;
     font-size: 0.72rem;
-    color: #8b6914;
-    opacity: 0.85;
-    margin-top: 0.1rem;
+    // (D) High-contrast: #5a3e00 on #fdf8ee = ~7.5:1 (WCAG AA)
+    color: #5a3e00;
+    margin-top: 0.4rem;
 
-    svg { flex-shrink: 0; }
+    svg { flex-shrink: 0; stroke: #8b6914; }
   }
 }
 
@@ -2103,10 +2103,62 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     align-items: center;
     gap: 0.35rem;
     font-size: 0.68rem;
-    color: #8b6914;
-    opacity: 0.8;
+    color: #5a3e00;
 
-    svg { flex-shrink: 0; }
+    svg { flex-shrink: 0; stroke: #8b6914; }
+  }
+}
+
+// ============================================================
+// CC-PROMO-MOBILE — Collapsible "Have a Promo Code?" toggle
+// Used in Checkout left column (mobile) and was missing from
+// the stylesheet, causing the unstyled appearance in Cart.
+// ============================================================
+.cc-promo-mobile {
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: #fdf8ee;
+    border: 1px solid #e8d5a0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-family-base);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #5a3e00;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      background: #f9f1dc;
+      border-color: $gold-main;
+    }
+  }
+
+  &__toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg { color: $gold-dark; }
+  }
+
+  &__chevron {
+    color: $gold-dark;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+
+    &.open { transform: rotate(180deg); }
+  }
+
+  &__body {
+    margin-top: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    background: #fffdf8;
+    border: 1px solid #e8d5a0;
+    border-radius: 8px;
   }
 }
 
