@@ -41,14 +41,106 @@ function getProductUrl(locale, elm) {
     return `/${locale}/shop/${cat}/${sub}/${prod}`;
 }
 
+/**
+ * CardCTA — switches between:
+ *   • Gold "+ Add" button  (pre-cart)
+ *   • Dark pill stepper [🗑/−] [qty] [+]  (in-cart, matching PDP theme)
+ */
+function CardCTA({ elm, elmWithDiscount, img0, name }) {
+    const { cartProducts, setCartProducts } = useContextElement();
+
+    const cartItem = cartProducts.find(
+        (c) => c.product_id == elm?.product_id && !c.is_gift
+    );
+    const isInCart = !!cartItem;
+    const qty = cartItem?.quantity ?? 0;
+
+    const maxQty = elm?.product_qty ?? 99;
+
+    const addToCart = () => {
+        if (isInCart) return;
+        const item = {
+            ...elmWithDiscount,
+            category_name: elm.category_name,
+            subcategory_name: elm.subcategory?.subcategory_name || "",
+            quantity: 1,
+        };
+        setCartProducts((prev) => [...prev, item]);
+        fireCartToast(name, img0, 1);
+    };
+
+    const increase = () => {
+        if (qty >= maxQty) return;
+        setCartProducts((prev) =>
+            prev.map((c) =>
+                c.product_id == elm?.product_id && !c.is_gift
+                    ? { ...c, quantity: c.quantity + 1 }
+                    : c
+            )
+        );
+    };
+
+    const decrease = () => {
+        if (qty <= 1) {
+            // Remove from cart
+            setCartProducts((prev) =>
+                prev.filter((c) => !(c.product_id == elm?.product_id && !c.is_gift))
+            );
+        } else {
+            setCartProducts((prev) =>
+                prev.map((c) =>
+                    c.product_id == elm?.product_id && !c.is_gift
+                        ? { ...c, quantity: c.quantity - 1 }
+                        : c
+                )
+            );
+        }
+    };
+
+    if (!isInCart) {
+        return (
+            <button className="ifs-cta ifs-cta--add" onClick={addToCart} type="button">
+                + Add
+            </button>
+        );
+    }
+
+    return (
+        <div className="ifs-cta ifs-cta--stepper" role="group" aria-label="Update quantity">
+            <button
+                className="ifs-cta__btn"
+                onClick={decrease}
+                aria-label={qty === 1 ? "Remove from cart" : "Decrease quantity"}
+                type="button"
+            >
+                {qty === 1 ? (
+                    /* Trash icon when qty = 1 (next decrease removes) */
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                    </svg>
+                ) : "−"}
+            </button>
+            <span className="ifs-cta__num" aria-live="polite">{qty}</span>
+            <button
+                className="ifs-cta__btn"
+                onClick={increase}
+                disabled={qty >= maxQty}
+                aria-label="Increase quantity"
+                type="button"
+            >
+                +
+            </button>
+        </div>
+    );
+}
+
 export default function ItemFamilySlider({ product, itemFamilyProds }) {
     const { currency } = useMenu();
     const locale = useLocale();
-    const { addProductToCart, isAddedToCartProducts } = useContextElement();
     const t = useTranslations();
     const sliderRef = useRef(null);
 
-    // Arrow visibility state — smart logic
+    // Arrow visibility — smart logic
     const [canScrollPrev, setCanScrollPrev] = useState(false);
     const [canScrollNext, setCanScrollNext] = useState(false);
     const [hasOverflow, setHasOverflow] = useState(false);
@@ -56,7 +148,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
     const updateArrows = useCallback(() => {
         const el = sliderRef.current;
         if (!el) return;
-        const overflow = el.scrollWidth > el.clientWidth + 4; // 4px tolerance
+        const overflow = el.scrollWidth > el.clientWidth + 4;
         setHasOverflow(overflow);
         setCanScrollPrev(el.scrollLeft > 4);
         setCanScrollNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
@@ -65,7 +157,6 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
     useEffect(() => {
         const el = sliderRef.current;
         if (!el) return;
-        // Check on mount + resize
         updateArrows();
         el.addEventListener("scroll", updateArrows, { passive: true });
         const ro = new ResizeObserver(updateArrows);
@@ -84,7 +175,6 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
         el.scrollBy({ left: dir * step, behavior: "smooth" });
     };
 
-    // Guards
     if (!itemFamilyProds || itemFamilyProds.length === 0) return null;
     const inStock = itemFamilyProds.filter((p) => p?.product_qty > 0);
     if (inStock.length === 0) return null;
@@ -93,7 +183,6 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
 
     return (
         <div className="ifs-panel">
-            {/* Header */}
             <div className="ifs-header">
                 <p className="ifs-eyebrow">You May Also Like</p>
                 <h3 className="ifs-title">
@@ -103,10 +192,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                 </h3>
             </div>
 
-            {/* Slider wrap — arrows only render when there IS overflow */}
             <div className="ifs-slider-wrap">
-
-                {/* Prev arrow — only when overflow AND not at start */}
                 {hasOverflow && (
                     <button
                         className={`ifs-arrow ifs-arrow--prev${canScrollPrev ? "" : " ifs-arrow--hidden"}`}
@@ -131,7 +217,6 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                             : null;
                         const url = getProductUrl(locale, elm);
                         const name = he.decode(elm?.product_name || "");
-                        const isAdded = isAddedToCartProducts(elm?.product_id);
                         const effectiveDiscount = elm.discount ??
                             (product?.discount?.apply_to === "group" ? product.discount : null);
                         const elmWithDiscount = effectiveDiscount ? { ...elm, discount: effectiveDiscount } : elm;
@@ -139,7 +224,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
 
                         return (
                             <div className="ifs-card" key={elm.product_id ?? i}>
-                                {/* Image container — ATC anchored here so it overlays image only */}
+                                {/* Image */}
                                 <div className="ifs-card__img">
                                     <Link href={url} tabIndex={-1} aria-hidden="true">
                                         {img0 && (
@@ -156,8 +241,6 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                             />
                                         )}
                                     </Link>
-
-                                    {/* Badges */}
                                     {hasDiscount && (
                                         <span className="ifs-badge">{effectiveDiscount.value}% Off</span>
                                     )}
@@ -173,28 +256,20 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                     <p className="ifs-card__cat">{t(elm.category_name)}</p>
                                     <Link href={url} className="ifs-card__name" title={name}>{name}</Link>
                                     <div className="ifs-card__price">{renderPrice(elmWithDiscount, currency)}</div>
-                                    {/* Always-visible ATC — below price */}
-                                    <button
-                                        className={`ifs-card__atc-static${isAdded ? " ifs-card__atc-static--added" : ""}`}
-                                        onClick={() => {
-                                            if (isAdded) return;
-                                            addProductToCart({ ...elmWithDiscount, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name || "" });
-                                            fireCartToast(name, img0, 1);
-                                        }}
-                                    >
-                                        {isAdded ? (
-                                            <>✓ Added to Cart</>
-                                        ) : (
-                                            <>+ Add</>
-                                        )}
-                                    </button>
+
+                                    {/* Always-visible CTA — switches to qty stepper when in cart */}
+                                    <CardCTA
+                                        elm={elm}
+                                        elmWithDiscount={elmWithDiscount}
+                                        img0={img0}
+                                        name={name}
+                                    />
                                 </div>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Next arrow — only when overflow AND not at end */}
                 {hasOverflow && (
                     <button
                         className={`ifs-arrow ifs-arrow--next${canScrollNext ? "" : " ifs-arrow--hidden"}`}

@@ -160,37 +160,83 @@
     transform: translateY(0) !important;
 }
 
-/* ── Always-visible ATC button — in card info section ── */
-.ifs-card__atc-static {
-    display: block;
+/* ── Card CTA: gold add button ────────────────────────────── */
+.ifs-cta {
+    margin-top: 0.65rem;
     width: 100%;
-    margin-top: 0.6rem;
+}
+
+/* Pre-cart: gold “+ Add” button */
+.ifs-cta--add {
+    display: block;
     padding: 0.5rem 0.6rem;
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-align: center;
-    background: var(--pdp-gold, #C9A96E);
+    background: linear-gradient(135deg, #c9903a 0%, #a67b30 60%, #8a6526 100%);
     color: #fff;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.15s ease;
+    transition: filter 0.2s ease, transform 0.15s ease;
+    position: relative;
+    overflow: hidden;
 }
+.ifs-cta--add::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+    transition: left .4s ease;
+}
+.ifs-cta--add:hover::before { left: 150%; }
+.ifs-cta--add:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.ifs-cta--add:active { transform: translateY(0); }
 
-.ifs-card__atc-static:hover {
+/* In-cart: dark pill stepper — matches PDP pdp-incart-unified__stepper */
+.ifs-cta--stepper {
+    display: flex;
+    align-items: center;
     background: var(--pdp-ink, #1A1A1A);
-    transform: translateY(-1px);
+    border-radius: 999px;
+    height: 38px;
+    overflow: hidden;
 }
 
-.ifs-card__atc-static:active {
-    transform: translateY(0);
+.ifs-cta__btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    padding: 0;
 }
-
-.ifs-card__atc-static--added {
-    background: #2e7d32 !important;
+.ifs-cta__btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+}
+.ifs-cta__btn:disabled {
+    opacity: 0.35;
     cursor: default;
+}
+
+.ifs-cta__num {
+    flex: 1;
+    text-align: center;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    user-select: none;
+    min-width: 24px;
 }
 
 /* ── Card info ── */
