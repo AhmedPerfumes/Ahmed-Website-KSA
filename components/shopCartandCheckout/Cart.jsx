@@ -65,8 +65,6 @@ export default function Cart() {
   const progressPct = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const remaining   = (FREE_SHIPPING_THRESHOLD - totalPrice).toFixed(2);
 
-  // Open summary after hydration so SSR and client agree
-  useEffect(() => { setSummaryOpen(true); }, []);
 
   useEffect(() => {
     setCouponDataContext(null);
@@ -646,75 +644,6 @@ export default function Cart() {
                   )}
                 </section>
 
-                {/* Promo code — identical to Checkout right sidebar */}
-                <div className="cc-coupon-card">
-                  {couponData ? (
-                    <div className="cc-coupon-applied">
-                      <span className="cc-coupon-applied__icon">🏷️</span>
-                      <div className="cc-coupon-applied__text">
-                        <span className="cc-coupon-applied__code">
-                          {couponData.code}
-                        </span>
-                        <span className="cc-coupon-applied__desc">
-                          {couponData.title}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        className="cc-coupon-applied__remove"
-                        onClick={removeCoupon}
-                        title="Remove coupon"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="cc-coupon-label-row">
-                        <span className="cc-coupon-label-text">
-                          Have a Promo Code?
-                        </span>
-                        <button
-                          type="button"
-                          className="cc-coupon-view-offers"
-                          onClick={openCouponModal}
-                        >
-                          View Offers
-                        </button>
-                      </div>
-                      <div className="cc-coupon-input-wrap">
-                        <input
-                          className="cc-coupon-input"
-                          type="text"
-                          placeholder="Enter code"
-                          value={couponCode}
-                          onChange={handleCouponChange}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && applyCoupon()
-                          }
-                          aria-label="Promo or coupon code"
-                        />
-                        <button
-                          type="button"
-                          className="cc-coupon-apply-btn"
-                          onClick={applyCoupon}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                      {couponError && (
-                        <div className="cc-coupon-msg cc-coupon-msg--err">
-                          {couponError}
-                        </div>
-                      )}
-                      {couponSuccess && (
-                        <div className="cc-coupon-msg cc-coupon-msg--ok">
-                          {couponSuccess}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
 
                 {/* Checkout CTA */}
                 <Link
@@ -770,76 +699,6 @@ export default function Cart() {
               </div>
             </aside>
 
-            {/* Full coupon modal — identical to Checkout */}
-            {showCouponModal && (
-              <div
-                className="coupon-modal-overlay"
-                onClick={() => setShowCouponModal(false)}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Available coupons"
-              >
-                <div className="coupon-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="coupon-header">
-                    <h3>Available Coupons</h3>
-                    <button className="close-btn" onClick={() => setShowCouponModal(false)} aria-label="Close">&times;</button>
-                  </div>
-                  {couponLoading ? (
-                    <div className="coupon-loading">Loading…</div>
-                  ) : !coupons.length ? (
-                    <div className="coupon-empty">No coupons available right now.</div>
-                  ) : (
-                    <div className="coupon-body">
-                      {coupons.map((c, idx) => {
-                        const expired = isExpired(c.end_date);
-                        const cid = c.id || `c-${idx}`;
-                        return (
-                          <div key={cid} className={`coupon-ticket${expired ? " expired" : ""}`}>
-                            <div className="coupon-left">
-                              <div className="coupon-title">{c.title || "Special Offer"}</div>
-                              <div className="coupon-desc">{c.description || (c.coupon_type === "percent" ? `${c.value}% OFF` : `SAR ${c.value} OFF`)}</div>
-                              <div className="coupon-validity">{expired ? `Expired: ${c.end_date?.slice(0,10)}` : `Valid until: ${c.end_date?.slice(0,10)}`}</div>
-                            </div>
-                            <div className="coupon-right">
-                              <div className="coupon-code-box"><span className="coupon-code">{c.code}</span></div>
-                              {!expired && (
-                                <button
-                                  className={`apply-btn${copiedId === cid ? " applied" : ""}`}
-                                  onClick={() => handleSelectCoupon(c.code, cid)}
-                                >
-                                  {copiedId === cid ? "Applied!" : "Apply"}
-                                </button>
-                              )}
-                              {expired && <div className="coupon-expired-badge">Expired</div>}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            <style>{`
-              .coupon-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:9999}
-              .coupon-modal{background:#fff;border-radius:12px;width:480px;max-width:92%;box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden}
-              .coupon-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0}
-              .coupon-header h3{margin:0;font-size:18px;font-weight:600}
-              .close-btn{background:none;border:none;font-size:22px;color:#888;cursor:pointer}
-              .coupon-body{display:flex;flex-direction:column;gap:10px;padding:14px;max-height:55vh;overflow-y:auto}
-              .coupon-ticket{display:flex;justify-content:space-between;align-items:center;border:1px solid #eee;border-radius:10px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-              .coupon-left{display:flex;flex-direction:column;gap:3px}
-              .coupon-title{font-size:13px;font-weight:600;color:#222}
-              .coupon-desc{font-size:11px;color:#666}
-              .coupon-validity{font-size:10px;color:#aaa}
-              .coupon-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-              .coupon-code{background:#f0fdf4;color:#198754;font-size:12px;font-weight:700;padding:3px 8px;border-radius:5px}
-              .apply-btn{background:none;border:none;color:#b9a16b;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
-              .apply-btn.applied{color:#2e7d32}
-              .coupon-ticket.expired{opacity:.55}
-              .coupon-expired-badge{font-size:10px;color:#e53935;font-weight:600}
-              .coupon-loading,.coupon-empty{text-align:center;padding:28px;color:#888;font-size:13px}
-            `}</style>
           </>
         ) : (
           <div className="cc-cart-empty">
