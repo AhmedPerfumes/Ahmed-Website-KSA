@@ -285,20 +285,25 @@
   flex-direction: row;
   gap: 10px;
   align-items: flex-start;
+  /* Safari: needs explicit height context so aspect-ratio works on flex child */
+  min-height: 0;
 }
 
 /* Vertical thumbnail sidebar — always above-fold on desktop */
 .pdp-gallery__thumb-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
-  width: 76px;
-  max-height: 540px;
+  /* Width matches thumb size exactly — no overflow clipping */
+  width: 72px;
+  /* Height tracks the main image naturally — no fixed pixel cap */
+  max-height: 600px;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--pdp-line) transparent;
-  padding-right: 2px;
+  /* No padding-right — thumbs are 72px, sidebar is 72px */
 }
 
 .pdp-gallery__thumb-sidebar::-webkit-scrollbar {
@@ -409,7 +414,9 @@
 
 /* Thumbnail shared styles */
 .pdp-gallery__thumb {
-  width: 72px;
+  /* width: 100% inside sidebar so thumb fills the 72px column exactly */
+  width: 100%;
+  /* Fixed height — sidebar thumbs are square */
   height: 72px;
   border-radius: var(--r-sm);
   overflow: hidden;
@@ -419,6 +426,9 @@
   transition: border-color var(--ease), opacity var(--ease);
   flex-shrink: 0;
   padding: 0;
+  /* Ensure the button doesn't grow wider than the sidebar */
+  max-width: 72px;
+  box-sizing: border-box;
 }
 
 .pdp-gallery__thumb img {
@@ -482,14 +492,31 @@
   color: #fff;
 }
 
+/* ── Tablet overrides (992px – 1199px) ── */
+@media (min-width: 992px) and (max-width: 1199px) {
+  /* Slightly narrower sidebar on tablets */
+  .pdp-gallery__thumb-sidebar {
+    width: 64px;
+    max-width: 64px;
+    gap: 5px;
+  }
+  .pdp-gallery__thumb {
+    max-width: 64px;
+    height: 64px;
+  }
+  .pdp-gallery__desktop-layout {
+    gap: 8px;
+  }
+}
+
 /* ── Mobile overrides (≤991px) ── */
 @media (max-width: 991px) {
-  /* Hide the vertical sidebar on mobile */
+  /* Hide the vertical sidebar on mobile — horizontal strip takes over */
   .pdp-gallery__thumb-sidebar {
     display: none;
   }
 
-  /* Show the horizontal strip instead */
+  /* Show the horizontal strip */
   .pdp-gallery__thumb-strip {
     display: flex;
     padding: 0 1rem .75rem;
@@ -507,16 +534,35 @@
     margin-bottom: 0;
   }
 
-  /* Always show arrows on touch (they fade in on hover on desktop) */
+  /* Always show arrows on touch — hover is not available */
   .pdp-gallery__arrow {
-    opacity: 0.75;
+    opacity: 0.8;
     width: 32px;
     height: 32px;
   }
 
-  .pdp-gallery__thumb {
+  /* Mobile thumbnails in horizontal strip: fixed square size */
+  .pdp-gallery__thumb-strip .pdp-gallery__thumb {
     width: 56px;
+    max-width: 56px;
     height: 56px;
+  }
+}
+
+/* ── Very small phones (≤375px) ── */
+@media (max-width: 375px) {
+  .pdp-gallery__arrow {
+    width: 28px;
+    height: 28px;
+  }
+  .pdp-gallery__arrow svg {
+    width: 14px;
+    height: 14px;
+  }
+  .pdp-gallery__thumb-strip .pdp-gallery__thumb {
+    width: 48px;
+    max-width: 48px;
+    height: 48px;
   }
 }
 
@@ -873,25 +919,30 @@
 .pdp-atc-row {
   display: flex;
   gap: .6rem;
+  /* min-height instead of fixed height — allows reflow if label wraps on tiny screens */
+  min-height: 54px;
   height: 54px;
+  flex-wrap: wrap;
 }
 
 /* FIX #3: White text on dark ATC button — max contrast (>14:1 vs #1A1A1A) */
 .pdp-atc-btn {
   flex: 1;
+  min-width: 0;
   background: var(--pdp-ink);
   color: #ffffff;
   border: 2px solid var(--pdp-ink);
   border-radius: var(--r-pill);
   font-size: var(--t-md);
   font-weight: 700;
-  letter-spacing: .12em;
+  letter-spacing: .10em;
   text-transform: uppercase;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: .4rem;
+  padding: 0 1rem;
   transition: background var(--ease), color var(--ease), border-color var(--ease), transform .15s;
   box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
   white-space: nowrap;
@@ -946,10 +997,12 @@
   letter-spacing: .06em;
 }
 
-/* CTA row: side-by-side ATC + Buy Now */
+/* CTA row: side-by-side ATC + Buy Now — can wrap on tiny screens */
 .pdp-atc-row--ctas {
   height: auto;
   min-height: 54px;
+  flex-wrap: wrap;
+  gap: .5rem;
 }
 
 /* FIX #1: Pre-cart quantity stepper row — sits above CTA row */
@@ -1045,6 +1098,7 @@
   align-items: center;
   gap: .6rem;
   min-height: 54px;
+  flex-wrap: wrap;
 }
 
 .pdp-incart-unified__stepper {
@@ -1054,7 +1108,9 @@
   border-radius: var(--r-pill);
   height: 54px;
   overflow: hidden;
-  min-width: 130px;
+  /* min-width keeps the stepper usable but allows flex to shrink on very small viewports */
+  min-width: 118px;
+  flex-shrink: 0;
 }
 
 .pdp-incart-unified__btn {
@@ -1084,6 +1140,73 @@
   text-align: center;
   user-select: none;
   min-width: 28px;
+}
+
+/* ── ATC / CTA responsive overrides ─────────────────────────── */
+
+/* Tablet (768px – 991px): reduce letter-spacing so text fits single-column info panel */
+@media (max-width: 991px) {
+  .pdp-atc-btn {
+    letter-spacing: .07em;
+    font-size: var(--t-sm);
+    padding: 0 .85rem;
+  }
+  .pdp-atc-btn--buynow {
+    letter-spacing: .05em;
+  }
+  .pdp-incart-unified__btn {
+    width: 40px;
+  }
+}
+
+/* Small phones (≤480px): stack ATC + Buy Now vertically */
+@media (max-width: 480px) {
+  .pdp-atc-row--ctas {
+    flex-direction: column;
+    height: auto;
+  }
+  .pdp-atc-row--ctas .pdp-atc-btn {
+    width: 100%;
+    flex: none;
+    min-height: 50px;
+  }
+  .pdp-atc-btn {
+    letter-spacing: .04em;
+    font-size: .85rem;
+  }
+  .pdp-incart-unified__row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .5rem;
+  }
+  .pdp-incart-unified__stepper {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .pdp-atc-btn--buynow-sm {
+    width: 100%;
+    min-height: 48px;
+    text-align: center;
+    justify-content: center;
+  }
+  .pdp-pre-qty {
+    justify-content: flex-start;
+  }
+}
+
+/* Very small phones (≤360px) */
+@media (max-width: 360px) {
+  .pdp-atc-btn {
+    font-size: .78rem;
+    letter-spacing: .02em;
+    padding: 0 .6rem;
+  }
+  .pdp-pre-qty__btn {
+    width: 34px;
+  }
+  .pdp-pre-qty__num {
+    min-width: 30px;
+  }
 }
 
 /* Share Row */
