@@ -39,10 +39,14 @@ export default function Cart() {
   } = useMenu();
   const locale = useLocale();
   const [error, setError] = useState(null);
-  const [summaryOpen, setSummaryOpen] = useState(true);
+  // Start closed to avoid SSR/hydration mismatch — open after mount
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   // Coupon state — mirrors Checkout right sidebar
   const [showCouponModal, setShowCouponModal] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState(null);
   const [couponSuccess, setCouponSuccess] = useState(null);
@@ -60,6 +64,9 @@ export default function Cart() {
   // Free-shipping progress
   const progressPct = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const remaining   = (FREE_SHIPPING_THRESHOLD - totalPrice).toFixed(2);
+
+  // Open summary after hydration so SSR and client agree
+  useEffect(() => { setSummaryOpen(true); }, []);
 
   useEffect(() => {
     setCouponDataContext(null);
@@ -107,15 +114,62 @@ export default function Cart() {
   const removeItem = (id) =>
     setCartProducts(cartProducts.filter((elm) => elm.product_id !== id));
 
+  const isExpired = (d) => new Date(d) < new Date();
+
+  // Fetch coupons when modal opens
+  const openCouponModal = async () => {
+    setShowCouponModal(true);
+    if (coupons.length) return; // already loaded
+    setCouponLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SMARTVIEW_API_URL}Coupon/ActiveCoupons`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ company: "KSA", salesType: "EComm" }),
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setCoupons(
+          (data.data || []).map((c) => ({
+            id: c.couponCode,
+            code: c.couponCode,
+            title: c.promotionName,
+            description: c.value
+              ? c.baseOn === "P" ? `${c.value}% OFF` : `SAR ${c.value} OFF`
+              : "",
+            coupon_type: c.baseOn === "P" ? "percent" : "amount",
+            value: c.value,
+            end_date: c.validTo,
+            start_date: c.registrationDate,
+          }))
+        );
+      }
+    } catch {
+      setCoupons([]);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleSelectCoupon = (code, id) => {
+    setCouponCode(code);
+    setCopiedId(id);
+    setShowCouponModal(false);
+    setTimeout(() => setCopiedId(null), 1400);
+  };
+
   // Coupon handlers
   const handleCouponChange = (e) => {
     setCouponCode(e.target.value);
     setCouponError(null);
     setCouponSuccess(null);
   };
-  const applyCoupon = useCallback(() => {
+  const applyCoupon = useCallback(async () => {
     if (!couponCode.trim()) return;
-    // TODO: replace with real coupon API call
+    // TODO: wire to full apply logic when checkout coupon API available on cart
     setCouponError("Invalid or expired code.");
     setCouponSuccess(null);
   }, [couponCode]);
@@ -623,7 +677,7 @@ export default function Cart() {
                         <button
                           type="button"
                           className="cc-coupon-view-offers"
-                          onClick={() => setShowCouponModal(true)}
+                          onClick={openCouponModal}
                         >
                           View Offers
                         </button>
@@ -716,7 +770,7 @@ export default function Cart() {
               </div>
             </aside>
 
-            {/* Coupon modal */}
+            {/* Full coupon modal — identical to Checkout */}
             {showCouponModal && (
               <div
                 className="coupon-modal-overlay"
@@ -725,26 +779,67 @@ export default function Cart() {
                 aria-modal="true"
                 aria-label="Available coupons"
               >
-                <div
-                  className="coupon-modal"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className="coupon-modal" onClick={(e) => e.stopPropagation()}>
                   <div className="coupon-header">
                     <h3>Available Coupons</h3>
-                    <button
-                      className="close-btn"
-                      onClick={() => setShowCouponModal(false)}
-                      aria-label="Close coupons modal"
-                    >
-                      &times;
-                    </button>
+                    <button className="close-btn" onClick={() => setShowCouponModal(false)} aria-label="Close">&times;</button>
                   </div>
-                  <div className="coupon-empty">
-                    Sign in to view your available coupons.
-                  </div>
+                  {couponLoading ? (
+                    <div className="coupon-loading">Loading…</div>
+                  ) : !coupons.length ? (
+                    <div className="coupon-empty">No coupons available right now.</div>
+                  ) : (
+                    <div className="coupon-body">
+                      {coupons.map((c, idx) => {
+                        const expired = isExpired(c.end_date);
+                        const cid = c.id || `c-${idx}`;
+                        return (
+                          <div key={cid} className={`coupon-ticket${expired ? " expired" : ""}`}>
+                            <div className="coupon-left">
+                              <div className="coupon-title">{c.title || "Special Offer"}</div>
+                              <div className="coupon-desc">{c.description || (c.coupon_type === "percent" ? `${c.value}% OFF` : `SAR ${c.value} OFF`)}</div>
+                              <div className="coupon-validity">{expired ? `Expired: ${c.end_date?.slice(0,10)}` : `Valid until: ${c.end_date?.slice(0,10)}`}</div>
+                            </div>
+                            <div className="coupon-right">
+                              <div className="coupon-code-box"><span className="coupon-code">{c.code}</span></div>
+                              {!expired && (
+                                <button
+                                  className={`apply-btn${copiedId === cid ? " applied" : ""}`}
+                                  onClick={() => handleSelectCoupon(c.code, cid)}
+                                >
+                                  {copiedId === cid ? "Applied!" : "Apply"}
+                                </button>
+                              )}
+                              {expired && <div className="coupon-expired-badge">Expired</div>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
+            <style>{`
+              .coupon-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:9999}
+              .coupon-modal{background:#fff;border-radius:12px;width:480px;max-width:92%;box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden}
+              .coupon-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0}
+              .coupon-header h3{margin:0;font-size:18px;font-weight:600}
+              .close-btn{background:none;border:none;font-size:22px;color:#888;cursor:pointer}
+              .coupon-body{display:flex;flex-direction:column;gap:10px;padding:14px;max-height:55vh;overflow-y:auto}
+              .coupon-ticket{display:flex;justify-content:space-between;align-items:center;border:1px solid #eee;border-radius:10px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+              .coupon-left{display:flex;flex-direction:column;gap:3px}
+              .coupon-title{font-size:13px;font-weight:600;color:#222}
+              .coupon-desc{font-size:11px;color:#666}
+              .coupon-validity{font-size:10px;color:#aaa}
+              .coupon-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+              .coupon-code{background:#f0fdf4;color:#198754;font-size:12px;font-weight:700;padding:3px 8px;border-radius:5px}
+              .apply-btn{background:none;border:none;color:#b9a16b;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+              .apply-btn.applied{color:#2e7d32}
+              .coupon-ticket.expired{opacity:.55}
+              .coupon-expired-badge{font-size:10px;color:#e53935;font-weight:600}
+              .coupon-loading,.coupon-empty{text-align:center;padding:28px;color:#888;font-size:13px}
+            `}</style>
           </>
         ) : (
           <div className="cc-cart-empty">
