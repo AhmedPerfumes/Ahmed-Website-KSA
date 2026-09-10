@@ -269,7 +269,7 @@ export default function Cart() {
       {/* ── SEO/Nav breadcrumb row — sits above the full grid ────── */}
       {/* (B) "Continue Shopping" here — clear nav context, not competing with items */}
       <nav className="cc-cart-topnav" aria-label="Cart navigation">
-        <ol className="cc-cart-topnav__breadcrumb">
+        {/* <ol className="cc-cart-topnav__breadcrumb">
           <li>
             <Link href={`/${locale}`}>Home</Link>
             <span aria-hidden="true"> / </span>
@@ -279,7 +279,7 @@ export default function Cart() {
             <span aria-hidden="true"> / </span>
           </li>
           <li aria-current="page">Shopping Cart</li>
-        </ol>
+        </ol> */}
         <Link href={`/${locale}/shop`} className="cc-cart-topnav__continue" aria-label="Continue shopping">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
             <polyline points="15 18 9 12 15 6"/>
