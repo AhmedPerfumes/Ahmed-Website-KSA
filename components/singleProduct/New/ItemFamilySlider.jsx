@@ -185,7 +185,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                         {isAdded ? (
                                             <>✓ Added to Cart</>
                                         ) : (
-                                            <>+ Add to Cart</>
+                                            <>+ Add</>
                                         )}
                                     </button>
                                 </div>
