@@ -1852,3 +1852,208 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     }
   }
 }
+
+// ============================================================
+// CART PAGE AUDIT FIXES — added for full-cart parity with drawer
+// ============================================================
+
+// ① Free-shipping progress bar (matches CartDrawer cd-shipping-bar style)
+.cc-cart-ship-bar {
+  background: #fdf8ee;
+  border: 1px solid #e8d5a0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8rem;
+
+  &__text {
+    color: #5a4a1a;
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+
+    strong { color: #8b6914; }
+
+    &--done {
+      color: #2e7d32;
+      margin-bottom: 0;
+      font-weight: 600;
+
+      strong { color: #2e7d32; }
+    }
+  }
+
+  &__track {
+    height: 5px;
+    background: #e8d5a0;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+  }
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #d4a84b 0%, #8b6914 100%);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  &__notice {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: #8b6914;
+    opacity: 0.85;
+    margin-top: 0.1rem;
+
+    svg { flex-shrink: 0; }
+  }
+}
+
+// ④ Continue Shopping link
+.cc-cart-continue {
+  padding: 0.35rem 0 0.85rem;
+
+  &__link {
+    font-size: 0.78rem;
+    color: #8b6914;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: color 0.15s ease;
+
+    &:hover { color: #5a4a1a; text-decoration: underline; }
+  }
+}
+
+// ③ Clickable product name
+.cc-cart-item__name--link {
+  display: block;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 0.2rem;
+  transition: color 0.15s ease;
+
+  &:hover { color: #8b6914; text-decoration: underline; }
+}
+
+// ④ Promo code field
+.cc-promo-row {
+  margin: 1rem 0 0.25rem;
+
+  &__label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #555;
+    margin-bottom: 0.4rem;
+  }
+
+  &__input-wrap {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    height: 2.4rem;
+    padding: 0 0.75rem;
+    border: 1.5px solid #e0d9cc;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: #1a1a1a;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s ease;
+
+    &:focus { border-color: #d4a84b; }
+    &--ok   { border-color: #2e7d32 !important; }
+    &--err  { border-color: #c62828 !important; }
+  }
+
+  &__apply {
+    height: 2.4rem;
+    padding: 0 1rem;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &:hover:not(:disabled) { background: #8b6914; }
+    &:disabled { opacity: 0.4; cursor: default; }
+  }
+
+  &__msg {
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin: 0.3rem 0 0;
+
+    &--ok  { color: #2e7d32; }
+    &--err { color: #c62828; }
+  }
+}
+
+// ④ Upgraded trust bar — proper contrast for cart page
+.cc-trust-bar--cart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0.85rem 0 0.5rem;
+
+  .cc-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    // Fix low-contrast: was #8b6914 on #fdf8ee (~3.1:1) → now #5a3e00 on #fff (~8:1)
+    color: #5a3e00;
+    background: #fdf8ee;
+    border: 1px solid #e8d5a0;
+    border-radius: 6px;
+    padding: 0.45rem 0.6rem;
+
+    svg { flex-shrink: 0; stroke: #8b6914; }
+  }
+}
+
+// ④ Payment note under totals card
+.cc-totals-card__pay-note {
+  font-size: 0.65rem;
+  color: #888;
+  text-align: center;
+  margin: 0.5rem 0 0;
+  letter-spacing: 0.02em;
+}
+
+.cc-totals-card__vat {
+  font-size: 0.68rem;
+  color: #bbb;
+  text-align: center;
+  margin: 0.2rem 0 0.75rem;
+}
+
+// ⑤ YouMayAlsoLike blank-space guard
+// The modal component sometimes renders a shell with height even when empty.
+// min-height:0 + overflow:hidden prevents it from reserving vertical space.
+.cc-ymal-wrapper {
+  min-height: 0;
+  overflow: hidden;
+}
