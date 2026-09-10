@@ -746,7 +746,15 @@ export default function Checkout() {
                       </div>
                     ) : (
                       /* ── GUEST: Full form ── */
-                      <div className="row g-2">
+                      <div>
+                        {/* Guest checkout notice — audit MEDIUM fix */}
+                        <div className="cc-guest-notice" role="note" aria-label="Checkout as guest">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                          </svg>
+                          <span>No account needed &mdash; you&apos;re checking out as a <strong>guest</strong>. <button type="button" className="cc-guest-notice__login-link" onClick={() => document.getElementById('customerLoginOpen')?.click()}>Sign in</button> to pre-fill your details.</span>
+                        </div>
+                        <div className="row g-2">
                         <div className="col-6">
                           <div className="form-floating">
                             <input type="text" className={`form-control${fieldErrors.first_name?' border-danger':''}`} id="bill_fn" placeholder="First Name" name="billingAddress.first_name" value={b.first_name} onChange={handleChange} required />
@@ -772,7 +780,7 @@ export default function Checkout() {
                         <div className="col-6">
                           <div className="form-floating">
                             <input type="text" className={`form-control${fieldErrors.short_national_address?' border-danger':''}`} id="bill_sna" placeholder="Short National Address" name="billingAddress.short_national_address" value={b.short_national_address} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
-                            <label htmlFor="bill_sna" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Short National Address *</label>
+                            <label htmlFor="bill_sna">Short National Address *</label>
                           </div>
                           <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. ABCD1234</p>
                           {fieldErrors.short_national_address && <div className="cc-alert cc-alert--error py-1 mt-1" style={{fontSize:'0.72rem'}}>{fieldErrors.short_national_address}</div>}
@@ -983,7 +991,8 @@ export default function Checkout() {
                             </div>
                           )}
                         </div> */}
-                      </div>
+                      </div>{/* /row.g-2 */}
+                    </div>
                     )}
 
 

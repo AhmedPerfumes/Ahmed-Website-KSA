@@ -2289,4 +2289,50 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   }
 }
 
-
+// ============================================================
+// GUEST CHECKOUT NOTICE — audit MEDIUM fix
+// Shown to unauthenticated users above the delivery form.
+// Communicates that no account is needed to complete the order.
+// ============================================================
+.cc-guest-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: #fdf8ee;
+  border: 1px solid #e8d5a0;
+  border-left: 3px solid $gold-main;
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+  color: #5a4a1a;
+  line-height: 1.5;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: $gold-dark;
+  }
+
+  strong {
+    font-weight: 700;
+    color: #3d2f00;
+  }
+
+  &__login-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    font-weight: 600;
+    color: $gold-dark;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: darken($gold-dark, 10%);
+    }
+  }
+}
