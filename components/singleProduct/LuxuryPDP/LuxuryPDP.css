@@ -528,6 +528,12 @@
   }
 
   .pdp-gallery__main {
+    /* CRITICAL: reset flex:1 — in a column flex container flex-basis:0%
+       collapses the height to 0, making the next/image fill invisible.
+       With flex:0 0 auto + width:100%, aspect-ratio:4/5 sets the height. */
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
     border-radius: 0;
     aspect-ratio: 4/5;
     box-shadow: none;
