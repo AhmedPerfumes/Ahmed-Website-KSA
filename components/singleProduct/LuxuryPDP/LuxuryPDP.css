@@ -2753,18 +2753,6 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   /* Checkout button — slightly shorter on very narrow screens */
   .pdp-atc-btn--goto-checkout { height: 46px; font-size: .76rem; }
 
-  /* Sticky ATC — full width on mobile */
-  .pdp-sticky-atc {
-    left: 0; right: 0;
-    transform: translateY(calc(100% + 2rem));
-    border-radius: 0;
-    min-width: unset;
-    max-width: unset;
-    width: 100%;
-  }
-  .pdp-sticky-atc.visible {
-    transform: translateY(0);
-  }
 
   /* Gallery thumbnails */
   .pdp-gallery__thumb-strip { gap: .4rem; }

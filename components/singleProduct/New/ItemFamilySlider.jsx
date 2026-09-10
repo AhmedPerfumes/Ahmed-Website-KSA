@@ -5,7 +5,7 @@ import Image from "next/image";
 import he from "he";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { renderPrice } from "@/utlis/priceRenderer";
 import "./ItemFamilySlider.css";
 
@@ -15,17 +15,6 @@ function fireCartToast(name, image, qty) {
     window.dispatchEvent(
         new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1 } })
     );
-}
-
-/** Build product URL slug — mirrors PHP/JS logic */
-function slugify(str) {
-    return (str || "")
-        .replace(/[^a-zA-Z0-9\s]/g, " Description ")
-        .replace(/\s+/g, " ")
-        .trim()
-        .split(" ")
-        .join("-")
-        .toLowerCase();
 }
 
 function cleanName(str) {
@@ -52,33 +41,54 @@ function getProductUrl(locale, elm) {
     return `/${locale}/shop/${cat}/${sub}/${prod}`;
 }
 
-const INITIAL_SHOW = 6; // show first 6 (2 × 3 rows), expand on demand
-
 export default function ItemFamilySlider({ product, itemFamilyProds }) {
     const { currency } = useMenu();
     const locale = useLocale();
     const { addProductToCart, isAddedToCartProducts } = useContextElement();
     const t = useTranslations();
-    const tp = useTranslations("ProductDetails");
-    const [showAll, setShowAll] = useState(false);
     const sliderRef = useRef(null);
 
+    // Arrow visibility state — smart logic
+    const [canScrollPrev, setCanScrollPrev] = useState(false);
+    const [canScrollNext, setCanScrollNext] = useState(false);
+    const [hasOverflow, setHasOverflow] = useState(false);
+
+    const updateArrows = useCallback(() => {
+        const el = sliderRef.current;
+        if (!el) return;
+        const overflow = el.scrollWidth > el.clientWidth + 4; // 4px tolerance
+        setHasOverflow(overflow);
+        setCanScrollPrev(el.scrollLeft > 4);
+        setCanScrollNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    }, []);
+
+    useEffect(() => {
+        const el = sliderRef.current;
+        if (!el) return;
+        // Check on mount + resize
+        updateArrows();
+        el.addEventListener("scroll", updateArrows, { passive: true });
+        const ro = new ResizeObserver(updateArrows);
+        ro.observe(el);
+        return () => {
+            el.removeEventListener("scroll", updateArrows);
+            ro.disconnect();
+        };
+    }, [updateArrows]);
+
     const scrollSlider = (dir) => {
-        if (!sliderRef.current) return;
-        const card = sliderRef.current.querySelector(".ifs-card");
-        const step = card ? card.offsetWidth + 16 : 200;
-        sliderRef.current.scrollBy({ left: dir * step, behavior: "smooth" });
+        const el = sliderRef.current;
+        if (!el) return;
+        const card = el.querySelector(".ifs-card");
+        const step = card ? card.offsetWidth + 12 : 200;
+        el.scrollBy({ left: dir * step, behavior: "smooth" });
     };
 
-    // Guard
+    // Guards
     if (!itemFamilyProds || itemFamilyProds.length === 0) return null;
-
-    // Filter out-of-stock
     const inStock = itemFamilyProds.filter((p) => p?.product_qty > 0);
     if (inStock.length === 0) return null;
 
-    const visible = showAll ? inStock : inStock.slice(0, INITIAL_SHOW);
-    const hasMore = inStock.length > INITIAL_SHOW;
     const familyName = product?.product_family ? he.decode(product.product_family) : "";
 
     return (
@@ -93,17 +103,22 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                 </h3>
             </div>
 
-            {/* Horizontal scroll slider — replaces old 2-col grid */}
+            {/* Slider wrap — arrows only render when there IS overflow */}
             <div className="ifs-slider-wrap">
-                {/* Prev arrow */}
-                <button
-                    className="ifs-arrow ifs-arrow--prev"
-                    onClick={() => scrollSlider(-1)}
-                    aria-label="Previous products"
-                    type="button"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
+
+                {/* Prev arrow — only when overflow AND not at start */}
+                {hasOverflow && (
+                    <button
+                        className={`ifs-arrow ifs-arrow--prev${canScrollPrev ? "" : " ifs-arrow--hidden"}`}
+                        onClick={() => scrollSlider(-1)}
+                        aria-label="Previous products"
+                        aria-hidden={!canScrollPrev}
+                        type="button"
+                        tabIndex={canScrollPrev ? 0 : -1}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                )}
 
                 <div className="ifs-slider" ref={sliderRef}>
                     {inStock.map((elm, i) => {
@@ -124,6 +139,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
 
                         return (
                             <div className="ifs-card" key={elm.product_id ?? i}>
+                                {/* Image container — ATC anchored here so it overlays image only */}
                                 <div className="ifs-card__img">
                                     <Link href={url} tabIndex={-1} aria-hidden="true">
                                         {img0 && (
@@ -140,6 +156,8 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                             />
                                         )}
                                     </Link>
+
+                                    {/* Badges */}
                                     {hasDiscount && (
                                         <span className="ifs-badge">{effectiveDiscount.value}% Off</span>
                                     )}
@@ -148,17 +166,21 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                             {elm.label_name}
                                         </span>
                                     )}
+
+                                    {/* ATC — slides up from bottom of image on hover */}
+                                    <button
+                                        className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
+                                        onClick={() => {
+                                            if (isAdded) return;
+                                            addProductToCart({ ...elmWithDiscount, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name || "" });
+                                            fireCartToast(name, img0, 1);
+                                        }}
+                                    >
+                                        {isAdded ? "✓ Added" : "Add to Cart"}
+                                    </button>
                                 </div>
-                                <button
-                                    className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
-                                    onClick={() => {
-                                        if (isAdded) return;
-                                        addProductToCart({ ...elmWithDiscount, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name || "" });
-                                        fireCartToast(name, img0, 1);
-                                    }}
-                                >
-                                    {isAdded ? "✓ Added" : "Add to Bag"}
-                                </button>
+
+                                {/* Info */}
                                 <div className="ifs-card__info">
                                     <p className="ifs-card__cat">{t(elm.category_name)}</p>
                                     <Link href={url} className="ifs-card__name" title={name}>{name}</Link>
@@ -169,15 +191,19 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                     })}
                 </div>
 
-                {/* Next arrow */}
-                <button
-                    className="ifs-arrow ifs-arrow--next"
-                    onClick={() => scrollSlider(1)}
-                    aria-label="Next products"
-                    type="button"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
+                {/* Next arrow — only when overflow AND not at end */}
+                {hasOverflow && (
+                    <button
+                        className={`ifs-arrow ifs-arrow--next${canScrollNext ? "" : " ifs-arrow--hidden"}`}
+                        onClick={() => scrollSlider(1)}
+                        aria-label="Next products"
+                        aria-hidden={!canScrollNext}
+                        type="button"
+                        tabIndex={canScrollNext ? 0 : -1}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                )}
             </div>
         </div>
     );
