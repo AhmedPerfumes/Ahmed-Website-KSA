@@ -1165,8 +1165,9 @@
   }
 }
 
-/* Small phones (≤480px): stack ATC + Buy Now vertically */
+/* Small phones (≤480px): keep stepper compact + checkout beside it */
 @media (max-width: 480px) {
+  /* Pre-cart ATC + Buy Now — stack vertically (2 large tap targets) */
   .pdp-atc-row--ctas {
     flex-direction: column;
     height: auto;
@@ -1180,20 +1181,26 @@
     letter-spacing: .04em;
     font-size: .85rem;
   }
+
+  /* In-cart row: KEEP side-by-side — stepper is compact, checkout fills rest */
   .pdp-incart-unified__row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;          /* stay horizontal */
+    align-items: center;
+    flex-wrap: nowrap;
     gap: .5rem;
   }
   .pdp-incart-unified__stepper {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .pdp-atc-btn--buynow-sm {
-    width: 100%;
-    min-height: 48px;
-    text-align: center;
+    /* Auto-width based on content — do NOT stretch to 100% */
+    width: auto;
+    flex-shrink: 0;
     justify-content: center;
+  }
+  /* Gold checkout button fills remaining horizontal space */
+  .pdp-atc-btn--goto-checkout {
+    flex: 1;
+    min-height: 54px;
+    font-size: .78rem;
+    letter-spacing: .07em;
   }
   .pdp-pre-qty {
     justify-content: flex-start;
@@ -2743,11 +2750,7 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   .pdp-info__title { font-size: 1.45rem; }
   .pdp-info__breadcrumb { font-size: .7rem; }
 
-  /* Checkout button row — stack on very narrow */
-  .pdp-incart-unified__row {
-    flex-wrap: wrap;
-    gap: .5rem;
-  }
+  /* Checkout button — slightly shorter on very narrow screens */
   .pdp-atc-btn--goto-checkout { height: 46px; font-size: .76rem; }
 
   /* Sticky ATC — full width on mobile */
