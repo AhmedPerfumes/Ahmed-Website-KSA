@@ -160,6 +160,39 @@
     transform: translateY(0) !important;
 }
 
+/* ── Always-visible ATC button — in card info section ── */
+.ifs-card__atc-static {
+    display: block;
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    background: var(--pdp-gold, #C9A96E);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.ifs-card__atc-static:hover {
+    background: var(--pdp-ink, #1A1A1A);
+    transform: translateY(-1px);
+}
+
+.ifs-card__atc-static:active {
+    transform: translateY(0);
+}
+
+.ifs-card__atc-static--added {
+    background: #2e7d32 !important;
+    cursor: default;
+}
+
 /* ── Card info ── */
 .ifs-card__info {
     padding: 0.65rem 0.7rem 0.75rem;

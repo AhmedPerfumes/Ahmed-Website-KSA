@@ -166,18 +166,6 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                             {elm.label_name}
                                         </span>
                                     )}
-
-                                    {/* ATC — slides up from bottom of image on hover */}
-                                    <button
-                                        className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
-                                        onClick={() => {
-                                            if (isAdded) return;
-                                            addProductToCart({ ...elmWithDiscount, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name || "" });
-                                            fireCartToast(name, img0, 1);
-                                        }}
-                                    >
-                                        {isAdded ? "✓ Added" : "Add to Cart"}
-                                    </button>
                                 </div>
 
                                 {/* Info */}
@@ -185,6 +173,21 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                     <p className="ifs-card__cat">{t(elm.category_name)}</p>
                                     <Link href={url} className="ifs-card__name" title={name}>{name}</Link>
                                     <div className="ifs-card__price">{renderPrice(elmWithDiscount, currency)}</div>
+                                    {/* Always-visible ATC — below price */}
+                                    <button
+                                        className={`ifs-card__atc-static${isAdded ? " ifs-card__atc-static--added" : ""}`}
+                                        onClick={() => {
+                                            if (isAdded) return;
+                                            addProductToCart({ ...elmWithDiscount, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name || "" });
+                                            fireCartToast(name, img0, 1);
+                                        }}
+                                    >
+                                        {isAdded ? (
+                                            <>✓ Added to Cart</>
+                                        ) : (
+                                            <>+ Add to Cart</>
+                                        )}
+                                    </button>
                                 </div>
                             </div>
                         );
