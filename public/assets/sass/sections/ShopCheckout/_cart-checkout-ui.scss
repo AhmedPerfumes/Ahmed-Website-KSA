@@ -2319,7 +2319,8 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     color: #3d2f00;
   }
 
-  &__login-link {
+  &__login-link,
+  &__login-link:is(a) {
     background: none;
     border: none;
     padding: 0;
