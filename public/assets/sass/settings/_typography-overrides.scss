@@ -815,16 +815,15 @@ p {
   justify-content: center !important;
 }
 
-/* ── 26. CHECKOUT FORM — prevent floating labels overflowing on mobile ─ */
-/* On narrow (col-6) columns the label can overflow the field boundary.   */
-/* Clip with ellipsis so it never escapes the field box on any screen.    */
+/* ── 26. CHECKOUT FORM — floating label visibility on mobile ─── */
+/* Labels must NEVER be clipped — overflow:hidden breaks the float-up transform. */
+/* Text truncation for narrow col-6 fields is handled in _cart-checkout-ui.scss  */
 @media (max-width: 575.98px) {
-  .form-floating>label {
-    overflow: hidden;
+  .form-floating > label {
+    /* Do NOT set overflow:hidden here — it clips the translateY float animation.
+       The label's clipping rect stays put while the label moves, causing overlap. */
     white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: calc(100% - 1rem);
-    /* leave room for Bootstrap's internal padding */
+    max-width: calc(100% - 0.75rem);
   }
 }
 

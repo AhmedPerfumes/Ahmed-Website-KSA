@@ -1823,31 +1823,70 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 }
 
 // ============================================================
-// CHECKOUT GUEST FORM — Prevent label truncation in col-6 fields
-// Bootstrap form-floating labels get clipped in narrow columns.
-// We scale the label font down so full text always shows.
+// CHECKOUT — Floating label BLOCKER fix (audit finding)
+// Label overlapped the typed value on Province, Short National
+// Address, Mobile Number — confirmed desktop + mobile.
+//
+// Root cause: Bootstrap's :placeholder-shown transform works
+// only when the label has overflow:visible. A previous rule set
+// overflow:hidden globally on mobile, clipping the float-up
+// animation so the label stayed in-place over the typed text.
+//
+// Fix: Enforce correct float behaviour on ALL checkout fields
+// (not just col-6). overflow:visible + correct transform for
+// both :focus and :not(:placeholder-shown) states.
 // ============================================================
+.cc-checkout-layout {
+  .form-floating {
+    // Base label — always visible, no clipping
+    > label {
+      overflow: visible;
+      white-space: nowrap;
+      text-overflow: unset;
+      max-width: none;
+      // Small font so long labels (Short National Address) fit on mobile
+      font-size: 0.78rem;
+      line-height: 1.2;
+      color: #6c757d;
+      transition: opacity 0.12s ease, transform 0.12s ease, font-size 0.12s ease;
+    }
+
+    // FLOATED state: input has a value OR is focused
+    > .form-control:focus ~ label,
+    > .form-control:not(:placeholder-shown) ~ label {
+      transform: scale(1) translateY(-1.1rem) translateX(0);
+      font-size: 0.65rem;
+      opacity: 0.75;
+      color: #888;
+      overflow: visible;
+      white-space: nowrap;
+    }
+
+    // On focus specifically: use brand gold
+    > .form-control:focus ~ label {
+      color: $gold-dark;
+      opacity: 1;
+    }
+  }
+}
+
+// Narrow col-6 needs slightly more compressed label text
 .row.g-2 {
   .col-6 {
     .form-floating {
-      >label {
+      > label {
         font-size: 0.72rem;
-        white-space: nowrap;
         overflow: visible;
-        text-overflow: unset;
-        line-height: 1.2;
-        padding-top: 0.5rem;
         max-width: none;
       }
 
-      // When input has value/focus, the label floats — keep it visible
-      >.form-control:focus~label,
-      >.form-control:not(:placeholder-shown)~label {
-        font-size: 0.65rem;
-        transform: scale(0.85) translateY(-0.6rem) translateX(0.15rem);
+      > .form-control:focus ~ label,
+      > .form-control:not(:placeholder-shown) ~ label {
+        font-size: 0.62rem;
+        transform: scale(1) translateY(-1.1rem) translateX(0);
         color: #888;
-        white-space: nowrap;
         overflow: visible;
+        white-space: nowrap;
       }
     }
   }
