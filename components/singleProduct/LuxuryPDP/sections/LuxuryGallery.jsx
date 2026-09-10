@@ -7,8 +7,13 @@ import he from "he";
 /**
  * LuxuryGallery — Product Image Gallery
  *
- * Desktop: Large main image + horizontal thumbnail strip BELOW it (reef-style)
- * Mobile:  Full-width swipeable image + bottom dot/thumbnail strip
+ * Desktop: Large main image + VERTICAL thumbnail sidebar on LEFT (always above-fold)
+ * Mobile:  Full-width swipeable image + bottom thumbnail strip
+ *
+ * Audit fixes applied:
+ *  - Fix #4: Thumbnails moved to left vertical sidebar on desktop (reef/farfetch-style)
+ *  - Fix #5: Prev/Next arrow buttons overlaid on main image
+ *  - Fix #5: Mobile swipe delta reduced from 40px → 30px for better sensitivity
  *
  * Props:
  *   images[]     — array of storage path strings
@@ -52,11 +57,41 @@ const Badges = ({ product }) => {
   );
 };
 
+/* ─── Arrow Button ──────────────────────────────────────────── */
+const ArrowBtn = ({ direction, onClick, disabled }) => (
+  <button
+    className={`pdp-gallery__arrow pdp-gallery__arrow--${direction}`}
+    onClick={onClick}
+    disabled={disabled}
+    aria-label={direction === "prev" ? "Previous image" : "Next image"}
+    type="button"
+  >
+    {direction === "prev" ? (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    ) : (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    )}
+  </button>
+);
+
 /* ─── Main Component ────────────────────────────────────────── */
 const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) => {
   const touchStartX = useRef(null);
 
-  /* Swipe handlers (mobile) */
+  /* Navigation helpers */
+  const goPrev = useCallback(() => {
+    setActiveIndex((prev) => Math.max(prev - 1, 0));
+  }, [setActiveIndex]);
+
+  const goNext = useCallback(() => {
+    setActiveIndex((prev) => Math.min(prev + 1, images.length - 1));
+  }, [images.length, setActiveIndex]);
+
+  /* Swipe handlers (mobile) — threshold reduced 40→30px for better sensitivity */
   const onTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
   }, []);
@@ -65,7 +100,7 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
     (e) => {
       if (touchStartX.current === null) return;
       const delta = touchStartX.current - e.changedTouches[0].clientX;
-      if (Math.abs(delta) > 40) {
+      if (Math.abs(delta) > 30) {
         setActiveIndex((prev) =>
           delta > 0
             ? Math.min(prev + 1, images.length - 1)
@@ -82,30 +117,82 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
     ? `${API_URL}storage/${currentImage}`
     : "/assets/images/general_product.png";
 
+  const hasPrev = activeIndex > 0;
+  const hasNext = activeIndex < images.length - 1;
+
   return (
     <div className="pdp-gallery" role="region" aria-label="Product images">
 
-      {/* ═══ MAIN IMAGE — full width ═══════════════════════════ */}
-      <div
-        className="pdp-gallery__main"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        role="img"
-        aria-label={`${he.decode(product?.product_name || "Product")} — image ${activeIndex + 1} of ${images.length}`}
-      >
-        <Image
-          src={imgSrc}
-          alt={he.decode(product?.product_name || "Product")}
-          fill
-          sizes="(max-width: 991px) 100vw, 48vw"
-          priority={activeIndex === 0}
-          loading={activeIndex === 0 ? "eager" : "lazy"}
-          style={{ objectFit: "contain" }}
-        />
-        <Badges product={product} />
+      {/* ═══ DESKTOP LAYOUT: Vertical Thumb Sidebar + Main Image ═══ */}
+      <div className="pdp-gallery__desktop-layout">
+
+        {/* Vertical thumbnail sidebar — always visible, above fold */}
+        {images.length > 1 && (
+          <div
+            className="pdp-gallery__thumb-sidebar"
+            role="tablist"
+            aria-label="Select image"
+          >
+            {images.map((img, idx) => (
+              <button
+                key={idx}
+                className={`pdp-gallery__thumb${activeIndex === idx ? " active" : ""}`}
+                onClick={() => setActiveIndex(idx)}
+                role="tab"
+                aria-selected={activeIndex === idx}
+                aria-label={`Image ${idx + 1}`}
+                type="button"
+              >
+                <Image
+                  src={`${API_URL}storage/${img}`}
+                  alt=""
+                  width={80}
+                  height={80}
+                  loading="lazy"
+                  style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Main image area */}
+        <div
+          className="pdp-gallery__main"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+          role="img"
+          aria-label={`${he.decode(product?.product_name || "Product")} — image ${activeIndex + 1} of ${images.length}`}
+        >
+          <Image
+            src={imgSrc}
+            alt={he.decode(product?.product_name || "Product")}
+            fill
+            sizes="(max-width: 991px) 100vw, 42vw"
+            priority={activeIndex === 0}
+            loading={activeIndex === 0 ? "eager" : "lazy"}
+            style={{ objectFit: "contain" }}
+          />
+          <Badges product={product} />
+
+          {/* Prev / Next arrows — only shown when multiple images exist */}
+          {images.length > 1 && (
+            <>
+              <ArrowBtn direction="prev" onClick={goPrev} disabled={!hasPrev} />
+              <ArrowBtn direction="next" onClick={goNext} disabled={!hasNext} />
+            </>
+          )}
+
+          {/* Image counter pill */}
+          {images.length > 1 && (
+            <div className="pdp-gallery__counter" aria-hidden="true">
+              {activeIndex + 1} / {images.length}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ═══ THUMBNAIL STRIP — below main image ════════════════ */}
+      {/* ═══ MOBILE THUMBNAIL STRIP — below main image ═══════════ */}
       {images.length > 1 && (
         <div
           className="pdp-gallery__thumb-strip"
@@ -120,6 +207,7 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
               role="tab"
               aria-selected={activeIndex === idx}
               aria-label={`Image ${idx + 1}`}
+              type="button"
             >
               <Image
                 src={`${API_URL}storage/${img}`}

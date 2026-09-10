@@ -279,15 +279,50 @@
   }
 }
 
-/* Gallery — thumbnail-below layout (reef-style) */
+/* ── FIX #4: Desktop layout — vertical thumb sidebar + main image ── */
+.pdp-gallery__desktop-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* Vertical thumbnail sidebar — always above-fold on desktop */
+.pdp-gallery__thumb-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 76px;
+  max-height: 540px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pdp-line) transparent;
+  padding-right: 2px;
+}
+
+.pdp-gallery__thumb-sidebar::-webkit-scrollbar {
+  width: 3px;
+}
+.pdp-gallery__thumb-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pdp-gallery__thumb-sidebar::-webkit-scrollbar-thumb {
+  background: var(--pdp-line);
+  border-radius: 99px;
+}
+
+/* Main image — fills remaining space */
 .pdp-gallery__main {
+  flex: 1;
+  min-width: 0;
   aspect-ratio: 5/6;
   border-radius: var(--r-xl);
   overflow: hidden;
   background: transparent;
   position: relative;
   cursor: zoom-in;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .pdp-gallery__main img,
@@ -300,15 +335,79 @@
   transform: scale(1.03);
 }
 
-/* Thumbnail strip — horizontal row BELOW main image */
-.pdp-gallery__thumb-strip {
+/* ── FIX #5: Prev / Next arrow buttons ── */
+.pdp-gallery__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
   display: flex;
-  flex-direction: row;
-  gap: 8px;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  padding: 0;
+  color: var(--pdp-ink);
+  transition: background var(--ease), opacity var(--ease), transform .15s;
+  opacity: 0;
 }
 
+.pdp-gallery__main:hover .pdp-gallery__arrow {
+  opacity: 1;
+}
+
+.pdp-gallery__arrow svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.pdp-gallery__arrow--prev {
+  left: 10px;
+}
+
+.pdp-gallery__arrow--next {
+  right: 10px;
+}
+
+.pdp-gallery__arrow:hover:not(:disabled) {
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.pdp-gallery__arrow:disabled {
+  opacity: 0 !important;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Image counter pill */
+.pdp-gallery__counter {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Thumbnail shared styles */
 .pdp-gallery__thumb {
   width: 72px;
   height: 72px;
@@ -335,6 +434,16 @@
 
 .pdp-gallery__thumb.active {
   border-color: var(--pdp-gold);
+}
+
+/* Mobile thumbnail strip — horizontal, hidden on desktop */
+.pdp-gallery__thumb-strip {
+  display: none; /* hidden on desktop — sidebar does the job */
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 0 0;
 }
 
 /* Badges */
@@ -373,15 +482,36 @@
   color: #fff;
 }
 
+/* ── Mobile overrides (≤991px) ── */
 @media (max-width: 991px) {
+  /* Hide the vertical sidebar on mobile */
+  .pdp-gallery__thumb-sidebar {
+    display: none;
+  }
+
+  /* Show the horizontal strip instead */
+  .pdp-gallery__thumb-strip {
+    display: flex;
+    padding: 0 1rem .75rem;
+  }
+
+  .pdp-gallery__desktop-layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
   .pdp-gallery__main {
     border-radius: 0;
     aspect-ratio: 4/5;
-    margin-bottom: 10px;
+    box-shadow: none;
+    margin-bottom: 0;
   }
 
-  .pdp-gallery__thumb-strip {
-    padding: 0 1rem .75rem;
+  /* Always show arrows on touch (they fade in on hover on desktop) */
+  .pdp-gallery__arrow {
+    opacity: 0.75;
+    width: 32px;
+    height: 32px;
   }
 
   .pdp-gallery__thumb {
@@ -405,37 +535,6 @@
   background: var(--pdp-ink);
   width: 16px;
   border-radius: 3px;
-}
-
-@media (max-width: 991px) {
-  .pdp-gallery__desktop-wrap {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .pdp-gallery__thumb-col {
-    display: none;
-  }
-
-  .pdp-gallery__main {
-    border-radius: 0;
-    aspect-ratio: 4/5;
-    box-shadow: none;
-  }
-
-  .pdp-gallery__mobile-strip {
-    display: flex;
-  }
-
-  .pdp-gallery__mobile-dots {
-    display: flex;
-  }
-
-  .pdp-gallery__mobile-strip .pdp-gallery__thumb {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
-  }
 }
 
 /* ── Info Panel ─────────────────────────────────────────────── */
@@ -777,10 +876,11 @@
   height: 54px;
 }
 
+/* FIX #3: White text on dark ATC button — max contrast (>14:1 vs #1A1A1A) */
 .pdp-atc-btn {
   flex: 1;
   background: var(--pdp-ink);
-  color: var(--pdp-gold-light);
+  color: #ffffff;
   border: 2px solid var(--pdp-ink);
   border-radius: var(--r-pill);
   font-size: var(--t-md);
@@ -792,12 +892,14 @@
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  transition: background var(--ease), color var(--ease), transform .15s;
+  transition: background var(--ease), color var(--ease), border-color var(--ease), transform .15s;
   box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
+  white-space: nowrap;
 }
 
 .pdp-atc-btn:hover:not(:disabled) {
   background: var(--pdp-gold-dark);
+  border-color: var(--pdp-gold-dark);
   color: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .20);
   transform: translateY(-1px);
@@ -815,33 +917,153 @@
 .pdp-atc-btn--oos {
   background: var(--pdp-line);
   color: var(--pdp-slate);
-  box-shadow: none;
-}
-
-.pdp-atc-btn--added {
-  background: transparent;
   border-color: var(--pdp-line);
-  color: var(--pdp-slate);
   box-shadow: none;
 }
 
-/* Qty Ctrl */
-.pdp-qty-ctrl {
+/* FIX #2: Buy Now — outlined gold style */
+.pdp-atc-btn--buynow {
+  background: transparent;
+  color: var(--pdp-ink);
+  border-color: var(--pdp-ink);
+  box-shadow: none;
+  letter-spacing: .08em;
+}
+
+.pdp-atc-btn--buynow:hover:not(:disabled) {
+  background: var(--pdp-ink);
+  color: #fff;
+  border-color: var(--pdp-ink);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
+  transform: translateY(-1px);
+}
+
+/* Smaller Buy Now used inside in-cart row */
+.pdp-atc-btn--buynow-sm {
+  flex: 0 0 auto;
+  padding: 0 1.25rem;
+  font-size: .8rem;
+  letter-spacing: .06em;
+}
+
+/* CTA row: side-by-side ATC + Buy Now */
+.pdp-atc-row--ctas {
+  height: auto;
+  min-height: 54px;
+}
+
+/* FIX #1: Pre-cart quantity stepper row — sits above CTA row */
+.pdp-pre-qty {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .65rem;
+}
+
+.pdp-pre-qty__label {
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--pdp-slate);
+  font-weight: 600;
+  min-width: 24px;
+}
+
+.pdp-pre-qty__ctrl {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--pdp-line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  height: 40px;
+}
+
+.pdp-pre-qty__btn {
+  background: transparent;
+  border: none;
+  color: var(--pdp-ink);
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--ease), color var(--ease);
+  flex-shrink: 0;
+}
+
+.pdp-pre-qty__btn:hover:not(:disabled) {
+  background: var(--pdp-sand);
+  color: var(--pdp-gold-dark);
+}
+
+.pdp-pre-qty__btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.pdp-pre-qty__num {
+  font-size: var(--t-base);
+  font-weight: 700;
+  color: var(--pdp-ink);
+  min-width: 36px;
+  text-align: center;
+  user-select: none;
+  border-left: 1px solid var(--pdp-line);
+  border-right: 1px solid var(--pdp-line);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FIX #6: Unified in-cart state — single coherent pill, no ghost button */
+.pdp-incart-unified {
+  margin-bottom: 1rem;
+}
+
+.pdp-incart-unified__label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--pdp-success);
+  margin-bottom: .55rem;
+}
+
+.pdp-incart-unified__label svg {
+  flex-shrink: 0;
+  color: var(--pdp-success);
+}
+
+.pdp-incart-unified__row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 54px;
+}
+
+.pdp-incart-unified__stepper {
   display: flex;
   align-items: center;
   background: var(--pdp-ink);
   border-radius: var(--r-pill);
+  height: 54px;
   overflow: hidden;
-  min-width: 116px;
+  min-width: 130px;
 }
 
-.pdp-qty-btn {
+.pdp-incart-unified__btn {
   background: transparent;
   border: none;
   color: #fff;
-  width: 40px;
-  height: 52px;
-  font-size: 1.25rem;
+  width: 44px;
+  height: 54px;
+  font-size: 1.2rem;
   cursor: pointer;
   flex-shrink: 0;
   display: flex;
@@ -850,17 +1072,18 @@
   transition: background var(--ease);
 }
 
-.pdp-qty-btn:hover {
+.pdp-incart-unified__btn:hover {
   background: rgba(255, 255, 255, .12);
 }
 
-.pdp-qty-num {
+.pdp-incart-unified__num {
   color: #fff;
   font-size: var(--t-base);
   font-weight: 700;
   flex: 1;
   text-align: center;
   user-select: none;
+  min-width: 28px;
 }
 
 /* Share Row */

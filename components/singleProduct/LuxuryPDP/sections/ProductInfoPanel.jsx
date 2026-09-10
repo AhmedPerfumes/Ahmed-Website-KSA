@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "@/context/MenuContext";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { renderPrice } from "@/utlis/priceRenderer";
 import { motion, AnimatePresence } from "framer-motion";
 import TamaraWidget from "@/components/TamaraWidget";
@@ -21,8 +22,16 @@ import he from "he";
  *  - Tabby/Tamara BNPL widgets
  *  - Size/volume tags display
  *  - Stock status indicator
- *  - Add-to-Cart block with animated quantity control
+ *  - Pre-cart quantity stepper (Fix #1)
+ *  - Add-to-Cart block with Buy Now (Fix #2)
+ *  - Unified in-cart stepper (Fix #6)
  *  - Share row (WhatsApp + Copy Link)
+ *
+ * Audit fixes:
+ *  #1 — Quantity selector shown BEFORE first Add to Cart
+ *  #2 — "Buy Now" button for direct-to-checkout path
+ *  #3 — ATC button text changed to #fff for maximum contrast
+ *  #6 — In-cart state shows single unified qty control (no ghost disabled button)
  *
  * API fields used:
  *   product_name, product_name_ar, price, discount, sale_price,
@@ -228,10 +237,39 @@ const ShareRow = ({ productName }) => {
   );
 };
 
+/* ─── Pre-Cart Quantity Stepper (Fix #1) ─── */
+const PreCartQtyStepper = ({ quantity, onDecrease, onIncrease, max }) => (
+  <div className="pdp-pre-qty" role="group" aria-label="Select quantity">
+    <span className="pdp-pre-qty__label">Qty</span>
+    <div className="pdp-pre-qty__ctrl">
+      <button
+        className="pdp-pre-qty__btn"
+        onClick={onDecrease}
+        disabled={quantity <= 1}
+        aria-label="Decrease quantity"
+        type="button"
+      >
+        −
+      </button>
+      <span className="pdp-pre-qty__num" aria-live="polite">{quantity}</span>
+      <button
+        className="pdp-pre-qty__btn"
+        onClick={onIncrease}
+        disabled={quantity >= max}
+        aria-label="Increase quantity"
+        type="button"
+      >
+        +
+      </button>
+    </div>
+  </div>
+);
+
 /* ─── Main Component ─── */
 const ProductInfoPanel = ({ product, category, subcategory, reviews = [], reviewsLoading = false }) => {
   const locale = useLocale();
   const t = useTranslations();
+  const router = useRouter();
   const { currency } = useMenu();
   const { cartProducts, setCartProducts, removeProduct } = useContextElement();
 
@@ -243,6 +281,11 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
     : he.decode(product?.product_name || "");
 
   const displaySubtitle = product?.olfactory_family || product?.fragrance_category || "";
+
+  /* ── Limits ── */
+  const stockQty = Number(product?.product_qty ?? 0);
+  const maxOrderQty = Number(product?.maximum_order_quantity ?? 0);
+  const qtyLimit = maxOrderQty > 0 ? Math.min(maxOrderQty, stockQty) : stockQty;
 
   /* ── Cart helpers ── */
   const isInCart = useMemo(
@@ -260,42 +303,75 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
   const capitalizeEachWord = (str = "") =>
     str.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
 
-  const setQuantityCartItem = (id, qty, maxOrderQty) => {
-    const n = Number(qty);
-    const stock = Number(product.product_qty);
-    const maxOrder = Number(maxOrderQty);
-    const limit = maxOrder > 0 ? maxOrder : stock;
-    const isValid = n >= 1 && n <= stock && n <= limit;
+  /* ── Pre-cart qty stepper handlers ── */
+  const handlePreDecrease = useCallback(() => {
+    setQuantity((prev) => Math.max(prev - 1, 1));
+    setError(null);
+  }, []);
 
-    if (cartItem) {
-      if (isValid) {
-        setError(null);
-        const items = cartProducts.map((elm) =>
-          elm.product_id == id ? { ...elm, quantity: n } : elm
+  const handlePreIncrease = useCallback(() => {
+    setQuantity((prev) => {
+      const next = prev + 1;
+      if (next > qtyLimit) {
+        setError(qtyLimit === stockQty
+          ? t("Quantity is more than available quantity")
+          : `Maximum allowed quantity is ${qtyLimit}`
         );
-        setCartProducts(items);
-      } else {
-        setError(
-          n > stock
-            ? t("Quantity is more than available quantity")
-            : `Maximum allowed quantity is ${limit}`
-        );
+        return prev;
       }
+      setError(null);
+      return next;
+    });
+  }, [qtyLimit, stockQty, t]);
+
+  /* ── In-cart qty update ── */
+  const setQuantityCartItem = (id, qty) => {
+    const n = Number(qty);
+    const isValid = n >= 1 && n <= stockQty && n <= qtyLimit;
+
+    if (isValid) {
+      setError(null);
+      const items = cartProducts.map((elm) =>
+        elm.product_id == id ? { ...elm, quantity: n } : elm
+      );
+      setCartProducts(items);
     } else {
-      if (isValid) {
-        setQuantity(n);
-        setError(null);
-      } else {
-        setError(
-          n > stock
-            ? t("Quantity is more than available quantity")
-            : `Maximum allowed quantity is ${limit}`
-        );
-      }
+      setError(
+        n > stockQty
+          ? t("Quantity is more than available quantity")
+          : `Maximum allowed quantity is ${qtyLimit}`
+      );
     }
   };
 
-  const addToCart = () => {
+  /* ── Image helper for toast ── */
+  const getProductImg = useCallback(() => {
+    const imgs = product?.images
+      ? typeof product.images === "string"
+        ? JSON.parse(product.images)
+        : product.images
+      : [];
+    return imgs[0] ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[0]}` : "";
+  }, [product]);
+
+  /* ── Fire cart toast ── */
+  const fireToast = useCallback((qty) => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+      new CustomEvent("cart:added", {
+        detail: {
+          name: productName,
+          image: getProductImg(),
+          qty,
+          category: category || "",
+          subcategory: subcategory || "",
+        },
+      })
+    );
+  }, [productName, getProductImg, category, subcategory]);
+
+  /* ── Add to Cart ── */
+  const addToCart = useCallback(() => {
     if (!isInCart) {
       const item = {
         ...product,
@@ -305,30 +381,28 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       };
       setCartProducts((prev) => [...prev, item]);
       setError(null);
-      // Fire the global CartToast (same event PremiumProductCard uses)
-      if (typeof window !== "undefined") {
-        const images = product?.images
-          ? typeof product.images === "string"
-            ? JSON.parse(product.images)
-            : product.images
-          : [];
-        const img = images[0]
-          ? `${process.env.NEXT_PUBLIC_API_URL}storage/${images[0]}`
-          : "";
-        window.dispatchEvent(
-          new CustomEvent("cart:added", {
-            detail: {
-              name: productName,
-              image: img,
-              qty: quantity,
-              category: category || "",
-              subcategory: subcategory || "",
-            },
-          })
-        );
-      }
+      fireToast(quantity);
     }
-  };
+  }, [isInCart, product, category, subcategory, quantity, setCartProducts, fireToast]);
+
+  /* ── Buy Now (Fix #2) — add to cart then go to checkout ── */
+  const buyNow = useCallback(() => {
+    if (isInCart) {
+      // Already in cart — just go to checkout
+      router.push(`/${locale}/checkout`);
+      return;
+    }
+    const item = {
+      ...product,
+      category_name: capitalizeEachWord(category.split("-").join(" ")),
+      subcategory_name: capitalizeEachWord(subcategory.split("-").join(" ")),
+      quantity,
+    };
+    setCartProducts((prev) => [...prev, item]);
+    setError(null);
+    fireToast(quantity);
+    router.push(`/${locale}/checkout`);
+  }, [isInCart, product, category, subcategory, quantity, setCartProducts, fireToast, router, locale]);
 
   /* ── Tabby Widget ── */
   useEffect(() => {
@@ -373,7 +447,6 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       const sum = reviews.reduce((acc, r) => acc + (r.star || 0), 0);
       return sum / reviews.length;
     }
-    // Fallback to pre-aggregated value while reviews are still fetching
     return parseFloat(product?.average_rating || 0);
   }, [reviews, product?.average_rating]);
 
@@ -451,9 +524,16 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
         )}
       </AnimatePresence>
 
-      {/* Add-to-Cart Block */}
+      {/* ═══════════════════════════════════════════════════════════
+          Add-to-Cart Block — All 4 audit states handled here:
+          A) Out of Stock  — disabled OOS button
+          B) Pre-cart      — qty stepper + [Add to Cart] + [Buy Now]
+          C) In-cart       — unified qty pill + [Buy Now / Go to Checkout]
+          ═══════════════════════════════════════════════════════════ */}
       <div className="pdp-atc-block">
+
         {isOutOfStock ? (
+          /* ── A: Out of Stock ── */
           <div className="pdp-atc-row">
             <button
               id="product-detail-top"
@@ -464,86 +544,116 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
               {t("Out of Stock")}
             </button>
           </div>
-        ) : (
-          <div className="pdp-atc-row">
-            {/* Add to Cart / Already Added */}
-            <motion.button
-              layout
-              id="product-detail-top"
-              type="button"
-              className={`pdp-atc-btn ${isInCart ? "pdp-atc-btn--added" : ""}`}
-              onClick={() => !isInCart && addToCart()}
-              disabled={isInCart}
-              animate={{ flex: isInCart ? "0 1 60%" : "1 1 100%" }}
-              transition={{ type: "tween", duration: 0.15 }}
-            >
-              {isInCart ? t("Already Added") : t("Add to Cart")}
-            </motion.button>
+        ) : !isInCart ? (
+          /* ── B: Pre-cart — show qty stepper THEN ATC + Buy Now ── */
+          <>
+            {/* Fix #1 — Pre-cart quantity selector */}
+            <PreCartQtyStepper
+              quantity={quantity}
+              onDecrease={handlePreDecrease}
+              onIncrease={handlePreIncrease}
+              max={qtyLimit}
+            />
 
-            {/* Quantity Controller (slides in when in cart) */}
-            <AnimatePresence>
-              {isInCart && (
-                <motion.div
-                  key="qty"
-                  className="pdp-qty-ctrl"
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 120, opacity: 1, flex: "0 0 120px" }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={{ type: "tween", duration: 0.15 }}
+            {/* CTA row: Add to Cart + Buy Now */}
+            <div className="pdp-atc-row pdp-atc-row--ctas">
+              <button
+                id="product-detail-top"
+                type="button"
+                className="pdp-atc-btn"
+                onClick={addToCart}
+              >
+                {/* Cart icon */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                {t("Add to Cart")}
+              </button>
+
+              {/* Fix #2 — Buy Now */}
+              <button
+                id="product-detail-buynow"
+                type="button"
+                className="pdp-atc-btn pdp-atc-btn--buynow"
+                onClick={buyNow}
+              >
+                Buy Now
+              </button>
+            </div>
+          </>
+        ) : (
+          /* ── C: In-cart — unified qty pill (Fix #6) ── */
+          <motion.div
+            key="incart-unified"
+            className="pdp-incart-unified"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Hidden anchor so IntersectionObserver in StickyATC still works */}
+            <span id="product-detail-top" aria-hidden="true" style={{ position: "absolute", pointerEvents: "none" }} />
+
+            {/* In-bag label */}
+            <div className="pdp-incart-unified__label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              In Your Bag
+            </div>
+
+            {/* Qty stepper + Buy Now */}
+            <div className="pdp-incart-unified__row">
+              <div className="pdp-incart-unified__stepper" role="group" aria-label="Update quantity">
+                <button
+                  className="pdp-incart-unified__btn"
+                  aria-label="Decrease quantity"
+                  type="button"
+                  onClick={() => {
+                    const cur = cartItem?.quantity ?? 1;
+                    if (cur > 1) {
+                      setQuantityCartItem(product.product_id, cur - 1);
+                    } else {
+                      removeProduct(product.product_id);
+                    }
+                  }}
                 >
-                  <button
-                    className="pdp-qty-btn"
-                    aria-label="Decrease quantity"
-                    onClick={() => {
-                      const cur = cartItem?.quantity ?? 1;
-                      if (cur > 1) {
-                        setQuantityCartItem(
-                          product.product_id,
-                          cur - 1,
-                          product?.maximum_order_quantity
-                        );
-                      } else {
-                        removeProduct(product.product_id);
-                      }
-                    }}
-                  >
-                    −
-                  </button>
-                  <span className="pdp-qty-num">{cartItem?.quantity ?? 1}</span>
-                  <button
-                    className="pdp-qty-btn"
-                    aria-label="Increase quantity"
-                    onClick={() => {
-                      const newQty = (cartItem?.quantity ?? 1) + 1;
-                      setQuantityCartItem(
-                        product.product_id,
-                        newQty,
-                        product?.maximum_order_quantity
-                      );
-                      // Fire toast to show updated qty (same as SpecialOffers)
-                      if (typeof window !== "undefined") {
-                        const images = product?.images
-                          ? typeof product.images === "string"
-                            ? JSON.parse(product.images)
-                            : product.images
-                          : [];
-                        const img = images[0]
-                          ? `${process.env.NEXT_PUBLIC_API_URL}storage/${images[0]}`
-                          : "";
-                        window.dispatchEvent(
-                          new CustomEvent("cart:added", {
-                            detail: { name: productName, image: img, qty: newQty },
-                          })
-                        );
-                      }
-                    }}
-                  >
-                    +
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  {cartItem?.quantity === 1 ? (
+                    /* Trash icon when qty would drop to 0 */
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                    </svg>
+                  ) : "−"}
+                </button>
+
+                <span className="pdp-incart-unified__num" aria-live="polite">
+                  {cartItem?.quantity ?? 1}
+                </span>
+
+                <button
+                  className="pdp-incart-unified__btn"
+                  aria-label="Increase quantity"
+                  type="button"
+                  onClick={() => {
+                    const newQty = (cartItem?.quantity ?? 1) + 1;
+                    setQuantityCartItem(product.product_id, newQty);
+                    fireToast(newQty);
+                  }}
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Buy Now / Go to Checkout */}
+              <button
+                type="button"
+                className="pdp-atc-btn pdp-atc-btn--buynow pdp-atc-btn--buynow-sm"
+                onClick={() => router.push(`/${locale}/checkout`)}
+              >
+                Go to Checkout
+              </button>
+            </div>
+          </motion.div>
         )}
       </div>
 
