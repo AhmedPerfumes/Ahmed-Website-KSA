@@ -27,7 +27,7 @@ export default function AccountOrders() {
   // Table & fetch state
   const [data, setData] = useState([]);
   const [orderSummaries, setOrderSummaries] = useState({}); // { [orderId]: [products] }
-  const [sorting, setSorting] = useState([]);
+  const [sorting, setSorting] = useState([{ id: "created_at", desc: true }]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -170,7 +170,7 @@ export default function AccountOrders() {
     setLoading(true);
     const BASE = process.env.NEXT_PUBLIC_API_URL;
     const { pageIndex, pageSize } = pagination;
-    const sort = sorting[0] || { id: "code", desc: false };
+    const sort = sorting[0] || { id: "created_at", desc: true };
     const params = new URLSearchParams({
       page: String(pageIndex + 1),
       pageSize: String(pageSize),
@@ -185,7 +185,7 @@ export default function AccountOrders() {
       const res = await fetch(`${BASE}api/customerOrders?${params}`);
       const json = await res.json();
       setData(json.data || []);
-      setPageCount(Math.ceil((json.total || 0) / pageSize));
+      setPageCount(Math.ceil((json.filtered ?? json.total ?? 0) / pageSize));
       // Fetch product summaries for each order
       const summaryResults = {};
       await Promise.all(
