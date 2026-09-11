@@ -247,14 +247,14 @@ export default function MobileHeader() {
           <span className="btn-close-lg position-absolute top-0 start-0 w-100"></span>
         </Link>
 
-        <div className="logo" style={{ overflow: "hidden", maxHeight: "calc(5rem - 1rem)", display: "flex", alignItems: "center" }}>
+        <div className="logo" style={{ overflow: "hidden", display: "flex", alignItems: "center" }}>
           <Link href={`/${locale}`}>
             <Image
               src="/assets/images/logo/Mobile.svg"
-              width={160}
-              height={56}
+              width={180}
+              height={68}
               alt="Ahmed"
-              style={{ height: "56px", width: "auto", objectFit: "contain", display: "block" }}
+              style={{ height: "68px", width: "auto", objectFit: "contain", display: "block" }}
               priority
             />
           </Link>
