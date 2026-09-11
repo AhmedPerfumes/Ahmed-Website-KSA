@@ -649,7 +649,7 @@ export default function Checkout() {
                           <div className="col-12">
                             <div className="form-floating">
                               <input type="text" pattern="^\d{10}$" className={`form-control${fieldErrors.mobile?' border-danger':''}`} id="bill_mobile" placeholder="Mobile" name="billingAddress.mobile" value={b.mobile} onChange={handleChange} required />
-                              <label htmlFor="bill_mobile" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Mobile Number *</label>
+                              <label htmlFor="bill_mobile">Mobile Number *</label>
                             </div>
                             <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. 0500000000</p>
                             {fieldErrors.mobile && <div className="cc-alert cc-alert--error py-1 mt-1">{fieldErrors.mobile}</div>}
@@ -746,7 +746,18 @@ export default function Checkout() {
                       </div>
                     ) : (
                       /* ── GUEST: Full form ── */
-                      <div className="row g-2">
+                      <div>
+                        {/* Guest checkout notice — audit MEDIUM fix */}
+                        <div className="cc-guest-notice" role="note" aria-label="Checkout as guest">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                          </svg>
+                          <span>You&apos;re checking out as a <strong>guest</strong>.{" "}
+                            <Link href={`/${locale}/login_register`} className="cc-guest-notice__login-link">Log In / Register</Link>
+                            {" "}to pre-fill your details.
+                          </span>
+                        </div>
+                        <div className="row g-2">
                         <div className="col-6">
                           <div className="form-floating">
                             <input type="text" className={`form-control${fieldErrors.first_name?' border-danger':''}`} id="bill_fn" placeholder="First Name" name="billingAddress.first_name" value={b.first_name} onChange={handleChange} required />
@@ -772,7 +783,7 @@ export default function Checkout() {
                         <div className="col-6">
                           <div className="form-floating">
                             <input type="text" className={`form-control${fieldErrors.short_national_address?' border-danger':''}`} id="bill_sna" placeholder="Short National Address" name="billingAddress.short_national_address" value={b.short_national_address} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
-                            <label htmlFor="bill_sna" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>Short National Address *</label>
+                            <label htmlFor="bill_sna">Short National Address *</label>
                           </div>
                           <p style={{fontSize:'0.65rem',color:'#aaa',margin:'2px 0 0 2px',lineHeight:1.3}}>e.g. ABCD1234</p>
                           {fieldErrors.short_national_address && <div className="cc-alert cc-alert--error py-1 mt-1" style={{fontSize:'0.72rem'}}>{fieldErrors.short_national_address}</div>}
@@ -820,7 +831,10 @@ export default function Checkout() {
                           {fieldErrors.mobile && <div className="cc-alert cc-alert--error py-1 mt-1" style={{fontSize:'0.72rem'}}>{fieldErrors.mobile}</div>}
                         </div>
 
-                        {/* ── INLINE OTP (guest users only) ── */}
+                        {/* ── INLINE OTP (guest users only) ──
+                            Only renders once a valid 10-digit KSA mobile is entered.
+                            Collapses to a success badge once verified. */}
+                        {/^\d{10}$/.test(b.mobile) && (
                         <div className="col-12">
                           <div style={{background:'#fafafa',border:'1px solid #eee',borderRadius:'4px',padding:'0.85rem',marginTop:'0.25rem'}}>
                             <p style={{fontSize:'0.78rem',fontWeight:'700',textTransform:'uppercase',letterSpacing:'0.05em',color:'#555',marginBottom:'0.6rem'}}>
@@ -836,7 +850,7 @@ export default function Checkout() {
                               <button
                                 type="button"
                                 className="cc-acc-continue"
-                                disabled={isSendOTPLoading || !b.mobile || !/^\d{10}$/.test(b.mobile)}
+                                disabled={isSendOTPLoading}
                                 onClick={sendOTP}
                                 style={{height:'2.6rem',fontSize:'0.8rem'}}
                               >
@@ -880,6 +894,7 @@ export default function Checkout() {
                             )}
                           </div>
                         </div>
+                        )}
 
                         {/* Optional extras */}
                         <div className="col-12">
@@ -983,7 +998,8 @@ export default function Checkout() {
                             </div>
                           )}
                         </div> */}
-                      </div>
+                      </div>{/* /row.g-2 */}
+                    </div>
                     )}
 
 

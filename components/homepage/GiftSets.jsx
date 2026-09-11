@@ -58,10 +58,22 @@ function VideoCard({ item, locale, t }) {
     const [playing, setPlaying] = useState(false);
     const isMobileRef = useRef(false);
 
-    /* ── Detect touch device (covers iOS + Android) ── */
+    /* ── Detect genuine touch-primary device ──────────────────────────
+       Problem: ThinkPad / Surface laptops have maxTouchPoints > 0 even
+       though their primary input is a mouse/trackpad (pointer: fine).
+       This caused IntersectionObserver to fire on all visible cards
+       simultaneously, autoplaying every video at once.
+
+       Fix: use the CSS `pointer: coarse` media query.
+         • phones / tablets   → pointer: coarse  → true  → use IO autoplay
+         • ThinkPad / Surface → pointer: fine    → false → use hover-play
+       This is the W3C-recommended way to distinguish touch-primary from
+       touch-secondary (hybrid) devices.
+    ── */
     useEffect(() => {
         isMobileRef.current =
-            typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
+            typeof window !== "undefined" &&
+            window.matchMedia("(pointer: coarse)").matches;
     }, []);
 
     /* ── Viewport-based autoplay for mobile ── */

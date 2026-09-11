@@ -20,15 +20,16 @@ export default function OnlineExclusiveBanner() {
                 {/* Full-bleed image */}
                 <Link href={`/${locale}/shop`} className="oebnr__link" tabIndex={-1}>
                     <Image
-                        src="https://adminksa.ahmedalmaghribi.com/public/storage/product-categories/multiple-banner-image-1.jpg"
+                        src="/assets/images/online-exclusive-banner.png"
                         alt="Online Exclusive â€” only available at Ahmed Al Maghribi online"
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
                         className="oebnr__img"
+                        quality={100}
                         priority={false}
                         loading="lazy"
                     />
-                    <span className="oebnr__scrim" />
+                    {/* <span className="oebnr__scrim" /> */}
                 </Link>
 
                 {/* Text overlay â€” eyebrow + title + CTA */}

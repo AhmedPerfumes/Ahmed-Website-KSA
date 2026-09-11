@@ -267,7 +267,7 @@ export default function CartDrawer() {
 
             {/* Payment methods note */}
             <p className="cd-payment-note">
-              🔒 Secure checkout · Visa · Mastercard · mada · Tamara · Tabby
+              🔒 Secure checkout · Visa · Mastercard · Mada · Tamara · Tabby
             </p>
           </div>
         )}

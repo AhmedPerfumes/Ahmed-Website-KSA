@@ -39,6 +39,30 @@ body {
   --font-dm-sans:      var(--font-ui); /* old dm-sans references now resolve to Inter */
 }
 
+/*
+ * ── ARABIC LOCALE FONT ROLES ────────────────────────────────────────────
+ * [lang="ar"] overrides ALL four semantic roles with Brando Arabic.
+ * Next.js injects --font-brando on <body> when locale === "ar".
+ * Inter is kept for --font-inter so prices / numbers stay crisp.
+ *
+ * Weight strategy (best practice for Arabic typography):
+ *   Headings  → 600 (SemiBold)  — authoritative, luxury feel
+ *   Body text → 300 (Light)     — spacious, elegant, easy to read in RTL
+ *   UI / nav  → 400             — neutral, clear chrome
+ *   Labels    → 600             — eyebrow / tag legibility
+ */
+[lang="ar"] body {
+  --font-display:     var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
+  --font-body:        var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
+  --font-ui:          var(--font-brando), "Geeza Pro", Arial, sans-serif;
+  --font-label:       var(--font-brando), "Geeza Pro", Arial, sans-serif;
+
+  /* ── Legacy aliases ── */
+  --font-heading:     var(--font-display);
+  --font-family-base: var(--font-body);
+  --font-dm-sans:     var(--font-ui);
+}
+
 .theme-11 {
   --theme-color: #0071e3;
   --theme-color-secondary: #0046be;

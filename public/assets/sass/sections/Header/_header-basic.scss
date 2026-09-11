@@ -107,7 +107,7 @@
     background: $header-cart-amount-bg;
     color: $header-cart-amount-color;
     font-size: $header-cart-amount-font-size;
-    line-height: $header-cart-amount-width;
+    line-height: $header-cart-amount-width !important;
     text-align: center;
   }
 }

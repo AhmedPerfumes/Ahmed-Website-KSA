@@ -63,10 +63,16 @@ function DakhoonVideoCard({ item, locale, t }) {
     const [playing, setPlaying] = useState(false);
     const isMobileRef = useRef(false);
 
-    /* ── Detect touch device (iOS + Android) ── */
+    /* ── Detect genuine touch-primary device ──────────────────────────
+       ThinkPad / Surface laptops have maxTouchPoints > 0 but use a
+       mouse/trackpad as primary input (pointer: fine). Using that check
+       caused all cards to autoplay simultaneously on wide laptop screens.
+       `pointer: coarse` correctly returns true only for phones/tablets.
+    ── */
     useEffect(() => {
         isMobileRef.current =
-            typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
+            typeof window !== "undefined" &&
+            window.matchMedia("(pointer: coarse)").matches;
     }, []);
 
     /* ── Viewport autoplay on mobile ── */

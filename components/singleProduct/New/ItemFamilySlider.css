@@ -122,11 +122,11 @@
     border-radius: 1px;
 }
 
-/* ── Quick add — anchored to .ifs-card, slides up on hover ── */
+/* ── Quick add — anchored to .ifs-card__img, slides up from image bottom on hover ── */
 .ifs-card__atc {
     position: absolute;
-    /* Sit at the bottom of the image area (just above info panel) */
-    bottom: 5.5rem;
+    /* Anchored to bottom of the IMAGE wrapper, not the card */
+    bottom: 0;
     left: 0;
     right: 0;
     z-index: 3;
@@ -137,18 +137,17 @@
     background: var(--pdp-ink, #1A1A1A);
     color: #fff;
     border: none;
-    padding: 0.55rem 0.5rem;
+    padding: 0.6rem 0.5rem;
     cursor: pointer;
-    /* Hidden: slid down below the image edge */
+    /* Hidden: slid down below image bottom edge */
     transform: translateY(100%);
     transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
                 background 0.2s ease;
     text-align: center;
-    /* Clip to image area only */
-    overflow: hidden;
 }
 
-.ifs-card:hover .ifs-card__atc {
+.ifs-card:hover .ifs-card__atc,
+.ifs-card:focus-within .ifs-card__atc {
     transform: translateY(0);
 }
 
@@ -159,6 +158,85 @@
 .ifs-card__atc--added {
     background: var(--pdp-gold, #C9A96E) !important;
     transform: translateY(0) !important;
+}
+
+/* ── Card CTA: gold add button ────────────────────────────── */
+.ifs-cta {
+    margin-top: 0.65rem;
+    width: 100%;
+}
+
+/* Pre-cart: gold “+ Add” button */
+.ifs-cta--add {
+    display: block;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    background: linear-gradient(135deg, #c9903a 0%, #a67b30 60%, #8a6526 100%);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.15s ease;
+    position: relative;
+    overflow: hidden;
+}
+.ifs-cta--add::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+    transition: left .4s ease;
+}
+.ifs-cta--add:hover::before { left: 150%; }
+.ifs-cta--add:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.ifs-cta--add:active { transform: translateY(0); }
+
+/* In-cart: dark pill stepper — matches PDP pdp-incart-unified__stepper */
+.ifs-cta--stepper {
+    display: flex;
+    align-items: center;
+    background: var(--pdp-ink, #1A1A1A);
+    border-radius: 999px;
+    height: 38px;
+    overflow: hidden;
+}
+
+.ifs-cta__btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    padding: 0;
+}
+.ifs-cta__btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+}
+.ifs-cta__btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.ifs-cta__num {
+    flex: 1;
+    text-align: center;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    user-select: none;
+    min-width: 24px;
 }
 
 /* ── Card info ── */
@@ -225,22 +303,19 @@
     color: var(--pdp-gold, #C9A96E);
 }
 
-/* ── Mobile: always show ATC ── */
-@media (max-width: 768px) {
-    .ifs-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
+/* ── Arrow hidden state — fade out at scroll boundaries ── */
+.ifs-arrow--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) scale(0.85);
+}
 
+/* ── Mobile: ATC stays inside image, always visible for touch ── */
+@media (max-width: 768px) {
     .ifs-card__atc {
-        /* On mobile: static flow between image and info. No clipping issues. */
-        position: relative;
-        bottom: auto;
-        left: auto;
-        right: auto;
+        /* On mobile: always show (no hover), still inside image wrapper */
         transform: translateY(0);
-        border-top: 1px solid #EDE8DF;
-        width: 100%;
+        border-top: 1px solid rgba(255,255,255,.15);
     }
 
     .ifs-panel {

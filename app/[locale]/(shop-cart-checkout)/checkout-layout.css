@@ -1,0 +1,62 @@
+/*
+ * checkout-layout.css
+ * =====================================================================
+ * Hides the global site navigation elements for ALL routes inside
+ * the (shop-cart-checkout) group: cart, checkout, order-complete,
+ * order-tracking, tamara redirect.
+ *
+ * Audit fix (CRITICAL): Full nav was visible during checkout, creating
+ * distractions (menu, cart icon, promo banner, language switcher).
+ *
+ * Implementation:
+ *  The global layout renders Header14 (.header) and MobileHeader
+ *  unconditionally. Since Next.js nested layouts inherit the parent
+ *  providers, we can't remove those components from the tree, but we
+ *  CAN hide them with CSS for this route group.
+ *  The mobile spacer div (.d-lg-none height:7rem) is also hidden so
+ *  the checkout page doesn't have a dead 7rem gap at the top.
+ * =====================================================================
+ */
+
+/* Hide full desktop header */
+.header {
+    display: none !important;
+}
+
+/* Hide mobile header (hamburger / mobile nav bar) */
+.mobile-header-wrapper,
+.header-mobile,
+[class*="MobileHeader"],
+header[class*="mobile"],
+.mobile-navigation {
+    display: none !important;
+}
+
+/* Hide the 7rem mobile spacer injected by the global layout */
+body > * div[aria-hidden="true"][style*="7rem"] {
+    display: none !important;
+}
+
+/* Hide any promo/announcement banners */
+.announcement-bar,
+.promo-banner,
+[class*="promo-bar"],
+[class*="announcement"] {
+    display: none !important;
+}
+
+/* Remove the top padding that compensates for the fixed header
+   (checkout pages don't have a sticky header to compensate for,
+    since the ck-header is only 64px and is in-flow) */
+.page-wrapper {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Cart & checkout pages: remove the mb-4 pb-4 spacer that was
+   compensating for the full header height */
+.shop-checkout.container > .mb-4:first-child,
+.shop-cart-area > .mb-4:first-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}

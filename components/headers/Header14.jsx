@@ -32,7 +32,9 @@ const headerStyles = `
     letter-spacing: 0.08em;
     text-transform: uppercase;
     border: none;
-    padding: 4px 28px 4px 8px;
+    /* padding-right must be wide enough for the browser's native arrow SVG
+       not to overlap the text. 32px = arrow width (~16px) + 8px gap + 8px buffer */
+    padding: 4px 32px 4px 8px;
     color: #555;
     background-color: transparent;
     transition: color 0.25s ease;
@@ -495,7 +497,9 @@ const headerStyles = `
     }
     .heeader-top__right .form-select {
         font-size: 11px !important;
-        padding: 2px 20px 2px 4px !important;
+        /* 26px right padding keeps the native arrow SVG from overlapping
+           the text at compact (ThinkPad / 1440px) resolution */
+        padding: 2px 26px 2px 4px !important;
         letter-spacing: 0.04em !important;
     }
     .search-minimal form {
@@ -1492,7 +1496,7 @@ export default function Header14() {
                         <div className="sticky-logo align-items-center">
                             <Link href="/">
                                 <Image
-                                    src="/assets/images/logo/Desktop.svg"
+                                    src="/assets/images/logo/ahmed-icon.svg"
                                     width={45}
                                     height={45}
                                     alt="Ahmed Al Maghribi"

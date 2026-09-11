@@ -142,7 +142,6 @@
 .luxury-pdp h6 {
   font-size: 0.8rem;
   font-weight: 600;
-  text-align: center;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--pdp-charcoal);
@@ -280,15 +279,55 @@
   }
 }
 
-/* Gallery — thumbnail-below layout (reef-style) */
+/* ── FIX #4: Desktop layout — vertical thumb sidebar + main image ── */
+.pdp-gallery__desktop-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  /* Safari: needs explicit height context so aspect-ratio works on flex child */
+  min-height: 0;
+}
+
+/* Vertical thumbnail sidebar — always above-fold on desktop */
+.pdp-gallery__thumb-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  /* Width matches thumb size exactly — no overflow clipping */
+  width: 72px;
+  /* Height tracks the main image naturally — no fixed pixel cap */
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pdp-line) transparent;
+  /* No padding-right — thumbs are 72px, sidebar is 72px */
+}
+
+.pdp-gallery__thumb-sidebar::-webkit-scrollbar {
+  width: 3px;
+}
+.pdp-gallery__thumb-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pdp-gallery__thumb-sidebar::-webkit-scrollbar-thumb {
+  background: var(--pdp-line);
+  border-radius: 99px;
+}
+
+/* Main image — fills remaining space */
 .pdp-gallery__main {
+  flex: 1;
+  min-width: 0;
   aspect-ratio: 5/6;
   border-radius: var(--r-xl);
   overflow: hidden;
   background: transparent;
   position: relative;
   cursor: zoom-in;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .pdp-gallery__main img,
@@ -301,17 +340,83 @@
   transform: scale(1.03);
 }
 
-/* Thumbnail strip — horizontal row BELOW main image */
-.pdp-gallery__thumb-strip {
+/* ── FIX #5: Prev / Next arrow buttons ── */
+.pdp-gallery__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
   display: flex;
-  flex-direction: row;
-  gap: 8px;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  padding: 0;
+  color: var(--pdp-ink);
+  transition: background var(--ease), opacity var(--ease), transform .15s;
+  opacity: 0;
 }
 
+.pdp-gallery__main:hover .pdp-gallery__arrow {
+  opacity: 1;
+}
+
+.pdp-gallery__arrow svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.pdp-gallery__arrow--prev {
+  left: 10px;
+}
+
+.pdp-gallery__arrow--next {
+  right: 10px;
+}
+
+.pdp-gallery__arrow:hover:not(:disabled) {
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.pdp-gallery__arrow:disabled {
+  opacity: 0 !important;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Image counter pill */
+.pdp-gallery__counter {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Thumbnail shared styles */
 .pdp-gallery__thumb {
-  width: 72px;
+  /* width: 100% inside sidebar so thumb fills the 72px column exactly */
+  width: 100%;
+  /* Fixed height — sidebar thumbs are square */
   height: 72px;
   border-radius: var(--r-sm);
   overflow: hidden;
@@ -321,6 +426,9 @@
   transition: border-color var(--ease), opacity var(--ease);
   flex-shrink: 0;
   padding: 0;
+  /* Ensure the button doesn't grow wider than the sidebar */
+  max-width: 72px;
+  box-sizing: border-box;
 }
 
 .pdp-gallery__thumb img {
@@ -336,6 +444,16 @@
 
 .pdp-gallery__thumb.active {
   border-color: var(--pdp-gold);
+}
+
+/* Mobile thumbnail strip — horizontal, hidden on desktop */
+.pdp-gallery__thumb-strip {
+  display: none; /* hidden on desktop — sidebar does the job */
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 0 0;
 }
 
 /* Badges */
@@ -374,20 +492,83 @@
   color: #fff;
 }
 
+/* ── Tablet overrides (992px – 1199px) ── */
+@media (min-width: 992px) and (max-width: 1199px) {
+  /* Slightly narrower sidebar on tablets */
+  .pdp-gallery__thumb-sidebar {
+    width: 64px;
+    max-width: 64px;
+    gap: 5px;
+  }
+  .pdp-gallery__thumb {
+    max-width: 64px;
+    height: 64px;
+  }
+  .pdp-gallery__desktop-layout {
+    gap: 8px;
+  }
+}
+
+/* ── Mobile overrides (≤991px) ── */
 @media (max-width: 991px) {
-  .pdp-gallery__main {
-    border-radius: 0;
-    aspect-ratio: 4/5;
-    margin-bottom: 10px;
+  /* Hide the vertical sidebar on mobile — horizontal strip takes over */
+  .pdp-gallery__thumb-sidebar {
+    display: none;
   }
 
+  /* Show the horizontal strip */
   .pdp-gallery__thumb-strip {
+    display: flex;
     padding: 0 1rem .75rem;
   }
 
-  .pdp-gallery__thumb {
+  .pdp-gallery__desktop-layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .pdp-gallery__main {
+    /* CRITICAL: reset flex:1 — in a column flex container flex-basis:0%
+       collapses the height to 0, making the next/image fill invisible.
+       With flex:0 0 auto + width:100%, aspect-ratio:4/5 sets the height. */
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    border-radius: 0;
+    aspect-ratio: 4/5;
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+
+  /* Always show arrows on touch — hover is not available */
+  .pdp-gallery__arrow {
+    opacity: 0.8;
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Mobile thumbnails in horizontal strip: fixed square size */
+  .pdp-gallery__thumb-strip .pdp-gallery__thumb {
     width: 56px;
+    max-width: 56px;
     height: 56px;
+  }
+}
+
+/* ── Very small phones (≤375px) ── */
+@media (max-width: 375px) {
+  .pdp-gallery__arrow {
+    width: 28px;
+    height: 28px;
+  }
+  .pdp-gallery__arrow svg {
+    width: 14px;
+    height: 14px;
+  }
+  .pdp-gallery__thumb-strip .pdp-gallery__thumb {
+    width: 48px;
+    max-width: 48px;
+    height: 48px;
   }
 }
 
@@ -406,37 +587,6 @@
   background: var(--pdp-ink);
   width: 16px;
   border-radius: 3px;
-}
-
-@media (max-width: 991px) {
-  .pdp-gallery__desktop-wrap {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .pdp-gallery__thumb-col {
-    display: none;
-  }
-
-  .pdp-gallery__main {
-    border-radius: 0;
-    aspect-ratio: 4/5;
-    box-shadow: none;
-  }
-
-  .pdp-gallery__mobile-strip {
-    display: flex;
-  }
-
-  .pdp-gallery__mobile-dots {
-    display: flex;
-  }
-
-  .pdp-gallery__mobile-strip .pdp-gallery__thumb {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
-  }
 }
 
 /* ── Info Panel ─────────────────────────────────────────────── */
@@ -775,30 +925,38 @@
 .pdp-atc-row {
   display: flex;
   gap: .6rem;
+  /* min-height instead of fixed height — allows reflow if label wraps on tiny screens */
+  min-height: 54px;
   height: 54px;
+  flex-wrap: wrap;
 }
 
+/* FIX #3: White text on dark ATC button — max contrast (>14:1 vs #1A1A1A) */
 .pdp-atc-btn {
   flex: 1;
+  min-width: 0;
   background: var(--pdp-ink);
-  color: var(--pdp-gold-light);
+  color: #ffffff;
   border: 2px solid var(--pdp-ink);
   border-radius: var(--r-pill);
   font-size: var(--t-md);
   font-weight: 700;
-  letter-spacing: .12em;
+  letter-spacing: .10em;
   text-transform: uppercase;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
-  transition: background var(--ease), color var(--ease), transform .15s;
+  gap: .4rem;
+  padding: 0 1rem;
+  transition: background var(--ease), color var(--ease), border-color var(--ease), transform .15s;
   box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
+  white-space: nowrap;
 }
 
 .pdp-atc-btn:hover:not(:disabled) {
   background: var(--pdp-gold-dark);
+  border-color: var(--pdp-gold-dark);
   color: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .20);
   transform: translateY(-1px);
@@ -816,33 +974,158 @@
 .pdp-atc-btn--oos {
   background: var(--pdp-line);
   color: var(--pdp-slate);
-  box-shadow: none;
-}
-
-.pdp-atc-btn--added {
-  background: transparent;
   border-color: var(--pdp-line);
-  color: var(--pdp-slate);
   box-shadow: none;
 }
 
-/* Qty Ctrl */
-.pdp-qty-ctrl {
+/* FIX #2: Buy Now — outlined gold style */
+.pdp-atc-btn--buynow {
+  background: transparent;
+  color: var(--pdp-ink);
+  border-color: var(--pdp-ink);
+  box-shadow: none;
+  letter-spacing: .08em;
+}
+
+.pdp-atc-btn--buynow:hover:not(:disabled) {
+  background: var(--pdp-ink);
+  color: #fff;
+  border-color: var(--pdp-ink);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
+  transform: translateY(-1px);
+}
+
+/* Smaller Buy Now used inside in-cart row */
+.pdp-atc-btn--buynow-sm {
+  flex: 0 0 auto;
+  padding: 0 1.25rem;
+  font-size: .8rem;
+  letter-spacing: .06em;
+}
+
+/* CTA row: side-by-side ATC + Buy Now — can wrap on tiny screens */
+.pdp-atc-row--ctas {
+  height: auto;
+  min-height: 54px;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+/* FIX #1: Pre-cart quantity stepper row — sits above CTA row */
+.pdp-pre-qty {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .65rem;
+}
+
+.pdp-pre-qty__label {
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--pdp-slate);
+  font-weight: 600;
+  min-width: 24px;
+}
+
+.pdp-pre-qty__ctrl {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--pdp-line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  height: 40px;
+}
+
+.pdp-pre-qty__btn {
+  background: transparent;
+  border: none;
+  color: var(--pdp-ink);
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--ease), color var(--ease);
+  flex-shrink: 0;
+}
+
+.pdp-pre-qty__btn:hover:not(:disabled) {
+  background: var(--pdp-sand);
+  color: var(--pdp-gold-dark);
+}
+
+.pdp-pre-qty__btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.pdp-pre-qty__num {
+  font-size: var(--t-base);
+  font-weight: 700;
+  color: var(--pdp-ink);
+  min-width: 36px;
+  text-align: center;
+  user-select: none;
+  border-left: 1px solid var(--pdp-line);
+  border-right: 1px solid var(--pdp-line);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FIX #6: Unified in-cart state — single coherent pill, no ghost button */
+.pdp-incart-unified {
+  margin-bottom: 1rem;
+}
+
+.pdp-incart-unified__label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--pdp-success);
+  margin-bottom: .55rem;
+}
+
+.pdp-incart-unified__label svg {
+  flex-shrink: 0;
+  color: var(--pdp-success);
+}
+
+.pdp-incart-unified__row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 54px;
+  flex-wrap: wrap;
+}
+
+.pdp-incart-unified__stepper {
   display: flex;
   align-items: center;
   background: var(--pdp-ink);
   border-radius: var(--r-pill);
+  height: 54px;
   overflow: hidden;
-  min-width: 116px;
+  /* min-width keeps the stepper usable but allows flex to shrink on very small viewports */
+  min-width: 118px;
+  flex-shrink: 0;
 }
 
-.pdp-qty-btn {
+.pdp-incart-unified__btn {
   background: transparent;
   border: none;
   color: #fff;
-  width: 40px;
-  height: 52px;
-  font-size: 1.25rem;
+  width: 44px;
+  height: 54px;
+  font-size: 1.2rem;
   cursor: pointer;
   flex-shrink: 0;
   display: flex;
@@ -851,17 +1134,92 @@
   transition: background var(--ease);
 }
 
-.pdp-qty-btn:hover {
+.pdp-incart-unified__btn:hover {
   background: rgba(255, 255, 255, .12);
 }
 
-.pdp-qty-num {
+.pdp-incart-unified__num {
   color: #fff;
   font-size: var(--t-base);
   font-weight: 700;
   flex: 1;
   text-align: center;
   user-select: none;
+  min-width: 28px;
+}
+
+/* ── ATC / CTA responsive overrides ─────────────────────────── */
+
+/* Tablet (768px – 991px): reduce letter-spacing so text fits single-column info panel */
+@media (max-width: 991px) {
+  .pdp-atc-btn {
+    letter-spacing: .07em;
+    font-size: var(--t-sm);
+    padding: 0 .85rem;
+  }
+  .pdp-atc-btn--buynow {
+    letter-spacing: .05em;
+  }
+  .pdp-incart-unified__btn {
+    width: 40px;
+  }
+}
+
+/* Small phones (≤480px): keep stepper compact + checkout beside it */
+@media (max-width: 480px) {
+  /* Pre-cart ATC + Buy Now — stack vertically (2 large tap targets) */
+  .pdp-atc-row--ctas {
+    flex-direction: column;
+    height: auto;
+  }
+  .pdp-atc-row--ctas .pdp-atc-btn {
+    width: 100%;
+    flex: none;
+    min-height: 50px;
+  }
+  .pdp-atc-btn {
+    letter-spacing: .04em;
+    font-size: .85rem;
+  }
+
+  /* In-cart row: KEEP side-by-side — stepper is compact, checkout fills rest */
+  .pdp-incart-unified__row {
+    flex-direction: row;          /* stay horizontal */
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: .5rem;
+  }
+  .pdp-incart-unified__stepper {
+    /* Auto-width based on content — do NOT stretch to 100% */
+    width: auto;
+    flex-shrink: 0;
+    justify-content: center;
+  }
+  /* Gold checkout button fills remaining horizontal space */
+  .pdp-atc-btn--goto-checkout {
+    flex: 1;
+    min-height: 54px;
+    font-size: .78rem;
+    letter-spacing: .07em;
+  }
+  .pdp-pre-qty {
+    justify-content: flex-start;
+  }
+}
+
+/* Very small phones (≤360px) */
+@media (max-width: 360px) {
+  .pdp-atc-btn {
+    font-size: .78rem;
+    letter-spacing: .02em;
+    padding: 0 .6rem;
+  }
+  .pdp-pre-qty__btn {
+    width: 34px;
+  }
+  .pdp-pre-qty__num {
+    min-width: 30px;
+  }
 }
 
 /* Share Row */
@@ -2233,3 +2591,170 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   background: var(--pdp-line);
   border-radius: 2px;
 }
+
+/* ============================================================
+   FIX 1: Go to Checkout — gold full-width button
+   ============================================================ */
+.pdp-atc-btn--goto-checkout {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  background: linear-gradient(135deg, #c9903a 0%, #a67b30 60%, #8a6526 100%);
+  color: #fff !important;
+  text-decoration: none !important;
+  border: none;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter .2s, transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.pdp-atc-btn--goto-checkout::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  transition: left .45s ease;
+}
+.pdp-atc-btn--goto-checkout:hover::before { left: 150%; }
+.pdp-atc-btn--goto-checkout:hover { filter: brightness(1.07); transform: translateY(-1px); }
+.pdp-atc-btn--goto-checkout:active { transform: translateY(0); }
+
+/* ============================================================
+   FIX 3: Gallery Lightbox (fullscreen overlay on image click)
+   ============================================================ */
+.pdp-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .92);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lbFadeIn .18s ease;
+}
+@keyframes lbFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.pdp-lightbox__img-wrap {
+  position: relative;
+  width: min(90vw, 720px);
+  height: min(88vh, 720px);
+}
+.pdp-lightbox__close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+  z-index: 9001;
+}
+.pdp-lightbox__close:hover { background: rgba(255,255,255,.15); }
+.pdp-lightbox__arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 50%;
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9001;
+  transition: background .15s;
+}
+.pdp-lightbox__arrow:hover { background: rgba(255,255,255,.15); }
+.pdp-lightbox__arrow:disabled { opacity: .3; cursor: default; }
+.pdp-lightbox__arrow--prev { left: 1rem; }
+.pdp-lightbox__arrow--next { right: 1rem; }
+.pdp-lightbox__arrow svg { width: 20px; height: 20px; }
+/* Clickable cursor on main image */
+.pdp-gallery__main { cursor: zoom-in; }
+
+/* ============================================================
+   FIX 4: YMAL — horizontal scroll-snap slider
+   ============================================================ */
+.ifs-slider-wrap {
+  position: relative;
+}
+.ifs-slider {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: .5rem;
+}
+.ifs-slider::-webkit-scrollbar { display: none; }
+.ifs-slider .ifs-card {
+  flex: 0 0 calc(50% - .5rem);     /* 2 per row mobile */
+  scroll-snap-align: start;
+  min-width: 0;
+}
+@media (min-width: 480px) {
+  .ifs-slider .ifs-card { flex: 0 0 calc(33.33% - .67rem); } /* 3 per row */
+}
+@media (min-width: 1024px) {
+  .ifs-slider .ifs-card { flex: 0 0 calc(25% - .75rem); }    /* 4 per row */
+}
+/* Prev/Next arrow buttons for YMAL slider */
+.ifs-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  border: 1px solid #e8e0d0;
+  border-radius: 50%;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  z-index: 2;
+  transition: background .15s, border-color .15s;
+}
+.ifs-arrow:hover { background: #fdf9f2; border-color: #c5a05a; }
+.ifs-arrow:disabled { opacity: .25; cursor: default; }
+.ifs-arrow--prev { left: -1.25rem; }
+.ifs-arrow--next { right: -1.25rem; }
+.ifs-arrow svg { width: 16px; height: 16px; }
+/* Hide old grid rule when slider is used */
+.ifs-grid { display: none; }
+
+/* ============================================================
+   RESPONSIVE POLISH — PDP global
+   ============================================================ */
+@media (max-width: 575px) {
+  /* Tighter hero grid padding on small phones */
+  .pdp-container { padding: 0 .75rem; }
+  .pdp-hero { padding: .75rem 0 0; }
+
+  /* Info panel breathing room */
+  .pdp-info__title { font-size: 1.45rem; }
+  .pdp-info__breadcrumb { font-size: .7rem; }
+
+  /* Checkout button — slightly shorter on very narrow screens */
+  .pdp-atc-btn--goto-checkout { height: 46px; font-size: .76rem; }
+
+
+  /* Gallery thumbnails */
+  .pdp-gallery__thumb-strip { gap: .4rem; }
+  .pdp-gallery__thumb { width: 52px; height: 52px; }
+}

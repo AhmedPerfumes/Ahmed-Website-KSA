@@ -3,8 +3,11 @@
   top: 0;
   width: $aside-width;
   max-width: 100%;
+  /* Fix: 100vh ignores the mobile browser URL bar.
+     100dvh (dynamic viewport height) shrinks when the bar is visible.
+     Fallback 100vh for older browsers that don't support dvh. */
   height: 100vh;
-  // height: -webkit-fill-available;
+  height: 100dvh;
   transition: all 0.32s cubic-bezier(0.39, 0.575, 0.565, 1);
   background-color: $body-bg;
   opacity: .7;

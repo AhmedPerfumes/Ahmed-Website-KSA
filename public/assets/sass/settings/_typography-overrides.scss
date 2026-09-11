@@ -7,7 +7,7 @@
      --font-ui      → Inter → Helvetica Neue → Arial, sans-serif    (UI / buttons / nav)
      --font-label   → Inter → Helvetica Neue → Arial, sans-serif    (eyebrows / labels)
      --font-inter   → Inter                                         (prices / numbers)
-     --font-alexandria → Alexandria                                  (Arabic locale)
+     --font-brando  → Brando Arabic + Brando Sans                   (Arabic locale)
    Legacy aliases: --font-heading = --font-display, --font-family-base = --font-body
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -815,15 +815,253 @@ p {
   justify-content: center !important;
 }
 
-/* ── 26. CHECKOUT FORM — prevent floating labels overflowing on mobile ─ */
-/* On narrow (col-6) columns the label can overflow the field boundary.   */
-/* Clip with ellipsis so it never escapes the field box on any screen.    */
+/* ── 26. CHECKOUT FORM — floating label visibility on mobile ─── */
+/* Labels must NEVER be clipped — overflow:hidden breaks the float-up transform. */
+/* Text truncation for narrow col-6 fields is handled in _cart-checkout-ui.scss  */
 @media (max-width: 575.98px) {
-  .form-floating>label {
-    overflow: hidden;
+  .form-floating > label {
+    /* Do NOT set overflow:hidden here — it clips the translateY float animation.
+       The label's clipping rect stays put while the label moves, causing overlap. */
     white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: calc(100% - 1rem);
-    /* leave room for Bootstrap's internal padding */
+    max-width: calc(100% - 0.75rem);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   27. ARABIC LOCALE TYPOGRAPHY (lang="ar")
+   Brando Arabic — best-practice RTL rules for luxury e-commerce.
+   ══════════════════════════════════════════════════════════════════════
+
+   DESIGN PRINCIPLES:
+   • Arabic calligraphy is rich — lighter weights read more elegantly.
+   • RTL script needs MORE line-height than Latin (1.9–2.0 for body).
+   • Never use letter-spacing on Arabic — it breaks glyph connection.
+   • Headings: 600 (SemiBold) — authoritative without appearing heavy.
+   • Body / p: 300 (Light)    — spacious, premium, luxury feel.
+   • Eyebrows:  700 (Bold)    — high visibility, short labels only.
+   • Prices/numbers: Keep Inter — Arabic-Indic numerals are handled
+     by the browser, Inter's Western digits stay crisp for SAR prices.
+
+   SEO NOTES:
+   • font-display: swap → no invisible text, Google can index content.
+   • Semantic HTML (h1→h6) + proper weights signal content hierarchy.
+   • No layout shift: adjustFontFallback: false + explicit size-adjust
+     handled via the fallback stack in _theme.scss.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Base: Apply Brando Arabic to every element in AR locale ── */
+[lang="ar"] *,
+[lang="ar"] *::before,
+[lang="ar"] *::after {
+  font-family: var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
+  /* letter-spacing must be 0 for Arabic — glyph connections break otherwise */
+  letter-spacing: 0 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Body text — Light weight, generous line-height for RTL readability ── */
+[lang="ar"] body {
+  font-family: var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif !important;
+  font-weight: 300 !important; /* Light — most legible for Arabic body copy */
+  font-size: 1rem;
+  line-height: 1.95;            /* RTL needs ~20% more line-height than LTR   */
+  direction: rtl;
+  text-align: right;
+  /* Optical sizing: off for Arabic — browser metrics differ per font */
+  font-optical-sizing: none;
+}
+
+/* ── Headings: SemiBold (600) — premium authority without heaviness ── */
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[lang="ar"] h4,
+[lang="ar"] h5,
+[lang="ar"] h6,
+[lang="ar"] .h1,
+[lang="ar"] .h2,
+[lang="ar"] .h3,
+[lang="ar"] .h4,
+[lang="ar"] .h5,
+[lang="ar"] .h6 {
+  font-family: var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif !important;
+  font-weight: 600 !important; /* SemiBold — headline authority */
+  line-height: 1.5 !important; /* tighter for large display headings        */
+  letter-spacing: 0 !important;
+  color: #1a1a1a;
+}
+
+/* h1 display headings — slightly lighter to contrast section h2 ── */
+[lang="ar"] h1,
+[lang="ar"] .h1 {
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+/* h3/h4 sub-headings — regular weight, still clear hierarchy ── */
+[lang="ar"] h3,
+[lang="ar"] h4,
+[lang="ar"] .h3,
+[lang="ar"] .h4 {
+  font-weight: 400 !important; /* Regular — mid-level headings */
+}
+
+/* ── Paragraphs — Light, ample line-height ── */
+[lang="ar"] p {
+  font-family: var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif !important;
+  font-weight: 300 !important;
+  font-size: 0.9375rem;
+  line-height: 2.0 !important; /* Max spacing for body text blocks           */
+  color: #1a1a1a;
+  letter-spacing: 0 !important;
+}
+
+/* ── Eyebrows / Labels — Bold, no letter-spacing (Arabic rule) ── */
+[lang="ar"] [class$="__eyebrow"],
+[lang="ar"] [class$="-eyebrow"],
+[lang="ar"] [class*="__eyebrow"],
+[lang="ar"] [class*="-eyebrow"],
+[lang="ar"] [class*="__label"],
+[lang="ar"] [class*="-label"] {
+  font-family: var(--font-brando), "Geeza Pro", Arial, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  font-size: 0.875rem !important;
+}
+
+/* ── Buttons / UI — Regular weight, Brando Arabic ── */
+[lang="ar"] button,
+[lang="ar"] .btn,
+[lang="ar"] [type="button"],
+[lang="ar"] [type="submit"] {
+  font-family: var(--font-brando), "Geeza Pro", Arial, sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Navigation ── */
+[lang="ar"] .navigation__item > a,
+[lang="ar"] .header14 .nav-item > a,
+[lang="ar"] .mainnav__item > a {
+  font-family: var(--font-brando), "Geeza Pro", Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Form elements ── */
+[lang="ar"] input,
+[lang="ar"] select,
+[lang="ar"] textarea,
+[lang="ar"] label {
+  font-family: var(--font-brando), "Geeza Pro", Arial, sans-serif !important;
+  font-weight: 300 !important;
+  letter-spacing: 0 !important;
+  text-align: right;
+  direction: rtl;
+}
+
+/* ── Prices and numbers — keep Inter for Western digit clarity ── */
+[lang="ar"] .price,
+[lang="ar"] .pc-price,
+[lang="ar"] [class*="price"],
+[lang="ar"] [class*="amount"],
+[lang="ar"] [class*="total"],
+[lang="ar"] [class*="discount"] {
+  font-family: var(--font-inter), "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Product card names — SemiBold 600 ── */
+[lang="ar"] .pc__title,
+[lang="ar"] .pc-card__name,
+[lang="ar"] .bs-card__name,
+[lang="ar"] .bs-card__name a,
+[lang="ar"] .na2-banner__name,
+[lang="ar"] .so-card__name,
+[lang="ar"] .oe-card__name,
+[lang="ar"] .dk-card__name,
+[lang="ar"] .gs2-card__name,
+[lang="ar"] .care-card__title,
+[lang="ar"] .collections__card-title {
+  font-family: var(--font-brando), "Geeza Pro", serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Section headings (component-level) ── */
+[lang="ar"] .bs2__title,
+[lang="ar"] .na2__title,
+[lang="ar"] .so__title,
+[lang="ar"] .hb__title,
+[lang="ar"] .col-sec__title,
+[lang="ar"] .dkbnr__title,
+[lang="ar"] .gbnr__title,
+[lang="ar"] .oebnr__title,
+[lang="ar"] .gs2__title,
+[lang="ar"] .oe__section-title,
+[lang="ar"] .best-sellers__title,
+[lang="ar"] .collections__title,
+[lang="ar"] .care__title {
+  font-family: var(--font-brando), "Geeza Pro", serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Banner / overlay titles — white on dark backgrounds ── */
+/* The global Arabic h* rule forces #1a1a1a; these elements sit on
+   dark photo/gradient backgrounds so they must stay white, exactly
+   as the English locale renders them.                              */
+[lang="ar"] .hero-slide__title,
+[lang="ar"] .oebnr__title,
+[lang="ar"] .gbnr__title,
+[lang="ar"] .dkbnr__title,
+[lang="ar"] .care-card__title,
+[lang="ar"] .small-banner__title {
+  color: #ffffff !important;
+}
+
+/* ── Blog / inner page body text ── */
+[lang="ar"] [class*="blog"] p,
+[lang="ar"] [class*="blog"] li,
+[lang="ar"] [class*="post"] p,
+[lang="ar"] [class*="post"] li {
+  font-family: var(--font-brando), "Geeza Pro", serif !important;
+  font-weight: 300 !important;
+  line-height: 2.1 !important;
+  font-size: 1rem !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Footer — off-white on dark, regular weight ── */
+[lang="ar"] .footer.footer_type_1.dark p,
+[lang="ar"] .footer.footer_type_1.dark .footer-address,
+[lang="ar"] .footer.footer_type_1.dark .footer-newsletter p {
+  font-family: var(--font-brando), "Geeza Pro", serif !important;
+  font-weight: 300 !important;
+  color: #e8e4dc !important;
+  line-height: 1.9 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── Review / testimonial text ── */
+[lang="ar"] [class*="review__text"],
+[lang="ar"] [class*="review__body"],
+[lang="ar"] [class*="review__content"] {
+  font-family: var(--font-brando), "Geeza Pro", serif !important;
+  font-weight: 300 !important;
+  line-height: 2.0 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── PDP description ── */
+[lang="ar"] .pdp-info p,
+[lang="ar"] .pdp-desc p,
+[lang="ar"] [class*="pdp-desc"] p,
+[lang="ar"] [class*="product-desc"] p {
+  font-family: var(--font-brando), "Geeza Pro", serif !important;
+  font-weight: 300 !important;
+  line-height: 2.0 !important;
+  letter-spacing: 0 !important;
+}

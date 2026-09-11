@@ -17,6 +17,28 @@
   --cd-t: 0.2s ease;
 }
 
+/* Fix 3: SAR / ﷼ symbol font fallback.
+   The ﷼ glyph (U+FDFC) lives in Arabic Presentation Forms-A block.
+   Most Latin UI fonts don't cover it, causing a missing-glyph box on Android/iOS.
+   This @font-face patch inserts system Arabic fonts into the stack for that
+   exact Unicode range, site-wide, without touching any other characters. */
+@font-face {
+  font-family: 'CurrencySymbolFallback';
+  src: local('Arial Unicode MS'),
+       local('Noto Sans Arabic'),
+       local('Noto Naskh Arabic'),
+       local('Geeza Pro'),       /* iOS/macOS system Arabic */
+       local('Simplified Arabic'),/* Windows system Arabic  */
+       local('Traditional Arabic');
+  unicode-range: U+FD00-FDFF, U+0600-06FF; /* Arabic + Arabic Presentation Forms-A */
+}
+
+/* Apply the currency fallback globally — cheapest way to fix site-wide */
+body {
+  font-family: 'CurrencySymbolFallback', -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 /* ── Drawer Container ──────────────────────────────────────── */
 .cart-drawer.cd-new {
   display: flex;
@@ -510,7 +532,6 @@
 /* Payment note */
 .cd-payment-note {
   font-size: 0.65rem;
-  color: var(--cd-light);
   text-align: center;
   margin: 0;
   letter-spacing: 0.02em;
@@ -534,5 +555,51 @@
 
   .cd-subtotal__value {
     font-size: 1.1rem;
+  }
+}
+
+/* Fix 2: Remove button — mobile visibility
+   On screens ≤ 480px the absolute-positioned trash icon can be clipped
+   or overlap the price. Switch to an inline text button below the qty row. */
+@media (max-width: 480px) {
+  /* Reset absolute positioning */
+  .cd-item__remove {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+    height: auto;
+    width: auto;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #fdd;
+    border-radius: 4px;
+    background: #fff8f8;
+    color: #c0392b;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* Shrink the SVG to match text size */
+  .cd-item__remove svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  /* Add a text label next to the icon */
+  .cd-item__remove::after {
+    content: 'Remove';
+  }
+
+  /* Remove the reserved right-padding since button is no longer absolute */
+  .cd-item__info {
+    padding-right: 0.5rem;
+  }
+
+  /* Stack image + info column vertically to give more room */
+  .cd-item {
+    flex-wrap: wrap;
   }
 }

@@ -5,7 +5,7 @@ import Image from "next/image";
 import he from "he";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { renderPrice } from "@/utlis/priceRenderer";
 import "./ItemFamilySlider.css";
 
@@ -15,17 +15,6 @@ function fireCartToast(name, image, qty) {
     window.dispatchEvent(
         new CustomEvent("cart:added", { detail: { name, image, qty: qty || 1 } })
     );
-}
-
-/** Build product URL slug — mirrors PHP/JS logic */
-function slugify(str) {
-    return (str || "")
-        .replace(/[^a-zA-Z0-9\s]/g, " Description ")
-        .replace(/\s+/g, " ")
-        .trim()
-        .split(" ")
-        .join("-")
-        .toLowerCase();
 }
 
 function cleanName(str) {
@@ -52,30 +41,148 @@ function getProductUrl(locale, elm) {
     return `/${locale}/shop/${cat}/${sub}/${prod}`;
 }
 
-const INITIAL_SHOW = 6; // show first 6 (2 × 3 rows), expand on demand
+/**
+ * CardCTA — switches between:
+ *   • Gold "+ Add" button  (pre-cart)
+ *   • Dark pill stepper [🗑/−] [qty] [+]  (in-cart, matching PDP theme)
+ */
+function CardCTA({ elm, elmWithDiscount, img0, name }) {
+    const { cartProducts, setCartProducts } = useContextElement();
+
+    const cartItem = cartProducts.find(
+        (c) => c.product_id == elm?.product_id && !c.is_gift
+    );
+    const isInCart = !!cartItem;
+    const qty = cartItem?.quantity ?? 0;
+
+    const maxQty = elm?.product_qty ?? 99;
+
+    const addToCart = () => {
+        if (isInCart) return;
+        const item = {
+            ...elmWithDiscount,
+            category_name: elm.category_name,
+            subcategory_name: elm.subcategory?.subcategory_name || "",
+            quantity: 1,
+        };
+        setCartProducts((prev) => [...prev, item]);
+        fireCartToast(name, img0, 1);
+    };
+
+    const increase = () => {
+        if (qty >= maxQty) return;
+        setCartProducts((prev) =>
+            prev.map((c) =>
+                c.product_id == elm?.product_id && !c.is_gift
+                    ? { ...c, quantity: c.quantity + 1 }
+                    : c
+            )
+        );
+    };
+
+    const decrease = () => {
+        if (qty <= 1) {
+            // Remove from cart
+            setCartProducts((prev) =>
+                prev.filter((c) => !(c.product_id == elm?.product_id && !c.is_gift))
+            );
+        } else {
+            setCartProducts((prev) =>
+                prev.map((c) =>
+                    c.product_id == elm?.product_id && !c.is_gift
+                        ? { ...c, quantity: c.quantity - 1 }
+                        : c
+                )
+            );
+        }
+    };
+
+    if (!isInCart) {
+        return (
+            <button className="ifs-cta ifs-cta--add" onClick={addToCart} type="button">
+                + Add
+            </button>
+        );
+    }
+
+    return (
+        <div className="ifs-cta ifs-cta--stepper" role="group" aria-label="Update quantity">
+            <button
+                className="ifs-cta__btn"
+                onClick={decrease}
+                aria-label={qty === 1 ? "Remove from cart" : "Decrease quantity"}
+                type="button"
+            >
+                {qty === 1 ? (
+                    /* Trash icon when qty = 1 (next decrease removes) */
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                    </svg>
+                ) : "−"}
+            </button>
+            <span className="ifs-cta__num" aria-live="polite">{qty}</span>
+            <button
+                className="ifs-cta__btn"
+                onClick={increase}
+                disabled={qty >= maxQty}
+                aria-label="Increase quantity"
+                type="button"
+            >
+                +
+            </button>
+        </div>
+    );
+}
 
 export default function ItemFamilySlider({ product, itemFamilyProds }) {
     const { currency } = useMenu();
     const locale = useLocale();
-    const { addProductToCart, isAddedToCartProducts } = useContextElement();
     const t = useTranslations();
-    const tp = useTranslations("ProductDetails");
-    const [showAll, setShowAll] = useState(false);
+    const sliderRef = useRef(null);
 
-    // Guard
+    // Arrow visibility — smart logic
+    const [canScrollPrev, setCanScrollPrev] = useState(false);
+    const [canScrollNext, setCanScrollNext] = useState(false);
+    const [hasOverflow, setHasOverflow] = useState(false);
+
+    const updateArrows = useCallback(() => {
+        const el = sliderRef.current;
+        if (!el) return;
+        const overflow = el.scrollWidth > el.clientWidth + 4;
+        setHasOverflow(overflow);
+        setCanScrollPrev(el.scrollLeft > 4);
+        setCanScrollNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    }, []);
+
+    useEffect(() => {
+        const el = sliderRef.current;
+        if (!el) return;
+        updateArrows();
+        el.addEventListener("scroll", updateArrows, { passive: true });
+        const ro = new ResizeObserver(updateArrows);
+        ro.observe(el);
+        return () => {
+            el.removeEventListener("scroll", updateArrows);
+            ro.disconnect();
+        };
+    }, [updateArrows]);
+
+    const scrollSlider = (dir) => {
+        const el = sliderRef.current;
+        if (!el) return;
+        const card = el.querySelector(".ifs-card");
+        const step = card ? card.offsetWidth + 12 : 200;
+        el.scrollBy({ left: dir * step, behavior: "smooth" });
+    };
+
     if (!itemFamilyProds || itemFamilyProds.length === 0) return null;
-
-    // Filter out-of-stock
     const inStock = itemFamilyProds.filter((p) => p?.product_qty > 0);
     if (inStock.length === 0) return null;
 
-    const visible = showAll ? inStock : inStock.slice(0, INITIAL_SHOW);
-    const hasMore = inStock.length > INITIAL_SHOW;
     const familyName = product?.product_family ? he.decode(product.product_family) : "";
 
     return (
         <div className="ifs-panel">
-            {/* Header */}
             <div className="ifs-header">
                 <p className="ifs-eyebrow">You May Also Like</p>
                 <h3 className="ifs-title">
@@ -85,119 +192,97 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                 </h3>
             </div>
 
-            {/* 2-col product grid */}
-            <div className="ifs-grid">
-                {visible.map((elm, i) => {
-                    const imgs = Array.isArray(elm.images) ? elm.images : [];
-                    const img0 = imgs[0]
-                        ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[0]}`
-                        : null;
-                    const img1 = imgs[1]
-                        ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[1]}`
-                        : null;
-                    const url = getProductUrl(locale, elm);
-                    const name = he.decode(elm?.product_name || "");
-                    const isAdded = isAddedToCartProducts(elm?.product_id);
+            <div className="ifs-slider-wrap">
+                {hasOverflow && (
+                    <button
+                        className={`ifs-arrow ifs-arrow--prev${canScrollPrev ? "" : " ifs-arrow--hidden"}`}
+                        onClick={() => scrollSlider(-1)}
+                        aria-label="Previous products"
+                        aria-hidden={!canScrollPrev}
+                        type="button"
+                        tabIndex={canScrollPrev ? 0 : -1}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                )}
 
-                    // item_family items often lack their own discount from the API.
-                    // If the parent product has a group discount, apply it to all family members.
-                    const effectiveDiscount =
-                        elm.discount ??
-                        (product?.discount?.apply_to === "group" ? product.discount : null);
+                <div className="ifs-slider" ref={sliderRef}>
+                    {inStock.map((elm, i) => {
+                        const imgs = Array.isArray(elm.images) ? elm.images : [];
+                        const img0 = imgs[0]
+                            ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[0]}`
+                            : null;
+                        const img1 = imgs[1]
+                            ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[1]}`
+                            : null;
+                        const url = getProductUrl(locale, elm);
+                        const name = he.decode(elm?.product_name || "");
+                        const effectiveDiscount = elm.discount ??
+                            (product?.discount?.apply_to === "group" ? product.discount : null);
+                        const elmWithDiscount = effectiveDiscount ? { ...elm, discount: effectiveDiscount } : elm;
+                        const hasDiscount = !!effectiveDiscount?.value;
 
-                    // Merge effective discount into elm for renderPrice
-                    const elmWithDiscount = effectiveDiscount
-                        ? { ...elm, discount: effectiveDiscount }
-                        : elm;
-
-                    // Active discount check (for badge only)
-                    const hasDiscount = !!effectiveDiscount?.value;
-
-                    return (
-                        <div className="ifs-card" key={elm.product_id ?? i}>
-                            {/* Image */}
-                            <div className="ifs-card__img">
-                                <Link href={url} tabIndex={-1} aria-hidden="true">
-                                    {img0 && (
-                                        <Image
-                                            src={img0}
-                                            alt={name}
-                                            fill
-                                            sizes="(max-width: 1024px) 40vw, 200px"
-                                            style={{ objectFit: "cover" }}
-                                            loading="lazy"
-                                        />
+                        return (
+                            <div className="ifs-card" key={elm.product_id ?? i}>
+                                {/* Image */}
+                                <div className="ifs-card__img">
+                                    <Link href={url} tabIndex={-1} aria-hidden="true">
+                                        {img0 && (
+                                            <Image src={img0} alt={name} fill
+                                                sizes="(max-width:1024px) 40vw,200px"
+                                                style={{ objectFit: "cover" }} loading="lazy"
+                                            />
+                                        )}
+                                        {img1 && (
+                                            <Image src={img1} alt={name} fill
+                                                sizes="(max-width:1024px) 40vw,200px"
+                                                style={{ objectFit: "cover" }} loading="lazy"
+                                                className="ifs-img-secondary"
+                                            />
+                                        )}
+                                    </Link>
+                                    {hasDiscount && (
+                                        <span className="ifs-badge">{effectiveDiscount.value}% Off</span>
                                     )}
-                                    {img1 && (
-                                        <Image
-                                            src={img1}
-                                            alt={name}
-                                            fill
-                                            sizes="(max-width: 1024px) 40vw, 200px"
-                                            style={{ objectFit: "cover" }}
-                                            loading="lazy"
-                                            className="ifs-img-secondary"
-                                        />
+                                    {!hasDiscount && elm?.label_name && (
+                                        <span className="ifs-badge" style={{ background: elm.label_color || "#1A1A1A" }}>
+                                            {elm.label_name}
+                                        </span>
                                     )}
-                                </Link>
+                                </div>
 
-                                {/* Badge */}
-                                {hasDiscount && (
-                                    <span className="ifs-badge">
-                                        {effectiveDiscount.value}% Off
-                                    </span>
-                                )}
-                                {!hasDiscount && elm?.label_name && (
-                                    <span
-                                        className="ifs-badge"
-                                        style={{ background: elm.label_color || "#1A1A1A" }}
-                                    >
-                                        {elm.label_name}
-                                    </span>
-                                )}
-                            </div>
+                                {/* Info */}
+                                <div className="ifs-card__info">
+                                    <p className="ifs-card__cat">{t(elm.category_name)}</p>
+                                    <Link href={url} className="ifs-card__name" title={name}>{name}</Link>
+                                    <div className="ifs-card__price">{renderPrice(elmWithDiscount, currency)}</div>
 
-                            {/* Quick-add — outside the image wrapper so it's never clipped */}
-                            <button
-                                className={`ifs-card__atc${isAdded ? " ifs-card__atc--added" : ""}`}
-                                onClick={() => {
-                                    if (isAdded) return;
-                                    addProductToCart({
-                                        ...elmWithDiscount,
-                                        category_name: elm.category_name,
-                                        subcategory_name:
-                                            elm.subcategory?.subcategory_name || "",
-                                    });
-                                    fireCartToast(name, img0, 1);
-                                }}
-                            >
-                                {isAdded ? "✓ Added" : "Add to Bag"}
-                            </button>
-
-                            {/* Info */}
-                            <div className="ifs-card__info">
-                                <p className="ifs-card__cat">{t(elm.category_name)}</p>
-                                <Link href={url} className="ifs-card__name" title={name}>
-                                    {name}
-                                </Link>
-                                <div className="ifs-card__price">
-                                    {renderPrice(elmWithDiscount, currency)}
+                                    {/* Always-visible CTA — switches to qty stepper when in cart */}
+                                    <CardCTA
+                                        elm={elm}
+                                        elmWithDiscount={elmWithDiscount}
+                                        img0={img0}
+                                        name={name}
+                                    />
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
 
-            {/* Show more */}
-            {hasMore && !showAll && (
-                <button
-                    className="ifs-show-more"
-                    onClick={() => setShowAll(true)}
-                >
-                    Show More ({inStock.length - INITIAL_SHOW} more)
-                </button>
-            )}
+                {hasOverflow && (
+                    <button
+                        className={`ifs-arrow ifs-arrow--next${canScrollNext ? "" : " ifs-arrow--hidden"}`}
+                        onClick={() => scrollSlider(1)}
+                        aria-label="Next products"
+                        aria-hidden={!canScrollNext}
+                        type="button"
+                        tabIndex={canScrollNext ? 0 : -1}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
