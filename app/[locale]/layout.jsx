@@ -427,8 +427,6 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                             <FacebookPixelEvents />
                             <AhmedTrackerComponent />
                                 <MobileHeader />
-                                {/* Spacer: compensates for fixed mobile header (5rem nav + 2rem marquee). Hidden on desktop. */}
-                                <div className="d-lg-none" style={{ height: "7rem", flexShrink: 0 }} aria-hidden="true" />
                                 <Header14 />
                                 {children}
                                 <MobileFooter1 />
