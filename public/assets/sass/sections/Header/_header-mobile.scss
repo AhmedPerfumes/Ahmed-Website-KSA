@@ -3,15 +3,9 @@
   min-height: $mobile-header-height;
   background-color: $mobile-header-background;
   z-index: $mobile-header-z-index;
-  overflow: hidden;
 
   .logo {
     margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-height: $mobile-header-height;
-    overflow: hidden;
   }
 
   .logo__image {
@@ -33,7 +27,7 @@
 
 .header-mobile__navigation {
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
   height: 0;
   max-height: 0;
   transition: max-height .35s, height .35s;
@@ -61,9 +55,9 @@
   }
 
   .navigation__link {
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
-    font-size: $h6-font-size;
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+    font-size: 13px;
 
     .flaticon {
       font-size: 0.75rem;
@@ -83,6 +77,7 @@
 }
 
 .mobile-nav-activator {
+
   .nav-icon,
   .btn-close-lg {
     transition: all .24s;
@@ -96,7 +91,7 @@
 }
 
 .mobile-menu-opened {
-  overflow: hidden;
+  overflow: auto;
 
   .header-mobile {
     z-index: $zindex-modal;
@@ -127,3 +122,4 @@
     }
   }
 }
+
