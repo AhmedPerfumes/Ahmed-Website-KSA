@@ -52,8 +52,28 @@ export default function MobileHeader() {
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const [currentCountryLink, setCurrentCountryLink] = useState("");
+
+  // Toggle mobile menu and sync with body class (for SCSS animations)
+  const toggleMenu = () => {
+    setIsMenuOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        document.body.classList.add("mobile-menu-opened");
+      } else {
+        document.body.classList.remove("mobile-menu-opened");
+      }
+      return next;
+    });
+  };
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+    document.body.classList.remove("mobile-menu-opened");
+  }, [pathname]);
 
   // Detect current country from URL
   useEffect(() => {
@@ -207,7 +227,7 @@ export default function MobileHeader() {
 
       {/* ── Main header bar ── */}
       <div
-        className="header-mobile header_sticky header_sticky-active"
+        className={`header-mobile header_sticky header_sticky-active${isMenuOpen ? " mobile-menu-opened" : ""}`}
         style={{ position: "sticky", top: 0, zIndex: 100 }}
       >
         <div
@@ -229,9 +249,11 @@ export default function MobileHeader() {
             }}
           >
             {/* Left: Hamburger */}
-            <Link
+            <a
               className="mobile-nav-activator d-block position-relative"
               href="#"
+              onClick={(e) => { e.preventDefault(); toggleMenu(); }}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               <svg
                 className="nav-icon"
@@ -239,11 +261,15 @@ export default function MobileHeader() {
                 height="15"
                 viewBox="0 0 25 18"
                 xmlns="http://www.w3.org/2000/svg"
+                style={{ opacity: isMenuOpen ? 0 : 1, transition: "opacity 0.2s" }}
               >
                 <use href="#icon_nav" />
               </svg>
-              <span className="btn-close-lg position-absolute top-0 start-0 w-100"></span>
-            </Link>
+              <span
+                className="btn-close-lg position-absolute top-0 start-0 w-100"
+                style={{ opacity: isMenuOpen ? 1 : 0, transition: "opacity 0.2s" }}
+              ></span>
+            </a>
 
             {/* Centre: Logo — absolutely centred (UAE pattern) */}
             <div
@@ -468,7 +494,16 @@ export default function MobileHeader() {
         )}
 
         {/* ── Slide-out navigation drawer ── */}
-        <nav className="header-mobile__navigation navigation d-flex flex-column w-100 position-absolute top-100 bg-body overflow-auto">
+        <nav
+          className={`header-mobile__navigation navigation d-flex flex-column w-100 position-absolute top-100 bg-body overflow-auto`}
+          style={{
+            maxHeight: isMenuOpen ? "calc(100vh - 60px)" : "0",
+            height: isMenuOpen ? "calc(100vh - 60px)" : "0",
+            transition: "max-height 0.35s ease, height 0.35s ease",
+            overflowY: "auto",
+            zIndex: 999,
+          }}
+        >
           <div className="container">
             <div className="overflow-hidden">
               <ul className="navigation__list list-unstyled position-relative">
