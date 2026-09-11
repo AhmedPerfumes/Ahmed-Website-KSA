@@ -3,9 +3,15 @@
   min-height: $mobile-header-height;
   background-color: $mobile-header-background;
   z-index: $mobile-header-z-index;
+  overflow: hidden;
 
   .logo {
     margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: $mobile-header-height;
+    overflow: hidden;
   }
 
   .logo__image {
