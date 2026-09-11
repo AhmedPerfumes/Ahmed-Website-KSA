@@ -233,52 +233,74 @@ export default function MobileHeader() {
           </div>
         </div>
       )}
-      <div className="container d-flex align-items-center h-100">
-        <Link className="mobile-nav-activator d-block position-relative" href="#">
-          <svg
-            className="nav-icon"
-            width="25"
-            height="18"
-            viewBox="0 0 25 18"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <use href="#icon_nav" />
-          </svg>
-          <span className="btn-close-lg position-absolute top-0 start-0 w-100"></span>
-        </Link>
+      <div className="container position-relative h-100 overflow-hidden" style={{ minHeight: "60px" }}>
 
-        <div className="logo" style={{ overflow: "hidden", display: "flex", alignItems: "center" }}>
-          <Link href={`/${locale}`}>
-            <Image
-              src="/assets/images/logo/Mobile.svg"
-              width={180}
-              height={68}
-              alt="Ahmed"
-              style={{ height: "68px", width: "auto", objectFit: "contain", display: "block" }}
-              priority
-            />
+        {/* Header bar content: hamburger | logo (absolute centred) | search + cart */}
+        <div className="w-100 h-100 d-flex align-items-center justify-content-between">
+
+          {/* Left: Hamburger */}
+          <Link className="mobile-nav-activator d-block position-relative" href="#">
+            <svg
+              className="nav-icon"
+              width="22"
+              height="16"
+              viewBox="0 0 25 18"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <use href="#icon_nav" />
+            </svg>
+            <span className="btn-close-lg position-absolute top-0 start-0 w-100"></span>
           </Link>
-        </div>
-        {/* <!-- /.logo --> */}
 
-        <a
-          onClick={() => openCart()}
-          className="header-tools__item header-tools__cart js-open-aside"
-        >
-          <svg
-            className="d-block"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+          {/* Centre: Logo — absolutely positioned so it's always mathematically centred
+              regardless of the width of the side elements (UAE pattern) */}
+          <div
+            className="logo"
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 1,
+              pointerEvents: "auto",
+            }}
           >
-            <use href="#icon_cart" />
-          </svg>
-          <span className="cart-amount d-block position-absolute js-cart-items-count">
-            <CartLength />
-          </span>
-        </a>
+            <Link href={`/${locale}`}>
+              <Image
+                src="/assets/images/logo/Mobile.svg"
+                width={500}
+                height={500}
+                alt="Ahmed Al Maghribi"
+                priority
+                style={{ height: "58px", width: "auto", display: "block" }}
+              />
+            </Link>
+          </div>
+
+          {/* Right: Cart */}
+          <div className="d-flex align-items-center gap-3">
+            <a
+              onClick={() => openCart()}
+              className="header-tools__item header-tools__cart js-open-aside"
+              style={{ cursor: "pointer", position: "relative" }}
+            >
+              <svg
+                className="d-block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <use href="#icon_cart" />
+              </svg>
+              <span className="cart-amount d-block position-absolute js-cart-items-count">
+                <CartLength />
+              </span>
+            </a>
+          </div>
+
+        </div>
       </div>
       {/* <!-- /.container --> */}
 
