@@ -752,7 +752,7 @@ export default function Checkout() {
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                           </svg>
-                          <span>No account needed &mdash; you&apos;re checking out as a <strong>guest</strong>.{" "}
+                          <span>You&apos;re checking out as a <strong>guest</strong>.{" "}
                             <Link href={`/${locale}/login_register`} className="cc-guest-notice__login-link">Log In / Register</Link>
                             {" "}to pre-fill your details.
                           </span>
