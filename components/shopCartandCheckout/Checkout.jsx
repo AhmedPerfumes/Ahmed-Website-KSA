@@ -623,7 +623,12 @@ export default function Checkout() {
                               type="button"
                               className="cc-address-card__edit-btn"
                               onClick={openAddrModal}
+                              aria-label="Change delivery address"
                             >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
                               Change Address
                             </button>
                           </div>
@@ -1375,20 +1380,47 @@ export default function Checkout() {
         </form>
 
         <style jsx>{`
-          .coupon-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:999}
-          .coupon-modal{background:#fff;border-radius:12px;width:480px;max-width:92%;box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden}
-          .coupon-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0}
-          .coupon-header h3{margin:0;font-size:18px;font-weight:600}
-          .close-btn{background:none;border:none;font-size:22px;color:#888;cursor:pointer}
-          .coupon-body{display:flex;flex-direction:column;gap:10px;padding:14px;max-height:55vh;overflow-y:auto}
-          .coupon-ticket{display:flex;justify-content:space-between;align-items:center;border:1px solid #eee;border-radius:10px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+          .coupon-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);display:flex;justify-content:center;align-items:center;z-index:999;padding:1rem}
+          .coupon-modal{background:#fff;border-radius:12px;width:480px;max-width:100%;box-shadow:0 8px 30px rgba(0,0,0,.15);border:1px solid #f0ece3;overflow:hidden}
+          .coupon-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f0ece3;background:#faf8f4}
+          .coupon-header h3{margin:0;font-size:16px;font-weight:700;letter-spacing:0.02em;color:#1a1a1a}
+          .close-btn{background:none;border:none;font-size:22px;color:#888;cursor:pointer;line-height:1;transition:color 0.15s}
+          .close-btn:hover{color:#1a1a1a}
+          .coupon-body{display:flex;flex-direction:column;gap:12px;padding:16px;max-height:55vh;overflow-y:auto}
+          .coupon-ticket{display:flex;justify-content:space-between;align-items:center;border:1.5px solid #ece4d2;background:#fffdfa;border-radius:10px;padding:12px 14px;box-shadow:0 2px 6px rgba(0,0,0,.03);transition:all 0.2s ease}
+          .coupon-ticket:hover{border-color:#b9a16b;box-shadow:0 3px 12px rgba(185,161,107,0.15)}
           .coupon-left{display:flex;flex-direction:column;gap:3px}
-          .coupon-title{font-size:13px;font-weight:600;color:#222}
-          .coupon-desc{font-size:11px;color:#666}
-          .coupon-validity{font-size:10px;color:#aaa}
-          .coupon-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-          .coupon-code{background:#f0fdf4;color:#198754;font-size:12px;font-weight:700;padding:3px 8px;border-radius:5px}
-          .apply-btn{background:none;border:none;color:#b9a16b;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase}
+          .coupon-title{font-size:13px;font-weight:700;color:#1a1a1a}
+          .coupon-desc{font-size:11.5px;color:#666;font-weight:500}
+          .coupon-validity{font-size:10.5px;color:#999}
+          .coupon-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+          .coupon-code{background:#f4efe4;color:#8a6c2d;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:5px;border:1px solid #dfd2b5;letter-spacing:0.04em}
+          .apply-btn{
+            background: linear-gradient(135deg, #c4ad76 0%, #b9a16b 100%);
+            border: 1px solid #b9a16b;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(185, 161, 107, 0.25);
+          }
+          .apply-btn:hover{
+            background: linear-gradient(135deg, #b0975e 0%, #9f8448 100%);
+            border-color: #9f8448;
+            box-shadow: 0 3px 8px rgba(185, 161, 107, 0.35);
+            transform: translateY(-1px);
+          }
+          .apply-btn.applied{
+            background: #198754;
+            border-color: #198754;
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(25, 135, 84, 0.25);
+          }
           .coupon-ticket.expired{opacity:.55}
           .coupon-expired-badge{font-size:10px;color:#e53935;font-weight:600}
           .coupon-loading,.coupon-empty{text-align:center;padding:28px;color:#888;font-size:13px}
@@ -1453,10 +1485,10 @@ export default function Checkout() {
                               </>
                             )}
                           </div>
-                          <div style={{display:'flex',flexDirection:'column',gap:'0.4rem',flexShrink:0}}>
-                            <button type="button" onClick={()=>startEditAddr(idx)} style={{background:'none',border:'1px solid #ddd',borderRadius:'6px',padding:'4px 12px',fontSize:'0.75rem',cursor:'pointer',color:'#555',fontWeight:600,whiteSpace:'nowrap'}}>Edit</button>
+                          <div style={{display:'flex',flexDirection:'column',gap:'0.45rem',flexShrink:0}}>
+                            <button type="button" onClick={()=>startEditAddr(idx)} style={{background:'#fff',border:'1px solid #d4be8a',borderRadius:'6px',padding:'5px 12px',fontSize:'0.75rem',cursor:'pointer',color:'#8a6c2d',fontWeight:700,whiteSpace:'nowrap',transition:'all 0.15s'}}>Edit</button>
                             {!a.isDefault && !isEmpty && (
-                              <button type="button" onClick={()=>selectAddrAsDefault(idx)} style={{background:'#b9a16b',border:'none',borderRadius:'6px',padding:'4px 12px',fontSize:'0.75rem',cursor:'pointer',color:'#fff',fontWeight:700,whiteSpace:'nowrap'}}>Use This</button>
+                              <button type="button" onClick={()=>selectAddrAsDefault(idx)} style={{background:'linear-gradient(135deg, #c4ad76 0%, #b9a16b 100%)',border:'none',borderRadius:'6px',padding:'5px 14px',fontSize:'0.75rem',cursor:'pointer',color:'#fff',fontWeight:700,whiteSpace:'nowrap',boxShadow:'0 2px 6px rgba(185,161,107,0.3)',transition:'all 0.15s'}}>Use This</button>
                             )}
                           </div>
                         </div>
@@ -1467,7 +1499,7 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={() => { setShowAddrModal(false); setEditingAddrIdx(null); }}
-                    style={{marginTop:'0.25rem',width:'100%',background:'#1a1a1a',color:'#fff',border:'none',borderRadius:'8px',padding:'0.65rem',fontSize:'0.875rem',fontWeight:600,cursor:'pointer',letterSpacing:'0.04em',fontFamily:'inherit'}}
+                    style={{marginTop:'0.35rem',width:'100%',background:'#1a1a1a',color:'#fff',border:'none',borderRadius:'8px',padding:'0.75rem',fontSize:'0.875rem',fontWeight:700,cursor:'pointer',letterSpacing:'0.04em',fontFamily:'inherit',transition:'background 0.2s'}}
                   >
                     Close
                   </button>
@@ -1500,8 +1532,8 @@ export default function Checkout() {
                   </label>
 
                   <div style={{display:'flex',gap:'0.75rem',marginTop:'0.5rem'}}>
-                    <button type="button" onClick={()=>setEditingAddrIdx(null)} style={{flex:1,border:'1px solid #ddd',background:'#fff',borderRadius:'8px',padding:'0.6rem',fontSize:'0.85rem',cursor:'pointer',fontWeight:600,color:'#555'}}>Cancel</button>
-                    <button type="button" onClick={saveAddrForm} disabled={addrSaving} style={{flex:2,border:'none',background:'#b9a16b',color:'#fff',borderRadius:'8px',padding:'0.6rem',fontSize:'0.85rem',cursor:'pointer',fontWeight:700}}>
+                    <button type="button" onClick={()=>setEditingAddrIdx(null)} style={{flex:1,border:'1px solid #ddd',background:'#fff',borderRadius:'8px',padding:'0.65rem',fontSize:'0.85rem',cursor:'pointer',fontWeight:600,color:'#555'}}>Cancel</button>
+                    <button type="button" onClick={saveAddrForm} disabled={addrSaving} style={{flex:2,border:'none',background:'linear-gradient(135deg, #c4ad76 0%, #b9a16b 100%)',color:'#fff',borderRadius:'8px',padding:'0.65rem',fontSize:'0.85rem',cursor:'pointer',fontWeight:700,boxShadow:'0 2px 8px rgba(185,161,107,0.3)'}}>
                       {addrSaving ? 'Saving…' : 'Save Address'}
                     </button>
                   </div>
