@@ -32,9 +32,29 @@ header[class*="mobile"],
     display: none !important;
 }
 
-/* Hide the 7rem mobile spacer injected by the global layout */
-body > * div[aria-hidden="true"][style*="7rem"] {
+/* Ensure zero top margin/padding on root containers so header sits flush at top */
+html,
+body {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Hide the 7rem mobile spacer injected by the global layout (removes dead gap above header on mobile) */
+div[style*="7rem"],
+div.d-lg-none[style*="7rem"],
+div[aria-hidden="true"][style*="7rem"],
+body > div.d-lg-none,
+body > div[style*="7rem"],
+body > * div[style*="7rem"] {
     display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
 }
 
 /* Hide any promo/announcement banners */
