@@ -14,65 +14,41 @@ export default function OrderCompleted() {
   
   const [showDate, setShowDate] = useState(false);
   const [orderData, setorderData] = useState(null);
-  const hasFiredPurchase = useRef(false); // prevents purchase events firing more than once
+  const hasTrackedRef = useRef(false); // prevents purchase events firing more than once
 
   useEffect(() => {
     setShowDate(true);
 
-  // ✅ Fire purchase events exactly once when orderDetails becomes available
-  if (orderDetails && orderDetails.order_id && !hasFiredPurchase.current) {
-    hasFiredPurchase.current = true; // lock — never fires again for this page visit
+    // ✅ Fire purchase events exactly once when orderDetails becomes available
+    if (orderDetails && orderDetails.order_id && !hasTrackedRef.current) {
+      const orderKey = `tracked_order_${orderDetails.order_id}`;
 
-    // ---- GA4 Purchase (TikTok listener in layout.jsx maps this to ttq.track("Purchase")) ----
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "purchase",
-      ecommerce: {
-        transaction_id: orderDetails.order_id,
-        affiliation: "Ahmed Al Maghribi Perfumes KSA",
-        value: parseFloat(orderDetails.total),
-        currency: currency?.code || "SAR",
-        items: orderDetails.products.map((item) => ({
-          item_id: item.product_id?.toString(),
-          item_name: he.decode(item.name || item.product_name || ""),
-          price: parseFloat(item.price),
-          quantity: item.qty,
-        })),
-      },
-    });
+      // Prevent duplicate tracking if already tracked in session
+      if (typeof window !== "undefined" && sessionStorage.getItem(orderKey)) {
+        return;
+      }
 
-    // ---- Meta (Facebook) Pixel Purchase ----
-    if (typeof window.fbq === "function") {
-      window.fbq("track", "Purchase", {
-        content_ids: orderDetails.products.map((item) => item.product_id?.toString()),
-        content_type: "product",
-        contents: orderDetails.products.map((item) => ({
-          id: item.product_id?.toString(),
-          quantity: item.qty,
-        })),
-        value: parseFloat(orderDetails.total),
-        currency: currency?.code || "SAR",
-        order_id: orderDetails.order_id,
-      });
-    }
-
-      hasTrackedRef.current = orderKey;
+      hasTrackedRef.current = true;
       if (typeof window !== "undefined") {
         sessionStorage.setItem(orderKey, "true");
       }
+
+      const totalVal = parseFloat(orderDetails.total) || 0;
+      const orderCurrency = currency?.code || "SAR";
+      const products = orderDetails.products || [];
 
       // ---- First-Party AhmedTracker ----
       if (typeof window !== "undefined" && window.AhmedTracker) {
         window.AhmedTracker.track("purchase", {
           order_id: orderDetails.order_id,
-          total: parseFloat(orderDetails.total),
+          total: totalVal,
           payment_type: orderDetails.payment_method || orderDetails.payment_type || "cod",
-          items: orderDetails.products ? orderDetails.products.map((item) => ({
+          items: products.map((item) => ({
             product_id: item.product_id?.toString(),
             product_name: item.name ? he.decode(item.name) : "",
-            price: parseFloat(item.price),
-            quantity: item.qty,
-          })) : [],
+            price: parseFloat(item.price) || 0,
+            quantity: item.qty || 1,
+          })),
         });
       }
 
@@ -83,43 +59,60 @@ export default function OrderCompleted() {
         ecommerce: {
           transaction_id: orderDetails.order_id,
           affiliation: "Ahmed Al Maghribi Perfumes KSA",
-          value: parseFloat(orderDetails.total),
-          currency: currency?.code || "SAR",
-          items: orderDetails.products ? orderDetails.products.map((item) => ({
+          value: totalVal,
+          currency: orderCurrency,
+          items: products.map((item) => ({
             item_id: item.product_id?.toString(),
-            item_name: item.name ? he.decode(item.name) : "",
-            price: parseFloat(item.price),
-            quantity: item.qty,
-          })) : [],
+            item_name: item.name ? he.decode(item.name) : (item.product_name ? he.decode(item.product_name) : ""),
+            price: parseFloat(item.price) || 0,
+            quantity: item.qty || 1,
+          })),
         },
       });
 
+      // ---- Meta (Facebook) Pixel Purchase ----
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        window.fbq("track", "Purchase", {
+          content_ids: products.map((item) => item.product_id?.toString()),
+          content_type: "product",
+          contents: products.map((item) => ({
+            id: item.product_id?.toString(),
+            quantity: item.qty || 1,
+          })),
+          value: totalVal,
+          currency: orderCurrency,
+          order_id: orderDetails.order_id,
+        });
+      }
+
       // ---- TikTok Pixel ----
-      if (typeof window.ttq === "object" && typeof window.ttq.track === "function") {
+      if (typeof window !== "undefined" && typeof window.ttq === "object" && typeof window.ttq.track === "function") {
         window.ttq.track("Purchase", {
-          contents: orderDetails.products ? orderDetails.products.map((item) => ({
+          contents: products.map((item) => ({
             content_id: item.product_id?.toString(),
             content_type: "product",
             content_name: item.name ? he.decode(item.name) : "",
-          })) : [],
-          value: parseFloat(orderDetails.total),
-          currency: currency?.code || "SAR",
+          })),
+          value: totalVal,
+          currency: orderCurrency,
         });
       }
 
       // ---- Snapchat Pixel ----
-      if (typeof window.snaptr === "function") {
+      if (typeof window !== "undefined" && typeof window.snaptr === "function") {
         window.snaptr('track', 'PURCHASE', {
           transaction_id: orderDetails.order_id,
-          price: parseFloat(orderDetails.total),
-          currency: currency?.code || "SAR",
-          item_ids: orderDetails.products ? orderDetails.products.map((item) => item.product_id?.toString()) : [],
+          price: totalVal,
+          currency: orderCurrency,
+          item_ids: products.map((item) => item.product_id?.toString()),
           item_category: "perfume",
-          number_items: orderDetails.products ? orderDetails.products.length : 0,
+          number_items: products.length,
         });
       }
 
-      localStorage.setItem('cartList', JSON.stringify([]));
+      if (typeof window !== "undefined") {
+        localStorage.setItem('cartList', JSON.stringify([]));
+      }
       setCartProducts([]);
     }
   }, [orderDetails?.order_id, currency?.code]);
