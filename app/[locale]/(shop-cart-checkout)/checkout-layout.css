@@ -45,18 +45,20 @@ body > * div[aria-hidden="true"][style*="7rem"] {
     display: none !important;
 }
 
-/* Remove the top padding that compensates for the fixed header
-   (checkout pages don't have a sticky header to compensate for,
-    since the ck-header is only 64px and is in-flow) */
+/* Checkout flow layout & spacing:
+   Provide consistent, elegant top breathing room below the sticky checkout header */
 .page-wrapper {
-    padding-top: 0 !important;
+    padding-top: clamp(1.25rem, 2.5vw, 2.25rem) !important;
     margin-top: 0 !important;
 }
 
-/* Cart & checkout pages: remove the mb-4 pb-4 spacer that was
-   compensating for the full header height */
+/* Normalize and remove legacy manual spacer divs so spacing is uniform */
+.page-wrapper > .mb-4.pb-4:first-child,
+.page-wrapper > .mb-4:first-child,
 .shop-checkout.container > .mb-4:first-child,
 .shop-cart-area > .mb-4:first-child {
+    display: none !important;
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
+

@@ -1,94 +1,263 @@
 /* ================================================================
-   CheckoutHeader — minimal distraction-free checkout bar
-   Audit fix: CRITICAL — remove full nav from checkout flow
+   CheckoutHeader — Luxury distraction-free checkout header
+   Ahmed Al Maghribi Perfumes
    ================================================================ */
 
 .ck-header {
     position: sticky;
     top: 0;
     z-index: 500;
-    background: #fff;
-    border-bottom: 1px solid #ede8df;
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(229, 221, 208, 0.85);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    transition: all 0.25s ease;
 }
 
 .ck-header__inner {
-    max-width: 1280px;
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 0 1.5rem;
-    height: 64px;
-    display: flex;
+    padding: 0 clamp(1.25rem, 3vw, 2.5rem);
+    height: 74px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
-/* ── Back to cart link ── */
+/* ── Columns ── */
+.ck-header__col--left {
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.ck-header__col--center {
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ck-header__col--right {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/* ── Back to cart button (Left column) ── */
 .ck-header__back {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.78rem;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+    background: #faf8f5;
+    border: 1px solid #ebd9b5;
+    color: #4b4336;
+    font-size: 0.82rem;
     font-weight: 500;
-    letter-spacing: 0.03em;
-    color: #6c757d;
+    letter-spacing: 0.02em;
     text-decoration: none;
-    transition: color 0.18s ease;
-    flex: 1;
-}
-.ck-header__back:hover {
-    color: #c9903a;
-}
-.ck-header__back svg {
-    flex-shrink: 0;
-}
-.ck-header__back-text {
-    /* Hide text on very narrow screens, keep chevron */
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    min-height: 38px;
+    user-select: none;
 }
 
-/* ── Centre logo ── */
+.ck-header__back:hover {
+    background: #fbf7ee;
+    border-color: #bb8c1c;
+    color: #a4761a;
+    box-shadow: 0 2px 8px rgba(187, 140, 28, 0.12);
+    transform: translateX(-2px);
+}
+
+.ck-header__back:active {
+    transform: scale(0.96);
+}
+
+.ck-header__back-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+/* RTL flip for back arrow */
+[dir="rtl"] .ck-header__back-icon,
+html[dir="rtl"] .ck-header__back-icon {
+    transform: scaleX(-1);
+}
+
+[dir="rtl"] .ck-header__back:hover,
+html[dir="rtl"] .ck-header__back:hover {
+    transform: translateX(2px);
+}
+
+.ck-header__back-text {
+    line-height: 1;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ── Center Logo (Middle column) ── */
 .ck-header__logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    transition: opacity 0.2s ease;
+    padding: 0.25rem 0.5rem;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+    text-decoration: none;
 }
+
 .ck-header__logo:hover {
-    opacity: 0.8;
+    opacity: 0.88;
+    transform: scale(1.02);
 }
 
-/* ── Secure badge ── */
-.ck-header__secure {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: #888;
-    flex: 1;
-    justify-content: flex-end;
-    white-space: nowrap;
+.ck-header__logo-img {
+    height: 50px;
+    width: auto;
+    max-height: 50px;
+    object-fit: contain;
+    display: block;
 }
-.ck-header__secure svg {
-    color: #4caf50;
+
+/* ── Secure Badge (Right column) ── */
+.ck-header__secure {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #fdfcf9 0%, #f7f4ec 100%);
+    border: 1px solid #ebd9b5;
+    color: #5c4e38;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    box-shadow: 0 1px 3px rgba(187, 140, 28, 0.05);
+    white-space: nowrap;
+    min-height: 38px;
+    user-select: none;
+}
+
+.ck-header__secure-icon {
+    color: #10b981;
     flex-shrink: 0;
 }
 
-/* ── Mobile ── */
+.ck-header__secure-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.ck-header__secure-text {
+    line-height: 1;
+}
+
+/* ── Responsive Breakpoints ── */
+
+/* Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+    .ck-header__inner {
+        height: 66px;
+        padding: 0 1.25rem;
+    }
+
+    .ck-header__logo-img {
+        height: 44px;
+        max-height: 44px;
+    }
+
+    .ck-header__back {
+        font-size: 0.78rem;
+        padding: 0.4rem 0.85rem;
+        min-height: 36px;
+    }
+
+    .ck-header__secure {
+        font-size: 0.74rem;
+        padding: 0.4rem 0.85rem;
+        min-height: 36px;
+    }
+}
+
+/* Mobile (max-width: 480px) */
 @media (max-width: 480px) {
     .ck-header__inner {
+        height: 62px;
         padding: 0 1rem;
-        height: 56px;
+        gap: 0.5rem;
     }
+
+    .ck-header__logo-img {
+        height: 38px;
+        max-height: 38px;
+    }
+
+    /* Tactile circular buttons on mobile for perfect left/right symmetry */
+    .ck-header__back {
+        padding: 0;
+        width: 38px;
+        height: 38px;
+        min-height: 38px;
+        border-radius: 50%;
+        justify-content: center;
+        background: #faf8f5;
+        border: 1px solid #ebd9b5;
+        color: #4b4336;
+    }
+
     .ck-header__back-text {
-        display: none; /* just show the chevron on tiny screens */
+        display: none;
     }
-    .ck-header__secure span {
-        display: none; /* just show the lock icon */
-    }
+
     .ck-header__secure {
-        flex: 0;
+        padding: 0;
+        width: 38px;
+        height: 38px;
+        min-height: 38px;
+        border-radius: 50%;
+        justify-content: center;
+        background: #faf8f5;
+        border: 1px solid #ebd9b5;
+    }
+
+    .ck-header__secure-text,
+    .ck-header__secure-dot {
+        display: none;
+    }
+
+    .ck-header__secure-icon {
+        width: 16px;
+        height: 16px;
+        color: #10b981;
+    }
+}
+
+/* Extra small mobile (max-width: 360px) */
+@media (max-width: 360px) {
+    .ck-header__inner {
+        padding: 0 0.75rem;
+    }
+
+    .ck-header__logo-img {
+        height: 34px;
+        max-height: 34px;
+    }
+
+    .ck-header__back,
+    .ck-header__secure {
+        width: 34px;
+        height: 34px;
+        min-height: 34px;
     }
 }
