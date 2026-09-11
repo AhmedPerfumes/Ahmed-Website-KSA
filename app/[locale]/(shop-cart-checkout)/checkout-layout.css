@@ -8,44 +8,43 @@
  * Audit fix (CRITICAL): Full nav was visible during checkout, creating
  * distractions (menu, cart icon, promo banner, language switcher).
  *
- * Implementation:
- *  The global layout renders Header14 (.header) and MobileHeader
- *  unconditionally. Since Next.js nested layouts inherit the parent
- *  providers, we can't remove those components from the tree, but we
- *  CAN hide them with CSS for this route group.
- *  The mobile spacer div (.d-lg-none height:7rem) is also hidden so
- *  the checkout page doesn't have a dead 7rem gap at the top.
+ * SCOPING STRATEGY (fixes "header hidden on homepage" bug):
+ *   All rules are wrapped inside  body:has(.checkout-scope)  so that
+ *   they ONLY activate when the checkout layout's wrapper div is mounted.
+ *   Once the user navigates away (e.g. back to homepage), the
+ *   .checkout-scope div is unmounted by Next.js, the :has() condition
+ *   becomes false, and the global header reappears automatically.
+ *
+ *   :has() is supported in all modern browsers (Chrome 105+, Safari 15.4+,
+ *   Firefox 121+). Legacy browsers fall back gracefully — they simply
+ *   won't hide the global header during checkout, which is acceptable.
  * =====================================================================
  */
 
-/* Hide full desktop header */
-.header {
-    display: none !important;
-}
-
-/* Hide mobile header (hamburger / mobile nav bar) */
-.mobile-header-wrapper,
-.header-mobile,
-[class*="MobileHeader"],
-header[class*="mobile"],
-.mobile-navigation {
-    display: none !important;
-}
-
-/* Ensure zero top margin/padding on root containers so header sits flush at top */
-html,
-body {
+/* ── Scope: only active while inside the checkout route group ── */
+body:has(.checkout-scope) {
     margin-top: 0 !important;
     padding-top: 0 !important;
 }
 
-/* Hide the 7rem mobile spacer injected by the global layout (removes dead gap above header on mobile) */
-div[style*="7rem"],
-div.d-lg-none[style*="7rem"],
-div[aria-hidden="true"][style*="7rem"],
-body > div.d-lg-none,
-body > div[style*="7rem"],
-body > * div[style*="7rem"] {
+/* Hide full desktop header */
+body:has(.checkout-scope) .header {
+    display: none !important;
+}
+
+/* Hide mobile header (hamburger / mobile nav bar) */
+body:has(.checkout-scope) .mobile-header-wrapper,
+body:has(.checkout-scope) .header-mobile,
+body:has(.checkout-scope) [class*="MobileHeader"],
+body:has(.checkout-scope) header[class*="mobile"],
+body:has(.checkout-scope) .mobile-navigation {
+    display: none !important;
+}
+
+/* Hide the 7rem mobile spacer injected by the global layout */
+body:has(.checkout-scope) div[style*="7rem"],
+body:has(.checkout-scope) div.d-lg-none[style*="7rem"],
+body:has(.checkout-scope) div[aria-hidden="true"][style*="7rem"] {
     display: none !important;
     height: 0 !important;
     min-height: 0 !important;
@@ -58,27 +57,32 @@ body > * div[style*="7rem"] {
 }
 
 /* Hide any promo/announcement banners */
-.announcement-bar,
-.promo-banner,
-[class*="promo-bar"],
-[class*="announcement"] {
+body:has(.checkout-scope) .announcement-bar,
+body:has(.checkout-scope) .promo-banner,
+body:has(.checkout-scope) [class*="promo-bar"],
+body:has(.checkout-scope) [class*="announcement"] {
     display: none !important;
 }
 
-/* Checkout flow layout & spacing:
-   Provide consistent, elegant top breathing room below the sticky checkout header */
-.page-wrapper {
+/* ── Checkout scope wrapper itself ── */
+.checkout-scope {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
+/* Checkout flow layout & spacing */
+body:has(.checkout-scope) .page-wrapper {
     padding-top: clamp(1.25rem, 2.5vw, 2.25rem) !important;
     margin-top: 0 !important;
 }
 
-/* Normalize and remove legacy manual spacer divs so spacing is uniform */
-.page-wrapper > .mb-4.pb-4:first-child,
-.page-wrapper > .mb-4:first-child,
-.shop-checkout.container > .mb-4:first-child,
-.shop-cart-area > .mb-4:first-child {
+/* Remove legacy manual spacer divs */
+body:has(.checkout-scope) .page-wrapper > .mb-4.pb-4:first-child,
+body:has(.checkout-scope) .page-wrapper > .mb-4:first-child,
+body:has(.checkout-scope) .shop-checkout.container > .mb-4:first-child,
+body:has(.checkout-scope) .shop-cart-area > .mb-4:first-child {
     display: none !important;
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
-
