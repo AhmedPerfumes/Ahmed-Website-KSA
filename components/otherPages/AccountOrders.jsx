@@ -38,6 +38,15 @@ export default function AccountOrders() {
   const [modalDetails, setModalDetails] = useState(null);
   const [modalOrderOuter, setModalOrderOuter] = useState(null);
 
+  // Cancellation Modal state
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancellingOrder, setCancellingOrder] = useState(null);
+  const [cancelReason, setCancelReason] = useState("Changed my mind");
+  const [cancelDescription, setCancelDescription] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState(null);
+  const [cancelSuccess, setCancelSuccess] = useState(null);
+
   // Filters
   const [codeFilter, setCodeFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -111,16 +120,32 @@ export default function AccountOrders() {
     columnHelper.display({
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => (
-        <Button
-          className="btn-rounded btn-link_lg text-uppercase fw-medium"
-          size="sm"
-          style={{ borderRadius: "30px" }}
-          onClick={() => handleView(row.original)}
-        >
-          ORDER DETAILS
-        </Button>
-      ),
+      cell: ({ row }) => {
+        const canCancel = ["processing", "pending"].includes(row.original.status?.value);
+        return (
+          <div className="d-flex align-items-center gap-2 flex-wrap">
+            <Button
+              className="btn-rounded btn-link_lg text-uppercase fw-medium"
+              size="sm"
+              style={{ borderRadius: "30px" }}
+              onClick={() => handleView(row.original)}
+            >
+              ORDER DETAILS
+            </Button>
+            {canCancel && (
+              <Button
+                variant="outline-danger"
+                size="sm"
+                className="text-uppercase fw-medium px-3"
+                style={{ borderRadius: "30px", fontSize: "0.78rem" }}
+                onClick={() => openCancelModal(row.original)}
+              >
+                Cancel Order
+              </Button>
+            )}
+          </div>
+        );
+      },
       enableSorting: false,
     }),
   ];
@@ -140,51 +165,97 @@ export default function AccountOrders() {
   });
 
   // Fetch table data and order product summary data
-  useEffect(() => {
+  const fetchOrders = React.useCallback(async () => {
     if (!CUSTOMER_ID) return;
-    (async () => {
-      setLoading(true);
-      const BASE = process.env.NEXT_PUBLIC_API_URL;
-      const { pageIndex, pageSize } = pagination;
-      const sort = sorting[0] || { id: "code", desc: false };
-      const params = new URLSearchParams({
-        page: String(pageIndex + 1),
-        pageSize: String(pageSize),
-        orderBy: sort.id,
-        orderDir: sort.desc ? "desc" : "asc",
-        customer_id: String(CUSTOMER_ID),
-      });
-      if (codeFilter) params.set("code", codeFilter);
-      if (dateFilter) params.set("created_at", dateFilter);
+    setLoading(true);
+    const BASE = process.env.NEXT_PUBLIC_API_URL;
+    const { pageIndex, pageSize } = pagination;
+    const sort = sorting[0] || { id: "code", desc: false };
+    const params = new URLSearchParams({
+      page: String(pageIndex + 1),
+      pageSize: String(pageSize),
+      orderBy: sort.id,
+      orderDir: sort.desc ? "desc" : "asc",
+      customer_id: String(CUSTOMER_ID),
+    });
+    if (codeFilter) params.set("code", codeFilter);
+    if (dateFilter) params.set("created_at", dateFilter);
 
-      try {
-        const res = await fetch(`${BASE}api/customerOrders?${params}`);
-        const json = await res.json();
-        setData(json.data);
-        setPageCount(Math.ceil(json.total / pageSize));
-        // Fetch product summaries for each order (just 1 API per order, not full details, just products)
-        const summaryResults = {};
-        await Promise.all(
-          json.data.map(async (order) => {
-            try {
-              const detailRes = await fetch(`${BASE}api/customerOrderDetails`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ order_id: order.id }),
-              });
-              const detailJson = await detailRes.json();
-              summaryResults[order.id] = detailJson.order_products || [];
-            } catch {}
-          })
-        );
-        setOrderSummaries(summaryResults);
-      } catch {
-        /* ignore */
-      }
-      setLoading(false);
-    })();
-    // eslint-disable-next-line
+    try {
+      const res = await fetch(`${BASE}api/customerOrders?${params}`);
+      const json = await res.json();
+      setData(json.data || []);
+      setPageCount(Math.ceil((json.total || 0) / pageSize));
+      // Fetch product summaries for each order
+      const summaryResults = {};
+      await Promise.all(
+        (json.data || []).map(async (order) => {
+          try {
+            const detailRes = await fetch(`${BASE}api/customerOrderDetails`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ order_id: order.id }),
+            });
+            const detailJson = await detailRes.json();
+            summaryResults[order.id] = detailJson.order_products || [];
+          } catch {}
+        })
+      );
+      setOrderSummaries(summaryResults);
+    } catch {
+      /* ignore */
+    }
+    setLoading(false);
   }, [CUSTOMER_ID, sorting, pagination, codeFilter, dateFilter]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const openCancelModal = (order) => {
+    setCancellingOrder(order);
+    setCancelReason("Changed my mind");
+    setCancelDescription("");
+    setCancelError(null);
+    setCancelSuccess(null);
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!cancellingOrder || !CUSTOMER_ID) return;
+    setIsCancelling(true);
+    setCancelError(null);
+    setCancelSuccess(null);
+    try {
+      const BASE = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${BASE}api/customerCancelOrder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: cancellingOrder.id,
+          customer_id: CUSTOMER_ID,
+          reason: cancelReason,
+          reason_description: cancelDescription,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setCancelSuccess(json.message || "Order cancelled successfully");
+        fetchOrders();
+        setTimeout(() => {
+          setShowCancelModal(false);
+          setCancellingOrder(null);
+          setCancelSuccess(null);
+        }, 1500);
+      } else {
+        setCancelError(json.message || "Failed to cancel order");
+      }
+    } catch (err) {
+      setCancelError(err.message || "An error occurred while cancelling order");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   // Sections for filtering
   const sections = [
@@ -825,11 +896,118 @@ export default function AccountOrders() {
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer className="border-0">
+        <Modal.Footer className="border-0 d-flex justify-content-between">
+          {["processing", "pending"].includes(modalOrderOuter?.status?.value) ? (
+            <Button
+              variant="outline-danger"
+              className="text-uppercase fw-medium px-3"
+              style={{ borderRadius: "30px", fontSize: "0.82rem" }}
+              onClick={() => {
+                setShowModal(false);
+                openCancelModal(modalOrderOuter);
+              }}
+            >
+              Cancel Order
+            </Button>
+          ) : (
+            <div />
+          )}
           <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* ── CANCELLATION CONFIRMATION MODAL ── */}
+      <Modal show={showCancelModal} onHide={() => !isCancelling && setShowCancelModal(false)} centered>
+        <Modal.Header className="bg-dark border-0">
+          <Modal.Title className="text-white fs-18">
+            Cancel Order #{cancellingOrder?.code || cancellingOrder?.id}
+          </Modal.Title>
+          <Button variant="close" onClick={() => !isCancelling && setShowCancelModal(false)} />
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          {cancelSuccess ? (
+            <div className="alert alert-success d-flex align-items-center mb-0">
+              <span className="me-2">✅</span> {cancelSuccess}
+            </div>
+          ) : (
+            <>
+              <p className="text-muted small mb-3">
+                Are you sure you want to cancel this order? Once cancelled, the items will be returned to stock and this action cannot be undone.
+              </p>
+
+              {cancelError && (
+                <div className="alert alert-danger py-2 mb-3 small">
+                  ⚠️ {cancelError}
+                </div>
+              )}
+
+              <Form.Group className="mb-3">
+                <Form.Label className="small fw-semibold text-uppercase text-muted">
+                  Reason for Cancellation
+                </Form.Label>
+                <Form.Select
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  disabled={isCancelling}
+                  className="shadow-none border"
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  <option value="Changed my mind">Changed my mind</option>
+                  <option value="Ordered wrong item / size">Ordered wrong item / size</option>
+                  <option value="Need to change shipping address / phone">Need to change shipping address / phone</option>
+                  <option value="Delivery time is too long">Delivery time is too long</option>
+                  <option value="Found a better price elsewhere">Found a better price elsewhere</option>
+                  <option value="Other">Other reason</option>
+                </Form.Select>
+              </Form.Group>
+
+              {cancelReason === "Other" && (
+                <Form.Group className="mb-3">
+                  <Form.Label className="small fw-semibold text-uppercase text-muted">
+                    Please describe the reason
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    placeholder="Enter details..."
+                    value={cancelDescription}
+                    onChange={(e) => setCancelDescription(e.target.value)}
+                    disabled={isCancelling}
+                    style={{ fontSize: "0.9rem" }}
+                  />
+                </Form.Group>
+              )}
+            </>
+          )}
+        </Modal.Body>
+        {!cancelSuccess && (
+          <Modal.Footer className="border-0">
+            <Button
+              variant="outline-secondary"
+              onClick={() => setShowCancelModal(false)}
+              disabled={isCancelling}
+            >
+              Keep Order
+            </Button>
+            <Button
+              variant="danger"
+              className="px-4 fw-semibold"
+              onClick={handleConfirmCancel}
+              disabled={isCancelling}
+            >
+              {isCancelling ? (
+                <>
+                  <Spinner size="sm" animation="border" className="me-2" />
+                  Cancelling…
+                </>
+              ) : (
+                "Confirm Cancellation"
+              )}
+            </Button>
+          </Modal.Footer>
+        )}
       </Modal>
     </>
   );
