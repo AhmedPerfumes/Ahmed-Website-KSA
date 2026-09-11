@@ -23,7 +23,7 @@ export default function Checkout() {
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [selectedOption, setSelectedOption] = useState('cod');
+  const [selectedOption, setSelectedOption] = useState("");
   const [createAccount, setCreateAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
