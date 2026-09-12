@@ -463,6 +463,10 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
     const renderTabby = () => {
       if (window.TabbyPromo && typeof window.TabbyPromo === "function") {
         try {
+          const container = document.getElementById("LuxuryPDP-TabbyPromo");
+          if (container) {
+            container.innerHTML = "";
+          }
           new window.TabbyPromo({
             selector: "#LuxuryPDP-TabbyPromo",
             currency: "SAR",
@@ -533,10 +537,16 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       {/* Star Rating Row */}
       <StarDisplay rating={avgRating} count={reviewCount} />
 
+      {/* Product Description from API — directly below product name & star rating */}
+      <ProductDescription
+        description={locale === "ar" ? (product?.description_ar || product?.description || "") : (product?.description || "")}
+        isArabic={locale === "ar"}
+      />
+
       {/* Price Block */}
       <PriceBlock product={product} currency={currency} />
 
-      {/* BNPL Row: Tabby + Tamara (side-by-side in same line) */}
+      {/* BNPL Row: Tabby + Tamara (compact side-by-side in same line) */}
       <div className="pdp-bnpl-row">
         <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
           <div id="LuxuryPDP-TabbyPromo" />
@@ -550,12 +560,6 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
           />
         </div>
       </div>
-
-      {/* Product Description from API */}
-      <ProductDescription
-        description={locale === "ar" ? (product?.description_ar || product?.description || "") : (product?.description || "")}
-        isArabic={locale === "ar"}
-      />
 
       {/* Size / Volume Tags */}
       {tags.length > 0 && (
