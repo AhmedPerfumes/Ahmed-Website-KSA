@@ -533,7 +533,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
           <TamaraWidget
             amount={(parseFloat(getTabbyPrice(product)) * currentQty).toFixed(2)}
             inlineType="6"
-            inlineVariant="outlined"
+            inlineVariant="none"
             locale={locale}
           />
         </div>
