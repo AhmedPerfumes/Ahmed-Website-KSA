@@ -798,7 +798,7 @@
   margin-bottom: 1.15rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: .5rem;
+  gap: .45rem;
   align-items: stretch;
 }
 
@@ -808,11 +808,12 @@
   justify-content: center;
   min-width: 0;
   width: 100%;
-  background: #FAFAFA;
-  border: 1px solid #EAE6DF;
-  border-radius: 8px;
-  padding: .35rem .6rem;
-  min-height: 38px;
+  background: #FAF9F7;
+  border: 1px solid #ECE7DF;
+  border-radius: 6px;
+  padding: 3px 6px;
+  min-height: 32px;
+  max-height: 44px;
   box-sizing: border-box;
   transition: border-color var(--ease), background var(--ease);
 }
@@ -822,6 +823,8 @@
   background: #FFFFFF;
 }
 
+#tabby-promo-luxury-pdp,
+[id^="tabby-promo-"],
 #LuxuryPDP-TabbyPromo {
   width: 100%;
   height: 100%;
@@ -830,6 +833,8 @@
   justify-content: center;
 }
 
+#tabby-promo-luxury-pdp > div,
+#tabby-promo-luxury-pdp iframe,
 #LuxuryPDP-TabbyPromo > div,
 #LuxuryPDP-TabbyPromo iframe {
   width: 100% !important;
@@ -838,21 +843,32 @@
   background: transparent !important;
 }
 
-/* Reset inner borders & adjust font size */
+/* Reset inner borders & make Tabby text compact */
+#tabby-promo-luxury-pdp [class*="styles__container"],
+#tabby-promo-luxury-pdp [class*="tabby-promo"],
 #LuxuryPDP-TabbyPromo [class*="styles__container"],
 #LuxuryPDP-TabbyPromo [class*="tabby-promo"] {
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
   margin: 0 !important;
-  font-size: .76rem !important;
-  line-height: 1.25 !important;
+  font-size: .72rem !important;
+  line-height: 1.2 !important;
+}
+
+/* Make Tabby and Tamara logos compact */
+#tabby-promo-luxury-pdp img,
+#tabby-promo-luxury-pdp svg,
+#LuxuryPDP-TabbyPromo img,
+#LuxuryPDP-TabbyPromo svg {
+  height: 14px !important;
+  width: auto !important;
 }
 
 tamara-widget {
   width: 100% !important;
   display: block;
-  font-size: .76rem !important;
+  font-size: .72rem !important;
 }
 
 tamara-widget::part(widget-container),
@@ -861,14 +877,14 @@ tamara-widget .tamara-summary-widget {
   background: transparent !important;
   padding: 0 !important;
   margin: 0 !important;
-  font-size: .76rem !important;
-  line-height: 1.25 !important;
+  font-size: .72rem !important;
+  line-height: 1.2 !important;
 }
 
 @media (max-width: 580px) {
   .pdp-bnpl-row {
     grid-template-columns: 1fr;
-    gap: .4rem;
+    gap: .35rem;
   }
 }
 
@@ -1366,66 +1382,87 @@ tamara-widget .tamara-summary-widget {
   }
 }
 
-/* Share Row */
+/* ── Subtle & Minimalist Share Row ── */
 .pdp-share-row {
   display: flex;
   align-items: center;
-  gap: .5rem;
-  flex-wrap: wrap;
+  gap: .65rem;
   margin-top: .75rem;
   padding-top: .75rem;
-  border-top: 1px solid var(--pdp-line);
+  border-top: 1px solid #ECE7DF;
 }
 
 .pdp-share-label {
-  font-size: var(--t-xs);
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--pdp-slate);
-  font-weight: 600;
+  font-size: .75rem;
+  color: #8C877E;
+  font-weight: 500;
+  letter-spacing: .04em;
 }
 
-.pdp-share-btn {
+.pdp-share-links {
   display: flex;
   align-items: center;
+  gap: .6rem;
+}
+
+.pdp-share-link {
+  display: inline-flex;
+  align-items: center;
   gap: .35rem;
-  padding: 5px 13px;
-  border: 1.5px solid var(--pdp-line);
-  border-radius: var(--r-pill);
-  background: var(--pdp-white);
-  font-size: var(--t-xs);
-  color: var(--pdp-ink);
-  font-weight: 600;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: .78rem;
+  color: #635F59;
+  font-weight: 500;
   text-decoration: none;
-  transition: border-color var(--ease), background var(--ease), color var(--ease);
+  cursor: pointer;
+  transition: color var(--ease);
 }
 
-.pdp-share-btn:hover {
-  border-color: var(--pdp-gold);
-  background: var(--pdp-sand);
-  color: var(--pdp-gold-dark);
+.pdp-share-link:hover {
+  color: var(--pdp-ink);
 }
 
-.pdp-share-btn svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
+.pdp-share-link svg {
+  width: 14px;
+  height: 14px;
+  color: #8C877E;
+  transition: color var(--ease), transform .15s ease;
 }
 
-.pdp-share-btn--wa:hover {
-  border-color: #25D366;
-  background: rgba(37, 211, 102, .08);
+.pdp-share-link:hover svg {
+  color: var(--pdp-ink);
+  transform: translateY(-1px);
+}
+
+.pdp-share-link--wa:hover {
   color: #128C7E;
 }
 
+.pdp-share-link--wa:hover svg {
+  color: #25D366;
+}
+
+.pdp-share-sep {
+  color: #D1CCC4;
+  font-size: .75rem;
+  user-select: none;
+}
+
 .pdp-share-copied {
-  font-size: var(--t-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-size: .78rem;
   color: var(--pdp-success);
-  font-weight: 700;
-  letter-spacing: .04em;
+  font-weight: 600;
+}
+
+.pdp-share-copied svg {
+  width: 13px;
+  height: 13px;
+  color: var(--pdp-success) !important;
 }
 
 /* ── Product Experience / Description Block — Anfasic inspired ── */

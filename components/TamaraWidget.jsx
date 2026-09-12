@@ -8,29 +8,26 @@ const TamaraWidget = ({ amount, inlineType, inlineVariant, locale }) => {
     useEffect(() => {
         setIsClient(true); // Prevent SSR
 
-        if (scriptLoadedRef.current) return;
-
         window.tamaraWidgetConfig = {
             lang: locale || "en",
             country: "SA",
             publicKey: process.env.NEXT_PUBLIC_TAMARA_PUBLIC_KEY,
         };
 
-        const script = document.createElement("script");
-        // script.src = "https://cdn-sandbox.tamara.co/widget-v2/tamara-widget.js";
-        script.src = "https://cdn.tamara.co/widget-v2/tamara-widget.js";
-        script.async = true;
-        script.onload = () => {
+        const scriptId = "tamara-widget-js";
+        if (!document.getElementById(scriptId)) {
+            const script = document.createElement("script");
+            script.id = scriptId;
+            script.src = "https://cdn.tamara.co/widget-v2/tamara-widget.js";
+            script.async = true;
+            script.onload = () => {
+                scriptLoadedRef.current = true;
+            };
+            document.body.appendChild(script);
+        } else {
             scriptLoadedRef.current = true;
-        };
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
-            delete window.tamaraWidgetConfig;
-            scriptLoadedRef.current = false;
-        };
-    }, []);
+        }
+    }, [locale]);
 
     if (!isClient) return null; // Prevent rendering on server
 
