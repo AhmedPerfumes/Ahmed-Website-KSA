@@ -528,7 +528,7 @@
   flex-direction: column;
   position: relative;
   cursor: pointer;
-  transition: box-shadow 0.28s var(--pc-ease), transform 0.28s var(--pc-ease);
+  transition: box-shadow 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 [dir="rtl"] .pc-card {
@@ -587,12 +587,13 @@
   height: 100%;
   object-fit: contain;
   object-position: center;
-  /* padding: 0.35rem; */
+  padding: 0.35rem;
   /* NOTE: No CSS filter here — filter forces iOS Safari to create a GPU
      compositing layer per image. With 20+ cards per page this exhausts
      GPU memory on iPhones causing all images to flash gray.
      Visual enhancement moved to desktop-only via media query below. */
-  transition: opacity 0.38s ease, transform 0.38s var(--pc-ease);
+  transition: opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
 }
 
 @media (max-width: 480px) {
@@ -618,7 +619,7 @@
   transform: scale(1.03);
 }
 
-/* Only crossoade when there IS a second image (--has-hover modioier) */
+/* Only crossfade when there IS a second image (--has-hover modifier) */
 .pc-card:hover .pc-card__img-wrap--has-hover .pc-card__img--primary {
   opacity: 0;
   transform: scale(1.04);
@@ -643,6 +644,7 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
   pointer-events: none;
   z-index: 2;
+  transition: opacity 0.6s ease;
 }
 
 /* Badges â€” proper pill labels on image corner */
