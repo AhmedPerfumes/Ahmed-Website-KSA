@@ -28,6 +28,7 @@ import { sortingOptions } from "@/data/products/productCategories";
 import PremiumProductCard from "./PremiumProductCard";
 import PremiumBreadcrumb from "./PremiumBreadcrumb";
 import "./premium-category.css";
+import "./skeleton.css";
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 
@@ -96,12 +97,17 @@ function IconClose() {
 
 function SkeletonCard() {
   return (
-    <div style={{ background: "#fff", display: "flex", flexDirection: "column" }}>
-      <div style={{ width: "100%", paddingTop: "130%", background: "#f0f0f0", animation: "pc-shimmer 1.4s ease-in-out infinite" }} />
-      <div style={{ padding: "1rem 0.75rem 1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <div style={{ height: 10, width: "60%", background: "#f0f0f0", borderRadius: 4, animation: "pc-shimmer 1.4s ease-in-out 0.1s infinite" }} />
-        <div style={{ height: 13, width: "85%", background: "#f0f0f0", borderRadius: 4, animation: "pc-shimmer 1.4s ease-in-out 0.2s infinite" }} />
-        <div style={{ height: 11, width: "40%", background: "#f0f0f0", borderRadius: 4, animation: "pc-shimmer 1.4s ease-in-out 0.3s infinite" }} />
+    <div className="pcs-card" aria-hidden="true">
+      <div className="pcs-img-wrap">
+        <div className="pcs-img shimmer" />
+      </div>
+      <div className="pcs-body">
+        <div className="pcs-line pcs-line--name shimmer" />
+        <div className="pcs-line pcs-line--name-short shimmer" />
+        <div className="pcs-line pcs-line--price shimmer" />
+      </div>
+      <div className="pcs-actions">
+        <div className="pcs-line pcs-line--atc shimmer" />
       </div>
     </div>
   );
@@ -444,14 +450,6 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes pc-shimmer {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.45; }
-        }
-      `}</style>
-
     </div>
   );
 }

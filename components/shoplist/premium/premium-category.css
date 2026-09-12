@@ -495,9 +495,10 @@
 .pc-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: #e8e8e8;
-  /* thin border lines between cards */
+  gap: 0;
+  background: #ffffff;
+  border-top: 1px solid var(--pc-border);
+  border-left: 1px solid var(--pc-border);
 }
 
 @media (min-width: 768px) {
@@ -512,19 +513,31 @@
   }
 }
 
-/* â”€â”€â”€ PRODUCT CARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+[dir="rtl"] .pc-grid {
+  border-left: none;
+  border-right: 1px solid var(--pc-border);
+}
+
+/* ─── PRODUCT CARD ─────────────────────────────────────────── */
 
 .pc-card {
   background: var(--pc-white);
+  border-right: 1px solid var(--pc-border);
+  border-bottom: 1px solid var(--pc-border);
   display: flex;
   flex-direction: column;
   position: relative;
   cursor: pointer;
-  transition: box-shadow 0.28s var(--pc-ease);
+  transition: box-shadow 0.28s var(--pc-ease), transform 0.28s var(--pc-ease);
+}
+
+[dir="rtl"] .pc-card {
+  border-right: none;
+  border-left: 1px solid var(--pc-border);
 }
 
 .pc-card:hover {
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   z-index: 2;
 }
 
@@ -667,9 +680,14 @@
 }
 
 .pc-badge--oos {
-  background: rgba(180, 50, 30, 0.9);
+  background: #a93226;
   color: #ffffff;
-  backdrop-filter: blur(4px);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.22rem 0.6rem;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* OOS dimming */
@@ -931,12 +949,13 @@
 }
 
 .pc-atc--oos {
-  background: #ececec;
-  color: #888888;
+  background: #f7f7f7;
+  color: #949494;
   cursor: not-allowed;
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   box-shadow: none;
   text-shadow: none;
   border-top: 1px solid var(--pc-border);

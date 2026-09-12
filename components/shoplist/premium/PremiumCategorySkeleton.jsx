@@ -10,11 +10,13 @@ import "./skeleton.css";
 /* Number of placeholder cards to render */
 const CARD_COUNT = 8;
 
-function SkeletonCard() {
+export function SkeletonCard() {
   return (
     <div className="pcs-card" aria-hidden="true">
       {/* Image area */}
-      <div className="pcs-img shimmer" />
+      <div className="pcs-img-wrap">
+        <div className="pcs-img shimmer" />
+      </div>
 
       {/* Text lines */}
       <div className="pcs-body">
@@ -25,7 +27,6 @@ function SkeletonCard() {
 
       {/* Actions */}
       <div className="pcs-actions">
-        <div className="pcs-line pcs-line--qty shimmer" />
         <div className="pcs-line pcs-line--atc shimmer" />
       </div>
     </div>
