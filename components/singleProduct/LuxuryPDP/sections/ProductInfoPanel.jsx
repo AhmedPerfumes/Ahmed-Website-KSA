@@ -523,7 +523,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       <div className="pdp-bnpl-row">
         <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
           <TabbyPromoWidget
-            price={parseFloat(getTabbyPrice(product)) * currentQty}
+            price={parseFloat(getTabbyPrice(product))}
             currency="SAR"
             lang={locale}
             source="luxury-pdp"
@@ -531,7 +531,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
         </div>
         <div className="pdp-bnpl-card pdp-bnpl-card--tamara">
           <TamaraWidget
-            amount={(parseFloat(getTabbyPrice(product)) * currentQty).toFixed(2)}
+            amount={parseFloat(getTabbyPrice(product)).toFixed(2)}
             inlineType="6"
             inlineVariant="none"
             locale={locale}
