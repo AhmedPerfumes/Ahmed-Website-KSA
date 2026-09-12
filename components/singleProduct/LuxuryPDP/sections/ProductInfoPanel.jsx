@@ -177,6 +177,57 @@ const StockStatus = ({ qty }) => {
   );
 };
 
+/* ─── Product Description Component ─── */
+const ProductDescription = ({ description, isArabic }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (!description) return null;
+
+  const decoded = typeof description === "string" ? he.decode(description).trim() : "";
+  const plainText = decoded.replace(/<[^>]*>?/gm, "").trim();
+
+  if (!plainText) return null;
+
+  const isLong = plainText.length > 220;
+  const isHtml = /<[a-z][\s\S]*>/i.test(decoded);
+
+  return (
+    <div className="pdp-info__desc-box">
+      <div
+        className={`pdp-info__desc-content ${
+          isLong && !isExpanded ? "pdp-info__desc-content--clamped" : ""
+        }`}
+      >
+        {isHtml ? (
+          <div
+            className="pdp-info__desc-html"
+            dangerouslySetInnerHTML={{ __html: decoded }}
+          />
+        ) : (
+          <p className="pdp-info__desc-text">{decoded}</p>
+        )}
+      </div>
+
+      {isLong && (
+        <button
+          type="button"
+          className="pdp-info__desc-toggle"
+          onClick={() => setIsExpanded((prev) => !prev)}
+          aria-expanded={isExpanded}
+        >
+          {isExpanded
+            ? isArabic
+              ? "عرض أقل ▲"
+              : "Read less ▲"
+            : isArabic
+            ? "اقرأ المزيد ▼"
+            : "Read more ▼"}
+        </button>
+      )}
+    </div>
+  );
+};
+
 /* ─── Share Row ─── */
 const ShareRow = ({ productName }) => {
   const [copied, setCopied] = useState(false);
@@ -485,11 +536,26 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       {/* Price Block */}
       <PriceBlock product={product} currency={currency} />
 
-      {/* BNPL Row: Tabby + Tamara */}
+      {/* BNPL Row: Tabby + Tamara (side-by-side in same line) */}
       <div className="pdp-bnpl-row">
-        <div id="LuxuryPDP-TabbyPromo" />
-        <TamaraWidget inlineType="6" inlineVariant="outlined" locale={locale} />
+        <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
+          <div id="LuxuryPDP-TabbyPromo" />
+        </div>
+        <div className="pdp-bnpl-card pdp-bnpl-card--tamara">
+          <TamaraWidget
+            amount={(parseFloat(getTabbyPrice(product)) * currentQty).toFixed(2)}
+            inlineType="6"
+            inlineVariant="outlined"
+            locale={locale}
+          />
+        </div>
       </div>
+
+      {/* Product Description from API */}
+      <ProductDescription
+        description={locale === "ar" ? (product?.description_ar || product?.description || "") : (product?.description || "")}
+        isArabic={locale === "ar"}
+      />
 
       {/* Size / Volume Tags */}
       {tags.length > 0 && (
@@ -497,7 +563,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
           <span className="pdp-size-row__label">{t("Size")}</span>
           <div className="pdp-size-tags">
             {tags.map((tag, i) => (
-              <div key={i} className="pdp-size-tag">
+              <div key={i} className="pdp-size-tag pdp-size-tag--active">
                 {tag}
               </div>
             ))}

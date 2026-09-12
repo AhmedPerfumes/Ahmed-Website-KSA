@@ -727,12 +727,147 @@
   margin-bottom: 1.25rem;
 }
 
-/* BNPL */
+/* ── BNPL Side-by-Side Row (Tabby + Tamara in Same Line) ── */
 .pdp-bnpl-row {
   margin-bottom: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .65rem;
+  align-items: stretch;
+}
+
+.pdp-bnpl-card {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+  background: #FCFBF9;
+  border: 1px solid #EBE6DE;
+  border-radius: 10px;
+  padding: .5rem .75rem;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+
+.pdp-bnpl-card:hover {
+  border-color: var(--pdp-gold);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+}
+
+#LuxuryPDP-TabbyPromo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#LuxuryPDP-TabbyPromo > div,
+#LuxuryPDP-TabbyPromo iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Reset inner borders if Tabby injects boxed layout */
+#LuxuryPDP-TabbyPromo [class*="styles__container"],
+#LuxuryPDP-TabbyPromo [class*="tabby-promo"] {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+tamara-widget {
+  width: 100% !important;
+  display: block;
+  height: 100%;
+}
+
+tamara-widget::part(widget-container),
+tamara-widget .tamara-summary-widget {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 580px) {
+  .pdp-bnpl-row {
+    grid-template-columns: 1fr;
+    gap: .5rem;
+  }
+}
+
+/* ── Product Description Block (From API) ── */
+.pdp-info__desc-box {
+  margin: 0 0 1.25rem;
+  padding: .85rem 1.05rem;
+  background: #FAF8F5;
+  border: 1px solid #ECE7DF;
+  border-left: 3px solid var(--pdp-gold);
+  border-radius: var(--r-sm);
+  position: relative;
+}
+
+[dir="rtl"] .pdp-info__desc-box {
+  border-left: 1px solid #ECE7DF;
+  border-right: 3px solid var(--pdp-gold);
+  text-align: right;
+}
+
+.pdp-info__desc-content {
+  font-size: .88rem;
+  line-height: 1.65;
+  color: var(--pdp-charcoal);
+  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif);
+}
+
+.pdp-info__desc-content--clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pdp-info__desc-html {
+  font-size: .88rem;
+  line-height: 1.65;
+  color: var(--pdp-charcoal);
+}
+
+.pdp-info__desc-html p {
+  margin: 0 0 .5rem;
+}
+
+.pdp-info__desc-html p:last-child {
+  margin-bottom: 0;
+}
+
+.pdp-info__desc-text {
+  margin: 0;
+}
+
+.pdp-info__desc-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: .45rem;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--pdp-gold-dark);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: color var(--ease);
+}
+
+.pdp-info__desc-toggle:hover {
+  color: var(--pdp-ink);
+  text-decoration: underline;
 }
 
 /* ── Trust Badges (Reef-style: 3-col bordered boxes with SVG icons) ── */
@@ -840,7 +975,14 @@
   background: var(--pdp-white);
   font-weight: 500;
   cursor: default;
-  transition: border-color var(--ease);
+  transition: border-color var(--ease), background var(--ease);
+}
+
+.pdp-size-tag--active {
+  border-color: var(--pdp-ink);
+  background: #FAF8F5;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
 }
 
 /* Stock Status */
