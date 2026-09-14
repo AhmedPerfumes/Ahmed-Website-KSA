@@ -1,44 +1,83 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  flexRender,
-  createColumnHelper,
-} from "@tanstack/react-table";
-import {
-  Card,
-  Row,
-  Col,
-  Form,
-  Spinner,
-  Button,
-  Modal,
-  Nav,
-  Badge,
-} from "react-bootstrap";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import Link from "next/link";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
+import { useMenu } from "@/context/MenuContext";
+import styles from "./AccountOrders.module.css";
 
-const columnHelper = createColumnHelper();
-const IMG_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+
+// Status badge styling helper
+function getStatusBadge(statusObj) {
+  const val = (statusObj?.value || statusObj || "").toLowerCase();
+  const label = statusObj?.label || (val ? val.charAt(0).toUpperCase() + val.slice(1) : "Unknown");
+
+  let badgeClass = styles.badgeCancelled;
+  if (val === "processing") badgeClass = styles.badgeProcessing;
+  else if (val === "pending") badgeClass = styles.badgePending;
+  else if (val === "shipped") badgeClass = styles.badgeShipped;
+  else if (val === "completed" || val === "delivered") badgeClass = styles.badgeCompleted;
+  else if (val === "returned") badgeClass = styles.badgeReturned;
+  else if (val === "cancelled") badgeClass = styles.badgeCancelled;
+
+  return { label, badgeClass, isProcessing: val === "processing" };
+}
+
+// Payment method helper
+function getPaymentMethodLabel(channel) {
+  const map = {
+    cod: "Cash on Delivery",
+    paytabs: "PayTabs",
+    tamara: "Tamara",
+    tabby: "Tabby",
+    card: "Credit / Debit Card",
+    bank_transfer: "Bank Transfer",
+  };
+  return map[channel] || channel || "Online Payment";
+}
+
+// Date formatter
+function formatDate(dateStr) {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
 
 export default function AccountOrders() {
-  // Table & fetch state
-  const [data, setData] = useState([]);
-  const [orderSummaries, setOrderSummaries] = useState({}); // { [orderId]: [products] }
-  const [sorting, setSorting] = useState([{ id: "created_at", desc: true }]);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [pageCount, setPageCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const { currency } = useMenu() || {};
+  const currencySymbol = currency?.symbol || " SAR";
 
-  // Modal state
+  // Customer ID from localStorage
+  const [customerId, setCustomerId] = useState(null);
+
+  // Orders data
+  const [orders, setOrders] = useState([]);
+  const [orderSummaries, setOrderSummaries] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalFiltered, setTotalFiltered] = useState(0);
+
+  // Filters & Sorting
+  const [statusTab, setStatusTab] = useState("all");
+  const [searchCode, setSearchCode] = useState("");
+  const [sortOption, setSortOption] = useState("processing_first");
+
+  // Details Modal
   const [showModal, setShowModal] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
-  const [modalOrderOuter, setModalOrderOuter] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Cancellation Modal state
+  // Cancellation Modal
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellingOrder, setCancellingOrder] = useState(null);
   const [cancelReason, setCancelReason] = useState("Changed my mind");
@@ -47,171 +86,148 @@ export default function AccountOrders() {
   const [cancelError, setCancelError] = useState(null);
   const [cancelSuccess, setCancelSuccess] = useState(null);
 
-  // Filters
-  const [codeFilter, setCodeFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-  const [activeStatus, setActiveStatus] = useState("all");
-
-  // CUSTOMER_ID from localStorage
-  const [CUSTOMER_ID, setCustomerId] = useState(null);
+  // Load customer ID from localStorage
   useEffect(() => {
     if (typeof window === "undefined") return;
     const raw = localStorage.getItem("user");
     if (raw) {
       try {
         const u = JSON.parse(atob(raw));
-        setCustomerId(u.id);
-      } catch {
-        // ignore
+        if (u?.id) setCustomerId(u.id);
+      } catch (e) {
+        console.error("Failed to decode user data", e);
       }
     }
   }, []);
 
-  // Table columns
-  const columns = [
-    columnHelper.accessor("code", {
-      header: "Order #",
-      cell: (info) => info.getValue(),
-      enableSorting: true,
-    }),
-    columnHelper.accessor("created_at", {
-      header: "Date",
-      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
-      enableSorting: true,
-    }),
-    columnHelper.accessor("status", {
-      header: "Status",
-      cell: (info) => {
-        const val = info.row.original.status?.value;
-        const label = info.row.original.status?.label || "";
-        return (
-          <span>
-            <Badge
-              bg={
-                val === "processing"
-                  ? "info"
-                  : val === "shipped"
-                  ? "primary"
-                  : val === "completed"
-                  ? "success"
-                  : val === "returned"
-                  ? "warning"
-                  : val === "cancelled"
-                  ? "danger"
-                  : "secondary"
-              }
-              className="rounded-pill px-3 py-1"
-              style={{ fontSize: "0.90em" }}
-            >
-              {label}
-            </Badge>
-          </span>
-        );
-      },
-      enableSorting: false,
-    }),
-    columnHelper.accessor("payment_channel", {
-      header: "Payment Method",
-      cell: (info) =>
-        ({ cod: "Cash on Delivery", paytabs: "PayTabs" }[info.getValue()] ||
-        info.getValue()),
-      enableSorting: false,
-    }),
-    columnHelper.display({
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const canCancel = ["processing", "pending"].includes(row.original.status?.value);
-        return (
-          <div className="d-flex align-items-center gap-2 flex-wrap">
-            <Button
-              className="btn-rounded btn-link_lg text-uppercase fw-medium"
-              size="sm"
-              style={{ borderRadius: "30px" }}
-              onClick={() => handleView(row.original)}
-            >
-              ORDER DETAILS
-            </Button>
-            {canCancel && (
-              <Button
-                variant="outline-danger"
-                size="sm"
-                className="text-uppercase fw-medium px-3"
-                style={{ borderRadius: "30px", fontSize: "0.78rem" }}
-                onClick={() => openCancelModal(row.original)}
-              >
-                Cancel Order
-              </Button>
-            )}
-          </div>
-        );
-      },
-      enableSorting: false,
-    }),
-  ];
-
-  const table = useReactTable({
-    data,
-    columns,
-    pageCount,
-    state: { sorting, pagination },
-    onSortingChange: setSorting,
-    onPaginationChange: setPagination,
-    manualSorting: true,
-    manualPagination: true,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
-
-  // Fetch table data and order product summary data
-  const fetchOrders = React.useCallback(async () => {
-    if (!CUSTOMER_ID) return;
+  // Fetch orders from API
+  const fetchOrders = useCallback(async () => {
+    if (!customerId) return;
     setLoading(true);
-    const BASE = process.env.NEXT_PUBLIC_API_URL;
-    const { pageIndex, pageSize } = pagination;
-    const sort = sorting[0] || { id: "created_at", desc: true };
+
     const params = new URLSearchParams({
-      page: String(pageIndex + 1),
+      customer_id: String(customerId),
+      page: String(page),
       pageSize: String(pageSize),
-      orderBy: sort.id,
-      orderDir: sort.desc ? "desc" : "asc",
-      customer_id: String(CUSTOMER_ID),
+      orderBy: "created_at",
+      orderDir: "desc",
     });
-    if (codeFilter) params.set("code", codeFilter);
-    if (dateFilter) params.set("created_at", dateFilter);
+
+    if (searchCode.trim()) {
+      params.set("code", searchCode.trim());
+    }
+
+    if (statusTab !== "all") {
+      params.set("status", statusTab);
+    }
 
     try {
-      const res = await fetch(`${BASE}api/customerOrders?${params}`);
+      const res = await fetch(`${API_BASE}api/customerOrders?${params}`);
       const json = await res.json();
-      setData(json.data || []);
-      setPageCount(Math.ceil((json.filtered ?? json.total ?? 0) / pageSize));
-      // Fetch product summaries for each order
-      const summaryResults = {};
-      await Promise.all(
-        (json.data || []).map(async (order) => {
-          try {
-            const detailRes = await fetch(`${BASE}api/customerOrderDetails`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ order_id: order.id }),
-            });
-            const detailJson = await detailRes.json();
-            summaryResults[order.id] = detailJson.order_products || [];
-          } catch {}
-        })
-      );
-      setOrderSummaries(summaryResults);
-    } catch {
-      /* ignore */
+      const orderList = json.data || [];
+      setOrders(orderList);
+      setTotalFiltered(json.filtered ?? json.total ?? orderList.length);
+
+      // Populate summaries from eager-loaded products if available, or fetch fallback
+      const summaries = {};
+      const pendingFetchIds = [];
+
+      orderList.forEach((ord) => {
+        if (ord.products && Array.isArray(ord.products)) {
+          summaries[ord.id] = ord.products;
+        } else {
+          pendingFetchIds.push(ord.id);
+        }
+      });
+
+      if (pendingFetchIds.length > 0) {
+        await Promise.all(
+          pendingFetchIds.map(async (id) => {
+            try {
+              const detailRes = await fetch(`${API_BASE}api/customerOrderDetails`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ order_id: id }),
+              });
+              const detailJson = await detailRes.json();
+              summaries[id] = detailJson.order_products || [];
+            } catch {
+              summaries[id] = [];
+            }
+          })
+        );
+      }
+
+      setOrderSummaries(summaries);
+    } catch (err) {
+      console.error("Failed to fetch customer orders:", err);
+      setOrders([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [CUSTOMER_ID, sorting, pagination, codeFilter, dateFilter]);
+  }, [customerId, page, pageSize, searchCode, statusTab]);
 
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Handle client-side sorting if user chooses other sort options
+  const sortedOrders = useMemo(() => {
+    const list = [...orders];
+
+    if (sortOption === "processing_first") {
+      return list.sort((a, b) => {
+        const aStatus = (a.status?.value || a.status || "").toLowerCase();
+        const bStatus = (b.status?.value || b.status || "").toLowerCase();
+        const aProc = aStatus === "processing" ? 0 : aStatus === "pending" ? 1 : 2;
+        const bProc = bStatus === "processing" ? 0 : bStatus === "pending" ? 1 : 2;
+        if (aProc !== bProc) return aProc - bProc;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      });
+    }
+
+    if (sortOption === "date_desc") {
+      return list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    }
+
+    if (sortOption === "date_asc") {
+      return list.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+    }
+
+    if (sortOption === "amount_desc") {
+      return list.sort((a, b) => Number(b.amount || 0) - Number(a.amount || 0));
+    }
+
+    if (sortOption === "amount_asc") {
+      return list.sort((a, b) => Number(a.amount || 0) - Number(b.amount || 0));
+    }
+
+    return list;
+  }, [orders, sortOption]);
+
+  // View order details in modal
+  const handleViewDetails = async (order) => {
+    setSelectedOrder(order);
+    setShowModal(true);
+    setModalLoading(true);
+    setModalDetails(null);
+
+    try {
+      const res = await fetch(`${API_BASE}api/customerOrderDetails`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: order.id }),
+      });
+      const json = await res.json();
+      setModalDetails(json);
+    } catch (err) {
+      console.error("Failed to load order details:", err);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  // Open cancel order modal
   const openCancelModal = (order) => {
     setCancellingOrder(order);
     setCancelReason("Changed my mind");
@@ -221,24 +237,26 @@ export default function AccountOrders() {
     setShowCancelModal(true);
   };
 
+  // Confirm order cancellation
   const handleConfirmCancel = async () => {
-    if (!cancellingOrder || !CUSTOMER_ID) return;
+    if (!cancellingOrder || !customerId) return;
     setIsCancelling(true);
     setCancelError(null);
     setCancelSuccess(null);
+
     try {
-      const BASE = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${BASE}api/customerCancelOrder`, {
+      const res = await fetch(`${API_BASE}api/customerCancelOrder`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           order_id: cancellingOrder.id,
-          customer_id: CUSTOMER_ID,
+          customer_id: customerId,
           reason: cancelReason,
           reason_description: cancelDescription,
         }),
       });
       const json = await res.json();
+
       if (json.success) {
         setCancelSuccess(json.message || "Order cancelled successfully");
         fetchOrders();
@@ -246,7 +264,8 @@ export default function AccountOrders() {
           setShowCancelModal(false);
           setCancellingOrder(null);
           setCancelSuccess(null);
-        }, 1500);
+          if (showModal) setShowModal(false);
+        }, 1400);
       } else {
         setCancelError(json.message || "Failed to cancel order");
       }
@@ -257,654 +276,436 @@ export default function AccountOrders() {
     }
   };
 
-  // Sections for filtering
-  const sections = [
-    {
-      key: "processing-shipped",
-      title: "Processing & Shipped",
-      filter: (r) => ["processing", "shipped"].includes(r.original.status.value),
-    },
-    {
-      key: "completed",
-      title: "Completed",
-      filter: (r) => r.original.status.value === "completed",
-    },
-    {
-      key: "returned",
-      title: "Returned",
-      filter: (r) => r.original.status.value === "returned",
-    },
-    {
-      key: "cancelled",
-      title: "Cancelled",
-      filter: (r) => r.original.status.value === "cancelled",
-    },
-  ];
-
-  // --- Handle Modal Data Fetch ---
-  const handleView = async (order) => {
-    setShowModal(true);
-    setModalLoading(true);
-    setModalDetails(null);
-    setModalOrderOuter(order);
-    try {
-      const BASE = process.env.NEXT_PUBLIC_API_URL;
-      const resp = await fetch(`${BASE}api/customerOrderDetails`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order_id: order.id }),
-      });
-      const json = await resp.json();
-      setModalDetails(json);
-    } catch {
-      setModalDetails(null);
-    }
-    setModalLoading(false);
-  };
-
-  // --- Modern Table Render with Product Summary Row ---
-  function ModernOrderTable({ rows }) {
-    return (
-      <div className="modern-table-responsive">
-        <table className="modern-table w-100 mb-0">
-          <thead>
-            <tr>
-              {table.getHeaderGroups()[0].headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="text-secondary text-white small"
-                  style={{
-                    fontWeight: "600",
-                    background: "#000000ff",
-                    textTransform: "uppercase",
-                    letterSpacing: 1,
-                  }}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                  {header.column.getIsSorted()
-                    ? header.column.getIsSorted() === "asc"
-                      ? " ▲"
-                      : " ▼"
-                    : null}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length ? (
-              rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  {/* PRODUCT SUMMARY ROW */}
-                  <tr className="product-summary-row">
-                    <td
-                      colSpan={columns.length}
-                      style={{ padding: 0, background: "#f8fbff" }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          flexWrap: "wrap",
-                          padding: "30px 10px 30px 0",
-                          gap: 16,
-                          overflowX: "auto",
-                          scrollbarWidth: "thin",
-                          borderBottom: "1px solid #535353ff",
-                        }}
-                      >
-                        {(orderSummaries[row.original.id] || [])
-                          .slice(0, 2)
-                          .map((prod, i) => (
-                            <div
-                              key={prod.id}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginRight: 24,
-                                minWidth: 0,
-                              }}
-                            >
-                              <img
-                                src={
-                                  prod.product_image
-                                    ? `${IMG_BASE}storage/${prod.product_image}`
-                                    : "/no-img.png"
-                                }
-                                alt={prod.product_name}
-                                style={{
-                                  width: 42,
-                                  height: 42,
-                                  objectFit: "cover",
-                                  borderRadius: 8,
-                                  marginRight: 10,
-                                  border: "1.5px solid #e6e6e6",
-                                }}
-                              />
-                              {/* <img
-                            src='http://localhost/ahmed-admin/public/storage/products/marj-2.jpg'
-                            alt={prod.product_image}
-                            style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 8, marginRight: 16 }}
-                          /> */}
-                              <span
-                                style={{
-                                  fontWeight: 500,
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  fontSize: "1em",
-                                }}
-                              >
-                                {prod.product_name}
-                              </span>
-                              <span
-                                style={{
-                                  color: "#4c4c4c",
-                                  fontWeight: 400,
-                                  marginLeft: 10,
-                                  fontSize: ".97em",
-                                }}
-                              >
-                                {prod.qty} × {Number(prod.price).toFixed(2)}
-                              </span>
-                            </div>
-                          ))}
-                        {(orderSummaries[row.original.id] || []).length > 2 && (
-                          <span
-                            style={{
-                              fontSize: ".95em",
-                              fontWeight: 500,
-                              color: "#555",
-                            }}
-                          >
-                            +{(orderSummaries[row.original.id].length - 2)} more
-                          </span>
-                        )}
-                        {(orderSummaries[row.original.id] || []).length === 0 && (
-                          <span
-                            className="text-muted"
-                            style={{ fontSize: ".97em" }}
-                          >
-                            No products
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="modern-table-row">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                </React.Fragment>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="text-center text-muted py-4"
-                >
-                  No orders in this category.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <style jsx>{`
-          .modern-table {
-            border-radius: 18px;
-            box-shadow: 0 3px 18px rgba(110, 120, 160, 0.07);
-            overflow: hidden;
-            background: #fff;
-          }
-          .modern-table thead th {
-            border-bottom: 2px solid #eef0f4;
-            padding: 16px 12px;
-          }
-          .modern-table-row {
-            transition: background 0.18s;
-            border-bottom: 3px solid #000000ff;
-          }
-          .modern-table-row:hover {
-            background: #f8fbff;
-          }
-          .modern-table td {
-            vertical-align: middle;
-            padding: 16px 12px;
-            font-size: 1.01em;
-          }
-          .product-summary-row td {
-            border-top: none !important;
-            padding-top: 0 !important;
-          }
-          @media (max-width: 991px) {
-            .modern-table th,
-            .modern-table td {
-              padding: 14px 6px;
-            }
-          }
-          @media (max-width: 600px) {
-            .modern-table thead {
-              display: none;
-            }
-            .modern-table tr,
-            .modern-table td {
-              display: block;
-              width: 100%;
-            }
-            .modern-table-row {
-              border-radius: 14px;
-              margin-bottom: 12px;
-              box-shadow: 0 1px 6px rgba(110, 120, 160, 0.09);
-              border: none;
-              background: #fff;
-              display: block;
-            }
-            .modern-table td {
-              padding: 10px 12px !important;
-              font-size: 0.99em;
-              border: none;
-              border-bottom: 1px solid #f3f3f3;
-            }
-            .product-summary-row td {
-              padding: 0 !important;
-            }
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  // -- Render for all/one section
-  const allRows = table.getRowModel().rows;
-  const renderTables = () =>
-    sections.map((sec) => {
-      const rows = allRows.filter(sec.filter);
-      return (
-        <div className="mb-5" key={sec.key}>
-          <div className="d-flex align-items-center mb-2 mt-2">
-            <h5 className="mb-0 text-dark">{sec.title}</h5>
-          </div>
-          <ModernOrderTable rows={rows} />
-        </div>
-      );
-    });
-
-  const renderSingle = () => {
-    const section = sections.find((s) => s.key === activeStatus) || {};
-    const rows = allRows.filter(section.filter);
-    return (
-      <div className="mb-5">
-        <div className="d-flex align-items-center mb-2 mt-2">
-          <h5 className="mb-0 text-dark">{section.title}</h5>
-        </div>
-        <ModernOrderTable rows={rows} />
-      </div>
-    );
-  };
+  const totalPages = Math.ceil(totalFiltered / pageSize) || 1;
 
   return (
-    <>
-      {/* TAB STYLES FOR ACTIVE COLORS AND MOBILE SCROLL */}
-      <style jsx global>{`
-        .nav-tabs {
-          overflow-x: auto;
-          overflow-y: hidden;
-          flex-wrap: nowrap;
-          border-bottom: 2px solid #e7e7e7;
-          scrollbar-width: thin;
-        }
-        .nav-tabs .nav-item {
-          flex: 0 0 auto;
-          min-width: 110px;
-        }
-        .nav-tabs .nav-link {
-          color: #222 !important;
-          background: transparent;
-          border: none;
-          border-bottom: 2.5px solid transparent;
-          transition: all 0.18s;
-          padding-bottom: 10px;
-          border-radius: 30px !important;
-          white-space: nowrap;
-        }
-        .nav-tabs .nav-link.active,
-        .nav-tabs .nav-link:focus,
-        .nav-tabs .nav-link.active:focus {
-          color: #fff !important;
-          background: #171717 !important;
-          border-bottom: 2.5px solid #1a1a1a !important;
-          box-shadow: 0 2px 12px 0 rgba(30, 34, 55, 0.1);
-        }
-        .nav-tabs .nav-link:hover:not(.active) {
-          color: #000 !important;
-          background: #f2f2f2 !important;
-          border-bottom: 2.5px solid #c1c1c1 !important;
-        }
-        .nav-link.active::before {
-          background: none;
-        }
-        @media (max-width: 600px) {
-          .nav-tabs .nav-link {
-            font-size: 0.97em;
-            padding-left: 14px;
-            padding-right: 14px;
-          }
-          .col-md-6 {
-            width: 100% !important;
-            flex: 0 0 100%;
-            max-width: 100%;
-          }
-        }
-      `}</style>
-      <div
-        className="col-lg-9"
-        style={{
-          fontFamily: "inherit",
-          border: "1px solid #e9e9e9",
-          borderRadius: ".75rem",
-          padding: "50px",
-        }}
-      >
-        {/* STATUS TABS */}
-        <Nav
-          variant="tabs"
-          activeKey={activeStatus}
-          onSelect={setActiveStatus}
-          className="mb-4 border-bottom flex-nowrap"
-        >
-          <Nav.Item style={{ width: "auto", marginBottom: "2rem" }}>
-            <Nav.Link eventKey="all" className="text-uppercase fw-semibold">
-              All Status
-            </Nav.Link>
-          </Nav.Item>
-          {sections.map((sec) => (
-            <Nav.Item key={sec.key} style={{ width: "auto", height: "auto" }}>
-              <Nav.Link eventKey={sec.key} className="text-uppercase fw-semibold">
-                {sec.title}
-              </Nav.Link>
-            </Nav.Item>
+    <div className={`col-lg-9 ${styles.container}`}>
+      {/* ── HEADER ── */}
+      <div className={styles.headerSection}>
+        <h3 className={styles.title}>My Purchases</h3>
+        <p className={styles.subtitle}>
+          Track your purchases, check delivery status, and review past orders.
+        </p>
+      </div>
+
+      {/* ── CONTROLS: TABS, SEARCH & SORT ── */}
+      <div className={styles.controlsRow}>
+        {/* Status Filter Tabs */}
+        <div className={styles.tabsContainer}>
+          {[
+            { key: "all", label: "All Orders" },
+            { key: "processing", label: "Processing" },
+            { key: "shipped", label: "Shipped" },
+            { key: "completed", label: "Delivered" },
+            { key: "cancelled", label: "Cancelled" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              className={`${styles.tabButton} ${
+                statusTab === tab.key ? styles.tabButtonActive : ""
+              }`}
+              onClick={() => {
+                setStatusTab(tab.key);
+                setPage(1);
+              }}
+            >
+              {tab.label}
+            </button>
           ))}
-        </Nav>
+        </div>
 
-        {/* CONTENT */}
-        {loading ? (
-          <div className="text-center py-5">
-            <Spinner animation="border" />
+        {/* Search & Sort Controls */}
+        <div className={styles.searchSortGroup}>
+          <div className={styles.searchInputWrapper}>
+            <span className={styles.searchIcon}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search by Order #..."
+              value={searchCode}
+              onChange={(e) => {
+                setSearchCode(e.target.value);
+                setPage(1);
+              }}
+            />
           </div>
-        ) : activeStatus === "all" ? (
-          renderTables()
-        ) : (
-          renderSingle()
-        )}
 
-        {/* PAGINATION */}
-        <div className="d-flex justify-content-between align-items-center mb-5">
-          <div className="text-secondary small">
-            Page {pagination.pageIndex + 1} of {pageCount}
-          </div>
-          <div className="btn-group">
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Prev
-            </Button>
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+          <select
+            className={styles.sortSelect}
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+          >
+            <option value="processing_first">Processing First</option>
+            <option value="date_desc">Newest Date</option>
+            <option value="date_asc">Oldest Date</option>
+            <option value="amount_desc">Amount: High to Low</option>
+            <option value="amount_asc">Amount: Low to High</option>
+          </select>
         </div>
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
-        <Modal.Header className="bg-dark border-0">
-          <Modal.Title className="text-white">Order Details</Modal.Title>
-          <Button variant="close" onClick={() => setShowModal(false)} />
-        </Modal.Header>
-        {/* Responsive 2 columns: stack on small, side by side on md+ */}
-        <Modal.Body className="p-4" style={{ minHeight: 350 }}>
-          {modalLoading ? (
-            <div className="py-4 text-center">
-              <Spinner />
+      {/* ── ORDERS LIST ── */}
+      {loading ? (
+        <div className={styles.orderList}>
+          {[1, 2, 3].map((n) => (
+            <div key={n} className={styles.skeletonCard}>
+              <div className={styles.skeletonLine} style={{ width: "40%" }} />
+              <div className={styles.skeletonLine} style={{ width: "80%", height: "20px" }} />
+              <div className={styles.skeletonLine} style={{ width: "25%" }} />
             </div>
-          ) : modalDetails &&
-            modalDetails.order_products &&
-            modalDetails.order_address ? (
-            <div
-              className="row g-5 flex-md-row flex-column"
-              style={{ fontFamily: "inherit" }}
-            >
-              <div className="col-md-6 mb-4 mb-md-0">
-                <div className="mb-4">
-                  <div className="mb-1 text-uppercase small fw-semibold text-muted">
-                    Contact Information
+          ))}
+        </div>
+      ) : sortedOrders.length === 0 ? (
+        <div className={styles.emptyState}>
+          <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 01-8 0"></path>
+          </svg>
+          <h4 className={styles.emptyTitle}>No Orders Found</h4>
+          <p className={styles.emptyDesc}>
+            {searchCode || statusTab !== "all"
+              ? "No purchases match your current search or filter criteria."
+              : "You haven't placed any purchases yet. Discover our exclusive perfume collection."}
+          </p>
+          <Link href="/shop-8" className={styles.btnShop}>
+            Explore Perfumes
+          </Link>
+        </div>
+      ) : (
+        <div className={styles.orderList}>
+          {sortedOrders.map((order) => {
+            const statusInfo = getStatusBadge(order.status);
+            const prods = orderSummaries[order.id] || order.products || [];
+            const canCancel = ["processing", "pending"].includes(
+              (order.status?.value || order.status || "").toLowerCase()
+            );
+
+            return (
+              <div key={order.id} className={styles.orderCard}>
+                {/* Card Header */}
+                <div className={styles.cardHeader}>
+                  <div className={styles.orderMeta}>
+                    <span className={styles.orderNumber}>
+                      Order #{order.code || order.id}
+                    </span>
+                    <span className={styles.orderDate}>
+                      Placed on {formatDate(order.created_at)}
+                    </span>
                   </div>
-                  <div style={{ fontWeight: 500, fontSize: 18 }}>
-                    {modalDetails.order_address[0]?.name}
+
+                  <div className={styles.headerRight}>
+                    <span className={`${styles.badge} ${statusInfo.badgeClass}`}>
+                      <span className={styles.statusDot} />
+                      {statusInfo.label}
+                    </span>
+                    <span className={styles.orderAmount}>
+                      {Number(order.amount || 0).toFixed(2)}
+                      {currencySymbol}
+                    </span>
                   </div>
-                  <div>{modalDetails.order_address[0]?.phone}</div>
-                  <div>{modalDetails.order_address[0]?.email}</div>
                 </div>
-                <div className="mb-4">
-                  <div className="mb-1 text-uppercase small fw-semibold text-muted">
-                    Status
+
+                {/* Card Body: Products Preview */}
+                <div className={styles.cardBody}>
+                  {prods.length > 0 ? (
+                    <div className={styles.productsRow}>
+                      {prods.slice(0, 3).map((item, idx) => (
+                        <div key={item.id || idx} className={styles.productItem}>
+                          <img
+                            src={
+                              item.product_image
+                                ? `${API_BASE}storage/${item.product_image}`
+                                : "/no-img.png"
+                            }
+                            alt={item.product_name || "Product"}
+                            className={styles.productThumb}
+                            onError={(e) => {
+                              e.currentTarget.src = "/no-img.png";
+                            }}
+                          />
+                          <div className={styles.productInfo}>
+                            <div className={styles.productName} title={item.product_name}>
+                              {item.product_name}
+                            </div>
+                            <div className={styles.productMeta}>
+                              Qty: {item.qty || 1} × {Number(item.price || item.gross_amount || 0).toFixed(2)}
+                              {currencySymbol}
+                              {item.is_gift === 1 && (
+                                <span className={styles.giftTag}>• Gift</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {prods.length > 3 && (
+                        <div className={styles.moreProductsBadge}>
+                          +{prods.length - 3} more items
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-muted small py-1">
+                      {Number(order.amount || 0).toFixed(2)} {currencySymbol} order
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Footer: Actions */}
+                <div className={styles.cardFooter}>
+                  <div className={styles.paymentTag}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                      <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <span>{getPaymentMethodLabel(order.payment_channel)}</span>
                   </div>
-                  <div style={{ fontWeight: 500, fontSize: 18 }}>
-                    {modalOrderOuter?.status?.label && (
-                      <Badge
-                        bg={
-                          modalOrderOuter.status.value === "processing"
-                            ? "info"
-                            : modalOrderOuter.status.value === "shipped"
-                            ? "primary"
-                            : modalOrderOuter.status.value === "completed"
-                            ? "success"
-                            : modalOrderOuter.status.value === "returned"
-                            ? "warning"
-                            : modalOrderOuter.status.value === "cancelled"
-                            ? "danger"
-                            : "secondary"
-                        }
-                        className="rounded-pill px-3 py-1"
-                        style={{ fontSize: "0.98em" }}
+
+                  <div className={styles.cardActions}>
+                    {canCancel && (
+                      <button
+                        type="button"
+                        className={styles.btnCancel}
+                        onClick={() => openCancelModal(order)}
                       >
-                        {modalOrderOuter.status.label}
-                      </Badge>
+                        Cancel Order
+                      </button>
                     )}
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <div className="mb-1 text-uppercase small fw-semibold text-muted">
-                    Payment Method
-                  </div>
-                  <div style={{ fontWeight: 500, fontSize: 18 }}>
-                    {modalOrderOuter?.payment_channel
-                      ? ({ cod: "Cash on Delivery", paytabs: "PayTabs" }[
-                          modalOrderOuter.payment_channel
-                        ] || modalOrderOuter.payment_channel)
-                      : "—"}
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <div className="mb-1 text-uppercase small fw-semibold text-muted">
-                    Shipping Address
-                  </div>
-                  <div>
-                    {modalDetails.order_address[0]?.address},{" "}
-                    {modalDetails.order_address[0]?.city},{" "}
-                    {modalDetails.order_address[0]?.state}
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <div className="mb-1 text-uppercase small fw-semibold text-muted">
-                    Billing Address
-                  </div>
-                  <div>
-                    {modalDetails.order_address[0]?.address},{" "}
-                    {modalDetails.order_address[0]?.city},{" "}
-                    {modalDetails.order_address[0]?.state}
+
+                    <button
+                      type="button"
+                      className={styles.btnDetails}
+                      onClick={() => handleViewDetails(order)}
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               </div>
-              <div className="col-md-6">
-                <h4 className="mb-4" style={{ fontWeight: 600 }}>
-                  Items
-                </h4>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── PAGINATION ── */}
+      {totalPages > 1 && (
+        <div className={styles.paginationRow}>
+          <div className={styles.pageInfo}>
+            Showing page {page} of {totalPages} ({totalFiltered} total purchases)
+          </div>
+          <div className={styles.pageButtons}>
+            <button
+              type="button"
+              className={styles.btnPage}
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className={styles.btnPage}
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── ORDER DETAILS MODAL ── */}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="lg"
+        centered
+        contentClassName="border-0 shadow-lg"
+        style={{ borderRadius: "16px" }}
+      >
+        <Modal.Header closeButton className={styles.modalHeaderCustom}>
+          <div>
+            <Modal.Title className={styles.modalTitleCustom}>
+              Order #{selectedOrder?.code || selectedOrder?.id}
+            </Modal.Title>
+            <div className="small text-muted mt-1">
+              Placed on {formatDate(selectedOrder?.created_at)}
+            </div>
+          </div>
+        </Modal.Header>
+
+        <Modal.Body className="p-4">
+          {modalLoading ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="dark" />
+            </div>
+          ) : modalDetails ? (
+            <div className="row g-4">
+              {/* Left Column: Delivery & Payment Details */}
+              <div className="col-md-5">
+                <div className={styles.detailSection}>
+                  <div className={styles.detailLabel}>Status</div>
+                  <div className="d-flex align-items-center gap-2 mt-1">
+                    {(() => {
+                      const st = getStatusBadge(selectedOrder?.status);
+                      return (
+                        <span className={`${styles.badge} ${st.badgeClass}`}>
+                          <span className={styles.statusDot} />
+                          {st.label}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                <div className={styles.detailSection}>
+                  <div className={styles.detailLabel}>Shipping Address</div>
+                  <div className={styles.detailValue}>
+                    {modalDetails.order_address?.[0]?.name && (
+                      <div className="fw-semibold mb-1">
+                        {modalDetails.order_address[0].name}
+                      </div>
+                    )}
+                    {modalDetails.order_address?.[0]?.phone && (
+                      <div className="small text-muted mb-1">
+                        📞 {modalDetails.order_address[0].phone}
+                      </div>
+                    )}
+                    <div className="small text-secondary">
+                      {[
+                        modalDetails.order_address?.[0]?.address,
+                        modalDetails.order_address?.[0]?.city,
+                        modalDetails.order_address?.[0]?.state,
+                      ]
+                        .filter(Boolean)
+                        .join(", ") || "No address provided"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.detailSection}>
+                  <div className={styles.detailLabel}>Payment Method</div>
+                  <div className={styles.detailValue}>
+                    {getPaymentMethodLabel(selectedOrder?.payment_channel)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Ordered Items & Price Summary */}
+              <div className="col-md-7">
+                <div className={styles.detailLabel}>Ordered Items</div>
                 <div
                   style={{
-                    maxHeight: 280,
+                    maxHeight: "260px",
                     overflowY: "auto",
-                    paddingRight: 2,
-                    marginBottom: 8,
+                    paddingRight: "4px",
+                    marginBottom: "16px",
                   }}
                 >
-                  {modalDetails.order_products.map((item) => (
-                    <div
-                      key={item.id}
-                      className="d-flex align-items-center mb-4 pb-3 border-bottom"
-                    >
+                  {(modalDetails.order_products || []).map((prod) => (
+                    <div key={prod.id} className={styles.modalProductItem}>
                       <img
                         src={
-                          item.product_image
-                            ? `${IMG_BASE}storage/${item.product_image}`
+                          prod.product_image
+                            ? `${API_BASE}storage/${prod.product_image}`
                             : "/no-img.png"
                         }
-                        alt={item.product_name}
-                        style={{
-                          width: 80,
-                          height: 80,
-                          objectFit: "cover",
-                          borderRadius: 12,
-                          marginRight: 18,
+                        alt={prod.product_name}
+                        className={styles.productThumb}
+                        onError={(e) => {
+                          e.currentTarget.src = "/no-img.png";
                         }}
                       />
-                      <div className="flex-grow-1">
-                        <div style={{ fontWeight: 500, fontSize: 16 }}>
-                          {item.product_name}
+                      <div className="flex-grow-1 min-w-0">
+                        <div className="fw-semibold small text-truncate" title={prod.product_name}>
+                          {prod.product_name}
                         </div>
-                        {item.is_gift === 1 && (
-                          <div
-                            className="small text-dark"
-                            style={{ fontWeight: 500 }}
-                          >
-                            (Free Gift)
-                          </div>
-                        )}
+                        <div className="small text-muted">
+                          Qty: {prod.qty}
+                          {prod.is_gift === 1 && (
+                            <span className={styles.giftTag}> • Free Gift</span>
+                          )}
+                        </div>
                       </div>
-                      <div style={{ fontWeight: 500 }}>
-                        {item.qty} X{" "}
-                        {Number(item.discount_amount) > 0 ? (
-                          <>
-                            <span
-                              style={{
-                                textDecoration: "line-through",
-                                color: "#888",
-                                marginRight: 6,
-                                fontWeight: 400,
-                              }}
-                            >
-                              {Number(item.price * 1.05).toFixed(2)}د.إ
-                            </span>
-                            <span> {Number(item.gross_amount).toFixed(2)}د.إ</span>
-                          </>
-                        ) : (
-                          <span>{Number(item.gross_amount).toFixed(2)}د.إ</span>
-                        )}
+                      <div className="text-end fw-semibold small">
+                        {Number(prod.gross_amount || prod.price * prod.qty || 0).toFixed(2)}
+                        {currencySymbol}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="pt-2">
-  <div className="pb-1 d-flex justify-content-between">
-    <span style={{ fontWeight: 500 }}>Subtotal</span>
-    <span className="fw-semibold">
-      {Number(modalOrderOuter?.sub_total || 0).toFixed(2)}د.إ
-    </span>
-  </div>
 
-  <div className="pb-1 d-flex justify-content-between">
-    <span style={{ fontWeight: 500 }}>Shipping Cost</span>
-    <span className="fw-semibold">
-      {modalOrderOuter?.shipping_cost
-        ? `${Number(modalOrderOuter.shipping_cost).toFixed(2)}د.إ`
-        : (Number(modalOrderOuter?.sub_total || 0) >= 400
-            ? "Free Shipping"
-            : `${(modalDetails.shipping_cost || 20).toFixed(2)}د.إ`)}
-    </span>
-  </div>
+                {/* Price Breakdown */}
+                <div className="pt-2 border-top">
+                  <div className={styles.priceBreakdownRow}>
+                    <span>Subtotal</span>
+                    <span>
+                      {Number(selectedOrder?.sub_total || 0).toFixed(2)}
+                      {currencySymbol}
+                    </span>
+                  </div>
 
-  {/* <div className="pb-1 d-flex justify-content-between">
-    <span style={{ fontWeight: 500 }}>Service Fee</span>
-    <span className="fw-semibold">
-      {(modalDetails.service_fee || 3.0).toFixed(2)}د.إ
-    </span>
-  </div>
+                  <div className={styles.priceBreakdownRow}>
+                    <span>Shipping Cost</span>
+                    <span>
+                      {selectedOrder?.shipping_cost && Number(selectedOrder.shipping_cost) > 0
+                        ? `${Number(selectedOrder.shipping_cost).toFixed(2)}${currencySymbol}`
+                        : Number(selectedOrder?.sub_total || 0) >= 400
+                        ? "Free Shipping"
+                        : `${(modalDetails.shipping_cost || 0).toFixed(2)}${currencySymbol}`}
+                    </span>
+                  </div>
 
-  {modalOrderOuter?.payment_channel === "cod" && (
-    <div className="pb-1 d-flex justify-content-between">
-      <span style={{ fontWeight: 500 }}>COD Charges</span>
-      <span className="fw-semibold">
-        {(modalDetails.cod_charges || 10.0).toFixed(2)}د.إ
-      </span>
-    </div>
-  )} */}
+                  {selectedOrder?.coupon_code && (
+                    <div className={styles.priceBreakdownRow}>
+                      <span className="text-success">
+                        Coupon ({selectedOrder.coupon_code})
+                      </span>
+                      <span className="text-success fw-semibold">Applied</span>
+                    </div>
+                  )}
 
-  <div className="pb-1 d-flex justify-content-between">
-    <span style={{ fontWeight: 500 }}>
-      <p className="text-red">{modalOrderOuter?.coupon_code ? ` (Coupon Applied: ${modalOrderOuter.coupon_code})` : ""}</p>
-    </span>
-    {/* <span className="fw-semibold text-danger">
-      -{modalDetails.order_products
-        .reduce((sum, it) => sum + Number(it.discount_amount), 0)
-        .toFixed(2)}د.إ
-    </span> */}
-  </div>
-
-
-  {/* Total */}
-  <div className="border-top pt-3 mt-3 d-flex justify-content-between align-items-center">
-    <div style={{ fontWeight: 600, fontSize: 22 }}>Total</div>
-    <div style={{ fontWeight: 600, fontSize: 22 }}>
-      {Number(modalOrderOuter?.amount || 0).toFixed(2)}د.إ
-      <div className="small text-muted" style={{ fontWeight: 500 }}>
-        (includes {Number(modalOrderOuter?.tax_amount || 0).toFixed(2)}د.إ VAT)
-      </div>
-    </div>
-  </div>
-</div>
-
+                  <div className={styles.grandTotalRow}>
+                    <div>
+                      <div>Total</div>
+                      <div className="small text-muted fw-normal" style={{ fontSize: "0.72rem" }}>
+                        Includes {Number(selectedOrder?.tax_amount || 0).toFixed(2)}
+                        {currencySymbol} VAT
+                      </div>
+                    </div>
+                    <div>
+                      {Number(selectedOrder?.amount || 0).toFixed(2)}
+                      {currencySymbol}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="text-muted py-5 text-center">
-              Order details not available.
+            <div className="text-center text-muted py-4">
+              Unable to load order details.
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer className="border-0 d-flex justify-content-between">
-          {["processing", "pending"].includes(modalOrderOuter?.status?.value) ? (
+
+        <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex justify-content-between">
+          {["processing", "pending"].includes(
+            (selectedOrder?.status?.value || selectedOrder?.status || "").toLowerCase()
+          ) ? (
             <Button
               variant="outline-danger"
-              className="text-uppercase fw-medium px-3"
-              style={{ borderRadius: "30px", fontSize: "0.82rem" }}
+              size="sm"
+              className="rounded-pill px-3"
               onClick={() => {
                 setShowModal(false);
-                openCancelModal(modalOrderOuter);
+                openCancelModal(selectedOrder);
               }}
             >
               Cancel Order
@@ -912,51 +713,65 @@ export default function AccountOrders() {
           ) : (
             <div />
           )}
-          <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
+
+          <Button
+            variant="dark"
+            size="sm"
+            className="rounded-pill px-4"
+            onClick={() => setShowModal(false)}
+          >
             Close
           </Button>
         </Modal.Footer>
       </Modal>
 
-      {/* ── CANCELLATION CONFIRMATION MODAL ── */}
-      <Modal show={showCancelModal} onHide={() => !isCancelling && setShowCancelModal(false)} centered>
-        <Modal.Header className="bg-dark border-0">
-          <Modal.Title className="text-white fs-18">
+      {/* ── CANCELLATION MODAL ── */}
+      <Modal
+        show={showCancelModal}
+        onHide={() => !isCancelling && setShowCancelModal(false)}
+        centered
+        contentClassName="border-0 shadow"
+        style={{ borderRadius: "16px" }}
+      >
+        <Modal.Header closeButton={!isCancelling} className={styles.modalHeaderCustom}>
+          <Modal.Title className={styles.modalTitleCustom}>
             Cancel Order #{cancellingOrder?.code || cancellingOrder?.id}
           </Modal.Title>
-          <Button variant="close" onClick={() => !isCancelling && setShowCancelModal(false)} />
         </Modal.Header>
+
         <Modal.Body className="p-4">
           {cancelSuccess ? (
             <div className="alert alert-success d-flex align-items-center mb-0">
-              <span className="me-2">✅</span> {cancelSuccess}
+              <span className="me-2">✓</span> {cancelSuccess}
             </div>
           ) : (
             <>
               <p className="text-muted small mb-3">
-                Are you sure you want to cancel this order? Once cancelled, the items will be returned to stock and this action cannot be undone.
+                Are you sure you want to cancel this order? Once cancelled, this action cannot be undone.
               </p>
 
               {cancelError && (
                 <div className="alert alert-danger py-2 mb-3 small">
-                  ⚠️ {cancelError}
+                  {cancelError}
                 </div>
               )}
 
               <Form.Group className="mb-3">
-                <Form.Label className="small fw-semibold text-uppercase text-muted">
+                <Form.Label className="small fw-semibold text-muted text-uppercase">
                   Reason for Cancellation
                 </Form.Label>
                 <Form.Select
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                   disabled={isCancelling}
-                  className="shadow-none border"
-                  style={{ fontSize: "0.9rem" }}
+                  className="shadow-none border rounded-3"
+                  style={{ fontSize: "0.88rem" }}
                 >
                   <option value="Changed my mind">Changed my mind</option>
                   <option value="Ordered wrong item / size">Ordered wrong item / size</option>
-                  <option value="Need to change shipping address / phone">Need to change shipping address / phone</option>
+                  <option value="Need to change shipping address / phone">
+                    Need to change shipping address / phone
+                  </option>
                   <option value="Delivery time is too long">Delivery time is too long</option>
                   <option value="Found a better price elsewhere">Found a better price elsewhere</option>
                   <option value="Other">Other reason</option>
@@ -965,7 +780,7 @@ export default function AccountOrders() {
 
               {cancelReason === "Other" && (
                 <Form.Group className="mb-3">
-                  <Form.Label className="small fw-semibold text-uppercase text-muted">
+                  <Form.Label className="small fw-semibold text-muted text-uppercase">
                     Please describe the reason
                   </Form.Label>
                   <Form.Control
@@ -975,17 +790,21 @@ export default function AccountOrders() {
                     value={cancelDescription}
                     onChange={(e) => setCancelDescription(e.target.value)}
                     disabled={isCancelling}
-                    style={{ fontSize: "0.9rem" }}
+                    className="shadow-none border rounded-3"
+                    style={{ fontSize: "0.88rem" }}
                   />
                 </Form.Group>
               )}
             </>
           )}
         </Modal.Body>
+
         {!cancelSuccess && (
-          <Modal.Footer className="border-0">
+          <Modal.Footer className="border-0 pt-0 px-4 pb-4">
             <Button
               variant="outline-secondary"
+              size="sm"
+              className="rounded-pill px-3"
               onClick={() => setShowCancelModal(false)}
               disabled={isCancelling}
             >
@@ -993,7 +812,8 @@ export default function AccountOrders() {
             </Button>
             <Button
               variant="danger"
-              className="px-4 fw-semibold"
+              size="sm"
+              className="rounded-pill px-4 fw-semibold"
               onClick={handleConfirmCancel}
               disabled={isCancelling}
             >
@@ -1009,6 +829,6 @@ export default function AccountOrders() {
           </Modal.Footer>
         )}
       </Modal>
-    </>
+    </div>
   );
 }
