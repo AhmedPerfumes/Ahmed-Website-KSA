@@ -146,12 +146,9 @@ export default function PremiumProductCard({
       ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ""))
       : he.decode(elm?.product_name || "");
 
-  const salePercent =
-    activeDiscount?.discount_type === "percent"
-      ? Math.round(activeDiscount.value)
-      : activeDiscount?.discount_type === "amount" && elm.price > 0
-      ? Math.round((activeDiscount.value / elm.price) * 100)
-      : null;
+  const isPercentDiscount = activeDiscount?.discount_type === "percent";
+  const salePercent = isPercentDiscount ? Math.round(activeDiscount.value) : null;
+  const isAmountDiscount = activeDiscount?.discount_type === "amount" || (activeDiscount && !isPercentDiscount);
 
   /* ─── Add to Cart ────────────────────────────────────────── */
 
@@ -243,8 +240,13 @@ export default function PremiumProductCard({
                 {elm.label_name}
               </span>
             )}
-            {salePercent && !isOOS && (
+            {isPercentDiscount && salePercent && !isOOS && (
               <span className="pc-badge pc-badge--sale">-{salePercent}%</span>
+            )}
+            {isAmountDiscount && !isOOS && (
+              <span className="pc-badge pc-badge--sale">
+                {locale === "ar" ? "تخفيض" : "Sale"}
+              </span>
             )}
             {isOOS && (
               <span className="pc-badge pc-badge--oos">
