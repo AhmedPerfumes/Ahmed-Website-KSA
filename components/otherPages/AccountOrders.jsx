@@ -6,6 +6,13 @@ import { useMenu } from "@/context/MenuContext";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
+const getProductImageUrl = (img) => {
+  if (!img || typeof img !== "string") return "/assets/images/general_product.png";
+  if (img.startsWith("http://") || img.startsWith("https://")) return img;
+  const cleanPath = img.replace(/^\/?(storage\/|public\/storage\/)/, "");
+  return `${IMG_BASE}storage/${cleanPath}`;
+};
+
 const FILTER_TABS = [
   { key: "all", label: "All Orders", status: null },
   { key: "processing", label: "Processing", status: "processing" },
@@ -79,7 +86,12 @@ export default function AccountOrders() {
       if (!res.ok) throw new Error("Failed to fetch orders");
       const json = await res.json();
       const orders = json.data || [];
-      setData(orders);
+
+      // Ensure newest date first
+      const sortedOrders = [...orders].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setData(sortedOrders);
 
       const totalRecords = json.filtered ?? json.total ?? 0;
       setPageCount(Math.ceil(totalRecords / pagination.pageSize) || 1);
@@ -301,11 +313,11 @@ export default function AccountOrders() {
                         <img
                           key={i}
                           className="product-thumb"
-                          src={
-                            prod.product_image
-                              ? `${IMG_BASE}storage/${prod.product_image}`
-                              : "/no-img.png"
-                          }
+                          src={getProductImageUrl(prod.product_image)}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/assets/images/general_product.png";
+                          }}
                           alt={prod.product_name || ""}
                           title={prod.product_name || ""}
                         />
@@ -445,11 +457,11 @@ export default function AccountOrders() {
                         <div className="order-item-main">
                           <img
                             className="item-img"
-                            src={
-                              item.product_image
-                                ? `${IMG_BASE}storage/${item.product_image}`
-                                : "/no-img.png"
-                            }
+                            src={getProductImageUrl(item.product_image)}
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/assets/images/general_product.png";
+                            }}
                             alt=""
                           />
                           <div className="item-info">
