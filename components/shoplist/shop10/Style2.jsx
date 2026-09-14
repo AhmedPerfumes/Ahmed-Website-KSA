@@ -215,9 +215,9 @@ export default function Style2({ category, subcategory, products: initialProduct
                           {t("Out Of Stock")}
                         </div>
                       ) : (
-                       elm.discount && (
+                       elm.discount && elm. discount.discount_type == 'percent' && (
                           <div style={{ backgroundColor: '#198754' }} className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2">
-                            {elm.discount.discount_type === "percent" ? `Sale ${elm.discount.value}%` : "Sale"}
+                            Sale {elm.discount.value}%
                           </div>
                         )
                       )}
