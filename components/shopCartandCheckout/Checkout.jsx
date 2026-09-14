@@ -202,10 +202,12 @@ export default function Checkout() {
     return () => { document.body.removeChild(s1); document.body.removeChild(s2); };
   }, [selectedOption]);
 
-  /* ------------------------------------------------------------------ */
-  /*  HANDLERS (all original logic preserved verbatim)                   */
-  /* ------------------------------------------------------------------ */
-  const handleRadioChange = e => setSelectedOption(e.target.value);
+  const handleRadioChange = e => {
+    setSelectedOption(e.target.value);
+    if (error && (error.toLowerCase().includes('payment') || error.toLowerCase().includes('option'))) {
+      setError(null);
+    }
+  };
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -388,6 +390,13 @@ export default function Checkout() {
   async function onOrder(event) {
     event.preventDefault();
     setIsLoading(true); setError(null); setSuccess(null);
+
+    if (!selectedOption || !selectedOption.trim()) {
+      setIsLoading(false);
+      setError('Please choose a payment option to continue.');
+      return;
+    }
+
     try {
       if (!window.__placeOrderTracked && cartProducts?.length) {
         window.__placeOrderTracked = true;
@@ -441,8 +450,11 @@ export default function Checkout() {
       else if (data.message === 'Redirecting to Paytabs...') { setSuccess(data.message); setError(null); router.push(data.redirect_url); }
       else if (data.message === 'Redirecting to Tamara...') { setSuccess(data.message); setError(null); router.push(data.redirect_url); }
       else {
-        const errField = ['qtyMessage', 'discountMessage', 'couponMessage', 'duplicateOrderMessage', 'error'].find(k => data[k]);
-        if (errField) { setError(data[errField]); }
+        const errField = ['qtyMessage', 'discountMessage', 'couponMessage', 'duplicateOrderMessage', 'error', 'payment_method'].find(k => data[k]);
+        if (errField) {
+          const msg = Array.isArray(data[errField]) ? data[errField][0] : data[errField];
+          setError(msg);
+        }
         else {
           const fErr = ['products', 'billingAddress.first_name', 'billingAddress.last_name', 'billingAddress.email', 'billingAddress.mobile', 'billingAddress.area', 'billingAddress.building', 'billingAddress.province'].find(k => data[k]);
           if (fErr) setError(data[fErr]);
@@ -1149,6 +1161,11 @@ export default function Checkout() {
 
                       {/* Payment methods — compact 2-column grid */}
                       <p className="cc-pay-label">Select Payment Method</p>
+                      {error && !selectedOption && (error.toLowerCase().includes('payment') || error.toLowerCase().includes('option')) && (
+                        <div className="text-danger small fw-semibold mb-2" role="alert">
+                          ⚠️ Please choose a payment option to continue.
+                        </div>
+                      )}
                       <div className="cc-payment-grid cc-payment-grid--compact">
                         {/* COD */}
                         <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
