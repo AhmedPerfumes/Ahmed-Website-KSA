@@ -3,9 +3,36 @@
 
 import { createContext, useContext, useState } from "react";
 
-const ShopFilterContext = createContext();
+const defaultShopFilterState = {
+  rawProducts: [],
+  setRawProducts: () => {},
+  priceRange: [0, 0],
+  setPriceRange: () => {},
+  stockAvailability: "all",
+  setStockAvailability: () => {},
+  promotionalOnly: false,
+  setPromotionalOnly: () => {},
+  selectedLabels: [],
+  setSelectedLabels: () => {},
+  selectedTags: [],
+  setSelectedTags: () => {},
+  searchTerm: '',
+  setSearchTerm: () => {},
+  sortOption: 'popularity',
+  setSortOption: () => {},
+  selectedCategories: [],
+  setSelectedCategories: () => {},
+  selectedSubcategories: [],
+  setSelectedSubcategories: () => {},
+  maxPrice: 1000,
+  setMaxPrice: () => {},
+  lastSearchQuery: null,
+  setLastSearchQuery: () => {},
+};
 
-export const useShopFilter = () => useContext(ShopFilterContext);
+const ShopFilterContext = createContext(defaultShopFilterState);
+
+export const useShopFilter = () => useContext(ShopFilterContext) || defaultShopFilterState;
 
 export function ShopFilterProvider({ children }) {
   const [rawProducts, setRawProducts] = useState([]);

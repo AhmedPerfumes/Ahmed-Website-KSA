@@ -33,6 +33,7 @@ import AhmedTrackerComponent from "@/components/common/AhmedTracker";
 import Head from "next/head";
 import { ToastContainer } from 'react-toastify';
 import DeferredCSS from "@/components/common/DeferredCSS";
+import { ShopFilterProvider } from "@/context/ShopFilterContext";
 
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
@@ -428,21 +429,23 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                             <AhmedTrackerComponent />
                                 <MobileHeader />
                                 <Header14 />
-                                {children}
-                                <MobileFooter1 />
-                                {/* Modals and Asides */}
-                                <LoginFormPopup />
-                                <SizeGuide />
-                                <Delivery />
-                                <CartDrawer />
-                                <CartToast />
-                                <NewsLetter />
-                                <SiteMap />
-                                <CustomerLogin />
-                                <ProductDescription />
-                                <ProductAdditionalInformation />
-                                <ProductReviews />
-                                <ToastContainer />
+                                <ShopFilterProvider>
+                                    {children}
+                                    <MobileFooter1 />
+                                    {/* Modals and Asides */}
+                                    <LoginFormPopup />
+                                    <SizeGuide />
+                                    <Delivery />
+                                    <CartDrawer />
+                                    <CartToast />
+                                    <NewsLetter />
+                                    <SiteMap />
+                                    <CustomerLogin />
+                                    <ProductDescription />
+                                    <ProductAdditionalInformation />
+                                    <ProductReviews />
+                                    <ToastContainer />
+                                </ShopFilterProvider>
                         </UserProvider>
                     </Context>
                             </MenuProvider>

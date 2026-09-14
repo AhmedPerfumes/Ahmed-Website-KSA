@@ -127,7 +127,7 @@ function CityWalk() {
                                         >
                                             <Image
                                                 loading="lazy"
-                                                src={`${process.env.NEXT_PUBLIC_API_URL}storage/${saleDesktop.image}`}
+                                                src={`${process.env.NEXT_PUBLIC_API_URL}storage/${(saleMobile || saleDesktop)?.image}`}
                                                 alt={(saleMobile || saleDesktop)?.title || "Sale Banner Mobile"}
                                                 fill
                                                 sizes="(max-width: 980px) 100vw, 980px"
