@@ -400,6 +400,12 @@ export default function Checkout() {
       return;
     }
 
+    if (!selectedOption) {
+      setIsLoading(false);
+      setError('Please select a payment option');
+      return;
+    }
+
     const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
     const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
     const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1].price);
