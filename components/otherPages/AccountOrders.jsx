@@ -1,10 +1,15 @@
-"use client";
-import React, { useState, useEffect, useCallback } from "react";
-import { Modal, Form, Spinner } from "react-bootstrap";
-import he from "he";
-import { useMenu } from "@/context/MenuContext";
-
 const IMG_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+
+const getImageUrl = (imgPath) => {
+  if (!imgPath) return "/assets/images/general_product.png";
+  if (imgPath.startsWith("http://") || imgPath.startsWith("https://")) return imgPath;
+  const clean = imgPath.replace(/^\/+/, "");
+  const base = IMG_BASE.endsWith("/") ? IMG_BASE : `${IMG_BASE}/`;
+  if (clean.startsWith("storage/")) {
+    return `${base}${clean}`;
+  }
+  return `${base}storage/${clean}`;
+};
 
 const FILTER_TABS = [
   { key: "all", label: "All Orders", status: null },
@@ -301,13 +306,13 @@ export default function AccountOrders() {
                         <img
                           key={i}
                           className="product-thumb"
-                          src={
-                            prod.product_image
-                              ? `${IMG_BASE}storage/${prod.product_image}`
-                              : "/no-img.png"
-                          }
+                          src={getImageUrl(prod.product_image)}
                           alt={prod.product_name || ""}
                           title={prod.product_name || ""}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/assets/images/general_product.png";
+                          }}
                         />
                       ))}
                     </div>
@@ -445,12 +450,12 @@ export default function AccountOrders() {
                         <div className="order-item-main">
                           <img
                             className="item-img"
-                            src={
-                              item.product_image
-                                ? `${IMG_BASE}storage/${item.product_image}`
-                                : "/no-img.png"
-                            }
-                            alt=""
+                            src={getImageUrl(item.product_image)}
+                            alt={item.product_name || ""}
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/assets/images/general_product.png";
+                            }}
                           />
                           <div className="item-info">
                             <div className="item-name">{he.decode(item.product_name || "")}</div>
