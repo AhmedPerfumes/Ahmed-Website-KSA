@@ -193,11 +193,11 @@ const filteredProducts = products
 
               {elm.product_qty <= 0 ? (
                 <div className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2" style={{ backgroundColor: "#dc3545" }}>
-                  Out Of Stock
+                  {t("Out Of Stock")}
                 </div>
-              ) : elm.discount && elm.discount.discount_type == "percent" && (
+              ) : elm.discount && (
                 <div className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2" style={{ backgroundColor: "#198754" }}>
-                  Sale {elm.discount.value}%
+                  {elm.discount.discount_type === "percent" ? `Sale ${elm.discount.value}%` : "Sale"}
                 </div>
               )}
 
