@@ -1,68 +1,36 @@
 "use client";
 
-import { useContextElement } from "@/context/Context";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import Image from "next/image";
-import he from "he";
 import Pagination2 from "@/components/common/Pagination2";
 import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from "@/context/MenuContext";
 import { useShopFilter } from "@/context/ShopFilterContext";
-import Link from "next/link";
 import {
   removeSpecialCharactersAndAmp,
   sanitizeUrlParam,
-  formatPrice
 } from "@/utlis/shop";
 import ProductFilter from "../../shoplist/ProductFilter";
-import toast from 'react-hot-toast';
+import PremiumProductCard from "@/components/shoplist/premium/PremiumProductCard";
+import "@/components/shoplist/premium/premium-category.css";
+import "@/components/shoplist/premium/skeleton.css";
 
-const ProductPrice = ({ elm, currency }) => {
-  const currentUTC = new Date();
-  const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000));
-  const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-
-  const isDiscountActive = elm?.discount &&
-    new Date(current_date_time) >= new Date(elm.discount.start_date) &&
-    new Date(current_date_time) <= new Date(elm.discount.end_date);
-
-  if (isDiscountActive) {
-    let discountedPrice = elm.price;
-    if (elm.discount.discount_type === "percent") {
-      discountedPrice = elm.price - (elm.price / 100 * elm.discount.value);
-    } else if (elm.discount.discount_type === "amount") {
-      discountedPrice = elm.price - elm.discount.value;
-    }
-    return (
-      <>
-        <span className="money price price-old">{formatPrice(elm.price, currency)}</span>
-        <span className="money price price-sale"> {formatPrice(discountedPrice, currency)}</span>
-      </>
-    );
-  } else if (elm?.sale_price) {
-    const salePrice = elm.price - (elm.price / 100 * elm.sale_price);
-    return (
-      <>
-        <span className="money price price-old">{formatPrice(elm.price, currency)}</span>
-        <span className="money price price-sale"> {formatPrice(salePrice, currency)}</span>
-      </>
-    );
-  }
-  return <span className="money price">{formatPrice(elm.price, currency)}</span>;
-};
-
-const ProductCardSkeleton = () => (
-  <div className="product-card-wrapper">
-    <div className="product-card">
-      <div className="pc__img-wrapper" style={{ background: '#f0f0f0', aspectRatio: '4/5' }}></div>
-      <div className="pc__info" style={{ padding: '15px 10px' }}>
-        <div className="skeleton-bar" style={{ height: '14px', width: '70%', background: '#eee', margin: '0 auto 8px', borderRadius: '4px' }}></div>
-        <div className="skeleton-bar" style={{ height: '12px', width: '40%', background: '#f5f5f5', margin: '0 auto', borderRadius: '4px' }}></div>
+function SkeletonCard() {
+  return (
+    <div className="pcs-card" aria-hidden="true">
+      <div className="pcs-img-wrap">
+        <div className="pcs-img shimmer" />
+      </div>
+      <div className="pcs-body">
+        <div className="pcs-line pcs-line--name shimmer" />
+        <div className="pcs-line pcs-line--name-short shimmer" />
+        <div className="pcs-line pcs-line--price shimmer" />
+      </div>
+      <div className="pcs-actions">
+        <div className="pcs-line pcs-line--atc shimmer" />
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 function DiscountGrid({ title, onlyDiscounted = false }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
@@ -78,11 +46,6 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
   } = useShopFilter();
 
   const locale = useLocale();
-  const {
-    addProductToCart,
-    cartProducts,
-    setCartProducts
-  } = useContextElement();
 
   const [loading, setLoading] = useState(true);
   const [selectedColView, setSelectedColView] = useState(3);
@@ -185,10 +148,18 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
     getAllProducts();
   }, [rawProducts.length, setRawProducts]);
 
-  const isSubcategoryFunc = (category, subcategory) => {
-    if (subcategory) return sanitizeUrlParam(subcategory.subcategory_name);
+  // Reset page to 1 whenever filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, sortOption, priceRange, selectedLabels, selectedSubcategories, selectedTags, stockAvailability]);
 
-    const categorySlug = removeSpecialCharactersAndAmp(category).split(" ").join("-").toLowerCase();
+  const isSubcategoryFunc = (category, subcategory) => {
+    if (subcategory) {
+      const subName = typeof subcategory === 'string' ? subcategory : subcategory.subcategory_name;
+      if (subName) return sanitizeUrlParam(subName);
+    }
+
+    const categorySlug = removeSpecialCharactersAndAmp(category || "").split(" ").join("-").toLowerCase();
     const categoryMap = {
       "gift-sets": "gift-sets",
       "hair-mist": "hair-mist",
@@ -197,42 +168,6 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
     };
 
     return categoryMap[categorySlug] || "online-exclusive";
-  };
-
-  const getProductQuantity = (id) => {
-    const item = cartProducts.find(p => p.product_id === id);
-    return item ? item.quantity : 0;
-  };
-
-  const updateQuantity = (id, delta) => {
-    const productData = rawProducts.find(p => p.product_id === id);
-    const stock = Number(productData?.product_qty) || 0;
-    const maxOrder = Number(productData?.maximum_order_quantity) || 0;
-    const limit = (maxOrder > 0) ? Math.min(maxOrder, stock) : stock;
-
-    setCartProducts(prev => {
-      return prev.map(p => {
-        if (p.product_id === id) {
-          const newQty = (p.quantity || 1) + delta;
-
-          if (newQty <= 0) {
-            toast(t("Removed from cart"), { icon: '🗑️', duration: 2000, position: 'bottom-right' });
-            return null;
-          }
-
-          if (newQty > limit) {
-            const msg = (maxOrder > 0 && newQty > maxOrder)
-              ? `${t("Maximum allowed quantity is")} ${maxOrder}`
-              : `${t("Only")} ${stock} ${t("left in stock")}`;
-            toast.error(msg, { duration: 3000, position: 'bottom-right' });
-            return p;
-          }
-
-          return { ...p, quantity: newQty };
-        }
-        return p;
-      }).filter(Boolean);
-    });
   };
 
   const handleReset = () => {
@@ -254,7 +189,7 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
       }
 
       // 1. Search Filter
-      const matchesSearch = p.product_name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = p.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
       if (!matchesSearch) return false;
 
       // 2. Stock Filter
@@ -397,153 +332,46 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
         </div>
       </div>
 
-      <div className={`products-grid row row-cols-2 row-cols-md-${selectedColView === 2 ? 2 : 3} row-cols-lg-${selectedColView}`}>
+      <div
+        className="pc-grid"
+        style={{
+          border: '1px solid var(--pc-border, #ebebeb)',
+          ...(selectedColView === 2
+            ? { gridTemplateColumns: 'repeat(2, 1fr)' }
+            : selectedColView === 4
+            ? { gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }
+            : undefined)
+        }}
+      >
         {loading || isMenuLoading ? (
           Array.from({ length: 12 }).map((_, i) => (
-            <ProductCardSkeleton key={i} />
+            <SkeletonCard key={i} />
           ))
+        ) : currentProducts.length === 0 ? (
+          <div className="py-5 text-center w-100" style={{ gridColumn: '1 / -1' }}>
+            <p className="text-secondary mb-0">{t("No products found") || "No products found."}</p>
+          </div>
         ) : (
           currentProducts.map((elm, i) => (
-            <div key={elm.product_id || i} className="product-card-wrapper">
-              <div className="product-card mb-3 mb-md-4 mb-xxl-5">
-                <div className="pc__img-wrapper">
-                  <Swiper
-                    className="swiper swiper-container background-img js-swiper-slider"
-                    slidesPerView={1}
-                  >
-                    <SwiperSlide className="swiper-slide">
-                      <Link
-                        href={`/${locale}/shop/${sanitizeUrlParam(elm.category_name)}/${isSubcategoryFunc(elm.category_name, elm.subcategory)}/${sanitizeUrlParam(elm.product_name)}`}
-                      >
-                        {elm?.images && (
-                          <>
-                            {JSON.parse(elm.images)[0] && (
-                              <Image
-                                loading="lazy"
-                                src={`${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[0]}`}
-                                width={480}
-                                height={600}
-                                alt={elm.product_name}
-                                className="pc__img"
-                                sizes="(max-width: 768px) 50vw, 33vw"
-                              />
-                            )}
-                            {JSON.parse(elm.images)[1] && (
-                              <Image
-                                loading="lazy"
-                                src={`${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(elm.images)[1]}`}
-                                width={480}
-                                height={600}
-                                alt={elm.product_name}
-                                className="pc__img pc__img-second"
-                                sizes="(max-width: 768px) 50vw, 33vw"
-                              />
-                            )}
-                          </>
-                        )}
-                      </Link>
-                      {elm.label_name && (
-                        <div style={{ backgroundColor: elm.label_color }} className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2">
-                          {elm.label_name}
-                        </div>
-                      )}
-
-                      {elm.product_qty <= 0 ? (
-                        <div className="product-label label--out-of-stock">
-                          {t("Out Of Stock")}
-                        </div>
-                      ) : (
-                        elm.discount && (
-                          <div className="product-label label--sale">
-                            {elm.discount.discount_type === "percent" ? `Sale ${elm.discount.value}%` : "Sale"}
-                          </div>
-                        )
-                      )}
-                    </SwiperSlide>
-                  </Swiper>
-                  <div className="product-card__actions">
-                    {getProductQuantity(elm.product_id) > 0 ? (
-                      <div className="pc__qty-selector--desktop">
-                        <button className="qty-btn" onClick={() => updateQuantity(elm.product_id, -1)} aria-label={t("Decrease quantity")}>−</button>
-                        <span className="qty-value">{getProductQuantity(elm.product_id)}</span>
-                        <button className="qty-btn" onClick={() => updateQuantity(elm.product_id, 1)} aria-label={t("Increase quantity")}>+</button>
-                      </div>
-                    ) : elm.product_qty > 0 ? (
-                      <button
-                        className="btn btn-primary js-add-cart"
-                        onClick={() => addProductToCart({ ...elm, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name })}
-                        title={t("Add To Cart")}
-                      >
-                        {t("Add To Cart")}
-                      </button>
-                    ) : (
-                      <button className="btn btn-out-of-stock" disabled>
-                        {t("Out Of Stock")}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="pc__info position-relative">
-                  <p className="pc__category">{t(elm.category_name)}</p>
-                  <h6 className="pc__title">
-                    <Link
-                      href={`/${locale}/shop/${sanitizeUrlParam(elm.category_name)}/${isSubcategoryFunc(elm.category_name, elm.subcategory)}/${sanitizeUrlParam(elm.product_name)}`}
-                    >
-                      {t(he.decode(elm.product_name))}
-                    </Link>
-                  </h6>
-
-                  <div className="product-card__price d-flex">
-                    <ProductPrice elm={elm} currency={currency} />
-                  </div>
-
-                  {getProductQuantity(elm.product_id) > 0 ? (
-                    <div className="pc__qty-selector">
-                      <button
-                        className="qty-btn"
-                        onClick={() => updateQuantity(elm.product_id, -1)}
-                        aria-label={t("Decrease quantity")}
-                      >
-                        −
-                      </button>
-                      <span className="qty-value">{getProductQuantity(elm.product_id)}</span>
-                      <button
-                        className="qty-btn"
-                        onClick={() => updateQuantity(elm.product_id, 1)}
-                        aria-label={t("Increase quantity")}
-                      >
-                        +
-                      </button>
-                    </div>
-                  ) : elm?.product_qty > 0 ? (
-                    <button
-                      className="pc__atc-mobile"
-                      onClick={() => addProductToCart({ ...elm, category_name: elm.category_name, subcategory_name: elm.subcategory?.subcategory_name })}
-                      aria-label={t("Add {name} to cart", { name: elm.product_name })}
-                    >
-                      {t("Add To Cart")}
-                    </button>
-                  ) : (
-                    <button className="pc__atc-mobile pc__atc-mobile--oos" disabled>
-                      {t("Out Of Stock")}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+            <PremiumProductCard
+              key={elm.product_id || i}
+              elm={elm}
+              category={elm.category_name || "perfumes"}
+              subcat={isSubcategoryFunc(elm.category_name, elm.subcategory)}
+              priority={i < 4}
+            />
           ))
         )}
       </div>
 
       {!loading && filteredProducts.length > 0 && (
-        <p className="mt-5 mb-2 text-center fw-medium text-secondary" style={{ fontSize: '13px' }}>
+        <p className="mt-4 mb-2 text-center fw-medium text-secondary" style={{ fontSize: '13px' }}>
           {t("Showing")} {filteredProducts.length} {t("items")}
         </p>
       )}
 
       {totalPages > 1 && (
-        <div className="container-fluid px-0 px-sm-3">
+        <div className="container-fluid px-0 px-sm-3 mt-4">
           <Pagination2
             totalPages={totalPages}
             currentPage={page}

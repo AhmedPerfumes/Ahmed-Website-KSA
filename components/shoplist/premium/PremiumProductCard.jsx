@@ -41,6 +41,7 @@ function removeSpecialChars(str) {
 
 function isDiscountActive(discount) {
   if (!discount) return false;
+  if (!discount.start_date || !discount.end_date) return true;
   const utc = new Date();
   const gst = new Date(utc.getTime() + 4 * 60 * 60 * 1000);
   const now = gst.toISOString().slice(0, 19).replace("T", " ");
@@ -148,6 +149,8 @@ export default function PremiumProductCard({
   const salePercent =
     activeDiscount?.discount_type === "percent"
       ? Math.round(activeDiscount.value)
+      : activeDiscount?.discount_type === "amount" && elm.price > 0
+      ? Math.round((activeDiscount.value / elm.price) * 100)
       : null;
 
   /* ─── Add to Cart ────────────────────────────────────────── */
