@@ -1,11 +1,6 @@
-﻿import Footer14 from "@/components/footers/Footer14";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
-
-
-
-
 import React from "react";
-// import Loader from "@/components/loader/Loader";
+import Footer14 from "@/components/footers/Footer14";
+import MobileFooter2 from "@/components/footers/MobileFooter2";
 import CityWalk from "@/components/campagin/Citywalk";
 
 export async function generateMetadata({ params }) {
@@ -23,16 +18,16 @@ export async function generateMetadata({ params }) {
     description: "Buy Best Perfumes Online Ahmed Perfume",
 
     icons: {
-      icon: 'https://www.ahmedalmaghribi.com/wp-content/uploads/2021/08/Ahmed-Logo-e1631552829722-100x100.png',
+      icon: '/assets/images/ahmed-favicon.png',
     },
 
     alternates: {
       canonical: canonicalUrl,
 
       languages: {
-        en: "/en/sale",
-        ar: "/ar/sale",
-        "x-default": "/en/sale",
+        en: `${baseUrl}/en/sale`,
+        ar: `${baseUrl}/ar/sale`,
+        "x-default": `${baseUrl}/en/sale`,
       },
     },
   };
@@ -40,20 +35,30 @@ export async function generateMetadata({ params }) {
 
 const Citywalk = () => {
   return (
-    <>
-      {/* <Loader/> */}
-   <CityWalk/>
-    
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-        <div className="MobileFooter">
-          <MobileFooter2/>
-        </div>
-      </section>
-    </>
+    <div className="page-wrapper pt-0 min-vh-100 d-flex flex-column">
+      {/* Main Content Area */}
+      <main className="flex-grow-1">
+        <CityWalk />
+      </main>
+
+      {/* Responsive Footer Strategy */}
+      <footer>
+        {/* Desktop Footer */}
+        <section className="d-none d-lg-block border-top">
+          <Footer14 />
+        </section>
+
+        {/* Mobile Footer */}
+        <section className="d-block d-lg-none bg-dark pt-5 pb-4">
+          <div className="container">
+            <div className="MobileFooter">
+              <MobileFooter2 />
+            </div>
+          </div>
+        </section>
+      </footer>
+    </div>
   );
-}
+};
 
 export default Citywalk;

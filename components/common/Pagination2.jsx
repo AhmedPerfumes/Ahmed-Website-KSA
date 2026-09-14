@@ -28,8 +28,9 @@ export default function Pagination2({ totalPages = 4 }) {
     >
       <Link
         href="#"
-        className={`btn-link d-inline-flex align-items-center ${currentPage === 1 ? "disabled" : ""
-          }`}
+        className={`btn-link d-inline-flex align-items-center ${
+          currentPage === 1 ? "disabled" : ""
+        }`}
         onClick={(e) => {
           e.preventDefault();
           handlePrevClick();
@@ -50,8 +51,9 @@ export default function Pagination2({ totalPages = 4 }) {
         {Array.from({ length: totalPages }, (_, index) => (
           <li key={index} className="page-item">
             <Link
-              className={`btn-link px-1 mx-2 ${currentPage === index + 1 ? "btn-link_active" : ""
-                }`}
+              className={`btn-link px-1 mx-2 ${
+                currentPage === index + 1 ? "btn-link_active" : ""
+              }`}
               href="#"
               onClick={(e) => {
                 e.preventDefault();
@@ -65,8 +67,9 @@ export default function Pagination2({ totalPages = 4 }) {
       </ul>
       <Link
         href="#"
-        className={`btn-link d-inline-flex align-items-center ${currentPage === totalPages ? "disabled" : ""
-          }`}
+        className={`btn-link d-inline-flex align-items-center ${
+          currentPage === totalPages ? "disabled" : ""
+        }`}
         onClick={(e) => {
           e.preventDefault();
           handleNextClick();

@@ -30,89 +30,90 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { FacebookPixelEvents } from "@/components/Metapixel";
 import AhmedTrackerComponent from "@/components/common/AhmedTracker";
-import Head from "next/head";
 import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
+import { ShopFilterProvider } from "@/context/ShopFilterContext";
 import DeferredCSS from "@/components/common/DeferredCSS";
 
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
 export async function generateMetadata({ params: { locale } }) {
-    const isAr = locale === "ar";
-    return {
-        metadataBase: new URL(baseUrl),
+  const isAr = locale === "ar";
+  return {
+    metadataBase: new URL(baseUrl),
 
-        title: isAr
-            ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-            : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
+    title: isAr
+      ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
+      : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
 
-        description: isAr
-            ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية أصيلة، بخور، دخون، ومجموعات هدايا فاخرة. شحن سريع في المملكة العربية السعودية."
-            : "Discover luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi — Saudi Arabia's premium fragrance house. Fast delivery across KSA.",
+    description: isAr
+      ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية أصيلة، بخور، دخون، ومجموعات هدايا فاخرة. شحن سريع في المملكة العربية السعودية."
+      : "Discover luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi — Saudi Arabia's premium fragrance house. Fast delivery across KSA.",
 
-        keywords: isAr
-            ? "عطور, عطر, بخور, دخون, هدايا, أحمد المغربي, عطور فاخرة, عطور عربية, المملكة العربية السعودية"
-            : "perfumes Saudi Arabia, buy perfumes online KSA, Arabic perfumes, oud fragrance, dakhoon, gift sets, Ahmed Al Maghribi, luxury perfumes",
+    keywords: isAr
+      ? "عطور, عطر, بخور, دخون, هدايا, أحمد المغربي, عطور فاخرة, عطور عربية, المملكة العربية السعودية"
+      : "perfumes Saudi Arabia, buy perfumes online KSA, Arabic perfumes, oud fragrance, dakhoon, gift sets, Ahmed Al Maghribi, luxury perfumes",
 
-        robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 
-        openGraph: {
-            type: "website",
-            locale: isAr ? "ar_SA" : "en_US",
-            url: `${baseUrl}/${locale}`,
-            siteName: "Ahmed Al Maghribi Perfumes",
-            title: isAr
-                ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-                : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
-            description: isAr
-                ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية، بخور، دخون، وهدايا فاخرة."
-                : "Luxury Arabic perfumes, oud, dakhoon & gift sets. Saudi Arabia's premier fragrance house.",
-            images: [
-                {
-                    url: `${baseUrl}/assets/images/ahmed-og-image.jpg`,
-                    width: 1200,
-                    height: 630,
-                    alt: "Ahmed Al Maghribi Perfumes — Luxury Fragrance House",
-                },
-            ],
+    openGraph: {
+      type: "website",
+      locale: isAr ? "ar_SA" : "en_US",
+      url: `${baseUrl}/${locale}`,
+      siteName: "Ahmed Al Maghribi Perfumes",
+      title: isAr
+        ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
+        : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
+      description: isAr
+        ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية، بخور، دخون، وهدايا فاخرة."
+        : "Luxury Arabic perfumes, oud, dakhoon & gift sets. Saudi Arabia's premier fragrance house.",
+      images: [
+        {
+          url: `${baseUrl}/assets/images/ahmed-og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: "Ahmed Al Maghribi Perfumes — Luxury Fragrance House",
         },
+      ],
+    },
 
-        twitter: {
-            card: "summary_large_image",
-            title: isAr
-                ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-                : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
-            description: isAr
-                ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي."
-                : "Luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi.",
-            images: [`${baseUrl}/assets/images/ahmed-og-image.jpg`],
-        },
+    twitter: {
+      card: "summary_large_image",
+      title: isAr
+        ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
+        : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
+      description: isAr
+        ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي."
+        : "Luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi.",
+      images: [`${baseUrl}/assets/images/ahmed-og-image.jpg`],
+    },
 
-        icons: {
-            icon: "/assets/images/ahmed-favicon.png",
-            shortcut: "/assets/images/ahmed-favicon.png",
-            apple: "/assets/images/ahmed-favicon.png",
-        },
+    icons: {
+      icon: "/assets/images/ahmed-favicon.png",
+      shortcut: "/assets/images/ahmed-favicon.png",
+      apple: "/assets/images/ahmed-favicon.png",
+    },
 
-        alternates: {
-            canonical: `${baseUrl}/${locale}`,
-            languages: {
-                en: `${baseUrl}/en`,
-                ar: `${baseUrl}/ar`,
-                "x-default": `${baseUrl}/en`,
-            },
-        },
-    };
+    alternates: {
+      canonical: `${baseUrl}/${locale}`,
+      languages: {
+        en: `${baseUrl}/en`,
+        ar: `${baseUrl}/ar`,
+        "x-default": `${baseUrl}/en`,
+      },
+    },
+  };
 }
 
 // Import English display font — used for headings (Wulkan Display)
 const englishFont = localFont({
     src: [
-        { path: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.woff2", weight: "400", style: "normal" },
-        { path: "../../public/assets/fonts/wulkan/WulkanDisplayLight.woff2", weight: "300", style: "normal" },
-        { path: "../../public/assets/fonts/wulkan/WulkanDisplayMedium.woff2", weight: "500", style: "normal" },
-        { path: "../../public/assets/fonts/wulkan/WulkanDisplaySemiBold.woff2", weight: "600", style: "normal" },
-        { path: "../../public/assets/fonts/wulkan/WulkanDisplayBold.woff2", weight: "700", style: "normal" },
-        { path: "../../public/assets/fonts/wulkan/WulkanDisplayItalic.woff2", weight: "400", style: "italic" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayRegular.woff2",      weight: "400", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayLight.woff2",         weight: "300", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayMedium.woff2",        weight: "500", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplaySemiBold.woff2",      weight: "600", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayBold.woff2",          weight: "700", style: "normal" },
+        { path: "../../public/assets/fonts/wulkan/WulkanDisplayItalic.woff2",        weight: "400", style: "italic" },
     ],
     display: "swap",
     adjustFontFallback: true,
@@ -180,19 +181,19 @@ const bodoniModa = Bodoni_Moda({
 const arabicFont = localFont({
     src: [
         // ── Arabic glyphs (primary) ──────────────────────────────────
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Hairline.otf", weight: "100", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Hairline.otf",   weight: "100", style: "normal" },
         { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_ExtraLight.otf", weight: "200", style: "normal" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Light.otf", weight: "300", style: "normal" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_SemiBold.otf", weight: "600", style: "normal" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Bold.otf", weight: "700", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Light.otf",      weight: "300", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_SemiBold.otf",   weight: "600", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Arabic_Bold.otf",       weight: "700", style: "normal" },
         // ── Brando Sans (Latin / UI / numbers within Arabic locale) ──
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_ExtraLight.otf", weight: "200", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_ExtraLight.otf",        weight: "200", style: "normal" },
         { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_ExtraLight_Italic.otf", weight: "200", style: "italic" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Light.otf", weight: "300", style: "normal" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Light_Italic.otf", weight: "300", style: "italic" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Italic.otf", weight: "400", style: "italic" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_SemiBold.otf", weight: "600", style: "normal" },
-        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Bold.otf", weight: "700", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Light.otf",             weight: "300", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Light_Italic.otf",      weight: "300", style: "italic" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Italic.otf",            weight: "400", style: "italic" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_SemiBold.otf",          weight: "600", style: "normal" },
+        { path: "../../public/assets/fonts/brando-arabic/fonnts.com-Brando_Sans_Bold.otf",              weight: "700", style: "normal" },
     ],
     display: "swap",
     adjustFontFallback: false, // OTF — skip auto fallback metrics; we handle in CSS
@@ -286,22 +287,22 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
                 />
             </head>
-
+            
             <body className={fontClasses}>
-                {/* GTM — lazyOnload: fires after page is idle, not during TBT window */}
-                <Script id="gtm-script" strategy="lazyOnload">
-                    {`
+            {/* GTM — lazyOnload: fires after page is idle, not during TBT window */}
+            <Script id="gtm-script" strategy="lazyOnload">
+                {`
                     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
                     })(window,document,'script','dataLayer','${GTM_ID}');
                 `}
-                </Script>
+            </Script>
 
-                {/* Last-cart-item tracker — for YouMayAlsoLike popup */}
-                <Script id="last-cart-item-tracker" strategy="lazyOnload">
-                    {`
+            {/* Last-cart-item tracker — for YouMayAlsoLike popup */}
+            <Script id="last-cart-item-tracker" strategy="lazyOnload">
+                {`
                     window.addEventListener('cart:added', function(e){
                         try {
                             var d = e.detail || {};
@@ -317,22 +318,22 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                         } catch(err){}
                     });
                 `}
-                </Script>
+            </Script>
 
-                {/* TikTok pixel — lazyOnload */}
-                <Script id="tiktok-pixel" strategy="lazyOnload">
-                    {`
+            {/* TikTok pixel — lazyOnload */}
+            <Script id="tiktok-pixel" strategy="lazyOnload">
+                {`
                     !function (w, d, t) {
                     w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
                     ttq.load('D3D90EBC77U0EI1CR1O0');
                     ttq.page();
                     }(window, document, 'ttq');
                 `}
-                </Script>
+            </Script>
 
-                {/* TikTok event bridge — lazyOnload so it doesn't block render */}
-                <Script id="tiktok-listener" strategy="lazyOnload">
-                    {`
+            {/* TikTok event bridge — lazyOnload so it doesn't block render */}
+            <Script id="tiktok-listener" strategy="lazyOnload">
+                {`
                     (function(){
                     window.dataLayer = window.dataLayer || [];
                     const originalPush = window.dataLayer.push;
@@ -365,11 +366,11 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     };
                     })();
                 `}
-                </Script>
+            </Script>
 
-                {/* Snapchat Pixel — lazyOnload */}
-                <Script id="snapchat-pixel" strategy="lazyOnload">
-                    {`
+            {/* Snapchat Pixel — lazyOnload */}
+            <Script id="snapchat-pixel" strategy="lazyOnload">
+                {`
                 (function(e,t,n){
                     if(e.snaptr) return;
                     var a=e.snaptr=function(){ a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments) };
@@ -382,11 +383,11 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                 snaptr('init', '849fbb5a-bd08-474b-81fc-dfc5dade871e');
                 snaptr('track', 'PAGE_VIEW');
                 `}
-                </Script>
+            </Script>
 
-                {/* Snapchat event bridge — lazyOnload */}
-                <Script id="snapchat-listener" strategy="lazyOnload">
-                    {`
+            {/* Snapchat event bridge — lazyOnload */}
+            <Script id="snapchat-listener" strategy="lazyOnload">
+                {`
                 (function(){
                     window.dataLayer = window.dataLayer || [];
                     const origPush = window.dataLayer.push;
@@ -408,44 +409,47 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     };
                 })();
                 `}
-                </Script>
+            </Script>
 
-                <noscript>
-                    <iframe
-                        src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-                        height="0"
-                        width="0"
-                        style={{ display: "none", visibility: "hidden" }}
-                    />
-                </noscript>
+            <noscript>
+                <iframe
+                    src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+                    height="0"
+                    width="0"
+                    style={{ display: "none", visibility: "hidden" }}
+                />
+            </noscript>
                 <NextIntlClientProvider messages={messages}>
                     <Svgs />
                     <DeferredCSS />
-                    <MenuProvider>
-                        <Context>
-                            <UserProvider>
-                                <FacebookPixelEvents />
-                                <AhmedTrackerComponent />
+                            <MenuProvider>
+                    <Context>
+                        <UserProvider>
+                            <FacebookPixelEvents />
+                            <AhmedTrackerComponent />
                                 <MobileHeader />
                                 <Header14 />
-                                {children}
-                                <MobileFooter1 />
-                                {/* Modals and Asides */}
-                                <LoginFormPopup />
-                                <SizeGuide />
-                                <Delivery />
-                                <CartDrawer />
-                                <CartToast />
-                                <NewsLetter />
-                                <SiteMap />
-                                <CustomerLogin />
-                                <ProductDescription />
-                                <ProductAdditionalInformation />
-                                <ProductReviews />
-                                <ToastContainer />
-                            </UserProvider>
-                        </Context>
-                    </MenuProvider>
+                                <ShopFilterProvider>
+                                    {children}
+                                    <MobileFooter1 />
+                                    {/* Modals and Asides */}
+                                    <LoginFormPopup />
+                                    <SizeGuide />
+                                    <Delivery />
+                                    <CartDrawer />
+                                    <CartToast />
+                                    <NewsLetter />
+                                    <SiteMap />
+                                    <CustomerLogin />
+                                    <ProductDescription />
+                                    <ProductAdditionalInformation />
+                                    <ProductReviews />
+                                    <ToastContainer />
+                                    <Toaster />
+                                </ShopFilterProvider>
+                        </UserProvider>
+                    </Context>
+                            </MenuProvider>
                     <div className="page-overlay" id="pageOverlay"></div>
                     <SmoothScroll />
                     <ScrollTop />
