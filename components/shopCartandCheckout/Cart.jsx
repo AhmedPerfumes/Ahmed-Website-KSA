@@ -215,10 +215,14 @@ export default function Cart() {
   };
 
   const getProductLink = (elm) => {
-    const cat = (elm.category_name || "").toLowerCase().replace(/\s+/g, "-");
-    const sub = (elm.subcategory_name || "").toLowerCase().replace(/\s+/g, "-");
-    const id  = elm.product_id || elm.id;
-    if (cat && sub && id) return `/${locale}/shop/${cat}/${sub}/${id}`;
+    const cat  = (elm.category_name || "").toLowerCase().replace(/\s+/g, "-");
+    const sub  = (elm.subcategory_name || "").toLowerCase().replace(/\s+/g, "-");
+    // Use product name slug (spaces → hyphens, lowercase) — matches the [...product] route
+    // which calls getproduct(categoryName, subCategoryName, productSlug) via the API.
+    const name = elm.product_name
+      ? elm.product_name.replace(/[^a-zA-Z0-9\u0600-\u06FF\s-]/g, "").trim().split(/\s+/).join("-").toLowerCase()
+      : null;
+    if (cat && sub && name) return `/${locale}/shop/${cat}/${sub}/${name}`;
     return null;
   };
 

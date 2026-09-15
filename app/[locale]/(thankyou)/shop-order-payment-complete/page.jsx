@@ -1,4 +1,4 @@
-﻿import Footer14 from "@/components/footers/Footer14";
+import Footer14 from "@/components/footers/Footer14";
 import OrderPaymentCompleted from "@/components/shopCartandCheckout/OrderPaymentCompleted";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";

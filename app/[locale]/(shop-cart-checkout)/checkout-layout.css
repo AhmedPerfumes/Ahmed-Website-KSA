@@ -32,6 +32,14 @@ body:has(.checkout-scope) .header {
     display: none !important;
 }
 
+/* Hide the sticky bottom nav bar (header-bottom-wrapper / header-bottom)
+   These elements are rendered as siblings to <header> in Header14,
+   so they are NOT covered by the .header rule above. */
+body:has(.checkout-scope) .header-bottom-wrapper,
+body:has(.checkout-scope) .header-bottom {
+    display: none !important;
+}
+
 /* Hide mobile header (hamburger / mobile nav bar) */
 body:has(.checkout-scope) .mobile-header-wrapper,
 body:has(.checkout-scope) .header-mobile,
