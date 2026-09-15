@@ -124,7 +124,7 @@ const buildFAQs = (product, t) => {
   // Dynamic Q8 — Fragrance type
   if (product?.fragrance_type) {
     faqs.push({
-      q: `What type of fragrance is this — EDP, EDT, or Parfum?`,
+      q: `What type of fragrance is this, EDP, EDT, or Parfum?`,
       a: `This product is classified as ${product.fragrance_type.replace(/_/g, " ")}. Different concentrations affect how long the scent lasts and its intensity.`,
     });
   }
