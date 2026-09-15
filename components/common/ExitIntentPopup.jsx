@@ -132,7 +132,7 @@ export default function ExitIntentPopup() {
 
           <p className="ei-desc">
             Explore over 100 luxury fragrances crafted from the finest Arabian oud
-            and Eastern essences — crafted for those who wear their story.
+            and Eastern essences, crafted for those who wear their story.
           </p>
 
           <div className="ei-actions">
