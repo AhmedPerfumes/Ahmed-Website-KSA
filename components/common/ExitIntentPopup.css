@@ -1,0 +1,257 @@
+/* ============================================================
+   EXIT INTENT POPUP — Ahmed Al Maghribi Perfumes
+   Luxury editorial style — inspired by Hermès / Jo Malone
+   ============================================================ */
+
+/* ── Overlay ── */
+.ei-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(10, 8, 6, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: ei-overlay-in 0.4s ease both;
+}
+
+@keyframes ei-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Popup card ── */
+.ei-popup {
+  position: relative;
+  background: #FAF8F4;
+  width: 100%;
+  max-width: 780px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.12);
+  animation: ei-popup-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ei-popup-in {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 600px) {
+  .ei-popup {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+}
+
+/* ── Decorative corner accents ── */
+.ei-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ei-corner--tl { top: 14px;    left: 14px;    border-top: 1px solid #C5A664;    border-left: 1px solid #C5A664;  }
+.ei-corner--tr { top: 14px;    right: 14px;   border-top: 1px solid #C5A664;    border-right: 1px solid #C5A664; }
+.ei-corner--bl { bottom: 14px; left: 14px;    border-bottom: 1px solid #C5A664; border-left: 1px solid #C5A664;  }
+.ei-corner--br { bottom: 14px; right: 14px;   border-bottom: 1px solid #C5A664; border-right: 1px solid #C5A664; }
+
+/* ── Left image column ── */
+.ei-image-strip {
+  position: relative;
+  overflow: hidden;
+  min-height: 380px;
+  background: #1A1410;
+}
+
+.ei-image-strip img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.88;
+}
+
+.ei-image-strip__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.18) 100%);
+}
+
+/* Hide image on mobile to save space */
+@media (max-width: 600px) {
+  .ei-image-strip {
+    display: none;
+  }
+}
+
+/* ── Right body column ── */
+.ei-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 40px;
+  gap: 0;
+}
+
+@media (max-width: 600px) {
+  .ei-body {
+    padding: 44px 28px 36px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 860px) {
+  .ei-body {
+    padding: 40px 28px;
+  }
+}
+
+/* ── Close button ── */
+.ei-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B6056;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.ei-close:hover {
+  color: #1A1A1A;
+}
+
+.ei-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Eyebrow label ── */
+.ei-eyebrow {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #C5A664;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ei-eyebrow::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: #C5A664;
+  flex-shrink: 0;
+}
+
+/* ── Heading ── */
+.ei-title {
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  color: #1A1A1A;
+  margin: 0 0 16px;
+}
+
+.ei-title em {
+  font-style: italic;
+  color: #8B6914;
+}
+
+/* ── Description ── */
+.ei-desc {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: #5C5449;
+  margin: 0 0 28px;
+}
+
+/* ── CTA buttons ── */
+.ei-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ei-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 13px 24px;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.ei-btn--primary {
+  background: #1A1A1A;
+  color: #FAF8F4;
+}
+
+.ei-btn--primary:hover {
+  background: #C5A664;
+  color: #1A1A1A;
+}
+
+.ei-btn--ghost {
+  background: transparent;
+  color: #1A1A1A;
+  border: 1px solid rgba(26, 26, 26, 0.3);
+}
+
+.ei-btn--ghost:hover {
+  border-color: #C5A664;
+  color: #C5A664;
+}
+
+/* ── Skip link ── */
+.ei-skip {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 0.68rem;
+  color: #A09688;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.ei-skip:hover {
+  color: #5C5449;
+}
