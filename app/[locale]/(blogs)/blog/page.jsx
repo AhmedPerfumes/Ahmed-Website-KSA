@@ -7,13 +7,45 @@ import React from "react";
 
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
+// export const metadata = {
+//   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+//   description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+//   icons: {
+//       icon: "/assets/images/ahmed-favicon.png",
+//   },
+// };
+
+export async function generateMetadata({ params }) {
+  const { locale } = params;
+
+  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+
+  const canonicalUrl = `${baseUrl}/${locale}/blog`;
+
+  return {
+    metadataBase: new URL(baseUrl),
+
+    title: "Blogs | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+
+    description:
+      "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+
+    icons: {
       icon: "/assets/images/ahmed-favicon.png",
-  },
-};
+    },
+
+    alternates: {
+      canonical: canonicalUrl,
+
+      languages: {
+        en: `${baseUrl}/en/blog`,
+        ar: `${baseUrl}/ar/blog`,
+        "x-default": `${baseUrl}/en/blog`,
+      },
+    },
+  };
+}
+
 export default function BlogPage1() {
   return (
     <>
