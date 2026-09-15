@@ -92,79 +92,9 @@
   object-position: center;
 }
 
-/* ── Ken Burns — alternating directions per slide ── */
-/* Each active slide gets a different drift so it never feels repetitive */
-.swiper-slide-active .hero-slide__image-wrapper img {
-  animation: heroKB1 10s var(--hero-ease) forwards;
-}
-
-.swiper-slide-active:nth-child(2n) .hero-slide__image-wrapper img {
-  animation: heroKB2 10s var(--hero-ease) forwards;
-}
-
-.swiper-slide-active:nth-child(3n) .hero-slide__image-wrapper img {
-  animation: heroKB3 10s var(--hero-ease) forwards;
-}
-
-/* Mobile: disable Ken Burns — frees GPU compositing layer, improving LCP */
-@media (max-width: 767px) {
-
-  .swiper-slide-active .hero-slide__image-wrapper img,
-  .swiper-slide-active:nth-child(2n) .hero-slide__image-wrapper img {
-    animation: none;
-  }
-}
-
-/* Desktop Ken Burns variants */
-@keyframes heroKB1 {
-  0% {
-    transform: scale(1.00) translate(0, 0);
-  }
-
-  100% {
-    transform: scale(1.08) translate(-1%, -0.5%);
-  }
-}
-
-@keyframes heroKB2 {
-  0% {
-    transform: scale(1.06) translate(-0.5%, 0.5%);
-  }
-
-  100% {
-    transform: scale(1.00) translate(0, 0);
-  }
-}
-
-@keyframes heroKB3 {
-  0% {
-    transform: scale(1.02) translate(0.5%, 0);
-  }
-
-  100% {
-    transform: scale(1.08) translate(-0.5%, -1%);
-  }
-}
-
-/* Mobile Ken Burns variants */
-@keyframes heroKBMobile1 {
-  0% {
-    transform: scale(1.00) translate(0, 0);
-  }
-
-  100% {
-    transform: scale(1.12) translate(0, -2%);
-  }
-}
-
-@keyframes heroKBMobile2 {
-  0% {
-    transform: scale(1.08) translate(0, -1%);
-  }
-
-  100% {
-    transform: scale(1.00) translate(0, 0);
-  }
+/* ── Slide Image — static, no zoom ── */
+.hero-slide__image-wrapper img {
+  transform: none;
 }
 
 /* Cinematic overlay — desktop: subtle horizontal gradient */
@@ -756,7 +686,6 @@
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
 
-  .swiper-slide-active .hero-slide__image-wrapper img,
   .swiper-slide-active .hero-slide__text-block,
   .swiper-slide-active .hero-slide__title,
   .swiper-slide-active .hero-slide__subtitle,
