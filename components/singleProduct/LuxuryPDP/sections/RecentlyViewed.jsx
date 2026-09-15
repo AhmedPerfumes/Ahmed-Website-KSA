@@ -30,6 +30,18 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const STORAGE_KEY = "ahmed_recently_viewed";
 const MAX_ITEMS = 10;
 
+// "WARNING: If you change this logic, update the corresponding PHP/JS file."
+// Same function used in RelatedSlider.jsx, Shop1.jsx, DiscountedProductsSlider.jsx etc.
+function removeSpecialCharactersAndAmp(str) {
+  // Remove the specific word "&amp;"
+  let cleanedStr = (str || "").replace(/&amp;/g, "");
+  // Remove all special characters
+  cleanedStr = cleanedStr.replace(/[^\w\s-]/g, "");
+  // Replace multiple spaces with a single space and trim
+  cleanedStr = cleanedStr.replace(/\s+/g, " ").trim();
+  return cleanedStr;
+}
+
 const RecentlyViewed = ({ product, category, subcategory }) => {
   const locale = useLocale();
   const { currency } = useMenu();
@@ -60,10 +72,10 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
       const entry = {
         product_id: product.product_id,
         product_name: product.product_name,
-        slug: product.slug || product.product_name?.toLowerCase().replace(/ /g, "-"),
+        slug: removeSpecialCharactersAndAmp(product.slug || product.product_name || "").split(" ").join("-").toLowerCase(),
         // Store the URL-safe slugs passed from the route (not the raw API names)
-        category_slug: category || product.category_name?.toLowerCase().replace(/\s+/g, "-") || "perfumes",
-        subcategory_slug: subcategory || product.subcategory?.subcategory_name?.toLowerCase().replace(/\s+/g, "-") || "online-exclusive",
+        category_slug: removeSpecialCharactersAndAmp(category || product.category_name || "").split(" ").join("-").toLowerCase() || "perfumes",
+        subcategory_slug: removeSpecialCharactersAndAmp(subcategory || product.subcategory?.subcategory_name || "").split(" ").join("-").toLowerCase() || "online-exclusive",
         image: images[0] || null,
         price: product.price,
         discount: product.discount || null,
@@ -112,10 +124,12 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
       <div className="position-relative" id="rv-slider">
         <Swiper {...swiperOptions} className="swiper-container js-swiper-slider">
           {viewed.map((item, idx) => {
-            const href = `/${locale}/shop/${item.category_slug || item.category || "perfumes"}/${item.subcategory_slug ||
+            // removeSpecialCharactersAndAmp applied at read-time too — fixes old cached entries stored before this fix
+            const rawSubcat = item.subcategory_slug ||
               (typeof item.subcategory === "object"
-                ? item.subcategory?.subcategory_name?.toLowerCase().replace(/\s+/g, "-")
-                : item.subcategory) || "online-exclusive"}/${item.slug}`;
+                ? item.subcategory?.subcategory_name
+                : item.subcategory);
+            const href = `/${locale}/shop/${removeSpecialCharactersAndAmp(item.category_slug || item.category || "").split(" ").join("-").toLowerCase() || "perfumes"}/${removeSpecialCharactersAndAmp(rawSubcat || "").split(" ").join("-").toLowerCase() || "online-exclusive"}/${removeSpecialCharactersAndAmp(item.slug || "").split(" ").join("-").toLowerCase()}`;
 
             const imgSrc = item.image
               ? `${API_URL}storage/${item.image}`
