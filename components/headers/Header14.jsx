@@ -1014,8 +1014,8 @@ export default function Header14() {
                                 style={{
                                     animation:
                                         locale === "ar"
-                                            ? "marquee-rtl 90s linear infinite"
-                                            : "marquee-ltr 90s linear infinite",
+                                            ? "marquee-rtl 9s linear infinite"
+                                            : "marquee-ltr 9s linear infinite",
                                     height: "100%",
                                 }}
                             >
