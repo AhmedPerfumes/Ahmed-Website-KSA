@@ -49,18 +49,17 @@ function HeroSection({ data = {}, onBookNow }) {
                   width: "60px",
                   height: "2px",
                   background: "linear-gradient(to right, #e5d4b2, transparent)",
-                  color: "#fff",
                 }}
                 initial={{ width: 0 }}
                 animate={{ width: 60 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
               />
 
-              <p className="lead mb-4 fade-in-top delay-1" style={{ fontSize: "1.1rem", lineHeight: "1.9", color: data?.accentColor || '#dcdcdc' }}>
+              <p className="lead mb-4 fade-in-top delay-1" style={{ fontSize: "1.1rem", lineHeight: "1.9", color: data?.textColor || 'rgba(255,255,255,0.88)' }}>
                 <em>{data?.heroQuote || '"This perfume is a tribute to the memories that shaped us."'}</em>
               </p>
 
-              <p className="fst-italic mb-5 fade-in-top delay-2" style={{ fontSize: "0.95rem", color: data?.accentColor || '#ffffff' }}>
+              <p className="fst-italic mb-5 fade-in-top delay-2" style={{ fontSize: "0.95rem", color: data?.textColor || 'rgba(255,255,255,0.60)' }}>
                 — Crafted by our founder — Mr. Kafeel Ahmed
               </p>
 
