@@ -26,6 +26,20 @@
 .text-gold { color: #e5d4b2; font-weight: 500; }
 .text-cream { color: #f5f5dc; }
 
+/* ── Force hero body text white — overrides global _typography-overrides.scss `p { color: #1a1a1a }` ── */
+.hero-section p,
+.hero-section p.lead,
+.hero-section p.fst-italic,
+.hero-section .lead,
+.hero-section em {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.hero-section p.fst-italic {
+  color: rgba(255, 255, 255, 0.60) !important;
+}
+
+
 /* Text */
 .hero-section h1 { 
   font-size: 3.5rem; 
