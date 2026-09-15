@@ -1,4 +1,4 @@
-﻿import Footer14 from "@/components/footers/Footer14";
+import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import Export from "@/components/otherPages/Contact/Export"
 
@@ -29,11 +29,10 @@ export async function generateMetadata({ params }) {
 
     alternates: {
       canonical: canonicalUrl,
-
       languages: {
-        en: "/en/export",
-        ar: "/ar/export",
-        "x-default": "/en/export",
+        "ar-SA": `${baseUrl}/ar/export`,
+        en: `${baseUrl}/en/export`,
+        "x-default": `${baseUrl}/ar/export`,
       },
     },
   };

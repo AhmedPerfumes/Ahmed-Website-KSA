@@ -18,9 +18,9 @@ export async function generateMetadata({ params }) {
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        en: "/en/product-category/gift-sets",
-        ar: "/ar/product-category/gift-sets",
-        "x-default": "/en/product-category/gift-sets",
+        "ar-SA": `${baseUrl}/ar/product-category/gift-sets`,
+        en: `${baseUrl}/en/product-category/gift-sets`,
+        "x-default": `${baseUrl}/ar/product-category/gift-sets`,
       },
     },
   };

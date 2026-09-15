@@ -1,14 +1,26 @@
-﻿import Footer14 from '@/components/footers/Footer14'
+import Footer14 from '@/components/footers/Footer14'
 import MobileFooter2 from '@/components/footers/MobileFooter2'
 import RefundPolicy from '@/components/otherPages/RefundPolicy'
 import React from 'react'
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
-      icon: "/assets/images/ahmed-favicon.png",
-  },
-};
+const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+
+export async function generateMetadata({ params }) {
+  const { locale } = params;
+  return {
+    metadataBase: new URL(baseUrl),
+    title: "Refund Policy | Ahmed Al Maghribi Perfumes",
+    description: "Read the refund and return policy of Ahmed Al Maghribi Perfumes.",
+    icons: { icon: "/assets/images/ahmed-favicon.png" },
+    alternates: {
+      canonical: `${baseUrl}/${locale}/refund-policy`,
+      languages: {
+        "ar-SA": `${baseUrl}/ar/refund-policy`,
+        en: `${baseUrl}/en/refund-policy`,
+        "x-default": `${baseUrl}/ar/refund-policy`,
+      },
+    },
+  };
+}
 
 function Refund() {
   return (

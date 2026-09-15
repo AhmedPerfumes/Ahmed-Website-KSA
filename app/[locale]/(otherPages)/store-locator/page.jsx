@@ -1,14 +1,29 @@
-﻿import Footer14 from '@/components/footers/Footer14'
+import Footer14 from '@/components/footers/Footer14'
 import MobileFooter2 from '@/components/footers/MobileFooter2'
 
 
 import StoreLocator from "@/components/otherPages/StoreLocator";
 import React from "react";
 
-export const metadata = {
-  title: "Store Locator || Ahmed Al Maghribi Perfumes KSA",
-  description: "Discover Ahmed Al Maghribi Perfumes Stores all over KSA",
-};
+const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+
+export async function generateMetadata({ params }) {
+  const { locale } = params;
+  return {
+    metadataBase: new URL(baseUrl),
+    title: "Store Locator | Ahmed Al Maghribi Perfumes KSA",
+    description: "Discover Ahmed Al Maghribi Perfumes stores all over Saudi Arabia.",
+    icons: { icon: "/assets/images/ahmed-favicon.png" },
+    alternates: {
+      canonical: `${baseUrl}/${locale}/store-locator`,
+      languages: {
+        "ar-SA": `${baseUrl}/ar/store-locator`,
+        en: `${baseUrl}/en/store-locator`,
+        "x-default": `${baseUrl}/ar/store-locator`,
+      },
+    },
+  };
+}
 export default function StoreLocationPage() {
   return (
     <>

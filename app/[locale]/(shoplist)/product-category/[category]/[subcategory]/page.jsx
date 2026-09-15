@@ -108,9 +108,9 @@ export async function generateMetadata({ params }) {
       alternates: {
         canonical: canonicalUrl,
         languages: {
+          "ar-SA": `/ar/product-category/${category}/${subcategory}`,
           en: `/en/product-category/${category}/${subcategory}`,
-          ar: `/ar/product-category/${category}/${subcategory}`,
-          "x-default": `/en/product-category/${category}/${subcategory}`,
+          "x-default": `/ar/product-category/${category}/${subcategory}`,
         },
       },
       openGraph: {

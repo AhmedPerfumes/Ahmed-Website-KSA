@@ -23,11 +23,10 @@ export async function generateMetadata({ params }) {
 
     alternates: {
       canonical: canonicalUrl,
-
       languages: {
+        "ar-SA": `${baseUrl}/ar/sale`,
         en: `${baseUrl}/en/sale`,
-        ar: `${baseUrl}/ar/sale`,
-        "x-default": `${baseUrl}/en/sale`,
+        "x-default": `${baseUrl}/ar/sale`,
       },
     },
   };

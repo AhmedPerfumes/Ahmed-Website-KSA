@@ -68,9 +68,9 @@ export async function generateMetadata({ params, searchParams }) {
     alternates: {
       canonical: canonicalUrl,
       languages: {
+        "ar-SA":     `/ar/shop${search ? `?q=${encodeURIComponent(search)}` : ""}`,
         en:          `/en/shop${search ? `?q=${encodeURIComponent(search)}` : ""}`,
-        ar:          `/ar/shop${search ? `?q=${encodeURIComponent(search)}` : ""}`,
-        "x-default": `/en/shop`,
+        "x-default": `/ar/shop`,
       },
     },
 

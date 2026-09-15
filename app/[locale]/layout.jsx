@@ -97,9 +97,9 @@ export async function generateMetadata({ params: { locale } }) {
     alternates: {
       canonical: `${baseUrl}/${locale}`,
       languages: {
+        "ar-SA": `${baseUrl}/ar`,
         en: `${baseUrl}/en`,
-        ar: `${baseUrl}/ar`,
-        "x-default": `${baseUrl}/en`,
+        "x-default": `${baseUrl}/ar`,
       },
     },
   };

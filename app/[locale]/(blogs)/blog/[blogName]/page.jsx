@@ -1,4 +1,4 @@
-﻿import Blog3 from "@/components/blogs/Blog3";
+import Blog3 from "@/components/blogs/Blog3";
 import BlogDetails from "@/components/blogs/BlogDetails";
 import Footer14 from "@/components/footers/Footer14";
 
@@ -119,9 +119,9 @@ export async function generateMetadata({ params }) {
             alternates: {
               canonical: canonicalUrl,
               languages: {
+                "ar-SA": `/ar/blog/${blogName}`,
                 en: `/en/blog/${blogName}`,
-                ar: `/ar/blog/${blogName}`,
-                "x-default": `/en/blog/${blogName}`,
+                "x-default": `/ar/blog/${blogName}`,
               },
             },
           // openGraph: {

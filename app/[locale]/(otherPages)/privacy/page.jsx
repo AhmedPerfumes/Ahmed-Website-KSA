@@ -1,14 +1,26 @@
-﻿import Footer14 from '@/components/footers/Footer14'
+import Footer14 from '@/components/footers/Footer14'
 import MobileFooter2 from '@/components/footers/MobileFooter2'
 import Privacy from '@/components/otherPages/Privacy'
 import React from 'react'
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
-      icon: "/assets/images/ahmed-favicon.png",
-  },
-};
+const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+
+export async function generateMetadata({ params }) {
+  const { locale } = params;
+  return {
+    metadataBase: new URL(baseUrl),
+    title: "Privacy Policy | Ahmed Al Maghribi Perfumes",
+    description: "Read the privacy policy of Ahmed Al Maghribi Perfumes.",
+    icons: { icon: "/assets/images/ahmed-favicon.png" },
+    alternates: {
+      canonical: `${baseUrl}/${locale}/privacy`,
+      languages: {
+        "ar-SA": `${baseUrl}/ar/privacy`,
+        en: `${baseUrl}/en/privacy`,
+        "x-default": `${baseUrl}/ar/privacy`,
+      },
+    },
+  };
+}
 export default function PrivacyPolicy() {
   return (
       <div style={{

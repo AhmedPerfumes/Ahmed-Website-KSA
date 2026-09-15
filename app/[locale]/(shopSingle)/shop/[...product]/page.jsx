@@ -1,4 +1,4 @@
-﻿import Footer14 from "@/components/footers/Footer14";
+import Footer14 from "@/components/footers/Footer14";
 
 import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 import SingleProduct11 from "@/components/singleProduct/SingleProduct11";
@@ -176,9 +176,9 @@ export async function generateMetadata({ params }) {
       alternates: {
         canonical: canonicalUrl,
         languages: {
+          "ar-SA": `/ar/shop/${categoryName}/${subCategoryName}/${product}`,
           en: `/en/shop/${categoryName}/${subCategoryName}/${product}`,
-          ar: `/ar/shop/${categoryName}/${subCategoryName}/${product}`,
-          "x-default": `/en/shop/${categoryName}/${subCategoryName}/${product}`,
+          "x-default": `/ar/shop/${categoryName}/${subCategoryName}/${product}`,
         },
       },
       // openGraph: {
