@@ -340,25 +340,12 @@
   transform: scale(1.03);
 }
 
-/* ── Image switch animation ── */
-@keyframes pdp-img-in {
-  from {
-    opacity: 0;
-    transform: scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.pdp-gallery__img-anim {
+/* ── Image crossfade stack layers ── */
+.pdp-gallery__img-layer {
   position: absolute;
   inset: 0;
-}
-
-.pdp-gallery__img-anim.is-switching {
-  animation: pdp-img-in 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  /* opacity + transition controlled inline per layer */
+  will-change: opacity;
 }
 
 /* ── FIX #5: Prev / Next arrow buttons ── */

@@ -41,7 +41,7 @@ import ProductSchema from "./ProductSchema";
 // ── Below-fold sections (lazy loaded)
 const CustomerReviews = dynamic(
   () => import("../New/ProductInfoTabs/CustomerReviews"),
-  { ssr: false, loading: () => <div style={{ height: "400px", background: "#111" }} /> }
+  { ssr: false, loading: () => null }
 );
 
 const FAQSection = dynamic(() => import("./sections/FAQSection"), {
@@ -212,7 +212,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
 
       {/* ── Section 11: Reviews ── */}
       <div id="pdp-reviews" style={{ background: "#FAF8F4", borderTop: "1px solid #E8E1D9" }}>
-        <Suspense fallback={<div style={{ height: "400px", background: "#FAF8F4" }} />}>
+        <Suspense fallback={null}>
           <CustomerReviews
             product={{ ...product, category, subcategory }}
             reviews={reviews}

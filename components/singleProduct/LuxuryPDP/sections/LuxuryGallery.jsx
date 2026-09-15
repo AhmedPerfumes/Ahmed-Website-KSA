@@ -84,9 +84,6 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
   const touchStartX = useRef(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  // Animation state: triggers CSS fade-in on every image switch
-  const [isSwitching, setIsSwitching] = useState(false);
-  const switchTimer = useRef(null);
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -95,14 +92,6 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [lightboxOpen]);
-
-  // Trigger switch animation on every activeIndex change
-  useEffect(() => {
-    setIsSwitching(true);
-    clearTimeout(switchTimer.current);
-    switchTimer.current = setTimeout(() => setIsSwitching(false), 350);
-    return () => clearTimeout(switchTimer.current);
-  }, [activeIndex]);
 
   const openLightbox = useCallback((idx) => {
     setLightboxIndex(idx);
@@ -141,11 +130,6 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
     },
     [images.length, setActiveIndex]
   );
-
-  const currentImage = images[activeIndex] ?? images[0];
-  const imgSrc = currentImage
-    ? `${API_URL}storage/${currentImage}`
-    : "/assets/images/general_product.png";
 
   const hasPrev = activeIndex > 0;
   const hasNext = activeIndex < images.length - 1;
@@ -186,7 +170,7 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           </div>
         )}
 
-        {/* Main image area */}
+        {/* Main image area — CSS crossfade stack: all images rendered, only active is visible */}
         <div
           className="pdp-gallery__main"
           onTouchStart={onTouchStart}
@@ -196,38 +180,44 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           onClick={() => openLightbox(activeIndex)}
           title="Click to zoom"
         >
-          {/* Hidden image preloader — prevents first-click delay by caching all images immediately */}
-          <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, opacity: 0, overflow: "hidden", pointerEvents: "none", top: 0, left: 0, zIndex: -1 }}>
-            {images.map((img, idx) => idx !== 0 && (
+          {/* All images stacked — CSS opacity transition = instant switch, no white flash */}
+          {images.map((img, idx) => (
+            <div
+              key={idx}
+              className="pdp-gallery__img-layer"
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: idx === activeIndex ? 1 : 0,
+                transition: "opacity 0.35s ease",
+                pointerEvents: idx === activeIndex ? "auto" : "none",
+              }}
+            >
               <Image
-                key={idx}
                 src={`${API_URL}storage/${img}`}
-                alt=""
-                width={1}
-                height={1}
-                priority
+                alt={idx === activeIndex ? he.decode(product?.product_name || "Product") : ""}
+                fill
+                sizes="(max-width: 991px) 100vw, 42vw"
+                priority={idx === 0}
+                loading={idx === 0 ? "eager" : "lazy"}
+                style={{ objectFit: "contain" }}
               />
-            ))}
-          </div>
+            </div>
+          ))}
 
-          {/* Main image with switching animation class */}
-          <div
-            key={activeIndex}
-            className={`pdp-gallery__img-anim${isSwitching ? " is-switching" : ""}`}
-            style={{ position: "absolute", inset: 0 }}
-          >
+          {images.length === 0 && (
             <Image
-              src={imgSrc}
+              src="/assets/images/general_product.png"
               alt={he.decode(product?.product_name || "Product")}
               fill
-              sizes="(max-width: 991px) 100vw, 42vw"
-              priority
               style={{ objectFit: "contain" }}
+              priority
             />
-          </div>
+          )}
+
           <Badges product={product} />
 
-          {/* Prev / Next arrows — only shown when multiple images exist */}
+          {/* Prev / Next arrows */}
           {images.length > 1 && (
             <>
               <ArrowBtn direction="prev" onClick={(e) => { e.stopPropagation(); goPrev(); }} disabled={!hasPrev} />
