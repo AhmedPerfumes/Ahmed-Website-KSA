@@ -30,18 +30,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const STORAGE_KEY = "ahmed_recently_viewed";
 const MAX_ITEMS = 10;
 
-/**
- * toSlug — converts a raw product/category name to a URL-safe slug.
- * Strips & and other special characters that break Next.js [...product] routing.
- * Handles both English and Arabic names.
- */
-const toSlug = (str) =>
-  (str || "")
-    .replace(/[&+%#@!*()=\[\]{}|\\:;'"<>,.?/]/g, "") // strip special chars incl. &
-    .trim()
-    .replace(/\s+/g, "-")
-    .toLowerCase();
-
 const RecentlyViewed = ({ product, category, subcategory }) => {
   const locale = useLocale();
   const { currency } = useMenu();
@@ -72,10 +60,10 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
       const entry = {
         product_id: product.product_id,
         product_name: product.product_name,
-        slug: product.slug ? toSlug(product.slug) : toSlug(product.product_name),
+        slug: product.slug || product.product_name?.toLowerCase().replace(/ /g, "-"),
         // Store the URL-safe slugs passed from the route (not the raw API names)
-        category_slug: category ? toSlug(category) : toSlug(product.category_name) || "perfumes",
-        subcategory_slug: subcategory ? toSlug(subcategory) : toSlug(product.subcategory?.subcategory_name) || "online-exclusive",
+        category_slug: category || product.category_name?.toLowerCase().replace(/\s+/g, "-") || "perfumes",
+        subcategory_slug: subcategory || product.subcategory?.subcategory_name?.toLowerCase().replace(/\s+/g, "-") || "online-exclusive",
         image: images[0] || null,
         price: product.price,
         discount: product.discount || null,
@@ -124,13 +112,10 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
       <div className="position-relative" id="rv-slider">
         <Swiper {...swiperOptions} className="swiper-container js-swiper-slider">
           {viewed.map((item, idx) => {
-            // toSlug() applied at read-time too — fixes old cached entries stored before this fix
-            const href = `/${locale}/shop/${toSlug(item.category_slug || item.category) || "perfumes"}/${toSlug(
-              item.subcategory_slug ||
+            const href = `/${locale}/shop/${item.category_slug || item.category || "perfumes"}/${item.subcategory_slug ||
               (typeof item.subcategory === "object"
-                ? item.subcategory?.subcategory_name
-                : item.subcategory)
-            ) || "online-exclusive"}/${toSlug(item.slug)}`;
+                ? item.subcategory?.subcategory_name?.toLowerCase().replace(/\s+/g, "-")
+                : item.subcategory) || "online-exclusive"}/${item.slug}`;
 
             const imgSrc = item.image
               ? `${API_URL}storage/${item.image}`
