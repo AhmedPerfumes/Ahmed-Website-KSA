@@ -26,10 +26,9 @@ export default function SpecialOffers() {
         window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: elm.product_name, image: img, qty, category: elm.category_name, subcategory: elm.subcategory?.subcategory_name || "" } }));
     };
 
-    const [promotions, setPromotions]               = useState([]);
-    const [activePromoIndex, setActivePromoIndex]   = useState(0);
-    const [loading, setLoading]                     = useState(true);
-    const [swiper, setSwiper]                       = useState(null);
+    const [promotions, setPromotions] = useState([]);
+    const [loading, setLoading]       = useState(true);
+    const [swiper, setSwiper]         = useState(null);
 
     const prevRef = useRef(null);
     const nextRef = useRef(null);
@@ -70,15 +69,6 @@ export default function SpecialOffers() {
             }
         }
     }, [swiper]);
-
-    /* Reset slide on tab change */
-    useEffect(() => {
-        if (swiper && !swiper.destroyed) {
-            try {
-                swiper.slideTo(0, 300);
-            } catch {}
-        }
-    }, [activePromoIndex, swiper]);
 
     /* ── Helpers ──────────────────────────────────────────────── */
     const cleanStr = useCallback((str) =>
@@ -125,8 +115,22 @@ export default function SpecialOffers() {
         }
     }, []);
 
-    const currentPromo = promotions[activePromoIndex] || null;
-    const currentProducts = currentPromo?.products ?? [];
+    /* ── Discount promotions & products ── */
+    const discountPromos = promotions.filter((p) => !p.type || p.type === "discount");
+    const firstDiscount = discountPromos[0] || null;
+
+    // Collect products from discount promotions (deduplicated by product_id) and limit to 8
+    const allDiscountProducts = [];
+    const seenIds = new Set();
+    for (const promo of discountPromos) {
+        for (const prod of (promo.products || [])) {
+            if (prod && prod.product_id && !seenIds.has(prod.product_id)) {
+                seenIds.add(prod.product_id);
+                allDiscountProducts.push(prod);
+            }
+        }
+    }
+    const currentProducts = allDiscountProducts.slice(0, 8);
 
     /* ── Skeleton ─────────────────────────────────────────────── */
     if (isMenuLoading || loading) {
@@ -163,30 +167,10 @@ export default function SpecialOffers() {
                 <div className="so-head">
                     <span className="so-eyebrow">{t("Exclusive Offers")}</span>
                     <h2 className="so-title">
-                        {currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}
+                        {firstDiscount?.name ? he.decode(firstDiscount.name) : t("Special Offers")}
                     </h2>
-                    {currentPromo?.description && (
-                        <p className="so-desc">{he.decode(currentPromo.description)}</p>
-                    )}
-
-                    {/* ── Promotion Tabs (when multiple promotions active) ── */}
-                    {promotions.length > 1 && (
-                        <div className="so-tabs-wrap">
-                            <div className="so-tabs" role="tablist" aria-label="Special Offer Campaigns">
-                                {promotions.map((promo, idx) => (
-                                    <button
-                                        key={promo.id || idx}
-                                        type="button"
-                                        role="tab"
-                                        aria-selected={activePromoIndex === idx}
-                                        className={`so-tab${activePromoIndex === idx ? " so-tab--active" : ""}`}
-                                        onClick={() => setActivePromoIndex(idx)}
-                                    >
-                                        {promo.name ? he.decode(promo.name) : `${t("Offer")} ${idx + 1}`}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                    {firstDiscount?.description && (
+                        <p className="so-desc">{he.decode(firstDiscount.description)}</p>
                     )}
                 </div>
 
