@@ -60,7 +60,7 @@ function HeroSection({ data = {}, onBookNow }) {
               </p>
 
               <p className="fst-italic mb-5 fade-in-top delay-2" style={{ fontSize: "0.95rem", color: data?.textColor || 'rgba(255,255,255,0.60)' }}>
-                — Crafted by our founder — Mr. Kafeel Ahmed
+                - Crafted by our founder — Mr. Kafeel Ahmed
               </p>
 
               <motion.div
