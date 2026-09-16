@@ -149,7 +149,7 @@ export async function fetchSpecialOffers() {
   _soInFlight = (async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}api/specialOffers`
+        `${process.env.NEXT_PUBLIC_API_URL}api/specialOffers?limit=8`
       );
       const data = await res.json();
       _soCache = {
