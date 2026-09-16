@@ -7,23 +7,23 @@ import dynamic from "next/dynamic";
    initial bundle. Loaded on demand but mounted immediately so the footer
    never floats above content regardless of whether HeroBanner is on or off. ── */
 
-const BestSellers         = dynamic(() => import("@/components/homepage/BestSellers"),        { ssr: false });
-const CollectionShowcase  = dynamic(() => import("@/components/homepage/CollectionShowcase"),  { ssr: false });
-const OffersBanner        = dynamic(() => import("@/components/homepage/OffersBanner"),        { ssr: false });
-const SpecialOffers       = dynamic(() => import("@/components/homepage/SpecialOffers"),       { ssr: false });
-const BuyXGetY            = dynamic(() => import("@/components/homepage/BuyXGetY"),            { ssr: false });
-const NewArrivals         = dynamic(() => import("@/components/homepage/NewArrivals"),         { ssr: false });
+const BestSellers = dynamic(() => import("@/components/homepage/BestSellers"), { ssr: false });
+const CollectionShowcase = dynamic(() => import("@/components/homepage/CollectionShowcase"), { ssr: false });
+const OffersBanner = dynamic(() => import("@/components/homepage/OffersBanner"), { ssr: false });
+const SpecialOffers = dynamic(() => import("@/components/homepage/SpecialOffers"), { ssr: false });
+const BuyXGetY = dynamic(() => import("@/components/homepage/BuyXGetY"), { ssr: false });
+const NewArrivals = dynamic(() => import("@/components/homepage/NewArrivals"), { ssr: false });
 const OnlineExclusiveBanner = dynamic(() => import("@/components/homepage/OnlineExclusiveBanner"), { ssr: false });
-const OnlineExclusive     = dynamic(() => import("@/components/homepage/OnlineExclusive"),     { ssr: false });
-const GiftBanner          = dynamic(() => import("@/components/homepage/GiftBanner"),          { ssr: false });
-const GiftSets            = dynamic(() => import("@/components/homepage/GiftSets"),            { ssr: false });
-const DakhoonBanner       = dynamic(
+const OnlineExclusive = dynamic(() => import("@/components/homepage/OnlineExclusive"), { ssr: false });
+const GiftBanner = dynamic(() => import("@/components/homepage/GiftBanner"), { ssr: false });
+const GiftSets = dynamic(() => import("@/components/homepage/GiftSets"), { ssr: false });
+const DakhoonBanner = dynamic(
     () => import("@/components/homepage/DakhoonBanner").then((m) => ({ default: m.DakhoonBanner })),
     { ssr: false }
 );
-const DakhoonSection      = dynamic(() => import("@/components/homepage/DakhoonSection"),      { ssr: false });
-const CareEssentials      = dynamic(() => import("@/components/homepage/CareEssentials"),      { ssr: false });
-const SmallBanner         = dynamic(() => import("@/components/homepage/SmallBanner"),         { ssr: false });
+const DakhoonSection = dynamic(() => import("@/components/homepage/DakhoonSection"), { ssr: false });
+const CareEssentials = dynamic(() => import("@/components/homepage/CareEssentials"), { ssr: false });
+const SmallBanner = dynamic(() => import("@/components/homepage/SmallBanner"), { ssr: false });
 
 /**
  * HomePage — Ahmed Al Maghribi Perfumes (KSA)

@@ -117,7 +117,7 @@ export default function SpecialOffers() {
 
     /* ── Discount promotions & products ── */
     const discountPromos = promotions.filter((p) => !p.type || p.type === "discount");
-    const firstDiscount = discountPromos[0] || null;
+    const currentPromo = discountPromos.find((p) => p.image) || discountPromos[0] || null;
 
     // Collect products from discount promotions (deduplicated by product_id) and limit to 8
     const allDiscountProducts = [];
@@ -130,7 +130,14 @@ export default function SpecialOffers() {
             }
         }
     }
+
     const currentProducts = allDiscountProducts.slice(0, 8);
+
+    const promoImage = currentPromo?.image
+        ? (currentPromo.image.startsWith("http")
+            ? currentPromo.image
+            : `${process.env.NEXT_PUBLIC_API_URL}storage/${currentPromo.image}`)
+        : null;
 
     /* ── Skeleton ─────────────────────────────────────────────── */
     if (isMenuLoading || loading) {
@@ -163,15 +170,34 @@ export default function SpecialOffers() {
         <section className="so-section" aria-label="Special Offers" id="special-offers">
             <div className="so-inner">
 
+                {/* ── Dynamic Promotion Banner ── */}
+                {promoImage && (
+                    <div className="so-banner">
+                        <Link href={`/${locale}/shop`} tabIndex={-1} className="so-banner__link" aria-label={currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}>
+                            <Image
+                                src={promoImage}
+                                alt={currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers"}
+                                fill
+                                sizes="(max-width: 768px) 95vw, 1440px"
+                                className="so-banner__img"
+                                priority={false}
+                                loading="lazy"
+                            />
+                            <span className="so-banner__scrim" />
+                        </Link>
+                    </div>
+                )}
+
                 {/* ── Centered heading ── */}
                 <div className="so-head">
                     <span className="so-eyebrow">{t("Exclusive Offers")}</span>
                     <h2 className="so-title">
-                        {firstDiscount?.name ? he.decode(firstDiscount.name) : t("Special Offers")}
+                        {currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}
                     </h2>
-                    {firstDiscount?.description && (
-                        <p className="so-desc">{he.decode(firstDiscount.description)}</p>
+                    {currentPromo?.description && (
+                        <p className="so-desc">{he.decode(currentPromo.description)}</p>
                     )}
+
                 </div>
 
                 {/* ── Carousel ── */}
