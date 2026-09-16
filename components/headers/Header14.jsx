@@ -419,6 +419,10 @@ const headerStyles = `
     border-top: none;
 }
 
+.mega-menu .container {
+    max-width: 1440px !important;
+}
+
 .header-bottom-wrapper .container {
     max-width: 100%;
     padding-left: 1.5rem;

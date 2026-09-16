@@ -259,6 +259,10 @@ const headerStyles = `
     position: relative;
 }
 
+.mega-menu .container {
+    max-width: 1440px !important;
+}
+
 .sticky-logo {
     display: flex;
     align-items: center;
