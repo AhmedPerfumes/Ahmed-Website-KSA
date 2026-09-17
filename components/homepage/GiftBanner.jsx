@@ -20,7 +20,7 @@ export default function GiftBanner() {
                 {/* Full-bleed image */}
                 <Link href={`/${locale}/shop/gift-sets`} className="gbnr__link" tabIndex={-1}>
                     <Image
-                        src="https://ae.ahmedalmaghribi.com/assets/images/home/demo8/avif/giftset-bnr.avif"
+                        src="/assets/images/banners/giftset-bnr.jpg"
                         alt="The Art of Gifting — luxury gift sets for every occasion"
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"

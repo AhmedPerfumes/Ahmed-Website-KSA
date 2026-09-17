@@ -199,12 +199,19 @@ export default function SpecialOffers() {
                     )}
 
                 </div>
+                <div className="oe-view-all-row">
+                    <Link href={`/${locale}/sale`} className="oe-view-all">
+                        {t("View All")}
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                    </Link>
+                </div>
 
                 {/* ── Carousel ── */}
                 <div className="so-slider-wrap">
                     <Swiper
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".so-scrollbar" }}
                         spaceBetween={20}
@@ -231,7 +238,14 @@ export default function SpecialOffers() {
                                     ? Math.round(Number(elm.discount.value))
                                     : Math.round(((base - sale) / base) * 100))
                                 : 0;
-                            const prodName = (locale === "ar" && elm.product_name_ar) ? elm.product_name_ar : elm.product_name;
+                            // Arabic name — mirrors PremiumProductCard logic exactly
+                            const prodName = locale === 'ar'
+                                ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
+                                : he.decode(elm?.product_name || '');
+                            const catLabel = locale === 'ar'
+                                ? (elm.subcategory?.subcategory_name_ar || elm.category_name_ar
+                                   || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
+                                : (elm.subcategory?.subcategory_name || elm.category_name);
 
                             return (
                                 <SwiperSlide key={elm.product_id}>
@@ -273,7 +287,7 @@ export default function SpecialOffers() {
                                         {/* Info */}
                                         <div className="so-card__info">
                                             <p className="so-card__sub">
-                                                {elm.subcategory?.subcategory_name || elm.category_name}
+                                                {catLabel}
                                             </p>
                                             <h3 className="so-card__name">
                                                 <Link href={url}>

@@ -329,6 +329,11 @@
   pointer-events: none;
 }
 
+/* ── RTL: mirror arrow icons ── */
+[dir="rtl"] .bs-arrow svg {
+  transform: scaleX(-1);
+}
+
 /* ─── Card ────────────────────────────────────────────────────── */
 .bs-card {
   display: flex;
@@ -757,4 +762,52 @@
   border-right: 1px solid var(--bs-gold, #C5A664);
   height: 36px;
   line-height: 36px;
+}
+/* -- Shop All CTA button -- */
+.bs-cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.bs-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 2.25rem;
+    border: 1px solid #C5A664;
+    color: #1a1a1a;
+    background: transparent;
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: "Kanit-Regular", sans-serif;
+    font-weight: 600;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.bs-cta svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.bs-cta:hover {
+    background: #C5A664;
+    color: #fff;
+    border-color: #C5A664;
+}
+
+.bs-cta:hover svg {
+    transform: translateX(4px);
+}
+
+[dir="rtl"] .bs-cta:hover svg {
+    transform: translateX(-4px);
 }

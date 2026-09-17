@@ -150,7 +150,7 @@ export default function OnlineExclusive() {
 
                 {/* ── View All row ── */}
                 <div className="oe-view-all-row">
-                    <Link href={`/${locale}/shop`} className="oe-view-all">
+                    <Link href={`/${locale}/product-category/online-exclusive`} className="oe-view-all">
                         {t("View All")}
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </Link>
@@ -160,6 +160,7 @@ export default function OnlineExclusive() {
                     <Swiper
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".oe-scrollbar" }}
                         spaceBetween={20}
@@ -186,18 +187,25 @@ export default function OnlineExclusive() {
                                     ? Math.round(Number(elm.discount.value))
                                     : Math.round(((base - sale) / base) * 100))
                                 : 0;
+                            // Arabic name — mirrors PremiumProductCard logic exactly
+                            const prodName = locale === 'ar'
+                                ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
+                                : he.decode(elm?.product_name || '');
+                            const catLabel = locale === 'ar'
+                                ? (elm.subcategory?.subcategory_name_ar || elm.category_name_ar
+                                   || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
+                                : (elm.subcategory?.subcategory_name || elm.category_name);
 
                             return (
                                 <SwiperSlide key={elm.product_id}>
                                     <article className="oe-card">
 
-                                        {/* â”€â”€ Image â”€â”€ */}
                                         <div className="oe-card__media">
                                             <Link href={url} tabIndex={-1}>
                                                 {imgSrc && (
                                                     <Image
                                                         src={imgSrc}
-                                                        alt={elm.product_name ? `${he.decode(elm.product_name)} — Ahmed Al Maghribi Online Exclusive` : "Ahmed Al Maghribi Online Exclusive Perfume"}
+                                                        alt={prodName ? `${prodName} — Ahmed Al Maghribi Online Exclusive` : "Ahmed Al Maghribi Online Exclusive Perfume"}
                                                         fill
                                                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                                                         className="oe-card__img"
@@ -230,11 +238,11 @@ export default function OnlineExclusive() {
                                         {/* â”€â”€ Info â”€â”€ */}
                                         <div className="oe-card__info">
                                             <p className="oe-card__sub">
-                                                {elm.subcategory?.subcategory_name || elm.category_name}
+                                                {catLabel}
                                             </p>
                                             <h3 className="oe-card__name">
                                                 <Link href={url}>
-                                                    {elm.product_name && he.decode(elm.product_name)}
+                                                    {prodName}
                                                 </Link>
                                             </h3>
                                             <div className="oe-card__price">

@@ -98,6 +98,7 @@ export default function CollectionShowcase() {
                         <Swiper
                             modules={[Navigation, Scrollbar]}
                             onSwiper={setSwiperInstance}
+                            dir={locale === 'ar' ? 'rtl' : 'ltr'}
                             spaceBetween={16}
                             slidesPerView={1.4}
                             breakpoints={{

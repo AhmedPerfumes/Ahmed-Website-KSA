@@ -151,7 +151,9 @@ export default function MobileHeader() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {t(elm.title.split(" ").slice(0, 13).join(" "))}
+                    {locale === 'ar' && elm.title_ar
+                      ? elm.title_ar
+                      : t(elm.title.split(" ").slice(0, 13).join(" "))}
                   </Link>
                   <span className="text-white">-</span>
                 </span>
@@ -173,7 +175,9 @@ export default function MobileHeader() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {t(elm.title.split(" ").slice(0, 13).join(" "))}
+                    {locale === 'ar' && elm.title_ar
+                      ? elm.title_ar
+                      : t(elm.title.split(" ").slice(0, 13).join(" "))}
                   </Link>
                   <span className="text-white">-</span>
                 </span>
@@ -195,7 +199,9 @@ export default function MobileHeader() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {t(elm.title.split(" ").slice(0, 13).join(" "))}
+                    {locale === 'ar' && elm.title_ar
+                      ? elm.title_ar
+                      : t(elm.title.split(" ").slice(0, 13).join(" "))}
                   </Link>
                   <span className="text-white">-</span>
                 </span>

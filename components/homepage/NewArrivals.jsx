@@ -12,6 +12,13 @@ import "./NewArrivals.css";
 /* ── Static editorial new arrival cards ── */
 const NEW_ARRIVAL_ITEMS = [
     {
+        id: "the-roots",
+        label: "K Series 2000",
+        name: "The Roots",
+        img: "/assets/images/kseries/the-roots-2000.png",
+        link: "/k-series/2000",
+    },
+    {
         id: "the-alchemy-lab",
         label: "K Series 2025",
         name: "The Alchemy Lab",
@@ -25,13 +32,7 @@ const NEW_ARRIVAL_ITEMS = [
         img: "/assets/images/kseries/the-beyond-2050.png",
         link: "/k-series/2050",
     },
-    {
-        id: "the-roots",
-        label: "K Series 2000",
-        name: "The Roots",
-        img: "/assets/images/kseries/the-roots-2000.png",
-        link: "/k-series/2000",
-    },
+    
 ];
 
 export default function NewArrivals() {
@@ -75,7 +76,7 @@ export default function NewArrivals() {
                 </Link>
 
                 <span className="na2-banner__badge">{t("New")}</span>
-                <button
+                {/* <button
                     type="button"
                     className={`na2-banner__wish${inWish ? " active" : ""}`}
                     onClick={() => toggleWishlist(item.id)}
@@ -84,7 +85,7 @@ export default function NewArrivals() {
                     <svg viewBox="0 0 24 24">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
-                </button>
+                </button> */}
 
                 <div className="na2-banner__body">
                     <p className="na2-banner__sub">{item.label}</p>
@@ -129,6 +130,7 @@ export default function NewArrivals() {
                     <Swiper
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".na2-scrollbar" }}
                         spaceBetween={14}

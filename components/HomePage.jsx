@@ -1,6 +1,7 @@
 "use client";
 
-import HeroBanner from "@/components/homepage/HeroBanner";
+// import HeroBanner from "@/components/homepage/HeroBanner"; // ← restore to revert
+import VideoHeroBanner from "@/components/homepage/VideoHeroBanner";
 import dynamic from "next/dynamic";
 
 /* ── Below-fold sections: code-split so their JS chunks don't ship in the
@@ -39,11 +40,15 @@ const SmallBanner = dynamic(() => import("@/components/homepage/SmallBanner"), {
 const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
     return (
         <div id="main">
-            {/* ── Toggle on/off freely — no layout side-effects either way ── */}
-            <HeroBanner
-                initialSliders={initialSliders}
-                initialMobileSliders={initialMobileSliders}
+            {/* ── Video Hero Banner — desktop + mobile ── */}
+            <VideoHeroBanner
+                desktopMp4Src="/assets/videos/banner-video.mp4"
+                desktopPoster="/assets/videos/banner-poster.jpg"
+                mobileMp4Src="/assets/videos/banner-video-mobile.mp4"
+                mobilePoster="/assets/videos/banner-poster-mobile.jpg"
             />
+            {/* To revert: comment VideoHeroBanner above, uncomment below:
+            <HeroBanner initialSliders={initialSliders} initialMobileSliders={initialMobileSliders} /> */}
 
             <BestSellers />
             <CollectionShowcase />

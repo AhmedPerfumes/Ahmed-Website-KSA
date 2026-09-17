@@ -1037,12 +1037,14 @@ export default function Header14() {
                                                     whiteSpace: "nowrap",
                                                 }}
                                             >
-                                                {t(
-                                                    elm.title
-                                                        .split(" ")
-                                                        .slice(0, 13)
-                                                        .join(" ")
-                                                )}
+                                                {locale === 'ar' && elm.title_ar
+                                                    ? elm.title_ar
+                                                    : t(
+                                                        elm.title
+                                                            .split(" ")
+                                                            .slice(0, 13)
+                                                            .join(" ")
+                                                    )}
                                             </Link>
                                             <span className="text-white opacity-50">
                                                 -

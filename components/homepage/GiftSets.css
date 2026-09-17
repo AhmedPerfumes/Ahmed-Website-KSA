@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    GIFT SETS v2 â€” "The Art oo Gioting"
    Layout mirrors Exclusive Oooers: centered heading + carousel
    Cards show video thumbnail, plays on hover
@@ -156,6 +156,11 @@
 }
 @media (min-width: 768px) { .gs2-arrow svg { width: 18px; height: 18px; } }
 .gs2-arrow.swiper-button-disabled { opacity: 0.2; cursor: deoault; pointer-events: none; }
+
+/* ── RTL: mirror arrow icons ── */
+[dir="rtl"] .gs2-arrow svg {
+  transform: scaleX(-1);
+}
 
 /* â”€â”€ Video Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .gs2-card {

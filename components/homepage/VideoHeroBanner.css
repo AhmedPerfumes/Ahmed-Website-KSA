@@ -1,0 +1,163 @@
+﻿/* ── VideoHeroBanner.css ─────────────────────────────────────────────────
+   Full-viewport video hero with poster-first loading strategy.
+   Uses opacity transitions (not display:none) so the browser can
+   decode the video frame while it is still invisible — avoids flash.
+──────────────────────────────────────────────────────────────────────── */
+
+.vhb {
+    position: relative;
+    width: 100%;
+    height: 100svh;          /* svh = safe viewport height (no iOS address-bar jump) */
+    min-height: 520px;
+    max-height: 960px;
+    overflow: hidden;
+    background: #0a0a0a;     /* fallback colour while poster loads */
+}
+
+/* ── Media layer ── */
+.vhb__media {
+    position: absolute;
+    inset: 0;
+}
+
+/* ── Poster image ── */
+.vhb__poster {
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+    z-index: 1;
+}
+.vhb__poster--hidden {
+    opacity: 0;              /* fades out once video is playing */
+    pointer-events: none;
+}
+
+/* ── Video ── */
+.vhb__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    z-index: 2;
+}
+.vhb__video--visible {
+    opacity: 1;              /* fades in once canplay fires */
+}
+
+/* ── Dark gradient overlay for text legibility ── */
+.vhb__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.10) 0%,
+        rgba(0,0,0,0.45) 50%,
+        rgba(0,0,0,0.70) 100%
+    );
+    z-index: 3;
+}
+
+/* ── Content ── */
+.vhb__content {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    align-items: flex-end;
+    padding: 3rem 4rem 4rem;
+}
+
+.vhb__text {
+    max-width: 640px;
+    color: #fff;
+}
+
+.vhb__eyebrow {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 0.75rem;
+    font-family: "Kanit-Regular", sans-serif;
+}
+
+.vhb__title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 1rem;
+    font-family: "Kanit-Bold", sans-serif;
+}
+
+.vhb__subtitle {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    opacity: 0.85;
+    margin: 0 0 1.75rem;
+    line-height: 1.6;
+    max-width: 480px;
+}
+
+.vhb__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    background: #fff;
+    color: #000;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: background 0.25s, color 0.25s;
+}
+.vhb__cta svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    transition: transform 0.25s;
+}
+.vhb__cta:hover {
+    background: #c9a84c;
+    color: #fff;
+}
+.vhb__cta:hover svg {
+    transform: translateX(4px);
+}
+
+/* ── RTL ── */
+[dir="rtl"] .vhb__content {
+    padding: 3rem 4rem 4rem;
+}
+[dir="rtl"] .vhb__cta:hover svg {
+    transform: translateX(-4px);
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .vhb {
+        height: 85svh;
+        min-height: 420px;
+    }
+    .vhb__content {
+        padding: 2rem 1.5rem 2.5rem;
+        align-items: flex-end;
+    }
+    .vhb__subtitle {
+        display: none;          /* saves space on mobile */
+    }
+}
+
+/* ── Reduced motion — disable fade transitions ── */
+@media (prefers-reduced-motion: reduce) {
+    .vhb__poster,
+    .vhb__video {
+        transition: none;
+    }
+}

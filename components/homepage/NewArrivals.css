@@ -164,6 +164,11 @@
 }
 .na2-arrow.swiper-button-disabled { opacity: 0.2; cursor: default; pointer-events: none; }
 
+/* ── RTL: mirror arrow icons ── */
+[dir="rtl"] .na2-arrow svg {
+  transform: scaleX(-1);
+}
+
 /* ── Banner Card ─────────────────────────────────────────────── */
 .na2-banner {
   position: relative;

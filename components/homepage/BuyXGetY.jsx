@@ -219,7 +219,14 @@ export default function BuyXGetY() {
                             const url      = productUrl(elm);
                             const inWish   = isAddedtoWishlist(elm.product_id);
                             const base     = Number(elm.price);
-                            const prodName = (locale === "ar" && elm.product_name_ar) ? elm.product_name_ar : elm.product_name;
+                            // Arabic name — mirrors PremiumProductCard logic exactly
+                            const prodName = locale === 'ar'
+                                ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
+                                : he.decode(elm?.product_name || '');
+                            const catLabel = locale === 'ar'
+                                ? (elm.subcategory?.subcategory_name_ar || elm.category_name_ar
+                                   || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
+                                : (elm.subcategory?.subcategory_name || elm.category_name);
 
                             return (
                                 <SwiperSlide key={elm.product_id}>
@@ -256,7 +263,7 @@ export default function BuyXGetY() {
                                         {/* Info */}
                                         <div className="bxy-card__info">
                                             <p className="bxy-card__sub">
-                                                {elm.subcategory?.subcategory_name || elm.category_name}
+                                                {catLabel}
                                             </p>
                                             <h3 className="bxy-card__name">
                                                 <Link href={url}>

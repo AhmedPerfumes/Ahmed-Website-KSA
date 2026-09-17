@@ -18,9 +18,9 @@ export default function OnlineExclusiveBanner() {
             <div className="oebnr__inner">
 
                 {/* Full-bleed image */}
-                <Link href={`/${locale}/shop`} className="oebnr__link" tabIndex={-1}>
+                <Link href={`/${locale}/product-category/online-exclusive`} className="oebnr__link" tabIndex={-1}>
                     <Image
-                        src="/assets/images/online-exclusive-banner.png"
+                        src="/assets/images/online-exclusive-banner.jpg"
                         alt="Online Exclusive â€” only available at Ahmed Al Maghribi online"
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
@@ -39,7 +39,7 @@ export default function OnlineExclusiveBanner() {
                         {t("Online")} <em>{t("Exclusive")}</em>
                     </h2>
                     
-                    <Link href={`/${locale}/shop`} className="oebnr__cta">
+                    <Link href={`/${locale}/product-category/online-exclusive`} className="oebnr__cta">
                         {t("Shop Online Exclusive")}
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </Link>

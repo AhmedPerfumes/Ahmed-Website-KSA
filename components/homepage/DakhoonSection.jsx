@@ -182,9 +182,9 @@ function DakhoonVideoCard({ item, locale, t }) {
             <div className="dk-card__info">
                 <p className="dk-card__sublabel">{item.subLabel}</p>
                 <h3 className="dk-card__name">
-                    <Link href={url}>{item.name}</Link>
+                    <Link href={url}>{t(item.name)}</Link>
                 </h3>
-                <p className="dk-card__tagline">{item.tagline}</p>
+                <p className="dk-card__tagline">{t(item.tagline)}</p>
                 <Link href={url} className="dk-card__cta">
                     {t("Shop Now")}
                 </Link>
@@ -229,6 +229,7 @@ export default function DakhoonSection() {
                     <Swiper
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".dk-scrollbar" }}
                         spaceBetween={20}

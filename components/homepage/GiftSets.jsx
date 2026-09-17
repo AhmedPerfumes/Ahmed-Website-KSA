@@ -190,9 +190,9 @@ function VideoCard({ item, locale, t }) {
             <div className="gs2-card__info">
                 <p className="gs2-card__sub">{t("Gift Set")}</p>
                 <h3 className="gs2-card__name">
-                    <Link href={url}>{item.altText}</Link>
+                    <Link href={url}>{t(item.altText)}</Link>
                 </h3>
-                <p className="gs2-card__tagline">{item.subText}</p>
+                <p className="gs2-card__tagline">{t(item.subText)}</p>
                 <Link href={url} className="gs2-card__cta">
                     {t("Add to Cart")}
                 </Link>
@@ -237,6 +237,7 @@ export default function GiftSets() {
                     <Swiper
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".gs2-scrollbar" }}
                         spaceBetween={20}

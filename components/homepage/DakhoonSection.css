@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    DAKHOON BANNER + DAKHOON SECTION
    Mirror of GiftBanner + GiftSets pattern.
    Banner: max-width 1440px, 21/7 ratio, eyebrow+title overlay.
@@ -321,6 +321,11 @@
   transition: stroke 0.28s ease;
 }
 .dk-arrow.swiper-button-disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+
+/* ── RTL: mirror arrow icons ── */
+[dir="rtl"] .dk-arrow svg {
+  transform: scaleX(-1);
+}
 
 /* ── Video Card ── */
 .dk-card {

@@ -197,6 +197,7 @@ export default function BestSellers() {
                         key={activeTab}
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".bs-scrollbar" }}
                         loop={products.length > 4}
@@ -216,6 +217,14 @@ export default function BestSellers() {
                             const url    = productUrl(elm);
                             const inCart = isAddedToCartProducts(elm.product_id);
                             const inWish = isAddedtoWishlist(elm.product_id);
+                            // Arabic name — mirrors PremiumProductCard logic exactly
+                            const prodName = locale === 'ar'
+                                ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
+                                : he.decode(elm?.product_name || '');
+                            const catLabel = locale === 'ar'
+                                ? (elm.subcategory?.subcategory_name_ar || elm.category_name_ar
+                                   || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
+                                : (elm.subcategory?.subcategory_name || elm.category_name);
 
                             return (
                                 <SwiperSlide key={elm.product_id}>
@@ -227,7 +236,7 @@ export default function BestSellers() {
                                                 {imgSrc && (
                                                     <Image
                                                         src={imgSrc}
-                                                        alt={elm.product_name ? `${he.decode(elm.product_name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Perfume"}
+                                                        alt={prodName ? `${prodName} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Perfume"}
                                                         fill
                                                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                                                         className="bs-card__img"
@@ -262,11 +271,11 @@ export default function BestSellers() {
                                         {/* Info */}
                                         <div className="bs-card__info">
                                             <p className="bs-card__sub">
-                                                {elm.subcategory?.subcategory_name || elm.category_name}
+                                                {catLabel}
                                             </p>
                                             <h3 className="bs-card__name">
                                                 <Link href={url}>
-                                                    {elm.product_name && he.decode(elm.product_name)}
+                                                    {prodName}
                                                 </Link>
                                             </h3>
                                             <div className="bs-card__price">
@@ -328,6 +337,19 @@ export default function BestSellers() {
                     <button type="button" ref={nextRef} className="bs-arrow" aria-label="Next">
                         <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
                     </button>
+                </div>
+
+                {/* ── Shop All CTA ── */}
+                <div className="bs-cta-wrap">
+                    <Link
+                        href={`/${locale}/product-category/perfumes`}
+                        className="bs-cta"
+                    >
+                        {t("View All")}
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </Link>
                 </div>
 
             </div>

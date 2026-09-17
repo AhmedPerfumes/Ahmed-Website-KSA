@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    ONLINE EXCLUSIVE — Product carousel section
    Mirrors SpecialOffers.css with oe- namespace.
    Key difference: "Online Only" gold badge on every card.
@@ -300,6 +300,11 @@
   opacity: 0.2;
   cursor: default;
   pointer-events: none;
+}
+
+/* ── RTL: mirror arrow icons ── */
+[dir="rtl"] .oe-arrow svg {
+  transform: scaleX(-1);
 }
 
 /* ── Card ── */
