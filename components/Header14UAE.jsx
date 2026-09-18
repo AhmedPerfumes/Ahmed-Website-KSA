@@ -747,13 +747,9 @@ export default function Header14() {
                                                 whiteSpace: "nowrap",
                                             }}
                                         >
-                                            {/* Truncated text using slice(0, 13) */}
-                                            {t(
-                                                elm.title
-                                                    .split(" ")
-                                                    .slice(0, 13)
-                                                    .join(" ")
-                                            )}
+                                            {locale === 'ar' && elm.title_ar
+                                                ? elm.title_ar
+                                                : (elm.title ? t(elm.title) : "")}
                                         </Link>
                                         {/* Separator - Keep it outside the Link but inside the span */}
                                         <span className="text-white opacity-50">

@@ -1018,8 +1018,8 @@ export default function Header14() {
                                 style={{
                                     animation:
                                         locale === "ar"
-                                            ? "marquee-rtl 9s linear infinite"
-                                            : "marquee-ltr 9s linear infinite",
+                                            ? "marquee-rtl 75s linear infinite"
+                                            : "marquee-ltr 75s linear infinite",
                                     height: "100%",
                                 }}
                             >
@@ -1039,12 +1039,7 @@ export default function Header14() {
                                             >
                                                 {locale === 'ar' && elm.title_ar
                                                     ? elm.title_ar
-                                                    : t(
-                                                        elm.title
-                                                            .split(" ")
-                                                            .slice(0, 13)
-                                                            .join(" ")
-                                                    )}
+                                                    : (elm.title ? t(elm.title) : "")}
                                             </Link>
                                             <span className="text-white opacity-50">
                                                 -
