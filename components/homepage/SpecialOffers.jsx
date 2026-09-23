@@ -182,11 +182,13 @@ export default function SpecialOffers() {
                             <Image
                                 src={promoImage}
                                 alt={currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers"}
-                                fill
-                                sizes="(max-width: 768px) 95vw, 1440px"
+                                width={1440}
+                                height={480}
+                                sizes="(max-width: 768px) 100vw, 1440px"
                                 className="so-banner__img"
                                 priority={false}
                                 loading="lazy"
+                                unoptimized
                             />
                             <span className="so-banner__scrim" />
                         </Link>
@@ -197,10 +199,16 @@ export default function SpecialOffers() {
                 <div className="so-head">
                     <span className="so-eyebrow">{t("Exclusive Offers")}</span>
                     <h2 className="so-title">
-                        {currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}
+                        {locale === "ar" && currentPromo?.name_ar
+                            ? currentPromo.name_ar
+                            : (currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers"))}
                     </h2>
-                    {currentPromo?.description && (
-                        <p className="so-desc">{he.decode(currentPromo.description)}</p>
+                    {((locale === "ar" && currentPromo?.description_ar) || currentPromo?.description) && (
+                        <p className="so-desc">
+                            {locale === "ar" && currentPromo?.description_ar
+                                ? currentPromo.description_ar
+                                : he.decode(currentPromo.description)}
+                        </p>
                     )}
 
                 </div>
