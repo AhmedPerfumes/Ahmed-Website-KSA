@@ -255,9 +255,6 @@ export default function PremiumProductCard({
             )}
           </div>
 
-          {/* OOS dimming */}
-          {isOOS && <div className="pc-card__oos-overlay" aria-hidden="true" />}
-
           {/* Images */}
           {img1 ? (
             <>

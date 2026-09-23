@@ -119,19 +119,24 @@ export default function SpecialOffers() {
     const discountPromos = promotions.filter((p) => !p.type || p.type === "discount");
     const currentPromo = discountPromos.find((p) => p.image) || discountPromos[0] || null;
 
-    // Collect products from discount promotions (deduplicated by product_id) and limit to 8
+    // Collect in-stock products from discount promotions (deduplicated by product_id), limit to 12
     const allDiscountProducts = [];
     const seenIds = new Set();
     for (const promo of discountPromos) {
         for (const prod of (promo.products || [])) {
-            if (prod && prod.product_id && !seenIds.has(prod.product_id)) {
+            if (
+                prod &&
+                prod.product_id &&
+                !seenIds.has(prod.product_id) &&
+                (prod.product_qty ?? 0) > 0  // exclude out-of-stock
+            ) {
                 seenIds.add(prod.product_id);
                 allDiscountProducts.push(prod);
             }
         }
     }
 
-    const currentProducts = allDiscountProducts.slice(0, 8);
+    const currentProducts = allDiscountProducts.slice(0, 12);
 
     const promoImage = currentPromo?.image
         ? (currentPromo.image.startsWith("http")
@@ -173,7 +178,7 @@ export default function SpecialOffers() {
                 {/* ── Dynamic Promotion Banner ── */}
                 {promoImage && (
                     <div className="so-banner">
-                        <Link href={`/${locale}/shop`} tabIndex={-1} className="so-banner__link" aria-label={currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}>
+                        <Link href={`/${locale}/sale`} tabIndex={-1} className="so-banner__link" aria-label={currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}>
                             <Image
                                 src={promoImage}
                                 alt={currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers"}

@@ -45,6 +45,45 @@ const nextConfig = {
       },
       productionBrowserSourceMaps: false,
       // basePath: '/ksa'
+
+    // ── 301 Redirects ──────────────────────────────────────────────────────────
+    // Consolidates extrait-de-parfum products that were mistakenly indexed
+    // under the /online-exclusive/online-exclusive/ path instead of the
+    // canonical /online-exclusive/extrait-de-parfum/ path.
+    // One wildcard rule covers all 14 slugs (and any future additions).
+    async redirects() {
+        const extraitSlugs = [
+            'azure-royal',
+            'blu-oud',
+            'blue-by-ahmed',
+            'endless',
+            'exotic',
+            'hayana',
+            'joud-100ml',
+            'lush-noir-75ml',
+            'meillure-80ml',
+            'oud-couture-100ml',
+            'ruby',
+            'sapphire',
+            'xtasy',
+            'zeleny',
+        ];
+
+        return extraitSlugs.flatMap((slug) => [
+            // AR
+            {
+                source:      `/ar/shop/online-exclusive/online-exclusive/${slug}`,
+                destination: `/ar/shop/online-exclusive/extrait-de-parfum/${slug}`,
+                permanent:   true,
+            },
+            // EN (mirrors — keeps parity if EN URLs are ever crawled)
+            {
+                source:      `/en/shop/online-exclusive/online-exclusive/${slug}`,
+                destination: `/en/shop/online-exclusive/extrait-de-parfum/${slug}`,
+                permanent:   true,
+            },
+        ]);
+    },
 };
 
 export default withNextIntl(nextConfig);

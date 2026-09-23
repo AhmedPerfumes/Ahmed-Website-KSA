@@ -34,7 +34,7 @@ import { ToastContainer } from 'react-toastify';
 import { Toaster } from 'react-hot-toast';
 import { ShopFilterProvider } from "@/context/ShopFilterContext";
 import DeferredCSS from "@/components/common/DeferredCSS";
-import ExitIntentPopup from "@/components/common/ExitIntentPopup";
+// import ExitIntentPopup from "@/components/common/ExitIntentPopup";
 
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
@@ -447,7 +447,6 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                     <ProductReviews />
                                     <ToastContainer />
                                     <Toaster />
-                                    <ExitIntentPopup />
                                 </ShopFilterProvider>
                         </UserProvider>
                     </Context>
