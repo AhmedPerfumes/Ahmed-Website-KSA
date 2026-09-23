@@ -220,7 +220,9 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                                 }}
                                                 className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2"
                                             >
-                                                Sale {elm.discount.value}%
+                                                {elm.discount.discount_type === "amount"
+                                                    ? "Sale"
+                                                    : `Sale ${elm.discount.value}%`}
                                             </div>
                                         )
                                     )}

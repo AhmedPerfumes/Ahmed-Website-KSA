@@ -437,6 +437,17 @@ useEffect(() => {
                           //   }
                           // }
 
+                          if (elm.discount.discount_type === "amount") {
+                            return (
+                              <div
+                                className="product-label text-uppercase text-white top-0 start-0 mt-2 mx-2"
+                                style={{ backgroundColor: "#198754" }}
+                              >
+                                SALE
+                              </div>
+                            );
+                          }
+
                           return discountPercent !== null && elm.discount.discount_type == "percent" ? (
                             <div
                               className="product-label text-uppercase text-white top-0 start-0 mt-2 mx-2"

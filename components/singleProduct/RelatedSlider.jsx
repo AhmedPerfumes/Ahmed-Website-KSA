@@ -166,9 +166,11 @@ export default function RelatedSlider({ relatedProds }) {
                     Out Of Stock
                   </div>
                 ) : (
-                    elm.discount && elm. discount.discount_type == 'percent' && (
+                    elm.discount && (
                     <div style={{ backgroundColor: '#198754' }} className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2">
-                      Sale {elm.discount.value}%
+                      {elm.discount.discount_type === "amount"
+                        ? "Sale"
+                        : `Sale ${elm.discount.value}%`}
                     </div>
                   )
                 )}

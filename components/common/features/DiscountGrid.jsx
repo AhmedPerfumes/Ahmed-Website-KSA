@@ -75,7 +75,11 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
 
   const filteredProducts = products
     .filter((p) => p.product_qty > 0)
-    .filter((p) => !onlyDiscounted || (p.discount && p.discount.value > 0));
+    .filter(
+      (p) =>
+        !onlyDiscounted ||
+        (p.discount && (Number(p.discount.value) > 0 || Number(p.discount.final_price) > 0))
+    );
 
   const totalPages = Math.ceil(filteredProducts.length / perPage);
   const currentProducts = filteredProducts.slice(
@@ -158,7 +162,9 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
                       style={{ backgroundColor: "#198754" }}
                       className="product-label text-uppercase text-white top-0 left-0 mt-2 mx-2"
                     >
-                      Sale {elm.discount.value}%
+                      {elm.discount.discount_type === "amount"
+                        ? "Sale"
+                        : `Sale ${elm.discount.value}%`}
                     </div>
                   )
                 )}
