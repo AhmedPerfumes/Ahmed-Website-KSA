@@ -52,11 +52,11 @@ export default function CollapsibleDescription({ description, title: customTitle
                         {title} {expanded ? <KeyboardArrowUp sx={{ fontSize: "0.95rem" }} /> : <KeyboardArrowDown sx={{ fontSize: "0.95rem" }} />}
                     </Typography>
 
-                    <Collapse in={expanded}>
+                   <Collapse in={expanded}>
                         <Box 
                             sx={{ 
                                 mt: 2,
-                                "& p, & div, & span": {
+                                "& p, & div": {
                                     color: "#5C4A3A",
                                     display: "block",
                                     fontSize: "0.75rem",
@@ -65,11 +65,18 @@ export default function CollapsibleDescription({ description, title: customTitle
                                     textAlign: "justify",
                                     fontFamily: "Merriweather, serif",
                                 },
+                                "& span": {
+                                    display: "inline",
+                                },
                                 "& a": {
                                     color: "#BF953F",
                                     textDecoration: "underline",
                                     textUnderlineOffset: "2px",
                                     fontWeight: "600",
+                                    display: "inline",
+                                },
+                                "& a span, & span a": {
+                                    display: "inline",
                                 }
                             }}
                         >
