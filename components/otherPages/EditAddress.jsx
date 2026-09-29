@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useLocale } from "next-intl";
+import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export default function EditAddress() {
+    const locale = useLocale();
+    const [lookupLoading, setLookupLoading] = useState(false);
+    const [lookupStatus, setLookupStatus] = useState(null);
+    const lookupDebounceRef = useRef(null);
+
     const [addresses, setAddresses] = useState([
         {
             id: -1,
@@ -145,15 +152,80 @@ export default function EditAddress() {
     const openModal = (idx) => {
         setEditingIndex(idx);
         setForm(addresses[idx]);
+        setLookupStatus(null);
+        setLookupLoading(false);
         setShow(true);
     };
 
     const [errors, setErrors] = useState({}); // <-- added for inline validation
 
+    const handleShortAddressLookup = async (codeToLookup) => {
+        const code = (codeToLookup || "").trim().toUpperCase();
+        if (!isValidShortAddress(code)) {
+            setLookupStatus({
+                success: false,
+                message: locale === "ar" ? "رمز غير مكتمل (مثال: ABCD1234)" : "Enter 4 letters + 4 digits (e.g. ABCD1234)",
+            });
+            return;
+        }
+
+        setLookupLoading(true);
+        setLookupStatus(null);
+
+        try {
+            const res = await lookupShortAddress(code, locale);
+            if (res.isValid && res.city) {
+                setForm((prev) => ({
+                    ...prev,
+                    short_national_address: code,
+                    area: res.city,
+                    province: res.city,
+                    building: res.formattedAddress || prev.building,
+                }));
+                setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.short_national_address;
+                    delete next.area;
+                    delete next.province;
+                    delete next.building;
+                    return next;
+                });
+                setLookupStatus({
+                    success: true,
+                    message: locale === "ar"
+                        ? `✓ تم التحقق: ${res.city}${res.district ? " - " + res.district : ""}`
+                        : `✓ Verified: ${res.city}${res.district ? " - " + res.district : ""}`,
+                });
+            } else {
+                setLookupStatus({
+                    success: false,
+                    message: res.message || (locale === "ar" ? "لم يتم العثور على عنوان لهذا الرمز" : "Address not found for this code"),
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            setLookupStatus({
+                success: false,
+                message: locale === "ar" ? "تعذر التحقق تلقائياً" : "Could not verify automatically",
+            });
+        } finally {
+            setLookupLoading(false);
+        }
+    };
+
     const handleChange = (e) => {
-        const { name, value, checked } = e.target;
+        let { name, value, checked } = e.target;
         if (name === "isDefault") {
             setForm((f) => ({ ...f, isDefault: checked }));
+        } else if (name === "short_national_address") {
+            value = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+            setForm((f) => ({ ...f, [name]: value }));
+            if (value.length === 8 && isValidShortAddress(value)) {
+                clearTimeout(lookupDebounceRef.current);
+                lookupDebounceRef.current = setTimeout(() => {
+                    handleShortAddressLookup(value);
+                }, 350);
+            }
         } else {
             setForm((f) => ({ ...f, [name]: value }));
         }
@@ -321,6 +393,64 @@ export default function EditAddress() {
 
                 <Modal.Body className="pt-1">
                     <Form>
+                        {/* Short National Address with auto-verify */}
+                        <Form.Group className="mb-3">
+                            <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
+                                {locale === "ar" ? "العنوان الوطني المختصر *" : "Short National Address *"}
+                            </Form.Label>
+                            <div className="position-relative">
+                                <Form.Control
+                                    name="short_national_address"
+                                    value={form.short_national_address || ""}
+                                    onChange={handleChange}
+                                    maxLength="8"
+                                    className="rounded-2 px-2 py-1"
+                                    isInvalid={!!errors.short_national_address}
+                                    style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}
+                                />
+                                {lookupLoading ? (
+                                    <span style={{ position: "absolute", right: locale === "ar" ? "auto" : "10px", left: locale === "ar" ? "10px" : "auto", top: "50%", transform: "translateY(-50%)", fontSize: "0.72rem", color: "#b9a16b", fontWeight: 600 }}>
+                                        ⏳ {locale === "ar" ? "تحقق…" : "Checking…"}
+                                    </span>
+                                ) : (
+                                    <Button
+                                        variant="link"
+                                        size="sm"
+                                        type="button"
+                                        onClick={() => handleShortAddressLookup(form.short_national_address)}
+                                        disabled={!form.short_national_address || form.short_national_address.length < 8}
+                                        style={{
+                                            position: "absolute",
+                                            right: locale === "ar" ? "auto" : "6px",
+                                            left: locale === "ar" ? "6px" : "auto",
+                                            top: "50%",
+                                            transform: "translateY(-50%)",
+                                            textDecoration: "none",
+                                            color: form.short_national_address?.length === 8 ? "#8a6c2d" : "#bbb",
+                                            fontSize: "0.72rem",
+                                            fontWeight: 700,
+                                            padding: "2px 6px",
+                                        }}
+                                    >
+                                        {locale === "ar" ? "تحقق وتعبئة" : "Verify & Fill"}
+                                    </Button>
+                                )}
+                            </div>
+                            {lookupStatus && (
+                                <div style={{ fontSize: "0.72rem", marginTop: "3px", color: lookupStatus.success ? "#2e7d32" : "#d32f2f", fontWeight: 600 }}>
+                                    {lookupStatus.message}
+                                </div>
+                            )}
+                            {!lookupStatus && (
+                                <Form.Text className="text-muted" style={{ fontSize: "0.68rem" }}>
+                                    e.g. RCTB4359
+                                </Form.Text>
+                            )}
+                            <Form.Control.Feedback type="invalid">
+                                {errors.short_national_address}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
                                 City
@@ -330,10 +460,26 @@ export default function EditAddress() {
                                 value={form.area}
                                 onChange={handleChange}
                                 className="rounded-2 px-2 py-1"
-                                isInvalid={!!errors.area} // <-- added
+                                isInvalid={!!errors.area}
                             />
                             <Form.Control.Feedback type="invalid">
                                 {errors.area}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
+                                Province
+                            </Form.Label>
+                            <Form.Control
+                                name="province"
+                                value={form.province}
+                                onChange={handleChange}
+                                className="rounded-2 px-2 py-1"
+                                isInvalid={!!errors.province}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.province}
                             </Form.Control.Feedback>
                         </Form.Group>
 
@@ -346,35 +492,11 @@ export default function EditAddress() {
                                 value={form.building}
                                 onChange={handleChange}
                                 className="rounded-2 px-2 py-1"
-                                isInvalid={!!errors.building} // <-- added
+                                isInvalid={!!errors.building}
                             />
                             <Form.Control.Feedback type="invalid">
                                 {errors.building}
                             </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Province
-                            </Form.Label>
-                            <Form.Control
-                                name="province"
-                                value={form.province}
-                                onChange={handleChange}
-                                className="rounded-2 px-2 py-1"
-                                isInvalid={!!errors.province}
-                            ></Form.Control>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Short National Address
-                            </Form.Label>
-                            <Form.Control
-                                name="short_national_address"
-                                value={form.short_national_address}
-                                onChange={handleChange}
-                                className="rounded-2 px-2 py-1"
-                                isInvalid={!!errors.short_national_address}
-                            ></Form.Control>
                         </Form.Group>
                         <Form.Group className="mb-4">
                             <Form.Check

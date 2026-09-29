@@ -13,6 +13,7 @@ import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import BogoFeature from "@/components/BogoFeature";
+import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 
 export default function Checkout() {
   /* ------------------------------------------------------------------ */
@@ -58,9 +59,12 @@ export default function Checkout() {
   const [addrForm, setAddrForm] = useState({});
   const [addrFormErrors, setAddrFormErrors] = useState({});
   const [addrSaving, setAddrSaving] = useState(false);
+  const [lookupLoading, setLookupLoading] = useState({ billing: false, shipping: false, modal: false });
+  const [lookupStatus, setLookupStatus] = useState({ billing: null, shipping: null, modal: null });
+  const lookupDebounceRef = useRef({});
 
   const [formData, setFormData] = useState({
-    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '' },
+    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' },
     billingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' },
     shippingAdd: false,
     note: '',
@@ -209,11 +213,114 @@ export default function Checkout() {
     }
   };
 
+  const handleLookup = async (target, codeToLookup) => {
+    const code = (codeToLookup || '').trim().toUpperCase();
+    if (!isValidShortAddress(code)) {
+      setLookupStatus(prev => ({
+        ...prev,
+        [target]: { success: false, message: locale === 'ar' ? 'رمز غير مكتمل (مثال: ABCD1234)' : 'Enter 4 letters + 4 digits (e.g. ABCD1234)' }
+      }));
+      return;
+    }
+
+    setLookupLoading(prev => ({ ...prev, [target]: true }));
+    setLookupStatus(prev => ({ ...prev, [target]: null }));
+
+    try {
+      const res = await lookupShortAddress(code, locale);
+      if (res.isValid && res.city) {
+        if (target === 'billing') {
+          setFormData(p => ({
+            ...p,
+            billingAddress: {
+              ...p.billingAddress,
+              short_national_address: code,
+              area: res.city,
+              province: res.city,
+              building: res.formattedAddress || p.billingAddress.building,
+              postalCode: res.postalCode || '',
+            }
+          }));
+          setFieldErrors(prev => {
+            const next = { ...prev };
+            delete next.short_national_address;
+            delete next.area;
+            delete next.province;
+            delete next.building;
+            return next;
+          });
+        } else if (target === 'shipping') {
+          setFormData(p => ({
+            ...p,
+            shippingAddress: {
+              ...p.shippingAddress,
+              short_national_address: code,
+              area: res.city,
+              province: res.city,
+              building: res.formattedAddress || p.shippingAddress.building,
+              postalCode: res.postalCode || '',
+            }
+          }));
+        } else if (target === 'modal') {
+          setAddrForm(p => ({
+            ...p,
+            short_national_address: code,
+            area: res.city,
+            province: res.city,
+            building: res.formattedAddress || p.building,
+            postalCode: res.postalCode || '',
+          }));
+          setAddrFormErrors(prev => {
+            const next = { ...prev };
+            delete next.short_national_address;
+            delete next.area;
+            delete next.province;
+            delete next.building;
+            return next;
+          });
+        }
+
+        setLookupStatus(prev => ({
+          ...prev,
+          [target]: {
+            success: true,
+            message: locale === 'ar'
+              ? `✓ تم التحقق: ${res.city}${res.district ? ' - ' + res.district : ''}`
+              : `✓ Verified: ${res.city}${res.district ? ' - ' + res.district : ''}`
+          }
+        }));
+      } else {
+        setLookupStatus(prev => ({
+          ...prev,
+          [target]: { success: false, message: res.message || (locale === 'ar' ? 'لم يتم العثور على عنوان لهذا الرمز' : 'Address not found for this code') }
+        }));
+      }
+    } catch (e) {
+      console.error(e);
+      setLookupStatus(prev => ({
+        ...prev,
+        [target]: { success: false, message: locale === 'ar' ? 'تعذر التحقق تلقائياً' : 'Could not verify automatically' }
+      }));
+    } finally {
+      setLookupLoading(prev => ({ ...prev, [target]: false }));
+    }
+  };
+
   const handleChange = e => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
     if (name.startsWith('shipping') || name.startsWith('billing')) {
       const addr = name.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
       const field = name.split('.')[1];
+      if (field === 'short_national_address') {
+        value = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (value.length === 8 && isValidShortAddress(value)) {
+          const target = name.startsWith('shipping') ? 'shipping' : 'billing';
+          clearTimeout(lookupDebounceRef.current[target]);
+          lookupDebounceRef.current[target] = setTimeout(() => {
+            handleLookup(target, value);
+          }, 350);
+        }
+      }
       setFormData(p => ({ ...p, [addr]: { ...p[addr], [field]: value } }));
     } else {
       setFormData(p => ({ ...p, [name]: value }));
@@ -224,7 +331,7 @@ export default function Checkout() {
     setFormData(p => ({
       ...p,
       shippingAdd: !p.shippingAdd,
-      shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' }
+      shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' }
     }));
     setShowShipping(v => !v);
   };
@@ -235,8 +342,18 @@ export default function Checkout() {
   const startEditAddr = idx => { setAddrForm({ ...addrList[idx] }); setAddrFormErrors({}); setEditingAddrIdx(idx); };
 
   const handleAddrFormChange = e => {
-    const { name, value, type, checked } = e.target;
-    setAddrForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+    let { name, value, type, checked } = e.target;
+    let finalVal = type === 'checkbox' ? checked : value;
+    if (name === 'short_national_address' && typeof finalVal === 'string') {
+      finalVal = finalVal.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (finalVal.length === 8 && isValidShortAddress(finalVal)) {
+        clearTimeout(lookupDebounceRef.current.modal);
+        lookupDebounceRef.current.modal = setTimeout(() => {
+          handleLookup('modal', finalVal);
+        }, 350);
+      }
+    }
+    setAddrForm(f => ({ ...f, [name]: finalVal }));
   };
 
   const selectAddrAsDefault = idx => {
@@ -707,11 +824,60 @@ export default function Checkout() {
                                 </div>
                               </div>
                               <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_sna" placeholder="Short National Address" name="shippingAddress.short_national_address" value={formData.shippingAddress.short_national_address || ''} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
-                                  <label htmlFor="ship_sna" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>Short National Address *</label>
+                                <div className="form-floating position-relative">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    id="ship_sna"
+                                    placeholder="Short National Address"
+                                    name="shippingAddress.short_national_address"
+                                    value={formData.shippingAddress.short_national_address || ''}
+                                    onChange={handleChange}
+                                    required
+                                    maxLength="8"
+                                    pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                    style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                                  />
+                                  <label htmlFor="ship_sna" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+                                    {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
+                                  </label>
+                                  {lookupLoading.shipping ? (
+                                    <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
+                                      ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleLookup('shipping', formData.shippingAddress.short_national_address)}
+                                      disabled={!formData.shippingAddress.short_national_address || formData.shippingAddress.short_national_address.length < 8}
+                                      style={{
+                                        position: 'absolute',
+                                        right: locale === 'ar' ? 'auto' : '8px',
+                                        left: locale === 'ar' ? '8px' : 'auto',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: formData.shippingAddress.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
+                                        border: formData.shippingAddress.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
+                                        borderRadius: '4px',
+                                        color: formData.shippingAddress.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 700,
+                                        cursor: formData.shippingAddress.short_national_address?.length === 8 ? 'pointer' : 'default',
+                                        padding: '3px 8px',
+                                      }}
+                                    >
+                                      {locale === 'ar' ? 'تحقق' : 'Verify'}
+                                    </button>
+                                  )}
                                 </div>
-                                <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                                {lookupStatus.shipping && (
+                                  <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.shipping.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
+                                    {lookupStatus.shipping.message}
+                                  </div>
+                                )}
+                                {!lookupStatus.shipping && (
+                                  <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                                )}
                               </div>
                               <div className="col-6">
                                 <div className="form-floating">
@@ -802,11 +968,58 @@ export default function Checkout() {
                               </div>
                             </div>
                             <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.short_national_address ? ' border-danger' : ''}`} id="bill_sna" placeholder="Short National Address" name="billingAddress.short_national_address" value={b.short_national_address} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
-                                <label htmlFor="bill_sna">Short National Address *</label>
+                              <div className="form-floating position-relative">
+                                <input
+                                  type="text"
+                                  className={`form-control${fieldErrors.short_national_address ? ' border-danger' : ''}`}
+                                  id="bill_sna"
+                                  placeholder="Short National Address"
+                                  name="billingAddress.short_national_address"
+                                  value={b.short_national_address}
+                                  onChange={handleChange}
+                                  required
+                                  maxLength="8"
+                                  pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                  style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                                />
+                                <label htmlFor="bill_sna">{locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}</label>
+                                {lookupLoading.billing ? (
+                                  <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
+                                    ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleLookup('billing', b.short_national_address)}
+                                    disabled={!b.short_national_address || b.short_national_address.length < 8}
+                                    style={{
+                                      position: 'absolute',
+                                      right: locale === 'ar' ? 'auto' : '8px',
+                                      left: locale === 'ar' ? '8px' : 'auto',
+                                      top: '50%',
+                                      transform: 'translateY(-50%)',
+                                      background: b.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
+                                      border: b.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
+                                      borderRadius: '4px',
+                                      color: b.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 700,
+                                      cursor: b.short_national_address?.length === 8 ? 'pointer' : 'default',
+                                      padding: '3px 8px',
+                                    }}
+                                  >
+                                    {locale === 'ar' ? 'تحقق' : 'Verify'}
+                                  </button>
+                                )}
                               </div>
-                              <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                              {lookupStatus.billing && (
+                                <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
+                                  {lookupStatus.billing.message}
+                                </div>
+                              )}
+                              {!lookupStatus.billing && (
+                                <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                              )}
                               {fieldErrors.short_national_address && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{fieldErrors.short_national_address}</div>}
                             </div>
 
@@ -953,11 +1166,60 @@ export default function Checkout() {
                                   </div>
                                 </div>
                                 <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_sna2" placeholder="Short National Address" name="shippingAddress.short_national_address" value={formData.shippingAddress.short_national_address || ''} onChange={handleChange} required maxLength="8" pattern="^[A-Za-z]{4}[0-9]{4}$" />
-                                    <label htmlFor="ship_sna2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>Short National Address *</label>
+                                  <div className="form-floating position-relative">
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      id="ship_sna2"
+                                      placeholder="Short National Address"
+                                      name="shippingAddress.short_national_address"
+                                      value={formData.shippingAddress.short_national_address || ''}
+                                      onChange={handleChange}
+                                      required
+                                      maxLength="8"
+                                      pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                      style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                                    />
+                                    <label htmlFor="ship_sna2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+                                      {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
+                                    </label>
+                                    {lookupLoading.shipping ? (
+                                      <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
+                                        ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
+                                      </span>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleLookup('shipping', formData.shippingAddress.short_national_address)}
+                                        disabled={!formData.shippingAddress.short_national_address || formData.shippingAddress.short_national_address.length < 8}
+                                        style={{
+                                          position: 'absolute',
+                                          right: locale === 'ar' ? 'auto' : '8px',
+                                          left: locale === 'ar' ? '8px' : 'auto',
+                                          top: '50%',
+                                          transform: 'translateY(-50%)',
+                                          background: formData.shippingAddress.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
+                                          border: formData.shippingAddress.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
+                                          borderRadius: '4px',
+                                          color: formData.shippingAddress.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
+                                          fontSize: '0.72rem',
+                                          fontWeight: 700,
+                                          cursor: formData.shippingAddress.short_national_address?.length === 8 ? 'pointer' : 'default',
+                                          padding: '3px 8px',
+                                        }}
+                                      >
+                                        {locale === 'ar' ? 'تحقق' : 'Verify'}
+                                      </button>
+                                    )}
                                   </div>
-                                  <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                                  {lookupStatus.shipping && (
+                                    <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.shipping.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
+                                      {lookupStatus.shipping.message}
+                                    </div>
+                                  )}
+                                  {!lookupStatus.shipping && (
+                                    <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                                  )}
                                 </div>
                                 <div className="col-6">
                                   <div className="form-floating">
@@ -1531,17 +1793,79 @@ export default function Checkout() {
                         ← Back to addresses
                       </button>
 
+                      {/* Short National Address with auto-verify */}
+                      <div>
+                        <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>
+                          {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type="text"
+                            name="short_national_address"
+                            value={addrForm.short_national_address || ''}
+                            onChange={handleAddrFormChange}
+                            maxLength="8"
+                            style={{
+                              width: '100%',
+                              border: `1px solid ${addrFormErrors.short_national_address ? '#e53935' : '#ddd'}`,
+                              borderRadius: '6px',
+                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.88rem',
+                              outline: 'none',
+                              fontFamily: 'inherit',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em'
+                            }}
+                          />
+                          {lookupLoading.modal ? (
+                            <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
+                              ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleLookup('modal', addrForm.short_national_address)}
+                              disabled={!addrForm.short_national_address || addrForm.short_national_address.length < 8}
+                              style={{
+                                position: 'absolute',
+                                right: locale === 'ar' ? 'auto' : '8px',
+                                left: locale === 'ar' ? '8px' : 'auto',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: addrForm.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
+                                border: addrForm.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
+                                borderRadius: '4px',
+                                color: addrForm.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                cursor: addrForm.short_national_address?.length === 8 ? 'pointer' : 'default',
+                                padding: '3px 8px',
+                              }}
+                            >
+                              {locale === 'ar' ? 'تحقق وتعبئة' : 'Verify & Fill'}
+                            </button>
+                          )}
+                        </div>
+                        {lookupStatus.modal && (
+                          <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.modal.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
+                            {lookupStatus.modal.message}
+                          </div>
+                        )}
+                        {!lookupStatus.modal && (
+                          <p style={{ margin: '2px 0 0', fontSize: '0.65rem', color: '#aaa', lineHeight: 1.3 }}>e.g. ABCD1234</p>
+                        )}
+                        {addrFormErrors.short_national_address && <p style={{ margin: '3px 0 0', fontSize: '0.75rem', color: '#e53935' }}>{addrFormErrors.short_national_address}</p>}
+                      </div>
+
                       {[
                         { label: 'City *', field: 'area', type: 'text', err: addrFormErrors.area },
-                        { label: 'Full Address *', field: 'building', type: 'text', err: addrFormErrors.building },
                         { label: 'Province *', field: 'province', type: 'text', err: addrFormErrors.province },
-                        { label: 'Short National Address *', field: 'short_national_address', type: 'text', err: addrFormErrors.short_national_address, hint: 'e.g. ABCD1234' },
-                      ].map(({ label, field, type, err, hint }) => (
+                        { label: 'Full Address *', field: 'building', type: 'text', err: addrFormErrors.building },
+                      ].map(({ label, field, type, err }) => (
                         <div key={field}>
                           <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>{label}</label>
                           <input type={type} name={field} value={addrForm[field] || ''} onChange={handleAddrFormChange}
                             style={{ width: '100%', border: `1px solid ${err ? '#e53935' : '#ddd'}`, borderRadius: '6px', padding: '0.5rem 0.75rem', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit' }} />
-                          {hint && <p style={{ margin: '2px 0 0', fontSize: '0.65rem', color: '#aaa', lineHeight: 1.3 }}>{hint}</p>}
                           {err && <p style={{ margin: '3px 0 0', fontSize: '0.75rem', color: '#e53935' }}>{err}</p>}
                         </div>
                       ))}
