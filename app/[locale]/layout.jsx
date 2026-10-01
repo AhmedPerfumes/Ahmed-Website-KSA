@@ -34,43 +34,51 @@ import { ToastContainer } from 'react-toastify';
 import { Toaster } from 'react-hot-toast';
 import { ShopFilterProvider } from "@/context/ShopFilterContext";
 import DeferredCSS from "@/components/common/DeferredCSS";
-// import ExitIntentPopup from "@/components/common/ExitIntentPopup";
+import ExitIntentPopup from "@/components/common/ExitIntentPopup";
+import { getStaticPageSEO } from "@/utlis/staticPageSeo";
 
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
-
 export async function generateMetadata({ params: { locale } }) {
   const isAr = locale === "ar";
+  const seoData = await getStaticPageSEO("home");
+
+  const defaultTitle = isAr
+    ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
+    : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi";
+
+  const defaultDesc = isAr
+    ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية أصيلة، بخور، دخون، ومجموعات هدايا فاخرة. شحن سريع في المملكة العربية السعودية."
+    : "Discover luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi — Saudi Arabia's premier fragrance house. Fast delivery across KSA.";
+
+  const title = isAr && seoData?.seo_title_ar ? seoData.seo_title_ar : (seoData?.seo_title || defaultTitle);
+  const description = isAr && seoData?.seo_description_ar ? seoData.seo_description_ar : (seoData?.seo_description || defaultDesc);
+  const ogImage = seoData?.seo_image || `${baseUrl}/assets/images/ahmed-og-image.jpg`;
+
   return {
     metadataBase: new URL(baseUrl),
 
-    title: isAr
-      ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-      : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
+    title: title,
 
-    description: isAr
-      ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية أصيلة، بخور، دخون، ومجموعات هدايا فاخرة. شحن سريع في المملكة العربية السعودية."
-      : "Discover luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi — Saudi Arabia's premium fragrance house. Fast delivery across KSA.",
+    description: description ? description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
 
     keywords: isAr
       ? "عطور, عطر, بخور, دخون, هدايا, أحمد المغربي, عطور فاخرة, عطور عربية, المملكة العربية السعودية"
       : "perfumes Saudi Arabia, buy perfumes online KSA, Arabic perfumes, oud fragrance, dakhoon, gift sets, Ahmed Al Maghribi, luxury perfumes",
 
-    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+    robots: seoData?.index === "noindex"
+      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      : { index: true, follow: true, googleBot: { index: true, follow: true } },
 
     openGraph: {
       type: "website",
       locale: isAr ? "ar_SA" : "en_US",
       url: `${baseUrl}/${locale}`,
       siteName: "Ahmed Al Maghribi Perfumes",
-      title: isAr
-        ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-        : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
-      description: isAr
-        ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية، بخور، دخون، وهدايا فاخرة."
-        : "Luxury Arabic perfumes, oud, dakhoon & gift sets. Saudi Arabia's premier fragrance house.",
+      title: title,
+      description: description ? description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
       images: [
         {
-          url: `${baseUrl}/assets/images/ahmed-og-image.jpg`,
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: "Ahmed Al Maghribi Perfumes — Luxury Fragrance House",
@@ -80,13 +88,9 @@ export async function generateMetadata({ params: { locale } }) {
 
     twitter: {
       card: "summary_large_image",
-      title: isAr
-        ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-        : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi",
-      description: isAr
-        ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي."
-        : "Luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi.",
-      images: [`${baseUrl}/assets/images/ahmed-og-image.jpg`],
+      title: title,
+      description: description ? description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
+      images: [ogImage],
     },
 
     icons: {
