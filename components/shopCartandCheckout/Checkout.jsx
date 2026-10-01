@@ -52,8 +52,8 @@ export default function Checkout() {
   // Inline address-edit modal (logged-in users)
   const [showAddrModal, setShowAddrModal] = useState(false);
   const [addrList, setAddrList] = useState([
-    { id: -1, name: '', email: '', mobile: '', area: '', building: '', province: '', short_national_address: '', isDefault: false },
-    { id: -1, name: '', email: '', mobile: '', area: '', building: '', province: '', short_national_address: '', isDefault: false },
+    { id: -1, name: '', email: '', mobile: '', area: '', building: '', building_name: '', province: '', short_national_address: '', isDefault: false },
+    { id: -1, name: '', email: '', mobile: '', area: '', building: '', building_name: '', province: '', short_national_address: '', isDefault: false },
   ]);
   const [editingAddrIdx, setEditingAddrIdx] = useState(null); // null=list view, 0|1=edit form
   const [addrForm, setAddrForm] = useState({});
@@ -64,8 +64,8 @@ export default function Checkout() {
   const lookupDebounceRef = useRef({});
 
   const [formData, setFormData] = useState({
-    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' },
-    billingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' },
+    shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', building_name: '', province: '', short_national_address: '' },
+    billingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', building_name: '', province: '', short_national_address: '' },
     shippingAdd: false,
     note: '',
     password: '',
@@ -109,7 +109,7 @@ export default function Checkout() {
   // User must still review and click Continue → to ensure address is complete.
   useEffect(() => {
     if (!isLoggedIn) return;
-    let firstName = '', lastName = '', email = '', mobile = '', area = '', building = '', province = '', short_national_address = '';
+    let firstName = '', lastName = '', email = '', mobile = '', area = '', building = '', building_name = '', province = '', short_national_address = '';
     let customerId = null;
     const userStr = localStorage.getItem('user');
     if (userStr) {
@@ -122,13 +122,13 @@ export default function Checkout() {
     const addrStr = localStorage.getItem('address');
     if (addrStr) {
       const a = JSON.parse(atob(addrStr));
-      area = a.city || ''; building = a.address || ''; province = a.state || ''; short_national_address = a.short_national_address || '';
+      area = a.city || ''; building = a.address || ''; building_name = a.area || a.building_name || ''; province = a.state || ''; short_national_address = a.short_national_address || '';
     }
     // Only pre-fill — do NOT setDoneSection1 or setActiveSection
     setFormData(p => ({
       ...p,
-      billingAddress: { ...p.billingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province, short_national_address },
-      shippingAddress: { ...p.shippingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, province },
+      billingAddress: { ...p.billingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, building_name, province, short_national_address },
+      shippingAddress: { ...p.shippingAddress, first_name: firstName, last_name: lastName, email, mobile, area, building, building_name, province },
     }));
 
     // Fetch both addresses for the inline modal
@@ -143,7 +143,7 @@ export default function Checkout() {
           const stored = localStorage.getItem('address');
           let defaultId = null;
           if (stored) { try { defaultId = JSON.parse(atob(stored)).id; } catch { } }
-          const base = { id: -1, ...defaultInfo, area: '', building: '', province: '', short_national_address: '', isDefault: false };
+          const base = { id: -1, ...defaultInfo, area: '', building: '', building_name: '', province: '', short_national_address: '', isDefault: false };
           if (data.addresses && data.addresses.length) {
             const parsed = data.addresses.map(a => ({
               id: a.id,
@@ -152,6 +152,7 @@ export default function Checkout() {
               mobile: a.phone || defaultInfo.mobile,
               area: a.city || '',
               building: a.address || '',
+              building_name: a.area || '', // DB area column stores Building data
               province: a.state || '',
               short_national_address: a.short_national_address || '',
               isDefault: defaultId !== null ? a.id === defaultId : a.is_default === 1,
@@ -237,7 +238,8 @@ export default function Checkout() {
               short_national_address: code,
               area: res.city,
               province: res.city,
-              building: res.formattedAddress || p.billingAddress.building,
+              building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || p.billingAddress.building,
+              building_name: res.buildingNumber || p.billingAddress.building_name,
               postalCode: res.postalCode || '',
             }
           }));
@@ -257,7 +259,8 @@ export default function Checkout() {
               short_national_address: code,
               area: res.city,
               province: res.city,
-              building: res.formattedAddress || p.shippingAddress.building,
+              building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || p.shippingAddress.building,
+              building_name: res.buildingNumber || p.shippingAddress.building_name,
               postalCode: res.postalCode || '',
             }
           }));
@@ -267,7 +270,8 @@ export default function Checkout() {
             short_national_address: code,
             area: res.city,
             province: res.city,
-            building: res.formattedAddress || p.building,
+            building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || p.building,
+            building_name: res.buildingNumber || p.building_name,
             postalCode: res.postalCode || '',
           }));
           setAddrFormErrors(prev => {
@@ -331,7 +335,7 @@ export default function Checkout() {
     setFormData(p => ({
       ...p,
       shippingAdd: !p.shippingAdd,
-      shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', province: '', short_national_address: '' }
+      shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', building_name: '', province: '', short_national_address: '' }
     }));
     setShowShipping(v => !v);
   };
@@ -364,6 +368,7 @@ export default function Checkout() {
     localStorage.setItem('address', btoa(JSON.stringify({
       id: chosen.id, name: chosen.name, email: chosen.email, phone: chosen.mobile,
       state: chosen.province, city: chosen.area, address: chosen.building,
+      area: chosen.building_name || '', building_name: chosen.building_name || '',
       short_national_address: chosen.short_national_address, is_default: 1,
     })));
     // Re-hydrate formData so the address card shows the selected address
@@ -373,6 +378,7 @@ export default function Checkout() {
       billingAddress: {
         ...p.billingAddress, first_name: parts[0] || '', last_name: parts.slice(1).join(' ') || '',
         email: chosen.email, mobile: chosen.mobile, area: chosen.area, building: chosen.building,
+        building_name: chosen.building_name || '',
         province: chosen.province, short_national_address: chosen.short_national_address
       },
     }));
@@ -401,6 +407,7 @@ export default function Checkout() {
       localStorage.setItem('address', btoa(JSON.stringify({
         id: defaultAddr.id, name: defaultAddr.name, email: defaultAddr.email, phone: defaultAddr.mobile,
         state: defaultAddr.province, city: defaultAddr.area, address: defaultAddr.building,
+        area: defaultAddr.building_name || '', building_name: defaultAddr.building_name || '',
         short_national_address: defaultAddr.short_national_address, is_default: 1,
       })));
     }
@@ -414,6 +421,7 @@ export default function Checkout() {
       billingAddress: {
         ...p.billingAddress, first_name: parts[0] || '', last_name: parts.slice(1).join(' ') || '',
         email: refill.email, mobile: refill.mobile, area: refill.area, building: refill.building,
+        building_name: refill.building_name || '',
         province: refill.province, short_national_address: refill.short_national_address
       },
     }));
@@ -435,6 +443,8 @@ export default function Checkout() {
             email: addrForm.email,
             mobile: addrForm.mobile,
             address: addrForm.building,
+            area: addrForm.building_name || '', // area column saves Building data
+            building: addrForm.building_name || '',
             city: addrForm.area,
             state: addrForm.province,
             short_national_address: addrForm.short_national_address,
@@ -556,7 +566,7 @@ export default function Checkout() {
 
       if (data.message?.split(' ')[0] === 'Order') {
         setSuccess(data.message); setError(null); setOrderDetails(data);
-        setFormData({ shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '' }, billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', province: '', short_national_address: '' }, shippingAdd: false });
+        setFormData({ shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', building_name: '', province: '' }, billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', building_name: '', province: '', short_national_address: '' }, shippingAdd: false });
         setTimeout(() => router.push(`/${locale}/shop-order-complete`), 1000);
       } else if (data.message === 'Redirecting to Payfort...') {
         setSuccess(data.message); setError(null);
@@ -741,6 +751,7 @@ export default function Checkout() {
                           <input type="hidden" name="billingAddress.short_national_address" value={b.short_national_address} />
                           <input type="hidden" name="billingAddress.area" value={b.area} />
                           <input type="hidden" name="billingAddress.building" value={b.building} />
+                          <input type="hidden" name="billingAddress.building_name" value={b.building_name || ''} />
                           <input type="hidden" name="billingAddress.province" value={b.province} />
 
                           {/* Address Summary Card */}
@@ -769,6 +780,7 @@ export default function Checkout() {
                             <div className="cc-address-card__body">
                               <p className="cc-address-card__name">{b.first_name} {b.last_name}</p>
                               {b.building && <p className="cc-address-card__line">{b.building}</p>}
+                              {b.building_name && <p className="cc-address-card__line">🏢 {locale === 'ar' ? 'مبنى: ' : 'Building: '}{b.building_name}</p>}
                               {b.area && b.province && <p className="cc-address-card__line">{b.area}, {b.province}</p>}
                               {b.short_national_address && <p className="cc-address-card__line cc-address-card__line--sna">📍 {b.short_national_address}</p>}
                               <p className="cc-address-card__line">Saudi Arabia</p>
@@ -895,6 +907,12 @@ export default function Checkout() {
                                 <div className="form-floating">
                                   <input type="text" className="form-control" id="ship_bldg" placeholder="Full Address" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
                                   <label htmlFor="ship_bldg">Full Address *</label>
+                                </div>
+                              </div>
+                              <div className="col-12">
+                                <div className="form-floating">
+                                  <input type="text" className="form-control" id="ship_bldg_name" placeholder="Building (Optional)" name="shippingAddress.building_name" value={formData.shippingAddress.building_name || ''} onChange={handleChange} />
+                                  <label htmlFor="ship_bldg_name">{locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)'}</label>
                                 </div>
                               </div>
                               <div className="col-12">
@@ -1046,6 +1064,14 @@ export default function Checkout() {
                                 <label htmlFor="bill_addr">Full Address *</label>
                               </div>
                               {fieldErrors.building && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{fieldErrors.building}</div>}
+                            </div>
+
+                            {/* Row: Building (Optional) — full width */}
+                            <div className="col-12">
+                              <div className="form-floating">
+                                <input type="text" className="form-control" id="bill_bldg_name" placeholder="Building (Optional)" name="billingAddress.building_name" value={b.building_name || ''} onChange={handleChange} />
+                                <label htmlFor="bill_bldg_name">{locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)'}</label>
+                              </div>
                             </div>
 
                             {/* Row: Email + Mobile */}
@@ -1237,6 +1263,12 @@ export default function Checkout() {
                                   <div className="form-floating">
                                     <input type="text" className="form-control" id="ship_bldg" placeholder="Full Address" name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
                                     <label htmlFor="ship_bldg">Full Address *</label>
+                                  </div>
+                                </div>
+                                <div className="col-12">
+                                  <div className="form-floating">
+                                    <input type="text" className="form-control" id="ship_bldg_name2" placeholder="Building (Optional)" name="shippingAddress.building_name" value={formData.shippingAddress.building_name || ''} onChange={handleChange} />
+                                    <label htmlFor="ship_bldg_name2">{locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)'}</label>
                                   </div>
                                 </div>
                                 <div className="col-6">
@@ -1762,6 +1794,7 @@ export default function Checkout() {
                                   <>
                                     <p style={{ margin: '0 0 0.15rem', fontWeight: 600, fontSize: '0.88rem', color: '#1a1a1a' }}>{a.name}</p>
                                     {a.building && <p style={{ margin: '0 0 0.1rem', fontSize: '0.8rem', color: '#555' }}>{a.building}</p>}
+                                    {a.building_name && <p style={{ margin: '0 0 0.1rem', fontSize: '0.8rem', color: '#555' }}>{locale === 'ar' ? 'مبنى: ' : 'Building: '}{a.building_name}</p>}
                                     {(a.area || a.province) && <p style={{ margin: '0 0 0.1rem', fontSize: '0.8rem', color: '#555' }}>{[a.area, a.province].filter(Boolean).join(', ')}</p>}
                                     {a.short_national_address && <p style={{ margin: '0', fontSize: '0.75rem', color: '#b9a16b', fontWeight: 600 }}>📍 {a.short_national_address}</p>}
                                   </>
@@ -1858,9 +1891,10 @@ export default function Checkout() {
                       </div>
 
                       {[
-                        { label: 'City *', field: 'area', type: 'text', err: addrFormErrors.area },
-                        { label: 'Province *', field: 'province', type: 'text', err: addrFormErrors.province },
-                        { label: 'Full Address *', field: 'building', type: 'text', err: addrFormErrors.building },
+                        { label: locale === 'ar' ? 'المدينة *' : 'City *', field: 'area', type: 'text', err: addrFormErrors.area },
+                        { label: locale === 'ar' ? 'المنطقة / المحافظة *' : 'Province *', field: 'province', type: 'text', err: addrFormErrors.province },
+                        { label: locale === 'ar' ? 'العنوان الكامل *' : 'Full Address *', field: 'building', type: 'text', err: addrFormErrors.building },
+                        { label: locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)', field: 'building_name', type: 'text', err: null },
                       ].map(({ label, field, type, err }) => (
                         <div key={field}>
                           <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>{label}</label>

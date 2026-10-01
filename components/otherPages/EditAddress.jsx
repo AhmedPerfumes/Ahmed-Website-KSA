@@ -22,6 +22,7 @@ export default function EditAddress() {
             mobile: "",
             area: "",
             building: "",
+            building_name: "",
             province: "",
             short_national_address: "",
             isDefault: false,
@@ -33,6 +34,7 @@ export default function EditAddress() {
             mobile: "",
             area: "",
             building: "",
+            building_name: "",
             province: "",
             short_national_address: "",
             isDefault: false,
@@ -82,6 +84,7 @@ export default function EditAddress() {
                         mobile: addr.phone || defaultUserInfo.mobile, // 👈 Apply user info as fallback
                         area: addr.city || "",
                         building: addr.address || "",
+                        building_name: addr.area || "", // DB area column stores Building data
                         province: addr.state || "",
                         short_national_address: addr.short_national_address || "",
                         isDefault: addr.is_default === 1,
@@ -94,6 +97,9 @@ export default function EditAddress() {
                             const def = JSON.parse(atob(stored));
                             parsed.forEach((a) => {
                                 a.isDefault = a.id === def.id;
+                                if (a.id === def.id && !a.building_name && def.area) {
+                                    a.building_name = def.area;
+                                }
                             });
                         } catch {}
                     }
@@ -105,6 +111,7 @@ export default function EditAddress() {
                             ...defaultUserInfo, // 👈 Use defaultUserInfo for the first fallback
                             area: "",
                             building: "",
+                            building_name: "",
                             province: "",
                             short_national_address: "",
                             isDefault: false,
@@ -114,6 +121,7 @@ export default function EditAddress() {
                             ...defaultUserInfo, // 👈 Use defaultUserInfo for the second fallback
                             area: "",
                             building: "",
+                            building_name: "",
                             province: "",
                             short_national_address: "",
                             isDefault: false,
@@ -127,6 +135,7 @@ export default function EditAddress() {
                             ...defaultUserInfo, // 👈 Use defaultUserInfo when no addresses exist
                             area: "",
                             building: "",
+                            building_name: "",
                             province: "",
                             short_national_address: "",
                             isDefault: false,
@@ -136,6 +145,7 @@ export default function EditAddress() {
                             ...defaultUserInfo, // 👈 Use defaultUserInfo when no addresses exist
                             area: "",
                             building: "",
+                            building_name: "",
                             province: "",
                             short_national_address: "",
                             isDefault: false,
@@ -180,7 +190,8 @@ export default function EditAddress() {
                     short_national_address: code,
                     area: res.city,
                     province: res.city,
-                    building: res.formattedAddress || prev.building,
+                    building_name: res.buildingNumber || prev.building_name,
+                    building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || prev.building,
                 }));
                 setErrors((prev) => {
                     const next = { ...prev };
@@ -276,6 +287,8 @@ export default function EditAddress() {
                             state: defaultAddr.province,
                             city: defaultAddr.area,
                             address: defaultAddr.building,
+                            area: defaultAddr.building_name || "", // store building in area column
+                            building_name: defaultAddr.building_name || "",
                             short_national_address: defaultAddr.short_national_address,
                             customer_id: customerId,
                             is_default: 1,
@@ -302,6 +315,8 @@ export default function EditAddress() {
                     email: form.email,
                     mobile: form.mobile,
                     address: form.building,
+                    area: form.building_name || "", // save building data in area column
+                    building: form.building_name || "",
                     city: form.area,
                     state: form.province,
                     short_national_address: form.short_national_address,
@@ -351,9 +366,15 @@ export default function EditAddress() {
                                 </p>
                                 <p className="mb-0 text-dark small">
                                     {addresses[idx].area},{" "}
-                                    {addresses[idx].building},{" "}
+                                    {addresses[idx].building}
+                                    {addresses[idx].building_name ? `, ${locale === "ar" ? "مبنى " : "Building "}${addresses[idx].building_name}` : ""},{" "}
                                     {addresses[idx].province}
                                 </p>
+                                {addresses[idx].short_national_address && (
+                                    <p className="mb-0 text-dark small" style={{ color: "#b9a16b", fontWeight: 600 }}>
+                                        📍 {addresses[idx].short_national_address}
+                                    </p>
+                                )}
                             </div>
                             <div className="text-end">
                                 {addresses[idx].isDefault && (
@@ -485,7 +506,7 @@ export default function EditAddress() {
 
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Full Address
+                                Full Address *
                             </Form.Label>
                             <Form.Control
                                 name="building"
@@ -497,6 +518,19 @@ export default function EditAddress() {
                             <Form.Control.Feedback type="invalid">
                                 {errors.building}
                             </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
+                                {locale === "ar" ? "المبنى (اختياري)" : "Building (Optional)"}
+                            </Form.Label>
+                            <Form.Control
+                                name="building_name"
+                                value={form.building_name || ""}
+                                onChange={handleChange}
+                                placeholder={locale === "ar" ? "رقم أو اسم المبنى" : "Building number or name"}
+                                className="rounded-2 px-2 py-1"
+                            />
                         </Form.Group>
                         <Form.Group className="mb-4">
                             <Form.Check
