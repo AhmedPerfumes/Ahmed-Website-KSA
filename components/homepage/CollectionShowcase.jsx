@@ -121,7 +121,7 @@ export default function CollectionShowcase() {
                             {COLLECTIONS.map((col) => (
                                 <SwiperSlide key={col.id}>
                                     <Link
-                                        href={`/${locale}${col.href}`}
+                                        href={`/${locale}/shop`}
                                         className="collections__card"
                                         id={`collection-${col.id}`}
                                     >

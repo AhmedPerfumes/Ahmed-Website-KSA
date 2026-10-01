@@ -194,7 +194,7 @@ function VideoCard({ item, locale, t }) {
                 </h3>
                 <p className="gs2-card__tagline">{t(item.subText)}</p>
                 <Link href={url} className="gs2-card__cta">
-                    {t("Add to Cart")}
+                    {t("Shop Now")}
                 </Link>
             </div>
         </article>

@@ -451,7 +451,6 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                     <ProductReviews />
                                     <ToastContainer />
                                     <Toaster />
-                                    <ExitIntentPopup />
                                 </ShopFilterProvider>
                         </UserProvider>
                     </Context>

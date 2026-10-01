@@ -241,7 +241,7 @@ export default function PremiumProductCard({
               </span>
             )}
             {isPercentDiscount && salePercent && !isOOS && (
-              <span className="pc-badge pc-badge--sale">-{salePercent}%</span>
+              <span className="pc-badge pc-badge--sale">{salePercent}% OFF</span>
             )}
             {isAmountDiscount && !isOOS && (
               <span className="pc-badge pc-badge--sale">
@@ -254,9 +254,6 @@ export default function PremiumProductCard({
               </span>
             )}
           </div>
-
-          {/* OOS dimming */}
-          {isOOS && <div className="pc-card__oos-overlay" aria-hidden="true" />}
 
           {/* Images */}
           {img1 ? (

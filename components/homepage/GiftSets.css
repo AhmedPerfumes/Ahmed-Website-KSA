@@ -285,6 +285,14 @@
 .gs2-card__cta:hover {
   background: var(--gs2-text); color: #fff; border-color: var(--gs2-text);
 }
+.gs2-card__cta--added,
+.gs2-card__cta:disabled {
+  background: var(--bs-gold, #C5A664) !important;
+  color: #fff !important;
+  border-color: var(--bs-gold, #C5A664) !important;
+  cursor: default;
+  pointer-events: none;
+}
 
 /* â”€â”€ RTL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 [dir="rtl"] .gs2-card__play { right: auto; left: 10px; }

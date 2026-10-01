@@ -73,31 +73,6 @@ export default function MobileNav() {
 
   return (
     <>
-      <style jsx>{`
-        .sub-menu {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.4s ease-in-out;
-        }
-        .sub-menu.open {
-          max-height: 1000px;
-        }
-        .toggle-button {
-          background: none;
-          border: none;
-          padding: 0 10px;
-          margin-left: ${locale === "ar" ? "0" : "auto"};
-          margin-right: ${locale === "ar" ? "auto" : "0"};
-          font-size: 1.5rem;
-          line-height: 1;
-          cursor: pointer;
-        }
-        .sub-menu__item {
-          padding-left: ${locale === "ar" ? "0" : "1.5rem"};
-          padding-right: ${locale === "ar" ? "1.5rem" : "0"};
-        }
-      `}</style>
-
       {categoriesSubCategories?.map((item, i) => {
         const isOpen = openCategoryIndex === i;
         const hasSubCategories = item.productSubCategories?.length > 0;
@@ -107,14 +82,12 @@ export default function MobileNav() {
             : `/${locale}/product-category/gift-sets`;
 
         return (
-          <li key={i} className="navigation__item d-flex flex-column border-bottom">
-            <div className="d-flex align-items-center w-100 py-2">
+          <li key={i} className="navigation__item">
+            <div className="navigation__item-row">
               <Link
                 href={categorySlug}
-                className={`navigation__link text-start flex-grow-1 ${
-                  isActiveParentMenu(categorySlug) ? "menu-active fw-bold" : ""
-                }`}
-                style={{ textAlign: locale === "ar" ? "right" : "left" }}
+                className={`navigation__link flex-grow-1 ${isActiveParentMenu(categorySlug) ? "menu-active" : ""
+                  }`}
               >
                 {t(item.name)}
               </Link>
@@ -125,73 +98,72 @@ export default function MobileNav() {
                     e.preventDefault();
                     setOpenCategoryIndex(isOpen ? null : i);
                   }}
-                  className="toggle-button"
-                  aria-label="Toggle sub-menu"
+                  className={`toggle-button ${isOpen ? "is-open" : ""}`}
+                  aria-label={`Toggle ${item.name} sub-menu`}
+                  aria-expanded={isOpen}
                 >
-                  {isOpen ? "-" : "+"}
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="toggle-chevron"
+                  >
+                    <path
+                      d="M2.5 4.5L6 8L9.5 4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
               )}
             </div>
 
-            <div className={`sub-menu ${isOpen && hasSubCategories ? "open" : ""}`}>
-              {isOpen && hasSubCategories && (
-                <ul className="list-unstyled mb-0 pb-2">
-                  {hasSubCategories &&
-                    item.productSubCategories.map((elm, j) => (
-                      <li key={j} className="sub-menu__item">
-                        <Link
-                          href={
-                            item.name !== "Gift Sets"
-                              ? `/${locale}/product-category/${item.name.split(" ").join("-").toLowerCase()}/${elm.name.split(" ").join("-").toLowerCase()}`
-                              : `/${locale}/product-category/gift-sets`
-                          }
-                          className={`menu-link d-block py-1 text-secondary ${
-                            isMenuActive(
-                              `/product-category/${item.name.split(" ").join("-").toLowerCase()}/${elm.name.split(" ").join("-").toLowerCase()}`
-                            )
-                              ? "menu-active text-dark fw-medium"
-                              : ""
+            {hasSubCategories && (
+              <div className={`sub-menu ${isOpen ? "open" : ""}`}>
+                <ul className="sub-menu__list list-unstyled">
+                  {item.productSubCategories.map((elm, j) => (
+                    <li key={j} className="sub-menu__item">
+                      <Link
+                        href={
+                          item.name !== "Gift Sets"
+                            ? `/${locale}/product-category/${item.name.split(" ").join("-").toLowerCase()}/${elm.name.split(" ").join("-").toLowerCase()}`
+                            : `/${locale}/product-category/gift-sets`
+                        }
+                        className={`sub-menu__link ${isMenuActive(
+                          `/product-category/${item.name.split(" ").join("-").toLowerCase()}/${elm.name.split(" ").join("-").toLowerCase()}`
+                        )
+                            ? "menu-active"
+                            : ""
                           }`}
-                          style={{
-                            textAlign: locale === "ar" ? "right" : "left",
-                            fontSize: "0.825rem",
-                          }}
-                        >
-                          {t(elm.name)}
-                        </Link>
-                      </li>
-                    ))}
+                      >
+                        <span>{t(elm.name)}</span>
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
-              )}
-            </div>
+              </div>
+            )}
           </li>
         );
       })}
+
       {saleBanner && (
-        <li key="sale" className="navigation__item border-bottom py-2">
-          <Link
-            href={`/${locale}/${saleBanner.link || "sale"}`}
-            className={`navigation__link d-block text-start ${
-              isActiveExportMenu(`/sale`) ? "menu-active fw-bold" : ""
-            }`}
-            style={{ textAlign: locale === "ar" ? "right" : "left" }}
-          >
-            {t("Sale")}
-          </Link>
+        <li key="sale" className="navigation__item">
+          <div className="navigation__item-row">
+            <Link
+              href={`/${locale}/${saleBanner.link || "sale"}`}
+              className={`navigation__link d-block w-100 ${isActiveExportMenu(`/sale`) ? "menu-active" : ""
+                }`}
+            >
+              {t("Sale")}
+            </Link>
+          </div>
         </li>
       )}
-
-      <li key="export" className="navigation__item border-bottom py-2">
-        <Link
-          href={`/${locale}/export`}
-          className={`navigation__link d-block text-start ${
-            isActiveExportMenu(`/export`) ? "menu-active fw-bold" : ""
-          }`}
-          style={{ textAlign: locale === "ar" ? "right" : "left" }}
-        >
-          {t("Worldwide Distribution")}
-        </Link>
-      </li>
     </>
   );
 }

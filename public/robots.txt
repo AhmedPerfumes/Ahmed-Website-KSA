@@ -1,9 +1,18 @@
-# Block Amazon's Product Discovery bot
-User-agent: AmazonProductDiscovery
-Disallow: /
+﻿User-agent: *
+Allow: /
 
-# Allow everything else
-User-agent: *
-Disallow: 
+# User-account / transactional pages — no SEO value, exclude from crawl
+# Wildcard covers /ar/ and /en/ (and any future language prefix) automatically
+Disallow: /*/shop-cart
+Disallow: /*/login_register
+Disallow: /*/reset_password
 
-Sitemap: https://ksa.ahmedalmaghribi.com/assets/sitemap.xml
+# Internal search results — avoid thin/duplicate content indexing
+Disallow: /*?q=
+
+# Common tracking parameters — avoid duplicate URLs being indexed
+Disallow: /*?utm_*
+Disallow: /*?fbclid=*
+Disallow: /*?gclid=*
+
+Sitemap: https://ksa.ahmedalmaghribi.com/sitemap.xml

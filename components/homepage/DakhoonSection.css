@@ -448,6 +448,14 @@
 .dk-card__cta:hover {
   background: var(--dk-text); color: #fff; border-color: var(--dk-text);
 }
+.dk-card__cta--added,
+.dk-card__cta:disabled {
+  background: var(--bs-gold, #C5A664) !important;
+  color: #fff !important;
+  border-color: var(--bs-gold, #C5A664) !important;
+  cursor: default;
+  pointer-events: none;
+}
 
 /* ── RTL ── */
 [dir="rtl"] .dk-card__cta:hover svg { transform: translateX(-3px); }

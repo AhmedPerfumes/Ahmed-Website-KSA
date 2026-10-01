@@ -66,7 +66,6 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto 36px;
-  aspect-ratio: 21 / 7;
   overflow: hidden;
   border-radius: 4px;
   background: var(--so-card-bg);
@@ -74,32 +73,29 @@
 
 @media (max-width: 767px) {
   .so-banner {
-    aspect-ratio: 16 / 9;
     margin-bottom: 24px;
   }
 }
 
 @media (max-width: 480px) {
   .so-banner {
-    aspect-ratio: 4 / 3;
     margin-bottom: 20px;
   }
 }
 
 .so-banner__link {
   display: block;
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: 100%;
+  line-height: 0;
   z-index: 1;
 }
 
 .so-banner__img {
-  position: absolute !important;
-  inset: 0;
   width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-  object-position: center;
+  height: auto !important;
+  display: block;
+  object-fit: contain;
   transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
 }
@@ -113,8 +109,8 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.02) 0%,
-    rgba(0, 0, 0, 0.1) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.06) 100%
   );
   z-index: 2;
   pointer-events: none;

@@ -13,13 +13,13 @@ import he from "he";
 import "./BestSellers.css";
 
 const TABS = [
-    { id: "all",                 label: "All",                 category: null },
-    { id: "perfumes",            label: "Perfumes",            category: "PERFUMES" },
-    { id: "dakhoon",             label: "Dakhoon",             category: "DAKHOON" },
-    { id: "concentrated-parfum", label: "Concentrated Parfum", category: "CONCENTRATED PARFUM" },
-    { id: "gift-sets",           label: "Gift Sets",           category: "GIFT SETS" },
-    { id: "hair-mist",           label: "Hair Mist",           category: "HAIR MIST" },
-    { id: "gel",                 label: "Gel",                 category: "GEL" },
+    { id: "all",                 label: "All",                 category: null,                 path: "/shop" },
+    { id: "perfumes",            label: "Perfumes",            category: "PERFUMES",            path: "/product-category/perfumes" },
+    { id: "dakhoon",             label: "Dakhoon",             category: "DAKHOON",             path: "/product-category/dakhoon" },
+    { id: "concentrated-parfum", label: "Concentrated Parfum", category: "CONCENTRATED PARFUM", path: "/product-category/concentrated-parfum" },
+    { id: "gift-sets",           label: "Gift Sets",           category: "GIFT SETS",           path: "/product-category/gift-sets" },
+    { id: "hair-mist",           label: "Hair Mist",           category: "HAIR MIST",           path: "/product-category/hair-mist" },
+    { id: "gel",                 label: "Gel",                 category: "GEL",                 path: "/product-category/gel" },
 ];
 
 export default function BestSellers() {
@@ -342,7 +342,7 @@ export default function BestSellers() {
                 {/* ── Shop All CTA ── */}
                 <div className="bs-cta-wrap">
                     <Link
-                        href={`/${locale}/product-category/perfumes`}
+                        href={`/${locale}${currentTab.path || "/shop"}`}
                         className="bs-cta"
                     >
                         {t("View All")}

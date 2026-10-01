@@ -17,7 +17,8 @@ const DAKHOON_ITEMS = [
         tagline:  "Royal Heritage",
         videoSrc: "/assets/videos/dakhoon/asateen.mp4",
         thumb:    "/assets/videos/dakhoon/thumbnails/asateen.jpg",
-        link:     "/shop/dakhoon",
+        link:     "/shop/dakhoon/oud-maattar/oud-maattar-majalis-omani",
+        slug:     "oud-maattar-majalis-omani",
     },
     {
         id: 2,
@@ -26,7 +27,8 @@ const DAKHOON_ITEMS = [
         tagline:  "Spirit of the Orient",
         videoSrc: "/assets/videos/dakhoon/bakhoor-hind.mp4",
         thumb:    "/assets/videos/dakhoon/thumbnails/bakhoor-hind.jpg",
-        link:     "/shop/dakhoon",
+        link:     "/shop/dakhoon/bakhoor/bakhoor-ahmed-40-tabs",
+        slug:     "bakhoor-ahmed-40-tabs",
     },
     {
         id: 3,
@@ -35,7 +37,8 @@ const DAKHOON_ITEMS = [
         tagline:  "Timeless Grandeur",
         videoSrc: "/assets/videos/dakhoon/maliki.mp4",
         thumb:    "/assets/videos/dakhoon/thumbnails/maliki.jpg",
-        link:     "/shop/dakhoon",
+        link:     "/shop/dakhoon/oud-maattar/oud-maattar-maliki-3-tola",
+        slug:     "oud-maattar-maliki-3-tola",
     },
     {
         id: 4,
@@ -44,7 +47,8 @@ const DAKHOON_ITEMS = [
         tagline:  "Exclusive Reserve",
         videoSrc: "/assets/videos/dakhoon/khususi.mp4",
         thumb:    "/assets/videos/dakhoon/thumbnails/oud.jpg",
-        link:     "/shop/dakhoon",
+        link:     "/shop/dakhoon/oud-maattar/oud-maattar-tayyeb",
+        slug:     "oud-maattar-tayyeb",
     },
     {
         id: 5,
@@ -53,7 +57,8 @@ const DAKHOON_ITEMS = [
         tagline:  "Essence of Arabia",
         videoSrc: "/assets/videos/dakhoon/oud.mp4",
         thumb:    "/assets/videos/dakhoon/thumbnails/oud.jpg",
-        link:     "/shop/dakhoon",
+        link:     "/shop/dakhoon/oud-maattar/oud-kiflain",
+        slug:     "oud-kiflain",
     },
 ];
 

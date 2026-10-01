@@ -1,51 +1,16 @@
 "use client";
-import { currencyOptions, languageOptions } from "@/data/footer";
-import { socialLinks } from "@/data/socials";
 import React, { useEffect, useState, useRef } from "react";
 import CartLength from "./components/CartLength";
 import { openCart } from "@/utlis/openCart";
 import MobileNav from "./components/MobileNav";
 import Image from "next/image";
 import Link from "next/link";
-import { IoLocationOutline } from "react-icons/io5";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "../../i18n/routing";
 import { useMenu } from "../../context/MenuContext";
-
-const MARQUEE_CSS = `
-  @keyframes marquee-ltr {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-33.333%); }
-  }
-  @keyframes marquee-rtl {
-    0%   { transform: translateX(-33.333%); }
-    100% { transform: translateX(0); }
-  }
-  .marquee-track {
-    display: flex;
-    width: 100%;
-    overflow: hidden;
-  }
-  .marquee-ltr {
-    animation: marquee-ltr 18s linear infinite;
-  }
-  .marquee-rtl {
-    animation: marquee-rtl 18s linear infinite;
-  }
-  .marquee-content {
-    flex-shrink: 0;
-    min-width: 33.333%;
-  }
-  .mobile-suggestion-img {
-    flex-shrink: 0;
-  }
-`;
 
 export default function MobileHeader() {
   const { top_header } = useMenu();
   const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
   const t = useTranslations();
 
   const [searchKeyWord, setSearchKeyWord] = useState("");
@@ -53,23 +18,6 @@ export default function MobileHeader() {
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const searchInputRef = useRef(null);
-  const [currentCountryLink, setCurrentCountryLink] = useState("");
-
-  // Detect current country from URL
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const currentOrigin = window.location.origin;
-      const matchedOption = currencyOptions.find(
-        (option) =>
-          option.link &&
-          (currentOrigin.includes(option.link) ||
-            option.link.includes(currentOrigin))
-      );
-      setCurrentCountryLink(
-        matchedOption ? matchedOption.link : currencyOptions[0]?.link ?? ""
-      );
-    }
-  }, []);
 
   // Auto-focus search input when search bar slides in
   useEffect(() => {
@@ -106,10 +54,6 @@ export default function MobileHeader() {
 
   const handleChange = (e) => setSearchKeyWord(e.target.value);
 
-  const handleLangChange = (e) => {
-    router.push(pathname, { locale: e.target.value });
-  };
-
   function removeSpecialCharactersAndAmp(str) {
     return str
       .replace(/&amp;/g, "")
@@ -129,110 +73,76 @@ export default function MobileHeader() {
 
   return (
     <>
-      <style jsx global>{MARQUEE_CSS}</style>
-
       {/* ── Top announcement marquee (mobile) ── */}
-      {top_header?.length > 0 && (
-        <div
-          className="bg-black d-flex align-items-center d-lg-none"
-          style={{ height: "2.5rem", overflow: "hidden" }}
-        >
-          <div className={`marquee-track ${locale === "ar" ? "marquee-rtl" : "marquee-ltr"}`} dir="ltr">
-            {/* Set 1 */}
-            <div className="marquee-content d-flex align-items-center">
-              {top_header.map((elm, i) => (
-                <span key={i} className="d-flex align-items-center flex-nowrap">
-                  <Link
-                    href={`/${locale}/${elm.color}`}
-                    className="text-white text-decoration-none mx-4"
-                    style={{
-                      textTransform: "uppercase",
-                      fontSize: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {locale === 'ar' && elm.title_ar
-                      ? elm.title_ar
-                      : t(elm.title.split(" ").slice(0, 13).join(" "))}
-                  </Link>
-                  <span className="text-white">-</span>
-                </span>
-              ))}
-            </div>
-            {/* Duplicate 1 */}
-            <div className="marquee-content d-flex align-items-center">
-              {top_header.map((elm, i) => (
-                <span
-                  key={`dup1-${i}`}
-                  className="d-flex align-items-center flex-nowrap"
-                >
-                  <Link
-                    href={`/${locale}/${elm.color}`}
-                    className="text-white text-decoration-none mx-4"
-                    style={{
-                      textTransform: "uppercase",
-                      fontSize: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {locale === 'ar' && elm.title_ar
-                      ? elm.title_ar
-                      : t(elm.title.split(" ").slice(0, 13).join(" "))}
-                  </Link>
-                  <span className="text-white">-</span>
-                </span>
-              ))}
-            </div>
-            {/* Duplicate 2 */}
-            <div className="marquee-content d-flex align-items-center">
-              {top_header.map((elm, i) => (
-                <span
-                  key={`dup2-${i}`}
-                  className="d-flex align-items-center flex-nowrap"
-                >
-                  <Link
-                    href={`/${locale}/${elm.color}`}
-                    className="text-white text-decoration-none mx-4"
-                    style={{
-                      textTransform: "uppercase",
-                      fontSize: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {locale === 'ar' && elm.title_ar
-                      ? elm.title_ar
-                      : t(elm.title.split(" ").slice(0, 13).join(" "))}
-                  </Link>
-                  <span className="text-white">-</span>
-                </span>
-              ))}
+      {top_header?.length > 0 && (() => {
+        // Repeat items if needed so each group comfortably fills wider than viewport
+        const repeatCount = Math.max(2, Math.ceil(4 / top_header.length));
+        const groupItems = Array.from({ length: repeatCount }, () => top_header).flat();
+
+        return (
+          <div
+            className="header-mobile__marquee-wrapper bg-black d-flex align-items-center d-lg-none"
+            role="region"
+            aria-label="Announcements"
+          >
+            <div
+              className={`header-mobile__marquee-track ${
+                locale === "ar"
+                  ? "header-mobile__marquee-track--rtl"
+                  : "header-mobile__marquee-track--ltr"
+              }`}
+              dir="ltr"
+            >
+              {/* Group 1 (Primary) */}
+              <div className="header-mobile__marquee-group">
+                {groupItems.map((elm, i) => (
+                  <span key={`g1-${i}`} className="d-flex align-items-center flex-nowrap">
+                    <Link
+                      href={`/${locale}/${elm.color || ""}`}
+                      className="header-mobile__marquee-link text-white text-decoration-none mx-4"
+                    >
+                      {locale === "ar" && elm.title_ar
+                        ? elm.title_ar
+                        : (elm.title ? t(elm.title) : "")}
+                    </Link>
+                    <span className="header-mobile__marquee-separator">-</span>
+                  </span>
+                ))}
+              </div>
+
+              {/* Group 2 (Exact duplicate for 100% seamless infinite loop) */}
+              <div className="header-mobile__marquee-group" aria-hidden="true">
+                {groupItems.map((elm, i) => (
+                  <span key={`g2-${i}`} className="d-flex align-items-center flex-nowrap">
+                    <Link
+                      href={`/${locale}/${elm.color || ""}`}
+                      className="header-mobile__marquee-link text-white text-decoration-none mx-4"
+                      tabIndex="-1"
+                    >
+                      {locale === "ar" && elm.title_ar
+                        ? elm.title_ar
+                        : (elm.title ? t(elm.title) : "")}
+                    </Link>
+                    <span className="header-mobile__marquee-separator">-</span>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── Main header bar ── */}
       <div
         className="header-mobile header_sticky header_sticky-active"
-        style={{ position: "sticky", top: 0, zIndex: 100 }}
       >
         <div
-          className="container position-relative h-100 overflow-hidden"
-          style={{ minHeight: "60px" }}
+          className="header-mobile__container container position-relative h-100 overflow-hidden"
         >
           {/* Default header content: hamburger | logo (centred) | search + cart */}
           <div
-            className="w-100 h-100 d-flex align-items-center justify-content-between px-3"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              transition:
-                "opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
-              opacity: isSearchActive ? 0 : 1,
-              transform: isSearchActive ? "translateY(-15px)" : "translateY(0)",
-              pointerEvents: isSearchActive ? "none" : "auto",
-            }}
+            className={`header-mobile__bar header-mobile__bar--default w-100 h-100 d-flex align-items-center justify-content-between px-3 ${isSearchActive ? "header-mobile__bar--hidden" : ""
+              }`}
           >
             {/* Left: Hamburger */}
             <Link
@@ -252,21 +162,12 @@ export default function MobileHeader() {
             </Link>
 
             {/* Centre: Logo — absolutely centred (UAE pattern) */}
-            <div
-              className="logo"
-              style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                zIndex: 1,
-              }}
-            >
+            <div className="logo header-mobile__logo">
               <Link href={`/${locale}`}>
                 <Image
                   src="/assets/images/logo/Mobile.svg"
-                  width={500}
-                  height={500}
+                  width={200}
+                  height={57}
                   alt="Ahmed Al Maghribi"
                   priority
                   className=""
@@ -275,71 +176,71 @@ export default function MobileHeader() {
             </div>
 
             {/* Right: Search icon + Cart */}
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-1">
               {/* Search trigger */}
-              <a
-                onClick={() => setIsSearchActive(true)}
-                className="header-tools__item"
-                style={{ cursor: "pointer" }}
+              <Link
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsSearchActive(true);
+                }}
+                className="header-mobile__action-btn"
+                aria-label="Search"
               >
                 <svg
                   className="d-block"
-                  width="18"
-                  height="18"
+                  width="19"
+                  height="19"
                   viewBox="0 0 20 20"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <use href="#icon_search" />
                 </svg>
-              </a>
+              </Link>
 
               {/* Cart */}
-              <a
-                onClick={() => openCart()}
-                className="header-tools__item header-tools__cart js-open-aside"
-                style={{ cursor: "pointer", position: "relative" }}
+              <Link
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openCart();
+                }}
+                className="header-mobile__cart-btn"
+                aria-label="Shopping Cart"
               >
                 <svg
                   className="d-block"
-                  width="18"
-                  height="18"
+                  width="19"
+                  height="19"
                   viewBox="0 0 20 20"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <use href="#icon_cart" />
                 </svg>
-                <span className="cart-amount d-block position-absolute js-cart-items-count">
+                <span className="cart-amount js-cart-items-count">
                   <CartLength />
                 </span>
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Search bar — slides in when isSearchActive */}
           <div
-            className="w-100 h-100 d-flex align-items-center gap-2 px-3 py-2"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              transition:
-                "opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
-              opacity: isSearchActive ? 1 : 0,
-              transform: isSearchActive ? "translateY(0)" : "translateY(15px)",
-              pointerEvents: isSearchActive ? "auto" : "none",
-            }}
+            className={`header-mobile__bar header-mobile__bar--search w-100 h-100 d-flex align-items-center gap-2 px-3 py-2 ${isSearchActive ? "header-mobile__bar--visible" : ""
+              }`}
           >
             {/* Back arrow */}
-            <a
-              onClick={() => {
+            <Link
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
                 setIsSearchActive(false);
                 setSearchKeyWord("");
                 setSearchSuggestions([]);
               }}
-              className="header-tools__item p-1"
-              style={{ cursor: "pointer" }}
+              className="header-tools__item header-mobile__back-btn p-1"
             >
               <svg
                 width="20"
@@ -351,7 +252,7 @@ export default function MobileHeader() {
               >
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
-            </a>
+            </Link>
 
             {/* Search form */}
             <form
@@ -360,28 +261,17 @@ export default function MobileHeader() {
             >
               <input
                 ref={searchInputRef}
-                className="w-100 border rounded-pill px-3 shadow-sm form-control"
+                className="header-mobile__search-input w-100 border rounded-pill px-3 shadow-sm form-control"
                 type="text"
                 placeholder={
                   locale === "ar" ? "ابحث عن المنتجات..." : "Search products..."
                 }
                 value={searchKeyWord}
                 onChange={handleChange}
-                style={{
-                  height: "38px",
-                  fontSize: "14px",
-                  paddingRight: locale === "ar" ? "1rem" : "2.5rem",
-                  paddingLeft: locale === "ar" ? "2.5rem" : "1rem",
-                  textAlign: locale === "ar" ? "right" : "left",
-                }}
               />
               <button
                 type="submit"
-                className="btn-icon position-absolute top-50 translate-middle-y bg-transparent border-0"
-                style={{
-                  right: locale === "ar" ? "auto" : "10px",
-                  left: locale === "ar" ? "10px" : "auto",
-                }}
+                className="header-mobile__search-btn btn-icon position-absolute top-50 translate-middle-y bg-transparent border-0"
               >
                 <svg
                   width="16"
@@ -401,7 +291,6 @@ export default function MobileHeader() {
         {isSearchActive && (isSearching || searchSuggestions.length > 0) && (
           <div
             className="mobile-search-results position-absolute start-0 top-100 w-100 bg-white border-top shadow-lg"
-            style={{ zIndex: 999, maxHeight: "80vh", overflowY: "auto" }}
           >
             {isSearching && (
               <div className="p-3 text-center fs-13 text-muted">
@@ -425,16 +314,12 @@ export default function MobileHeader() {
                     setIsSearchActive(false);
                   }}
                 >
-                  <img
+                  <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}storage/${item.image}`}
-                    alt={item.name}
+                    alt={item.name || "Product"}
+                    width={45}
+                    height={45}
                     className="mobile-suggestion-img"
-                    style={{
-                      width: "45px",
-                      height: "45px",
-                      objectFit: "cover",
-                      borderRadius: "4px",
-                    }}
                   />
                   <div className="mobile-suggestion-info flex-grow-1">
                     <span className="mobile-suggestion-name d-block fw-medium fs-14 text-start">
@@ -475,166 +360,12 @@ export default function MobileHeader() {
 
         {/* ── Slide-out navigation drawer ── */}
         <nav className="header-mobile__navigation navigation d-flex flex-column w-100 position-absolute top-100 bg-body overflow-auto">
-          <div className="container">
+          <div className="container py-3">
             <div className="overflow-hidden">
-              <ul className="navigation__list list-unstyled position-relative">
+              <ul className="navigation__list list-unstyled position-relative mb-0 pb-3">
                 <MobileNav />
               </ul>
             </div>
-          </div>
-
-          <div className="border-top mt-2 pb-2">
-            <div className="container mt-2 mb-2 pb-3 border-bottom">
-              <div className="d-flex align-items-center justify-content-between gap-2">
-                {/* Find a Store */}
-                <Link
-                  href={`/${locale}/store-locator`}
-                  className="d-flex align-items-center justify-content-center p-2 rounded text-decoration-none border"
-                  style={{
-                    backgroundColor: "#fcfcfc",
-                    color: "#111",
-                    borderColor: "#f0f0f0",
-                    height: "42px",
-                    flex: "1 1 0px",
-                    minWidth: "0",
-                  }}
-                >
-                  <IoLocationOutline
-                    size={16}
-                    className="text-warning me-1 flex-shrink-0"
-                  />
-                  <span
-                    className="text-uppercase fw-bold text-truncate"
-                    style={{ fontSize: "10px", letterSpacing: "0.5px" }}
-                  >
-                    {t("Find a store")}
-                  </span>
-                </Link>
-
-                {/* Language selector */}
-                <div
-                  className="d-flex flex-column justify-content-center px-2 py-1 border rounded"
-                  style={{
-                    borderColor: "#f0f0f0",
-                    backgroundColor: "#fcfcfc",
-                    height: "42px",
-                    flex: "1 1 0px",
-                    minWidth: "0",
-                  }}
-                >
-                  <span
-                    className="text-uppercase fw-semibold text-muted text-start"
-                    style={{
-                      fontSize: "8px",
-                      letterSpacing: "0.5px",
-                      display: "block",
-                      lineHeight: "1",
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {t("Language")}
-                  </span>
-                  <select
-                    className="form-select form-select-sm border-0 bg-transparent p-0 shadow-none fw-semibold text-dark text-start"
-                    aria-label="Language selector"
-                    name="store-language"
-                    value={locale}
-                    onChange={handleLangChange}
-                    style={{
-                      fontSize: "11px",
-                      cursor: "pointer",
-                      outline: "none",
-                      width: "100%",
-                      maxWidth: "100%",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {languageOptions.map((option, index) => (
-                      <option
-                        key={index}
-                        className="text-dark bg-white"
-                        value={option.value}
-                      >
-                        {option.text}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Country selector */}
-                <div
-                  className="d-flex flex-column justify-content-center px-2 py-1 border rounded"
-                  style={{
-                    borderColor: "#f0f0f0",
-                    backgroundColor: "#fcfcfc",
-                    height: "42px",
-                    flex: "1 1 0px",
-                    minWidth: "0",
-                  }}
-                >
-                  <span
-                    className="text-uppercase fw-semibold text-muted text-start"
-                    style={{
-                      fontSize: "8px",
-                      letterSpacing: "0.5px",
-                      display: "block",
-                      lineHeight: "1",
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {t("Country")}
-                  </span>
-                  <select
-                    className="form-select form-select-sm border-0 bg-transparent p-0 shadow-none fw-semibold text-dark text-start"
-                    aria-label="Country selector"
-                    name="store-country"
-                    value={currentCountryLink}
-                    onChange={(e) => window.open(e.target.value, "_self")}
-                    style={{
-                      fontSize: "11px",
-                      cursor: "pointer",
-                      outline: "none",
-                      width: "100%",
-                      maxWidth: "100%",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {currencyOptions.map((option, index) => (
-                      <option
-                        key={index}
-                        className="text-dark bg-white"
-                        value={option.link}
-                      >
-                        {t(option.text)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <ul className="container social-links list-unstyled d-flex flex-wrap mb-0">
-              {socialLinks.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    href={link.href}
-                    className="footer__social-link d-block"
-                  >
-                    <svg
-                      className={link.className}
-                      width={link.width}
-                      height={link.height}
-                      viewBox={link.viewBox}
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <use href={link.icon} />
-                    </svg>
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
         </nav>
         {/* <!-- /.navigation --> */}
