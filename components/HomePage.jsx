@@ -51,7 +51,7 @@ const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
             <HeroBanner initialSliders={initialSliders} initialMobileSliders={initialMobileSliders} /> */}
 
             <BestSellers />
-            <CollectionShowcase />
+            {/* <CollectionShowcase /> */}
             <OffersBanner />
             <SpecialOffers />
             <BuyXGetY />
