@@ -583,7 +583,7 @@ export default function Checkout() {
           setError(msg);
         }
         else {
-          const fErr = ['products', 'billingAddress.first_name', 'billingAddress.last_name', 'billingAddress.email', 'billingAddress.mobile', 'billingAddress.area', 'billingAddress.building', 'billingAddress.province'].find(k => data[k]);
+          const fErr = ['products', 'billingAddress.first_name', 'billingAddress.last_name', 'billingAddress.email', 'billingAddress.mobile', 'billingAddress.area', 'billingAddress.province'].find(k => data[k]);
           if (fErr) setError(data[fErr]);
         }
         setSuccess(null);
@@ -636,7 +636,7 @@ export default function Checkout() {
     if (!/^\d{10}$/.test(b.mobile)) errs.mobile = 'Enter a valid 10-digit number';
     if (!b.email.trim()) errs.email = 'Required';
     if (!b.area.trim()) errs.area = 'Required';
-    if (!b.building.trim()) errs.building = 'Required';
+    if (b.building && !b.building.trim()) errs.building = 'Invalid';
     if (!b.province.trim()) errs.province = 'Required';
     if (!/^[A-Za-z]{4}[0-9]{4}$/.test(b.short_national_address?.trim()))
       errs.short_national_address = '4 letters + 4 numbers, e.g. ABCD1234';
