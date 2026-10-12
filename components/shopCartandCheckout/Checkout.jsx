@@ -635,14 +635,17 @@ export default function Checkout() {
     if (!b.last_name.trim()) errs.last_name = 'Required';
     if (!/^\d{10}$/.test(b.mobile)) errs.mobile = 'Enter a valid 10-digit number';
     if (!b.email.trim()) errs.email = 'Required';
-    if (!b.area.trim()) errs.area = 'Required';
-    if (b.building && !b.building.trim()) errs.building = 'Invalid';
-    if (!b.province.trim()) errs.province = 'Required';
-    if (!/^[A-Za-z]{4}[0-9]{4}$/.test(b.short_national_address?.trim()))
-      errs.short_national_address = '4 letters + 4 numbers, e.g. ABCD1234';
-    // Guest must verify OTP before continuing
-    if (!isLoggedIn && !isOTPVerified) {
-      errs._otp = 'Please verify your mobile number before continuing';
+    // Only validate address fields for guest users — logged-in users have pre-filled address from account
+    if (!isLoggedIn) {
+      if (!b.area.trim()) errs.area = 'Required';
+      if (b.building && !b.building.trim()) errs.building = 'Invalid';
+      if (!b.province.trim()) errs.province = 'Required';
+      if (!/^[A-Za-z]{4}[0-9]{4}$/.test(b.short_national_address?.trim()))
+        errs.short_national_address = '4 letters + 4 numbers, e.g. ABCD1234';
+      // Guest must verify OTP before continuing
+      if (!isOTPVerified) {
+        errs._otp = 'Please verify your mobile number before continuing';
+      }
     }
     if (Object.keys(errs).length) { setFieldErrors(errs); return; }
     setFieldErrors({});
@@ -710,7 +713,7 @@ export default function Checkout() {
         <>
           <FreeGiftFeature couponData={couponData} />
           <BogoFeature />
-          <form onSubmit={onOrder}>
+          <form onSubmit={onOrder} >
             <div className="cc-checkout-layout">
 
               {/* ============================================
@@ -1060,7 +1063,7 @@ export default function Checkout() {
                             {/* Row: Full Address — full width */}
                             <div className="col-12">
                               <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.building ? ' border-danger' : ''}`} id="bill_addr" placeholder="Full Address" name="billingAddress.building" value={b.building} onChange={handleChange} required />
+                                <input type="text" className={`form-control${fieldErrors.building ? ' border-danger' : ''}`} id="bill_addr" placeholder="Full Address" name="billingAddress.building" value={b.building} onChange={handleChange} />
                                 <label htmlFor="bill_addr">Full Address *</label>
                               </div>
                               {fieldErrors.building && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{fieldErrors.building}</div>}
