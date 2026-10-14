@@ -1,102 +1,90 @@
 // CollapsibleDescription.js
+
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import React, { useState } from "react";
+import { useLocale } from "next-intl";
+import { Box, Container, Typography, Collapse } from "@mui/material";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
-const COLLAPSED_LINES = 1; // number of visible lines when closed
-
-export default function CollapsibleDescription({ description }) {
+export default function CollapsibleDescription({ description, title: customTitle }) {
     const [expanded, setExpanded] = useState(false);
-    const [isOverflowing, setIsOverflowing] = useState(false);
-    const [fullHeight, setFullHeight] = useState(0);
-    const [lineHeight, setLineHeight] = useState(22);
-    const contentRef = useRef(null);
-    const t = useTranslations();
+    const locale = useLocale();
+    const isRtl = locale === "ar";
+    const title = customTitle || (isRtl ? "عن هذه المجموعة" : "About this Collection");
 
-    useEffect(() => {
-        const el = contentRef.current;
-        if (!el) return;
-        const lh = parseFloat(window.getComputedStyle(el).lineHeight) || 22;
-        setLineHeight(lh);
-        setFullHeight(el.scrollHeight);
-        setIsOverflowing(el.scrollHeight > lh * COLLAPSED_LINES + 4);
-    }, [description]);
-
-    if (!description) return null;
-
-    const collapsedHeight = lineHeight * COLLAPSED_LINES;
-    const currentHeight = expanded ? fullHeight : collapsedHeight;
+    // If there's no description, don't render anything
+    if (!description) {
+        return null;
+    }
 
     return (
-        <div style={{ position: "relative", maxWidth: 860, margin: "0 auto" }}>
-            <hr style={{ border: "none", borderTop: "1px solid #e8e8e8", margin: "0 0 0.6rem" }} />
-            {/* Text body */}
-            <div
-                ref={contentRef}
-                dangerouslySetInnerHTML={{ __html: description }}
-                style={{
-                    height: isOverflowing ? currentHeight : "auto",
-                    overflow: "hidden",
-                    transition: "height 0.35s ease",
-                    fontSize: "0.8rem",
-                    lineHeight: "1.6",
-                    color: "#888",
-                    letterSpacing: "0.01em",
-                    // strip big margins injected by CMS HTML
-                    // (p tags inside will stack; we let them)
-                }}
-            />
-
-            {/* Fade mask — only when collapsed and overflowing */}
-            {isOverflowing && !expanded && (
-                <div
-                    aria-hidden="true"
-                    style={{
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: "1.4rem",
-                        background: "linear-gradient(to bottom, transparent, var(--bs-body-bg, #fff))",
-                        pointerEvents: "none",
-                    }}
-                />
-            )}
-
-            {/* Toggle link */}
-            {isOverflowing && (
-                <button
-                    onClick={() => setExpanded(v => !v)}
-                    style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.2rem",
-                        marginTop: "0.25rem",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                        fontSize: "0.72rem",
-                        fontWeight: 600,
-                        letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                        color: "#a07840",
-                        lineHeight: 1,
-                    }}
-                    aria-expanded={expanded}
-                >
-                    {expanded ? t("Show less") : t("Read more")}
-                    <svg
-                        width="10" height="10" viewBox="0 0 10 10" fill="none"
-                        style={{
-                            transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.25s ease",
+        <Box
+            component="section"
+            dir={isRtl ? "rtl" : "ltr"}
+            sx={{
+                py: 3,
+                background: "transparent",
+                borderTop: "1px solid rgba(191, 149, 63, 0.15)",
+                maxWidth: "930px",
+                margin: "0 auto",
+            }}
+        >
+            <Container maxWidth="lg">
+                <Box sx={{ textAlign: isRtl ? "right" : "left", opacity: 0.85 }}>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            color: "#5C4A3A",
+                            fontSize: "0.75rem",
+                            fontWeight: "600",
+                            letterSpacing: "1.5px",
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                            userSelect: "none",
+                            textTransform: "uppercase",
+                            transition: "color 0.3s ease",
+                            "&:hover": { color: "#BF953F" }
                         }}
+                        onClick={() => setExpanded(!expanded)}
                     >
-                        <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
-            )}
-        </div>
+                        {title} {expanded ? <KeyboardArrowUp sx={{ fontSize: "0.95rem" }} /> : <KeyboardArrowDown sx={{ fontSize: "0.95rem" }} />}
+                    </Typography>
+
+                    <Collapse in={expanded}>
+                        <Box 
+                            sx={{ 
+                                mt: 2,
+                                "& p, & div": {
+                                    color: "#5C4A3A",
+                                    display: "block",
+                                    fontSize: "0.75rem",
+                                    mb: 1.5,
+                                    lineHeight: 1.6,
+                                    textAlign: "justify",
+                                    fontFamily: "Merriweather, serif",
+                                },
+                                "& span": {
+                                    display: "inline",
+                                },
+                                "& a": {
+                                    color: "#BF953F",
+                                    textDecoration: "underline",
+                                    textUnderlineOffset: "2px",
+                                    fontWeight: "600",
+                                    display: "inline",
+                                },
+                                "& a span, & span a": {
+                                    display: "inline",
+                                }
+                            }}
+                        >
+                            <div dangerouslySetInnerHTML={{ __html: description }} />
+                        </Box>
+                    </Collapse>
+                </Box>
+            </Container>
+        </Box>
     );
 }

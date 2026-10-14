@@ -16,7 +16,7 @@ export default function SmallBanner() {
         <section className="small-banner" aria-label={t("Crafted with Passion")} id="small-banner">
             <div className="small-banner__inner">
                 <span className="small-banner__eyebrow">
-                    {t("Since 2003")}
+                    {t("Since 2000")}
                 </span>
                 <h2 className="small-banner__title">
                     {t("Crafted with")} <em>{t("Passion")}</em>
