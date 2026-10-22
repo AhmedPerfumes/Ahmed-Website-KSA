@@ -211,7 +211,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
         
         { paymentStatusMessage() }
         {orderData && (
-          <FeedbackForm orderId={orderData?.order_id || orderData?.id} customerName={orderData?.customer_name}/>
+          <FeedbackForm orderId={orderData.id} customerName={orderData.customer_name}/>
         )}
       </div>
 

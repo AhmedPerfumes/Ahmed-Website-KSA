@@ -234,7 +234,7 @@ export default function OrderCompleted() {
         <h3>Your order is completed!</h3>
         <p>Thank you. Your order has been received.</p>
       </div>
-      <FeedbackForm orderId={orderDetails?.order_id || orderDetails?.id} customerName={orderDetails?.customer_name}/>
+       <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
       <div className="order-info">
         <div className="order-info__item">
           <label>Order Number</label>
