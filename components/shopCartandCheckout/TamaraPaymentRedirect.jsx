@@ -176,7 +176,7 @@ export default function TamaraPaymentRedirect() {
             )}
             {paymentStatus === 'success' ? <h3>Your order is completed!</h3> : <h3>Your order failed!</h3>}
             {paymentStatus === 'success' && <p>Thank you. Your order has been received.</p>}
-            <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name} />
+            <FeedbackForm orderId={orderDetails?.order_id || orderDetails?.id} customerName={orderDetails?.customer_name} />
           </div>
 
           {paymentStatus === 'success' && (

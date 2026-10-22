@@ -9,8 +9,8 @@ import dynamic from "next/dynamic";
    never floats above content regardless of whether HeroBanner is on or off. ── */
 
 const BestSellers = dynamic(() => import("@/components/homepage/BestSellers"), { ssr: false });
-const CollectionShowcase = dynamic(() => import("@/components/homepage/CollectionShowcase"), { ssr: false });
-const OffersBanner = dynamic(() => import("@/components/homepage/OffersBanner"), { ssr: false });
+// const CollectionShowcase = dynamic(() => import("@/components/homepage/CollectionShowcase"), { ssr: false });
+// const OffersBanner = dynamic(() => import("@/components/homepage/OffersBanner"), { ssr: false });
 const SpecialOffers = dynamic(() => import("@/components/homepage/SpecialOffers"), { ssr: false });
 const BuyXGetY = dynamic(() => import("@/components/homepage/BuyXGetY"), { ssr: false });
 const NewArrivals = dynamic(() => import("@/components/homepage/NewArrivals"), { ssr: false });
@@ -51,8 +51,8 @@ const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
             <HeroBanner initialSliders={initialSliders} initialMobileSliders={initialMobileSliders} /> */}
 
             <BestSellers />
-            <CollectionShowcase />
-            <OffersBanner />
+            {/* <CollectionShowcase /> */}
+            {/* <OffersBanner /> */}
             <SpecialOffers />
             <BuyXGetY />
             <NewArrivals />

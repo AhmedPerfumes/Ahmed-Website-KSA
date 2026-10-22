@@ -77,6 +77,8 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
     if (orderData?.payment_status === "completed" && orderData?.id && !hasFiredPurchase.current) {
       hasFiredPurchase.current = true; // lock — never fires again even if orderData re-renders
 
+      const orderId = orderData.order_id || orderData.id;
+
       // ---- GA4 Purchase (TikTok listener in layout.jsx maps this to ttq.track("Purchase")) ----
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
@@ -208,7 +210,9 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
         </svg>}
         
         { paymentStatusMessage() }
-        <FeedbackForm orderId={orderData.id} customerName={orderData.customer_name}/>
+        {orderData && (
+          <FeedbackForm orderId={orderData.id} customerName={orderData.customer_name}/>
+        )}
       </div>
 
       {isSuccess ? <>

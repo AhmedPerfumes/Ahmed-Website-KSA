@@ -20,7 +20,7 @@ export default function OnlineExclusiveBanner() {
                 {/* Full-bleed image */}
                 <Link href={`/${locale}/product-category/online-exclusive`} className="oebnr__link" tabIndex={-1}>
                     <Image
-                        src="/assets/images/online-exclusive-banner.jpg"
+                        src="/assets/images/banners/online-exclusive.jpg"
                         alt="Online Exclusive â€” only available at Ahmed Al Maghribi online"
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
