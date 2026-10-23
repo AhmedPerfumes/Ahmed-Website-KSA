@@ -72,8 +72,9 @@ export async function generateMetadata({ params: { locale } }) {
       images: [
         {
           url: `${baseUrl}/assets/images/about/ahmed-logo.png`,
-          width: 1200,
-          height: 630,
+          width: 500,
+          height: 500,
+          type: "image/png",
           alt: "Ahmed Al Maghribi Perfumes — Luxury Fragrance House",
         },
       ],

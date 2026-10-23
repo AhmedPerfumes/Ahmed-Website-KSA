@@ -232,8 +232,9 @@ export async function generateMetadata({ params }) {
         images: [
           {
             url: ogImage,
-            width: 1200,
-            height: 630,
+            width: ogImage.includes("ahmed-logo") ? 500 : 800,
+            height: ogImage.includes("ahmed-logo") ? 500 : 800,
+            type: ogImage.endsWith(".png") ? "image/png" : "image/jpeg",
             alt: title,
           },
         ],
@@ -275,8 +276,9 @@ export async function generateMetadata({ params }) {
         images: [
           {
             url: `${baseUrl}/assets/images/about/ahmed-logo.png`,
-            width: 1200,
-            height: 630,
+            width: 500,
+            height: 500,
+            type: "image/png",
             alt: fallbackTitle,
           },
         ],
