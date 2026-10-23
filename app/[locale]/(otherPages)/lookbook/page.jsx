@@ -4,24 +4,25 @@ import Header1 from "@/components/headers/Header1";
 import Lookbook from "@/components/otherPages/Lookbook";
 import React from "react";
 
-const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
-  return {
-    metadataBase: new URL(baseUrl),
-    title: "Lookbook | Ahmed Al Maghribi Perfumes",
-    description: "Explore the Ahmed Al Maghribi Perfumes lookbook — luxury fragrance collections.",
-    icons: { icon: "/assets/images/ahmed-favicon.png" },
-    alternates: {
-      canonical: `${baseUrl}/${locale}/lookbook`,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/lookbook`,
-        en: `${baseUrl}/en/lookbook`,
-        "x-default": `${baseUrl}/ar/lookbook`,
-      },
-    },
-  };
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
+
+  const defaultTitle = isAr ? "كتالوج الصور والتشكيلات | عطور أحمد المغربي" : "Lookbook | Ahmed Al Maghribi Perfumes";
+  const defaultDesc = isAr
+    ? "استعرض تشكيلة عطور أحمد المغربي الفاخرة، الإطلالات العطرية الحصرية، وأحدث الإصدارات."
+    : "Explore the Ahmed Al Maghribi Perfumes lookbook — luxury fragrance collections and signature scents.";
+
+  return await buildStaticPageMetadata({
+    pageKey: "lookbook",
+    locale,
+    path: "lookbook",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 export default function LookbookPage() {
   return (

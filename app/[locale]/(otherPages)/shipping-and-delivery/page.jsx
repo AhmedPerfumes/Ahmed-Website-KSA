@@ -2,24 +2,25 @@ import Footer14 from '@/components/footers/Footer14'
 import MobileFooter2 from '@/components/footers/MobileFooter2'
 import Shipping from '@/components/otherPages/Shipping'
 import React from 'react'
-const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
-  return {
-    metadataBase: new URL(baseUrl),
-    title: "Shipping & Delivery | Ahmed Al Maghribi Perfumes",
-    description: "Shipping and delivery information for Ahmed Al Maghribi Perfumes in Saudi Arabia.",
-    icons: { icon: "/assets/images/ahmed-favicon.png" },
-    alternates: {
-      canonical: `${baseUrl}/${locale}/shipping-and-delivery`,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/shipping-and-delivery`,
-        en: `${baseUrl}/en/shipping-and-delivery`,
-        "x-default": `${baseUrl}/ar/shipping-and-delivery`,
-      },
-    },
-  };
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
+
+  const defaultTitle = isAr ? "الشحن والتوصيل | عطور أحمد المغربي" : "Shipping & Delivery | Ahmed Al Maghribi Perfumes";
+  const defaultDesc = isAr
+    ? "معلومات الشحن والتوصيل، المدة والرسوم لجميع مناطق المملكة العربية السعودية من عطور أحمد المغربي."
+    : "Shipping and delivery information, timelines, and rates across Saudi Arabia for Ahmed Al Maghribi Perfumes.";
+
+  return await buildStaticPageMetadata({
+    pageKey: "shipping-and-delivery",
+    locale,
+    path: "shipping-and-delivery",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 
 function ShippingDelivery() {

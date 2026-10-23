@@ -25,7 +25,7 @@ export async function generateMetadata({ params, searchParams }) {
     ? "تسوّق جميع منتجات أحمد المغربي: عطور فاخرة، بخور، دخون، جيل، ومجموعات هدايا. شحن سريع داخل المملكة العربية السعودية."
     : "Shop the full range of Ahmed Al Maghribi fragrances — luxury perfumes, oud, dakhoon, hair mist, gel, and gift sets. Fast delivery across Saudi Arabia.";
 
-  const ogImage = `${baseUrl}/assets/images/ahmed-og-image.jpg`;
+  const ogImage = `${baseUrl}/assets/images/about/ahmed-logo.png`;
 
   // JSON-LD: CollectionPage for the shop
   const jsonLd = {

@@ -7,41 +7,25 @@ import Clients from "@/components/otherPages/about/Clients";
 import Services from "@/components/otherPages/about/Services";
 import React from "react";
 
-import { getStaticPageSEO } from "@/utlis/staticPageSeo";
-
-const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
   const isAr = locale === "ar";
 
-  const seoData = await getStaticPageSEO("about");
   const defaultTitle = isAr ? "من نحن | عطور أحمد المغربي" : "About Us | Ahmed Al Maghribi Perfumes";
   const defaultDesc = isAr
     ? "تعرف على عطور أحمد المغربي — بيت العطور الفاخر الأول في المملكة العربية السعودية."
     : "Learn about Ahmed Al Maghribi Perfumes — Saudi Arabia's premier luxury fragrance house.";
 
-  const seoTitle = isAr && seoData?.seo_title_ar ? seoData.seo_title_ar : (seoData?.seo_title || defaultTitle);
-  const seoDesc = isAr && seoData?.seo_description_ar ? seoData.seo_description_ar : (seoData?.seo_description || defaultDesc);
-
-  return {
-    metadataBase: new URL(baseUrl),
-    title: seoTitle,
-    description: seoDesc ? seoDesc.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
-    icons: { icon: "/assets/images/ahmed-favicon.png" },
-    robots: {
-      index: seoData?.index !== "noindex",
-      follow: seoData?.index !== "noindex",
-    },
-    alternates: {
-      canonical: `${baseUrl}/${locale}/about`,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/about`,
-        en: `${baseUrl}/en/about`,
-        "x-default": `${baseUrl}/ar/about`,
-      },
-    },
-  };
+  return await buildStaticPageMetadata({
+    pageKey: "about",
+    locale,
+    path: "about",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 export default function AboutPage() {
   return (

@@ -15,16 +15,18 @@ import { headers } from 'next/headers';
 // };
 
 function getRequestOrigin() {
-  const headersList = headers();
-  const host = headersList.get('host') || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN; // e.g., 'localhost:3000' or 'yourdomain.com'
-  const protocol = headersList.get('x-forwarded-proto') || 'https'; // or 'https'
-  
-  // if (!host) {
-  //   // Fallback for local development or edge cases
-  //   return process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || 'http://localhost:3000';
-  // }
-
-  return `${protocol}://${host}`;
+  const defaultOrigin = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+  try {
+    const headersList = headers();
+    const host = headersList.get('host') || '';
+    if (!host || host.includes('localhost') || host.includes('127.0.0.1')) {
+      return defaultOrigin;
+    }
+    const protocol = headersList.get('x-forwarded-proto') || 'https';
+    return `${protocol}://${host}`;
+  } catch {
+    return defaultOrigin;
+  }
 }
 
 async function getCategorySubCategory(categoryName) {
@@ -100,16 +102,17 @@ async function getProductCategorySEO(categoryName) {
 }
 
 export async function generateMetadata({ params }) {
-    const { category, locale } = params;
+    const resolvedParams = await params;
+    const category = resolvedParams?.category;
+    const locale = resolvedParams?.locale || "en";
 
-    const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
+    const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
     const canonicalUrl = `${baseUrl}/${locale}/product-category/${category}`;
 
     try {
         const data = await getProductCategorySEO(category);
-        // console.log(JSON.parse(data.meta_value)[0]);
-        const meta = JSON.parse(data.meta_value)[0] || {};
+        const meta = typeof data?.meta_value === "string" ? (JSON.parse(data.meta_value)[0] || {}) : (Array.isArray(data?.meta_value) ? (data.meta_value[0] || {}) : (data?.meta_value || {}));
 
         // Select Arabic SEO fields only if locale is ar and values exist
         const seoTitle =
@@ -122,28 +125,54 @@ export async function generateMetadata({ params }) {
                 ? meta.seo_description_ar
                 : meta.seo_description;
 
+        const fullTitle = seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+        const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
+        const normalizedApiUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
+        const ogImage = meta.seo_image
+            ? `${normalizedApiUrl}storage/${meta.seo_image}`
+            : `${baseUrl}/assets/images/about/ahmed-logo.png`;
+
         return {
             metadataBase: new URL(baseUrl),
-            title: seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-            description: seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+            title: fullTitle,
+            description: cleanDesc,
+            icons: {
+                icon: "/assets/images/ahmed-favicon.png",
+                shortcut: "/assets/images/ahmed-favicon.png",
+                apple: "/assets/images/ahmed-favicon.png",
+            },
             alternates: {
                 canonical: canonicalUrl,
                 languages: {
-                  "ar-SA": `/ar/product-category/${category}`,
-                  en: `/en/product-category/${category}`,
-                  "x-default": `/ar/product-category/${category}`,
+                  "ar-SA": `${baseUrl}/ar/product-category/${category}`,
+                  en: `${baseUrl}/en/product-category/${category}`,
+                  "x-default": `${baseUrl}/ar/product-category/${category}`,
                 },
             },
-            // openGraph: {
-            //     // title: data.product_name,
-            //     // description: data.description.replace(/<\/?[^>]+(>|$)/g, "").trim(),
-            //     // url: `https://ae.ahmedalmaghribi.com/en/shop/${categoryName}/${subCategoryName}/${data.product_name
-            //     //     .split(" ")
-            //     //     .join("-")
-            //     //     .toLowerCase()}`,
-            //     images: `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(data.meta_value)[0]?.seo_image}`,
-            //     // type: "product.item",
-            // }
+            openGraph: {
+                type: "website",
+                locale: locale === "ar" ? "ar_SA" : "en_US",
+                url: canonicalUrl,
+                siteName: "Ahmed Al Maghribi Perfumes",
+                title: fullTitle,
+                description: cleanDesc,
+                images: [
+                    {
+                        url: ogImage,
+                        width: 1200,
+                        height: 630,
+                        alt: fullTitle,
+                    },
+                ],
+            },
+            twitter: {
+                card: "summary_large_image",
+                title: fullTitle,
+                description: cleanDesc,
+                images: [ogImage],
+            },
         };
     } catch (error) {
         console.error("Error generating metadata:", error);

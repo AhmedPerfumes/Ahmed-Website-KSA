@@ -1,7 +1,7 @@
 import { getStaticPageSEO } from "./staticPageSeo";
 
 const DEFAULT_ORIGIN = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
-const DEFAULT_OG_IMAGE = `${DEFAULT_ORIGIN}/assets/images/ahmed-og-image.jpg`;
+const DEFAULT_OG_IMAGE = `${DEFAULT_ORIGIN}/assets/images/about/ahmed-logo.png`;
 const DEFAULT_FAVICON = "/assets/images/ahmed-favicon.png";
 
 /**

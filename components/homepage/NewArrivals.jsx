@@ -14,21 +14,27 @@ const NEW_ARRIVAL_ITEMS = [
     {
         id: "the-roots",
         label: "K Series 2000",
+        labelAr: "سلسلة K 2000",
         name: "The Roots",
+        nameAr: "ذا روتس",
         img: "/assets/images/kseries/the-roots-2000.png",
         link: "/k-series/2000",
     },
     {
         id: "the-alchemy-lab",
         label: "K Series 2025",
+        labelAr: "سلسلة K 2025",
         name: "The Alchemy Lab",
+        nameAr: "ذا الكيمي لاب",
         img: "/assets/images/kseries/alchemy-lab-2025.png",
         link: "/k-series/2025",
     },
     {
         id: "the-beyond",
         label: "K Series 2050",
+        labelAr: "سلسلة K 2050",
         name: "The Beyond",
+        nameAr: "ذا بيوند",
         img: "/assets/images/kseries/the-beyond-2050.png",
         link: "/k-series/2050",
     },
@@ -59,13 +65,15 @@ export default function NewArrivals() {
     const BannerCard = ({ item }) => {
         const inWish = isAddedtoWishlist(item.id);
         const url = `/${locale}${item.link}`;
+        const label = locale === 'ar' ? (item.labelAr || item.label) : item.label;
+        const name = locale === 'ar' ? (item.nameAr || item.name) : item.name;
 
         return (
             <article className="na2-banner">
                 <Link href={url} className="na2-banner__link" tabIndex={-1}>
                     <Image
                         src={item.img}
-                        alt={`${item.name} — Ahmed Al Maghribi New Arrival Perfume`}
+                        alt={`${name} — Ahmed Al Maghribi New Arrival Perfume`}
                         fill
                         sizes="(max-width: 767px) 85vw, 33vw"
                         quality={100}
@@ -88,9 +96,9 @@ export default function NewArrivals() {
                 </button> */}
 
                 <div className="na2-banner__body">
-                    <p className="na2-banner__sub">{item.label}</p>
+                    <p className="na2-banner__sub">{label}</p>
                     <h3 className="na2-banner__name">
-                        <Link href={url}>{item.name}</Link>
+                        <Link href={url}>{name}</Link>
                     </h3>
                     <Link href={url} className="na2-banner__discover">
                         {t("Discover")}
@@ -152,10 +160,10 @@ export default function NewArrivals() {
 
                     {/* Nav arrows */}
                     <div className="na2__nav">
-                        <button type="button" ref={prevRef} className="na2-arrow" aria-label="Previous">
+                        <button type="button" ref={prevRef} className="na2-arrow" aria-label={t("Previous")}>
                             <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
                         </button>
-                        <button type="button" ref={nextRef} className="na2-arrow" aria-label="Next">
+                        <button type="button" ref={nextRef} className="na2-arrow" aria-label={t("Next")}>
                             <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
                         </button>
                     </div>

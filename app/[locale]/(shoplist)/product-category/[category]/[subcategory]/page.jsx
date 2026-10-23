@@ -8,11 +8,18 @@ import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription
 import { headers } from "next/headers";
 
 function getRequestOrigin() {
-  const headersList = headers();
-  const host =
-    headersList.get("host") || process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
-  const protocol = headersList.get("x-forwarded-proto") || "https";
-  return `${protocol}://${host}`;
+  const defaultOrigin = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+  try {
+    const headersList = headers();
+    const host = headersList.get("host") || "";
+    if (!host || host.includes("localhost") || host.includes("127.0.0.1")) {
+      return defaultOrigin;
+    }
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+    return `${protocol}://${host}`;
+  } catch {
+    return defaultOrigin;
+  }
 }
 
 async function getCategorySubCategory(categoryName, subCategoryName) {
@@ -77,14 +84,16 @@ async function getProductCategorySEO(categoryName, subCategoryName) {
 }
 
 export async function generateMetadata({ params }) {
-  const { category, subcategory, locale } = params;
+  const resolvedParams = await params;
+  const { category, subcategory } = resolvedParams || {};
+  const locale = resolvedParams?.locale || "en";
 
-  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
+  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
   const canonicalUrl = `${baseUrl}/${locale}/product-category/${category}/${subcategory}`;
 
   try {
     const data = await getProductCategorySEO(category, subcategory);
-    const meta = JSON.parse(data.meta_value)[0] || {};
+    const meta = typeof data?.meta_value === "string" ? (JSON.parse(data.meta_value)[0] || {}) : (Array.isArray(data?.meta_value) ? (data.meta_value[0] || {}) : (data?.meta_value || {}));
 
     const seoTitle =
       locale === "ar" && meta.seo_title_ar
@@ -96,40 +105,58 @@ export async function generateMetadata({ params }) {
         ? meta.seo_description_ar
         : meta.seo_description;
 
+    const fullTitle = seoTitle
+      ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes`
+      : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+    const cleanDesc = seoDescription
+      ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim()
+      : "Luxury Arabic perfumes, oud, dakhoon & gift sets.";
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
+    const normalizedApiUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
+    const ogImage = meta.seo_image
+      ? `${normalizedApiUrl}storage/${meta.seo_image}`
+      : `${baseUrl}/assets/images/about/ahmed-logo.png`;
+
     return {
       metadataBase: new URL(baseUrl),
-      title: seoTitle
-        ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes`
-        : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-      description: seoDescription
-        ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim()
-        : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+      title: fullTitle,
+      description: cleanDesc,
       robots: { index: true, follow: true },
+      icons: {
+        icon: "/assets/images/ahmed-favicon.png",
+        shortcut: "/assets/images/ahmed-favicon.png",
+        apple: "/assets/images/ahmed-favicon.png",
+      },
       alternates: {
         canonical: canonicalUrl,
         languages: {
-          "ar-SA": `/ar/product-category/${category}/${subcategory}`,
-          en: `/en/product-category/${category}/${subcategory}`,
-          "x-default": `/ar/product-category/${category}/${subcategory}`,
+          "ar-SA": `${baseUrl}/ar/product-category/${category}/${subcategory}`,
+          en: `${baseUrl}/en/product-category/${category}/${subcategory}`,
+          "x-default": `${baseUrl}/ar/product-category/${category}/${subcategory}`,
         },
       },
       openGraph: {
         type: "website",
+        locale: locale === "ar" ? "ar_SA" : "en_US",
         url: canonicalUrl,
         siteName: "Ahmed Al Maghribi Perfumes",
-        title: seoTitle || "Ahmed Al Maghribi Perfumes",
-        description: seoDescription
-          ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim()
-          : "Luxury Arabic perfumes, oud, dakhoon & gift sets.",
-        images: meta.seo_image
-          ? [
-              {
-                url: `${process.env.NEXT_PUBLIC_API_URL}storage/${meta.seo_image}`,
-                width: 1200,
-                height: 630,
-              },
-            ]
-          : [],
+        title: fullTitle,
+        description: cleanDesc,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: fullTitle,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: fullTitle,
+        description: cleanDesc,
+        images: [ogImage],
       },
     };
   } catch (error) {

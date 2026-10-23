@@ -8,34 +8,27 @@ import LocationMap from "@/components/otherPages/Contact/LocationMap";
 import React from "react";
 // import Loader from "@/components/loader/Loader";
 
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
+
 export async function generateMetadata({ params }) {
-  const { locale } = params;
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
 
-  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+  const defaultTitle = isAr
+    ? "طلبات التصدير والتوزيع الخارجي | عطور أحمد المغربي"
+    : "Export & International Distribution | Ahmed Al Maghribi Perfumes";
+  const defaultDesc = isAr
+    ? "تواصل مع قسم التصدير والمبيعات الدولية لعطور أحمد المغربي. شراكات توزيع موثوقة حول العالم."
+    : "Partner with Ahmed Al Maghribi Perfumes for export and international distribution. Luxury Arabian fragrances worldwide.";
 
-  const canonicalUrl = `${baseUrl}/${locale}/export`;
-
-  return {
-    metadataBase: new URL(baseUrl),
-
-    title: "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-
-    description:
-      "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-
-    icons: {
-      icon: "/assets/images/ahmed-favicon.png",
-    },
-
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/export`,
-        en: `${baseUrl}/en/export`,
-        "x-default": `${baseUrl}/ar/export`,
-      },
-    },
-  };
+  return await buildStaticPageMetadata({
+    pageKey: "export",
+    locale,
+    path: "export",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 
 const ExportPage = () => {

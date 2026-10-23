@@ -2,24 +2,25 @@ import Footer14 from '@/components/footers/Footer14'
 import MobileFooter2 from '@/components/footers/MobileFooter2'
 import RefundPolicy from '@/components/otherPages/RefundPolicy'
 import React from 'react'
-const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
-  return {
-    metadataBase: new URL(baseUrl),
-    title: "Refund Policy | Ahmed Al Maghribi Perfumes",
-    description: "Read the refund and return policy of Ahmed Al Maghribi Perfumes.",
-    icons: { icon: "/assets/images/ahmed-favicon.png" },
-    alternates: {
-      canonical: `${baseUrl}/${locale}/refund-policy`,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/refund-policy`,
-        en: `${baseUrl}/en/refund-policy`,
-        "x-default": `${baseUrl}/ar/refund-policy`,
-      },
-    },
-  };
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
+
+  const defaultTitle = isAr ? "سياسة الاسترجاع والاستبدال | عطور أحمد المغربي" : "Refund Policy | Ahmed Al Maghribi Perfumes";
+  const defaultDesc = isAr
+    ? "تعرف على سياسة الاسترجاع والاستبدال لمتجر عطور أحمد المغربي في المملكة العربية السعودية."
+    : "Read the refund and return policy of Ahmed Al Maghribi Perfumes.";
+
+  return await buildStaticPageMetadata({
+    pageKey: "refund-policy",
+    locale,
+    path: "refund-policy",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 
 function Refund() {

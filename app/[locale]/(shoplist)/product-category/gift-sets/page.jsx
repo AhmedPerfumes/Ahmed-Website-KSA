@@ -5,25 +5,26 @@ import React from "react";
 import QuickView from "@/components/modals/QuickView";
 import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
 import { headers } from 'next/headers';
+import { buildPageMetadata } from "@/utlis/seoHelper";
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
-  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
-  const canonicalUrl = `${baseUrl}/${locale}/product-category/gift-sets`;
-  return {
-    metadataBase: new URL(baseUrl),
-    title: "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-    description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-    icons: { icon: "/assets/images/ahmed-favicon.png" },
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/product-category/gift-sets`,
-        en: `${baseUrl}/en/product-category/gift-sets`,
-        "x-default": `${baseUrl}/ar/product-category/gift-sets`,
-      },
-    },
-  };
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
+
+  const title = isAr
+    ? "مجموعات الهدايا الفاخرة | عطور أحمد المغربي"
+    : "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+  const description = isAr
+    ? "تسوق أرقى أطقم ومجموعات الهدايا الفاخرة من عطور أحمد المغربي. عطور وبخور ودخون فاخر لجميع المناسبات."
+    : "Shop luxury perfume gift sets from Ahmed Al Maghribi Perfumes. Exquisite fragrance collections and gifts for every occasion.";
+
+  return buildPageMetadata({
+    locale,
+    path: "product-category/gift-sets",
+    title,
+    description,
+  });
 }
 
 function getRequestOrigin() {

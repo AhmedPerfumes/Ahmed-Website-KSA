@@ -2,24 +2,25 @@ import Footer14 from '@/components/footers/Footer14'
 import MobileFooter2 from '@/components/footers/MobileFooter2';
 import Terms from '@/components/otherPages/Terms'
 import React from 'react'
-const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
-  return {
-    metadataBase: new URL(baseUrl),
-    title: "Terms & Conditions | Ahmed Al Maghribi Perfumes",
-    description: "Read the terms and conditions of Ahmed Al Maghribi Perfumes.",
-    icons: { icon: "/assets/images/ahmed-favicon.png" },
-    alternates: {
-      canonical: `${baseUrl}/${locale}/terms`,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/terms`,
-        en: `${baseUrl}/en/terms`,
-        "x-default": `${baseUrl}/ar/terms`,
-      },
-    },
-  };
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
+
+  const defaultTitle = isAr ? "الشروط والأحكام | عطور أحمد المغربي" : "Terms & Conditions | Ahmed Al Maghribi Perfumes";
+  const defaultDesc = isAr
+    ? "الشروط والأحكام الخاصة بالتسوق والطلب عبر متجر عطور أحمد المغربي في المملكة العربية السعودية."
+    : "Read the terms and conditions of Ahmed Al Maghribi Perfumes Saudi Arabia.";
+
+  return await buildStaticPageMetadata({
+    pageKey: "terms",
+    locale,
+    path: "terms",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 function Tnc() {
   return (

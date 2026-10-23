@@ -157,7 +157,7 @@ function DakhoonVideoCard({ item, locale, t }) {
                 <Link href={url} tabIndex={-1}>
                     <Image
                         src={item.thumb}
-                        alt={`${item.name} — Ahmed Al Maghribi Dakhoon Collection`}
+                        alt={`${t(item.name)} — ${locale === 'ar' ? 'مجموعة دخون أحمد المغربي' : 'Ahmed Al Maghribi Dakhoon Collection'}`}
                         fill
                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                         className={`dk-card__thumb${playing ? " dk-card__thumb--hidden" : ""}`}
@@ -185,7 +185,7 @@ function DakhoonVideoCard({ item, locale, t }) {
 
             {/* Info */}
             <div className="dk-card__info">
-                <p className="dk-card__sublabel">{item.subLabel}</p>
+                <p className="dk-card__sublabel">{t(item.subLabel)}</p>
                 <h3 className="dk-card__name">
                     <Link href={url}>{t(item.name)}</Link>
                 </h3>
@@ -218,14 +218,14 @@ export default function DakhoonSection() {
     }, [swiper]);
 
     return (
-        <section className="dk-section" aria-label="Dakhoon Collection" id="dakhoon">
+        <section className="dk-section" aria-label={t("Dakhoon Collection") || "Dakhoon Collection"} id="dakhoon">
             <div className="dk-inner">
 
                 {/* ── Heading block ── */}
                 <div className="dk-head">
                     <h2 className="gs2-lead">{t("Luxury Delight")}</h2>
                     <p className="dk-sub">
-                        {t("Step into a realm of refreshing warmth with Ahmed Al Maghribi's exclusive Dakhoon collection.")}
+                        {t("Step into a realm of refreshing warmth with Ahmed Al Maghribi's exclusive Dakhoon collection")}
                     </p>
                 </div>
 
@@ -260,10 +260,10 @@ export default function DakhoonSection() {
 
                 {/* ── Nav arrows ── */}
                 <div className="dk-nav">
-                    <button type="button" ref={prevRef} className="dk-arrow" aria-label="Previous">
+                    <button type="button" ref={prevRef} className="dk-arrow" aria-label={t("Previous")}>
                         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
                     </button>
-                    <button type="button" ref={nextRef} className="dk-arrow" aria-label="Next">
+                    <button type="button" ref={nextRef} className="dk-arrow" aria-label={t("Next")}>
                         <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
                     </button>
                 </div>

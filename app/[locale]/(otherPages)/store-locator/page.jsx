@@ -4,34 +4,27 @@ import Header14 from "@/components/headers/Header14";
 import StoreLocator from "@/components/otherPages/storelocator/StoreLocator";
 import React from "react";
 
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
+
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const locale = resolvedParams?.locale || "en";
   const isArabic = locale === "ar";
 
-  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
-  const canonicalUrl = `${baseUrl}/${locale}/store-locator`;
+  const defaultTitle = isArabic
+    ? "محدد مواقع الفروع | أحمد المغربي للعطور السعودية"
+    : "Store Locator | Ahmed Al Maghribi Perfumes KSA";
+  const defaultDesc = isArabic
+    ? "اعثر على أقرب فرع لأحمد المغربي للعطور في السعودية، واكتشف العطور الفاخرة، والعطور العربية، والعود، وروائحنا المميزة."
+    : "Find your nearest Ahmed Al Maghribi Perfumes store in Saudi Arabia (KSA) and explore luxury perfumes, Arabian fragrances, oud and signature scents.";
 
-  return {
-    metadataBase: new URL(baseUrl),
-    title: isArabic
-      ? "محدد مواقع الفروع | أحمد المغربي للعطور السعودية"
-      : "Store Locator | Ahmed Al Maghribi Perfumes KSA",
-    description: isArabic
-      ? "اعثر على أقرب فرع لأحمد المغربي للعطور في السعودية، واكتشف العطور الفاخرة، والعطور العربية، والعود، وروائحنا المميزة."
-      : "Find your nearest Ahmed Al Maghribi Perfumes store in Saudi Arabia (KSA) and explore luxury perfumes, Arabian fragrances, oud and signature scents.",
-    icons: {
-      icon: "/assets/images/ahmed-favicon.png",
-    },
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        en: `${baseUrl}/en/store-locator`,
-        ar: `${baseUrl}/ar/store-locator`,
-        "x-default": `${baseUrl}/en/store-locator`,
-      },
-    },
-  };
+  return await buildStaticPageMetadata({
+    pageKey: "store-locator",
+    locale,
+    path: "store-locator",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 
 async function getStores() {

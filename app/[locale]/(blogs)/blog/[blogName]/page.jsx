@@ -90,50 +90,77 @@ async function getBlogSEO(blogName) {
   return response.json();
 }
 export async function generateMetadata({ params }) {
-  const { blogName, locale } = params;
+  const resolvedParams = await params;
+  const { blogName } = resolvedParams || {};
+  const locale = resolvedParams?.locale || "en";
 
-  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN;
+  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
   const canonicalUrl = `${baseUrl}/${locale}/blog/${blogName}`;
 
   try {
       const data = await getBlogSEO(blogName);
-      // console.log(JSON.parse(data.meta_value)[0]);
-      const meta = JSON.parse(data.meta_value)[0] || {};
+      const meta = typeof data?.meta_value === "string" ? (JSON.parse(data.meta_value)[0] || {}) : (Array.isArray(data?.meta_value) ? (data.meta_value[0] || {}) : (data?.meta_value || {}));
 
-        // Select Arabic SEO fields only if locale is ar and values exist
-        const seoTitle =
-            locale === "ar" && meta.seo_title_ar
-                ? meta.seo_title_ar
-                : meta.seo_title;
+      // Select Arabic SEO fields only if locale is ar and values exist
+      const seoTitle =
+          locale === "ar" && meta.seo_title_ar
+              ? meta.seo_title_ar
+              : meta.seo_title;
 
-        const seoDescription =
-            locale === "ar" && meta.seo_description_ar
-                ? meta.seo_description_ar
-                : meta.seo_description;
-                
+      const seoDescription =
+          locale === "ar" && meta.seo_description_ar
+              ? meta.seo_description_ar
+              : meta.seo_description;
+
+      const fullTitle = seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+      const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
+      const normalizedApiUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
+      const ogImage = meta.seo_image
+          ? `${normalizedApiUrl}storage/${meta.seo_image}`
+          : `${baseUrl}/assets/images/about/ahmed-logo.png`;
+              
       return {
           metadataBase: new URL(baseUrl),
-          title: seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-            description: seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-            alternates: {
-              canonical: canonicalUrl,
-              languages: {
-                "ar-SA": `/ar/blog/${blogName}`,
-                en: `/en/blog/${blogName}`,
-                "x-default": `/ar/blog/${blogName}`,
-              },
+          title: fullTitle,
+          description: cleanDesc,
+          icons: {
+            icon: "/assets/images/ahmed-favicon.png",
+            shortcut: "/assets/images/ahmed-favicon.png",
+            apple: "/assets/images/ahmed-favicon.png",
+          },
+          alternates: {
+            canonical: canonicalUrl,
+            languages: {
+              "ar-SA": `${baseUrl}/ar/blog/${blogName}`,
+              en: `${baseUrl}/en/blog/${blogName}`,
+              "x-default": `${baseUrl}/ar/blog/${blogName}`,
             },
-          // openGraph: {
-          //     // title: data.product_name,
-          //     // description: data.description.replace(/<\/?[^>]+(>|$)/g, "").trim(),
-          //     // url: `https://ae.ahmedalmaghribi.com/en/shop/${categoryName}/${subCategoryName}/${data.product_name
-          //     //     .split(" ")
-          //     //     .join("-")
-          //     //     .toLowerCase()}`,
-          //     images: `${process.env.NEXT_PUBLIC_API_URL}storage/${JSON.parse(data.meta_value)[0]?.seo_image}`,
-          //     // type: "product.item",
-          // }
+          },
+          openGraph: {
+            type: "article",
+            locale: locale === "ar" ? "ar_SA" : "en_US",
+            url: canonicalUrl,
+            siteName: "Ahmed Al Maghribi Perfumes",
+            title: fullTitle,
+            description: cleanDesc,
+            images: [
+              {
+                url: ogImage,
+                width: 1200,
+                height: 630,
+                alt: fullTitle,
+              },
+            ],
+          },
+          twitter: {
+            card: "summary_large_image",
+            title: fullTitle,
+            description: cleanDesc,
+            images: [ogImage],
+          },
       };
   } catch (error) {
       console.error("Error generating metadata:", error);

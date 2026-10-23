@@ -144,7 +144,7 @@ export default function OnlineExclusive() {
                 <div className="gs2-head">
                     <h2 className="gs2-lead">{t("Exclusive luxury meets your senses")}</h2>
                     <p className="gs2-sub">
-                        {t("Rare finds, curated collections and limited editions, available exclusively online.")}
+                        {t("Rare finds curated collections and limited editions available exclusively online")}
                     </p>
                 </div>
 
@@ -187,10 +187,23 @@ export default function OnlineExclusive() {
                                     ? Math.round(Number(elm.discount.value))
                                     : Math.round(((base - sale) / base) * 100))
                                 : 0;
-                            // Arabic name — mirrors PremiumProductCard logic exactly
-                            const prodName = locale === 'ar'
-                                ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
-                                : he.decode(elm?.product_name || '');
+                            // Arabic name — uses product_name_ar from API, or falls back to translations dictionary
+                            const rawName  = he.decode(elm?.product_name || '');
+                            let prodName   = rawName;
+                            if (locale === 'ar') {
+                                if (elm?.product_name_ar?.trim()) {
+                                    prodName = elm.product_name_ar.trim();
+                                } else {
+                                    try {
+                                        const translated = t(rawName);
+                                        if (translated && translated !== rawName) {
+                                            prodName = translated;
+                                        }
+                                    } catch {
+                                        prodName = rawName;
+                                    }
+                                }
+                            }
                             const catLabel = locale === 'ar'
                                 ? (elm.subcategory?.subcategory_name_ar || elm.category_name_ar
                                    || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
@@ -205,7 +218,7 @@ export default function OnlineExclusive() {
                                                 {imgSrc && (
                                                     <Image
                                                         src={imgSrc}
-                                                        alt={prodName ? `${prodName} — Ahmed Al Maghribi Online Exclusive` : "Ahmed Al Maghribi Online Exclusive Perfume"}
+                                                        alt={prodName ? `${prodName} — ${locale === 'ar' ? 'عطور أحمد المغربي حصرياً عبر الإنترنت' : 'Ahmed Al Maghribi Online Exclusive'}` : (locale === 'ar' ? 'عطور أحمد المغربي حصرياً عبر الإنترنت' : 'Ahmed Al Maghribi Online Exclusive Perfume')}
                                                         fill
                                                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                                                         className="oe-card__img"
@@ -262,12 +275,12 @@ export default function OnlineExclusive() {
                                                 const maxQty   = elm.maximum_order_quantity || elm.product_qty || 99;
                                                 return cartQty > 0 ? (
                                                     <div className="oe-card__stepper">
-                                                        <button type="button" className="oe-card__step-btn" aria-label="Decrease" onClick={() => {
+                                                        <button type="button" className="oe-card__step-btn" aria-label={t("Decrease")} onClick={() => {
                                                             if (cartQty <= 1) { setCartProducts(cartProducts.filter(p => p.product_id !== elm.product_id)); }
                                                             else { setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: cartQty - 1 } : p)); }
                                                         }}>−</button>
                                                         <span className="oe-card__step-num">{cartQty}</span>
-                                                        <button type="button" className={`oe-card__step-btn${cartQty >= maxQty ? " oe-card__step-btn--max" : ""}`} aria-label="Increase" onClick={() => {
+                                                        <button type="button" className={`oe-card__step-btn${cartQty >= maxQty ? " oe-card__step-btn--max" : ""}`} aria-label={t("Increase")} onClick={() => {
                                                             if (cartQty >= maxQty) return;
                                                             const newQty = cartQty + 1;
                                                             setCartProducts(cartProducts.map(p => p.product_id === elm.product_id ? { ...p, quantity: newQty } : p));
@@ -292,12 +305,12 @@ export default function OnlineExclusive() {
                     <div className="oe-scrollbar" />
                 </div>
 
-                {/* â”€â”€ Nav arrows â”€â”€ */}
+                {/* ── Nav arrows ── */}
                 <div className="oe-nav">
-                    <button type="button" ref={prevRef} className="oe-arrow" aria-label="Previous">
+                    <button type="button" ref={prevRef} className="oe-arrow" aria-label={t("Previous")}>
                         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
-                    <button type="button" ref={nextRef} className="oe-arrow" aria-label="Next">
+                    <button type="button" ref={nextRef} className="oe-arrow" aria-label={t("Next")}>
                         <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
                     </button>
                 </div>

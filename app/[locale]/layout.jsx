@@ -35,50 +35,43 @@ import { Toaster } from 'react-hot-toast';
 import { ShopFilterProvider } from "@/context/ShopFilterContext";
 import DeferredCSS from "@/components/common/DeferredCSS";
 import ExitIntentPopup from "@/components/common/ExitIntentPopup";
-import { getStaticPageSEO } from "@/utlis/staticPageSeo";
-
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 export async function generateMetadata({ params: { locale } }) {
   const isAr = locale === "ar";
-  const seoData = await getStaticPageSEO("home");
 
   const defaultTitle = isAr
-    ? "أفضل العطور الفاخرة | أحمد المغربي للعطور"
-    : "Buy Luxury Perfumes Online in Saudi Arabia | Ahmed Al Maghribi";
+    ? "عطور أحمد المغربي | الموقع الرسمي في السعودية"
+    : "Ahmed Al Maghribi Perfumes | Official KSA Store";
 
   const defaultDesc = isAr
     ? "اكتشف أرقى العطور الفاخرة من أحمد المغربي. عطور عربية أصيلة، بخور، دخون، ومجموعات هدايا فاخرة. شحن سريع في المملكة العربية السعودية."
     : "Discover luxury Arabic perfumes, oud, dakhoon & gift sets from Ahmed Al Maghribi — Saudi Arabia's premier fragrance house. Fast delivery across KSA.";
 
-  const title = isAr && seoData?.seo_title_ar ? seoData.seo_title_ar : (seoData?.seo_title || defaultTitle);
-  const description = isAr && seoData?.seo_description_ar ? seoData.seo_description_ar : (seoData?.seo_description || defaultDesc);
-  const ogImage = seoData?.seo_image || `${baseUrl}/assets/images/ahmed-og-image.jpg`;
-
   return {
     metadataBase: new URL(baseUrl),
 
-    title: title,
+    title: {
+      default: defaultTitle,
+      template: isAr ? "%s | عطور أحمد المغربي" : "%s | Ahmed Al Maghribi Perfumes",
+    },
 
-    description: description ? description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
+    description: defaultDesc,
 
     keywords: isAr
       ? "عطور, عطر, بخور, دخون, هدايا, أحمد المغربي, عطور فاخرة, عطور عربية, المملكة العربية السعودية"
       : "perfumes Saudi Arabia, buy perfumes online KSA, Arabic perfumes, oud fragrance, dakhoon, gift sets, Ahmed Al Maghribi, luxury perfumes",
 
-    robots: seoData?.index === "noindex"
-      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
-      : { index: true, follow: true, googleBot: { index: true, follow: true } },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 
     openGraph: {
       type: "website",
       locale: isAr ? "ar_SA" : "en_US",
-      url: `${baseUrl}/${locale}`,
       siteName: "Ahmed Al Maghribi Perfumes",
-      title: title,
-      description: description ? description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
+      title: defaultTitle,
+      description: defaultDesc,
       images: [
         {
-          url: ogImage,
+          url: `${baseUrl}/assets/images/about/ahmed-logo.png`,
           width: 1200,
           height: 630,
           alt: "Ahmed Al Maghribi Perfumes — Luxury Fragrance House",
@@ -88,24 +81,15 @@ export async function generateMetadata({ params: { locale } }) {
 
     twitter: {
       card: "summary_large_image",
-      title: title,
-      description: description ? description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "",
-      images: [ogImage],
+      title: defaultTitle,
+      description: defaultDesc,
+      images: [`${baseUrl}/assets/images/about/ahmed-logo.png`],
     },
 
     icons: {
       icon: "/assets/images/ahmed-favicon.png",
       shortcut: "/assets/images/ahmed-favicon.png",
       apple: "/assets/images/ahmed-favicon.png",
-    },
-
-    alternates: {
-      canonical: `${baseUrl}/${locale}`,
-      languages: {
-        "ar-SA": `${baseUrl}/ar`,
-        en: `${baseUrl}/en`,
-        "x-default": `${baseUrl}/ar`,
-      },
     },
   };
 }

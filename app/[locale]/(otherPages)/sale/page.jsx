@@ -3,33 +3,27 @@ import Footer14 from "@/components/footers/Footer14";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
 import CityWalk from "@/components/campagin/Citywalk";
 
+import { buildStaticPageMetadata } from "@/utlis/seoHelper";
+
 export async function generateMetadata({ params }) {
-  const { locale } = params;
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "en";
+  const isAr = locale === "ar";
 
-  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+  const defaultTitle = isAr
+    ? "عروض وتخفيضات العطور | عطور أحمد المغربي"
+    : "Sale & Special Fragrance Offers | Ahmed Al Maghribi Perfumes";
+  const defaultDesc = isAr
+    ? "تسوق أفضل عروض وتخفيضات العطور الفاخرة، البخور، والدخون بأسعار مميزة داخل المملكة العربية السعودية."
+    : "Shop luxury perfumes, oud, and fragrance sets on sale at special discounted prices with fast delivery across KSA.";
 
-  const canonicalUrl = `${baseUrl}/${locale}/sale`;
-
-  return {
-    metadataBase: new URL(baseUrl),
-
-    title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
-
-    description: "Buy Best Perfumes Online Ahmed Perfume",
-
-    icons: {
-      icon: '/assets/images/ahmed-favicon.png',
-    },
-
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        "ar-SA": `${baseUrl}/ar/sale`,
-        en: `${baseUrl}/en/sale`,
-        "x-default": `${baseUrl}/ar/sale`,
-      },
-    },
-  };
+  return await buildStaticPageMetadata({
+    pageKey: "sale",
+    locale,
+    path: "sale",
+    defaultTitle,
+    defaultDesc,
+  });
 }
 
 const Citywalk = () => {

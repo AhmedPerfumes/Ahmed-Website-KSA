@@ -111,9 +111,11 @@ export default function Style2({ category, subcategory, products: initialProduct
       subcat = "gift-sets";
     } else if (removeSpecialCharactersAndAmp(category) == "hair-mist") {
       subcat = "hair-mist";
-    } else if (removeSpecialCharactersAndAmp(category) == "xtrait-de-parfum") {
-      subcat = "extrait-de-parfum";
-    } else {
+    }
+    //  else if (removeSpecialCharactersAndAmp(category) == "xtrait-de-parfum") {
+    //   subcat = "extrait-de-parfum";
+    // } 
+    else {
       subcat = "online-exclusive";
     }
   }
