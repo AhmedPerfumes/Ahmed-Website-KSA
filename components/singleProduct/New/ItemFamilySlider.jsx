@@ -46,7 +46,7 @@ function getProductUrl(locale, elm) {
  *   • Gold "+ Add" button  (pre-cart)
  *   • Dark pill stepper [🗑/−] [qty] [+]  (in-cart, matching PDP theme)
  */
-function CardCTA({ elm, elmWithDiscount, img0, name }) {
+function CardCTA({ elm, elmWithDiscount, img0, name, isArabic }) {
     const { cartProducts, setCartProducts } = useContextElement();
 
     const cartItem = cartProducts.find(
@@ -100,17 +100,17 @@ function CardCTA({ elm, elmWithDiscount, img0, name }) {
     if (!isInCart) {
         return (
             <button className="ifs-cta ifs-cta--add" onClick={addToCart} type="button">
-                + Add
+                {isArabic ? "+ أضف" : "+ Add"}
             </button>
         );
     }
 
     return (
-        <div className="ifs-cta ifs-cta--stepper" role="group" aria-label="Update quantity">
+        <div className="ifs-cta ifs-cta--stepper" role="group" aria-label={isArabic ? "تعديل الكمية" : "Update quantity"}>
             <button
                 className="ifs-cta__btn"
                 onClick={decrease}
-                aria-label={qty === 1 ? "Remove from cart" : "Decrease quantity"}
+                aria-label={isArabic ? (qty === 1 ? "إزالة من السلة" : "تقليل الكمية") : (qty === 1 ? "Remove from cart" : "Decrease quantity")}
                 type="button"
             >
                 {qty === 1 ? (
@@ -125,7 +125,7 @@ function CardCTA({ elm, elmWithDiscount, img0, name }) {
                 className="ifs-cta__btn"
                 onClick={increase}
                 disabled={qty >= maxQty}
-                aria-label="Increase quantity"
+                aria-label={isArabic ? "زيادة الكمية" : "Increase quantity"}
                 type="button"
             >
                 +
@@ -172,23 +172,37 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
         if (!el) return;
         const card = el.querySelector(".ifs-card");
         const step = card ? card.offsetWidth + 12 : 200;
-        el.scrollBy({ left: dir * step, behavior: "smooth" });
+        const mult = locale === "ar" ? -1 : 1;
+        el.scrollBy({ left: dir * step * mult, behavior: "smooth" });
     };
 
     if (!itemFamilyProds || itemFamilyProds.length === 0) return null;
     const inStock = itemFamilyProds.filter((p) => p?.product_qty > 0);
     if (inStock.length === 0) return null;
 
-    const familyName = product?.product_family ? he.decode(product.product_family) : "";
+    const isAr = locale === "ar";
+    const familyName = (isAr && product?.product_family_ar ? he.decode(product.product_family_ar) : null) || (product?.product_family ? he.decode(product.product_family) : "");
+
+    const getCatName = (cat) => {
+        if (!cat) return "";
+        try {
+            const tr = t(cat);
+            if (tr && tr !== cat) return tr;
+            const cap = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+            const trCap = t(cap);
+            if (trCap && trCap !== cap) return trCap;
+        } catch (_) {}
+        return cat;
+    };
 
     return (
         <div className="ifs-panel">
             <div className="ifs-header">
-                <p className="ifs-eyebrow">You May Also Like</p>
+                <p className="ifs-eyebrow">{isAr ? "قد يعجبك أيضاً" : "You May Also Like"}</p>
                 <h3 className="ifs-title">
                     {familyName
-                        ? <>More from <em>{familyName}</em></>
-                        : "Complete Your Collection"}
+                        ? (isAr ? <>المزيد من <em>{familyName}</em></> : <>More from <em>{familyName}</em></>)
+                        : (isAr ? "أكمل مجموعتك" : "Complete Your Collection")}
                 </h3>
             </div>
 
@@ -197,7 +211,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                     <button
                         className={`ifs-arrow ifs-arrow--prev${canScrollPrev ? "" : " ifs-arrow--hidden"}`}
                         onClick={() => scrollSlider(-1)}
-                        aria-label="Previous products"
+                        aria-label={isAr ? "المنتجات السابقة" : "Previous products"}
                         aria-hidden={!canScrollPrev}
                         type="button"
                         tabIndex={canScrollPrev ? 0 : -1}
@@ -216,7 +230,9 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                             ? `${process.env.NEXT_PUBLIC_API_URL}storage/${imgs[1]}`
                             : null;
                         const url = getProductUrl(locale, elm);
-                        const name = he.decode(elm?.product_name || "");
+                        const name = he.decode(
+                            (isAr && elm?.product_name_ar ? elm.product_name_ar : null) || elm?.product_name || ""
+                        );
                         const effectiveDiscount = elm.discount ??
                             (product?.discount?.apply_to === "group" ? product.discount : null);
                         const elmWithDiscount = effectiveDiscount ? { ...elm, discount: effectiveDiscount } : elm;
@@ -228,7 +244,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                 <div className="ifs-card__img">
                                     <Link href={url} tabIndex={-1} aria-hidden="true">
                                         {img0 && (
-                                            <Image src={img0} alt={name} fill
+                                             <Image src={img0} alt={name} fill
                                                 sizes="(max-width:1024px) 40vw,200px"
                                                 style={{ objectFit: "cover" }} loading="lazy"
                                             />
@@ -242,18 +258,18 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                         )}
                                     </Link>
                                     {hasDiscount && (
-                                        <span className="ifs-badge">{effectiveDiscount.value}% Off</span>
+                                        <span className="ifs-badge">{effectiveDiscount.value}{isAr ? "% خصم" : "% Off"}</span>
                                     )}
                                     {!hasDiscount && elm?.label_name && (
                                         <span className="ifs-badge" style={{ background: elm.label_color || "#1A1A1A" }}>
-                                            {elm.label_name}
+                                            {(isAr && elm?.label_name_ar) ? elm.label_name_ar : elm.label_name}
                                         </span>
                                     )}
                                 </div>
 
                                 {/* Info */}
                                 <div className="ifs-card__info">
-                                    <p className="ifs-card__cat">{t(elm.category_name)}</p>
+                                    <p className="ifs-card__cat">{getCatName(elm.category_name)}</p>
                                     <Link href={url} className="ifs-card__name" title={name}>{name}</Link>
                                     <div className="ifs-card__price">{renderPrice(elmWithDiscount, currency)}</div>
 
@@ -263,6 +279,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                                         elmWithDiscount={elmWithDiscount}
                                         img0={img0}
                                         name={name}
+                                        isArabic={isAr}
                                     />
                                 </div>
                             </div>
@@ -274,7 +291,7 @@ export default function ItemFamilySlider({ product, itemFamilyProds }) {
                     <button
                         className={`ifs-arrow ifs-arrow--next${canScrollNext ? "" : " ifs-arrow--hidden"}`}
                         onClick={() => scrollSlider(1)}
-                        aria-label="Next products"
+                        aria-label={isAr ? "المنتجات التالية" : "Next products"}
                         aria-hidden={!canScrollNext}
                         type="button"
                         tabIndex={canScrollNext ? 0 : -1}

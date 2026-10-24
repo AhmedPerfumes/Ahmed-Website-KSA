@@ -73,11 +73,20 @@
   /* 24px    — section titles   (unchanged) */
 }
 
+/* ── Page Shell ─────────────────────────────────────────────────── */
+.luxury-pdp {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
 /* ── Container ─────────────────────────────────────────────────── */
 .pdp-container {
   max-width: 1340px;
   margin: 0 auto;
   padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -247,6 +256,9 @@
 .pdp-hero {
   background: transparent;
   padding: 2rem 0 4rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .pdp-hero__grid {
@@ -254,11 +266,20 @@
   grid-template-columns: 55% minmax(0, 1fr);
   gap: 3.5rem;
   align-items: stretch;
+  min-width: 0;
+  width: 100%;
+}
+
+.pdp-hero__gallery-col,
+.pdp-hero__info-col {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
 }
 
 @media (max-width: 991px) {
   .pdp-hero__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0;
   }
 
@@ -2876,27 +2897,42 @@ html[dir="rtl"] .pdp-metric-bar__fill {
    ============================================================ */
 .ifs-slider-wrap {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 .ifs-slider {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: .5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overscroll-behavior-x: contain;
 }
 .ifs-slider::-webkit-scrollbar { display: none; }
 .ifs-slider .ifs-card {
-  flex: 0 0 calc(50% - .5rem);     /* 2 per row mobile */
+  flex: 0 0 calc(50% - 0.4rem);     /* 2 per row mobile */
+  width: calc(50% - 0.4rem);
+  min-width: 140px;
   scroll-snap-align: start;
-  min-width: 0;
+  box-sizing: border-box;
 }
 @media (min-width: 480px) {
-  .ifs-slider .ifs-card { flex: 0 0 calc(33.33% - .67rem); } /* 3 per row */
+  .ifs-slider .ifs-card {
+    flex: 0 0 calc(33.33% - 0.5rem);
+    width: calc(33.33% - 0.5rem);
+  } /* 3 per row */
 }
 @media (min-width: 1024px) {
-  .ifs-slider .ifs-card { flex: 0 0 calc(25% - .75rem); }    /* 4 per row */
+  .ifs-slider .ifs-card {
+    flex: 0 0 calc(25% - 0.6rem);
+    width: calc(25% - 0.6rem);
+  }    /* 4 per row */
 }
 /* Prev/Next arrow buttons for YMAL slider */
 .ifs-arrow {
@@ -2911,14 +2947,24 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  z-index: 2;
-  transition: background .15s, border-color .15s;
+  z-index: 4;
+  transition: background .15s, border-color .15s, opacity .2s;
 }
 .ifs-arrow:hover { background: #fdf9f2; border-color: #c5a05a; }
 .ifs-arrow:disabled { opacity: .25; cursor: default; }
-.ifs-arrow--prev { left: -1.25rem; }
-.ifs-arrow--next { right: -1.25rem; }
+.ifs-arrow--prev { left: -1rem; }
+.ifs-arrow--next { right: -1rem; }
 .ifs-arrow svg { width: 16px; height: 16px; }
+
+/* Hide arrows on mobile to prevent viewport overflow; users swipe with touch */
+@media (max-width: 768px) {
+  .ifs-arrow { display: none !important; }
+}
+
+[dir="rtl"] .ifs-arrow--prev { left: auto; right: -1rem; }
+[dir="rtl"] .ifs-arrow--next { right: auto; left: -1rem; }
+[dir="rtl"] .ifs-arrow svg { transform: scaleX(-1); }
+
 /* Hide old grid rule when slider is used */
 .ifs-grid { display: none; }
 

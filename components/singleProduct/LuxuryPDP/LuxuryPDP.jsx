@@ -164,7 +164,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
         <div className="pdp-container">
           <div className="pdp-hero__grid">
             {/* Gallery Column */}
-            <div>
+            <div className="pdp-hero__gallery-col">
               <LuxuryGallery
                 images={images}
                 product={product}
@@ -174,7 +174,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
             </div>
 
             {/* Info Panel Column */}
-            <div>
+            <div className="pdp-hero__info-col">
               <ProductInfoPanel
                 product={product}
                 category={category}

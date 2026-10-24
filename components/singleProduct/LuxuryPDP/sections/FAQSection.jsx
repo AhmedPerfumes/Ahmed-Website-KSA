@@ -70,62 +70,81 @@ const FAQItem = ({ question, answer, isOpen, onToggle, idx }) => (
   </div>
 );
 
-const buildFAQs = (product, t) => {
+const buildFAQs = (product, t, isAr) => {
   const faqs = [];
+  const prodName = isAr
+    ? (product?.product_name_ar || product?.product_name || "هذا العطر")
+    : (product?.product_name || "This fragrance");
 
   // Dynamic Q1 — Longevity
   if (product?.longevity) {
     faqs.push({
-      q: "How long does this perfume last?",
-      a: `${product.product_name ? `${product.product_name} has` : "This fragrance has"} a longevity of ${product.longevity}. For best results, apply to pulse points after moisturizing.`,
+      q: isAr ? "كم تدوم رائحة هذا العطر؟" : "How long does this perfume last?",
+      a: isAr
+        ? `يتميز ${prodName} بثبات يدوم ${product.longevity_ar || product.longevity}. ولأفضل نتيجة وثبات يدوم طويلاً، يُنصح برشه على نقاط النبض بعد ترطيب البشرة.`
+        : `${product.product_name ? `${product.product_name} has` : "This fragrance has"} a longevity of ${product.longevity}. For best results, apply to pulse points after moisturizing.`,
     });
   }
 
   // Dynamic Q2 — Sillage / Projection
   if (product?.sillage) {
     faqs.push({
-      q: "What is the sillage (trail/projection) of this fragrance?",
-      a: `The sillage of this fragrance is ${product.sillage}, meaning it leaves a ${product.sillage.toLowerCase()} scent trail around you.`,
+      q: isAr ? "ما هو فوحان وانتشار هذا العطر؟" : "What is the sillage (trail/projection) of this fragrance?",
+      a: isAr
+        ? `يتمتع هذا العطر بدرجة فوحان ${product.sillage_ar || product.sillage}، مما يترك أثراً عطرياً فواحاً ومميزاً يلفت الأنظار.`
+        : `The sillage of this fragrance is ${product.sillage}, meaning it leaves a ${product.sillage.toLowerCase()} scent trail around you.`,
     });
   }
 
   // Dynamic Q3 — Occasion
   if (product?.occasion) {
     faqs.push({
-      q: "When is the best time to wear this perfume?",
-      a: `This fragrance is recommended for: ${product.occasion}. It is ${product.fragrance_category ? `a ${product.fragrance_category} scent` : "a versatile fragrance"} that suits these occasions perfectly.`,
+      q: isAr ? "ما هي أفضل أوقات ومناسبات استخدام هذا العطر؟" : "When is the best time to wear this perfume?",
+      a: isAr
+        ? `يناسب هذا العطر: ${product.occasion_ar || product.occasion}. وهو توليفة عطرية فاخرة تناسب هذه الأوقات والمناسبات بامتياز.`
+        : `This fragrance is recommended for: ${product.occasion}. It is ${product.fragrance_category ? `a ${product.fragrance_category} scent` : "a versatile fragrance"} that suits these occasions perfectly.`,
     });
   }
 
   // Static Q4 — COD (KSA critical)
   faqs.push({
-    q: "Is Cash on Delivery (COD) available?",
-    a: "Yes! We offer Cash on Delivery across Saudi Arabia. Simply select COD at checkout. No card required.",
+    q: isAr ? "هل تتوفر خدمة الدفع عند الاستلام داخل السعودية؟" : "Is Cash on Delivery (COD) available?",
+    a: isAr
+      ? "نعم! نوفر خدمة الدفع عند الاستلام في جميع مدن ومناطق المملكة العربية السعودية. كل ما عليك هو اختيار الدفع عند الاستلام عند إتمام الطلب."
+      : "Yes! We offer Cash on Delivery across Saudi Arabia. Simply select COD at checkout. No card required.",
   });
 
   // Static Q5 — Authenticity
   faqs.push({
-    q: "Are your perfumes 100% authentic and original?",
-    a: "Absolutely. All products at Ahmed Al Maghribi Perfumes are 100% genuine and sourced directly. We never sell imitations or replicas.",
+    q: isAr ? "هل جميع العطور أصلية ومضمونة 100%؟" : "Are your perfumes 100% authentic and original?",
+    a: isAr
+      ? "بالتأكيد. جميع منتجات أحمد المغربي للعطور أصلية 100% ومصنعة مباشرة بأعلى معايير الجودة والمقاييس العالمية."
+      : "Absolutely. All products at Ahmed Al Maghribi Perfumes are 100% genuine and sourced directly. We never sell imitations or replicas.",
   });
 
   // Static Q6 — Shipping
   faqs.push({
-    q: "How long does delivery take in Saudi Arabia?",
-    a: "Standard delivery within Saudi Arabia takes 3-5 business days. Express options may be available at checkout.",
+    q: isAr ? "كم يستغرق توصيل الطلب في السعودية؟" : "How long does delivery take in Saudi Arabia?",
+    a: isAr
+      ? "يستغرق التوصيل داخل المملكة العربية السعودية من 3 إلى 5 أيام عمل، مع إمكانية توفر خيارات التوصيل السريع لبعض المدن."
+      : "Standard delivery within Saudi Arabia takes 3-5 business days. Express options may be available at checkout.",
   });
 
   // Static Q7 — Returns
   faqs.push({
-    q: "What is your return policy?",
-    a: "We offer hassle-free returns within the return window for unopened, unused products. Contact our customer care team to initiate a return.",
+    q: isAr ? "ما هي سياسة الاسترجاع والاستبدال؟" : "What is your return policy?",
+    a: isAr
+      ? "نقدم سياسة استرجاع واستبدال مرنة وسهلة للمنتجات غير المفتوحة والتي لا تزال في غلافها الأصلي. يمكنك التواصل مع فريق خدمة العملاء للمساعدة فوراً."
+      : "We offer hassle-free returns within the return window for unopened, unused products. Contact our customer care team to initiate a return.",
   });
 
   // Dynamic Q8 — Fragrance type
   if (product?.fragrance_type) {
     faqs.push({
-      q: `What type of fragrance is this, EDP, EDT, or Parfum?`,
-      a: `This product is classified as ${product.fragrance_type.replace(/_/g, " ")}. Different concentrations affect how long the scent lasts and its intensity.`,
+      q: isAr ? "ما هو نوع وتركيز هذا العطر؟" : `What type of fragrance is this, EDP, EDT, or Parfum?`,
+      a: isAr
+        ? `يصنف هذا العطر ضمن فئة ${(product.fragrance_type_ar || product.fragrance_type).replace(/_/g, " ")}. وتمنح التركيزات المختلفة تجربة ثبات وفوحان متمايزة.`
+        : `This product is classified as ${product.fragrance_type.replace(/_/g, " ")}. Different concentrations affect how long the scent lasts and its intensity.`,
     });
   }
 
@@ -135,9 +154,10 @@ const buildFAQs = (product, t) => {
 const FAQSection = ({ product }) => {
   const t = useTranslations("ProductDetails");
   const locale = useLocale();
+  const isAr = locale === "ar";
   const [openIndex, setOpenIndex] = useState(null);
 
-  const faqs = buildFAQs(product, t);
+  const faqs = buildFAQs(product, t, isAr);
 
   if (faqs.length === 0) return null;
 
@@ -165,9 +185,9 @@ const FAQSection = ({ product }) => {
 
       <div className="pdp-container">
         <header className="pdp-section-header">
-          <span className="pdp-section-eyebrow">Questions & Answers</span>
+          <span className="pdp-section-eyebrow">{isAr ? "الأسئلة والأجوبة" : "Questions & Answers"}</span>
           <h2 className="pdp-section-title" id="faq-heading">
-            Frequently Asked Questions
+            {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
           </h2>
         </header>
 

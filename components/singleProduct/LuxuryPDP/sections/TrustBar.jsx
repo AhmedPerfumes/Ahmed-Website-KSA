@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useLocale } from "next-intl";
 
 /**
  * TrustBar — Section 1
@@ -10,6 +11,8 @@ import React, { useState } from "react";
  */
 const TrustBar = ({ text, link, linkText }) => {
   const [dismissed, setDismissed] = useState(false);
+  const locale = useLocale();
+  const isAr = locale === "ar";
 
   const handleDismiss = () => {
     setDismissed(true);
@@ -22,7 +25,7 @@ const TrustBar = ({ text, link, linkText }) => {
   return (
     <div className="pdp-trust-bar" role="status" aria-live="polite">
       <div className="pdp-trust-bar__text">
-        <span>{text || "Free delivery on orders above 300 SAR"}</span>
+        <span>{text || (isAr ? "شحن مجاني للطلبات الأكثر من 300 ريال" : "Free delivery on orders above 300 SAR")}</span>
         {link && linkText && (
           <>
             <span className="pdp-trust-bar__sep" aria-hidden="true">·</span>
@@ -33,7 +36,7 @@ const TrustBar = ({ text, link, linkText }) => {
       <button
         className="pdp-trust-bar__close"
         onClick={handleDismiss}
-        aria-label="Dismiss announcement"
+        aria-label={isAr ? "إغلاق الإشعار" : "Dismiss announcement"}
       >
         ✕
       </button>

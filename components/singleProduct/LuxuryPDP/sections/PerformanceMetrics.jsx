@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 /**
  * PerformanceMetrics — Section 7
@@ -90,6 +90,8 @@ const MetricBar = ({ label, icon, value, fillRef }) => {
 
 const PerformanceMetrics = ({ product }) => {
   const t = useTranslations("ProductDetails");
+  const locale = useLocale();
+  const isAr = locale === "ar";
 
   const longevityRef = useRef(null);
   const sillageRef = useRef(null);
@@ -99,7 +101,7 @@ const PerformanceMetrics = ({ product }) => {
   const metrics = [
     {
       key: "longevity",
-      value: product?.longevity,
+      value: (isAr ? (product?.longevity_ar || product?.longevity) : product?.longevity),
       ref: longevityRef,
       fill: estimateFill(product?.longevity, PERFORMANCE_MAP.longevity.keywords),
       label: t("highlights.longevity"),
@@ -107,7 +109,7 @@ const PerformanceMetrics = ({ product }) => {
     },
     {
       key: "sillage",
-      value: product?.sillage,
+      value: (isAr ? (product?.sillage_ar || product?.sillage) : product?.sillage),
       ref: sillageRef,
       fill: estimateFill(product?.sillage, PERFORMANCE_MAP.sillage.keywords),
       label: t("summary.sillage"),
@@ -115,7 +117,7 @@ const PerformanceMetrics = ({ product }) => {
     },
     {
       key: "occasion",
-      value: product?.occasion,
+      value: (isAr ? (product?.occasion_ar || product?.occasion) : product?.occasion),
       ref: occasionRef,
       fill: estimateFill(product?.occasion, PERFORMANCE_MAP.occasion.keywords),
       label: t("highlights.occasion"),
@@ -157,9 +159,9 @@ const PerformanceMetrics = ({ product }) => {
     >
       <div className="pdp-container">
         <header className="pdp-section-header">
-          <span className="pdp-section-eyebrow">Fragrance Character</span>
+          <span className="pdp-section-eyebrow">{isAr ? "طابع العطر" : "Fragrance Character"}</span>
           <h2 className="pdp-section-title" id="metrics-heading">
-            Performance Profile
+            {isAr ? "أداء العطر" : "Performance Profile"}
           </h2>
         </header>
 

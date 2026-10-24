@@ -23,10 +23,14 @@ import he from "he";
  *   setActiveIndex — setter from parent
  */
 
+import { useLocale } from "next-intl";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 /* ─── Badge overlay ─────────────────────────────────────────── */
 const Badges = ({ product }) => {
+  const locale = useLocale();
+  const isAr = locale === "ar";
   const isOutOfStock = (product?.product_qty ?? 0) <= 0;
   const now = new Date();
   const discount = product?.discount;
@@ -38,12 +42,12 @@ const Badges = ({ product }) => {
   return (
     <div className="pdp-gallery__badge-row" aria-hidden="true">
       {isOutOfStock && (
-        <span className="pdp-badge pdp-badge--oos">Out of Stock</span>
+        <span className="pdp-badge pdp-badge--oos">{isAr ? "غير متوفر" : "Out of Stock"}</span>
       )}
       {!isOutOfStock && isDiscountActive && (
         <span className="pdp-badge pdp-badge--sale">
-          Save {discount.value}
-          {discount.discount_type === "percent" ? "%" : " SAR"}
+          {isAr ? `وفر ${discount.value}` : `Save ${discount.value}`}
+          {discount.discount_type === "percent" ? "%" : (isAr ? " ر.س" : " SAR")}
         </span>
       )}
       {product?.label_name && !isOutOfStock && (
