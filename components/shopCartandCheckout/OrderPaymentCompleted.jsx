@@ -79,6 +79,24 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
 
       const orderId = orderData.order_id || orderData.id;
 
+      // ---- First-Party AhmedTracker ----
+      if (typeof window !== "undefined" && window.AhmedTracker) {
+        window.AhmedTracker.track("purchase", {
+          order_id: orderId,
+          total: parseFloat(orderData.total) || 0,
+          revenue: parseFloat(orderData.total) || 0,
+          payment_type: orderData.payment_type || "card",
+          customer_phone: orderData.phone || orderData.customer_phone || orderData.mobile || null,
+          customer_email: orderData.email || orderData.customer_email || null,
+          items: (orderData.products || []).map((item) => ({
+            product_id: (item.product_id || item.id)?.toString(),
+            product_name: item.name ? he.decode(item.name) : (item.product_name ? he.decode(item.product_name) : ""),
+            price: parseFloat(item.price) || 0,
+            quantity: item.qty || 1,
+          })),
+        });
+      }
+
       // ---- GA4 Purchase (TikTok listener in layout.jsx maps this to ttq.track("Purchase")) ----
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({

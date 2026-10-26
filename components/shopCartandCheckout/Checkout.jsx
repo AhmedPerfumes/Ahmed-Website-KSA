@@ -81,6 +81,7 @@ export default function Checkout() {
   const locale = useLocale();
   const { isLoggedIn } = useUser();
   const hasFetchedRef = useRef(false);
+  const hasTrackedBeginCheckout = useRef(false);
   const t = useTranslations();
 
   const shippingLoaded = Array.isArray(shippingServiceCharges) && shippingServiceCharges.length >= 2;
@@ -104,6 +105,28 @@ export default function Checkout() {
   /*  EFFECTS                                                             */
   /* ------------------------------------------------------------------ */
   useEffect(() => { setCouponDataContext(null); }, []);
+
+  // First-party AhmedTracker: begin_checkout on checkout load
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.AhmedTracker && cartProducts?.length > 0 && !hasTrackedBeginCheckout.current) {
+      hasTrackedBeginCheckout.current = true;
+      const b = formData.billingAddress || {};
+      window.AhmedTracker.track("begin_checkout", {
+        total: parseFloat(totalPrice || 0),
+        items_count: cartProducts.length,
+        email: b.email || null,
+        phone: b.mobile || null,
+        customer_phone: b.mobile || null,
+        customer_name: `${b.first_name || ''} ${b.last_name || ''}`.trim() || null,
+        items: cartProducts.map((i) => ({
+          product_id: (i.product_id || i.id)?.toString(),
+          product_name: i.product_name || i.name || "",
+          price: parseFloat(i.price || 0),
+          quantity: i.quantity || 1,
+        })),
+      });
+    }
+  }, [cartProducts?.length, totalPrice]);
 
   // Pre-fill form for logged-in users — but do NOT auto-skip.
   // User must still review and click Continue → to ensure address is complete.
@@ -530,6 +553,23 @@ export default function Checkout() {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: 'add_payment_info', ecommerce: { currency: 'SAR', value: parseFloat(totalPrice || 0), payment_type: selectedOption || 'cod', items: cartProducts.filter(i => !i.is_gift).map(i => ({ item_id: i.product_id?.toString(), item_name: i.product_name, price: parseFloat(i.price || 0), quantity: i.quantity || 1 })) } });
         if (typeof window.fbq === 'function') window.fbq('track', 'AddPaymentInfo', { content_ids: cartProducts.filter(i => !i.is_gift).map(i => i.product_id?.toString()), content_type: 'product', value: parseFloat(totalPrice || 0), currency: 'SAR' });
+
+        if (typeof window !== "undefined" && window.AhmedTracker) {
+          window.AhmedTracker.track("add_payment_info", {
+            payment_type: selectedOption || 'cod',
+            phone: formData.billingAddress?.mobile || null,
+            customer_phone: formData.billingAddress?.mobile || null,
+            email: formData.billingAddress?.email || null,
+            customer_name: `${formData.billingAddress?.first_name || ''} ${formData.billingAddress?.last_name || ''}`.trim() || null,
+            total: parseFloat(totalPrice || 0),
+            items: cartProducts.filter(i => !i.is_gift).map(i => ({
+              product_id: (i.product_id || i.id)?.toString(),
+              product_name: i.product_name,
+              price: parseFloat(i.price || 0),
+              quantity: i.quantity || 1,
+            })),
+          });
+        }
       }
     } catch (e) { }
 
@@ -618,6 +658,21 @@ export default function Checkout() {
       else if (data.message?.split(' ')[0] === 'OTP') {
         setOTPSuccess(data.message); setIsOTPVerified(true); setOTPError(null);
         localStorage.setItem('token', data.access_token);
+        if (typeof window !== "undefined" && window.AhmedTracker) {
+          window.AhmedTracker.track("verify_otp", {
+            phone: formData.billingAddress.mobile,
+            customer_phone: formData.billingAddress.mobile,
+            email: formData.billingAddress.email || null,
+            customer_name: `${formData.billingAddress.first_name || ''} ${formData.billingAddress.last_name || ''}`.trim() || null,
+            total: parseFloat(totalPrice || 0),
+            items: (cartProducts || []).map((i) => ({
+              product_id: (i.product_id || i.id)?.toString(),
+              product_name: i.product_name || i.name || "",
+              price: parseFloat(i.price || 0),
+              quantity: i.quantity || 1,
+            })),
+          });
+        }
         // useEffect will auto-advance to section 3
       } else {
         if (data.mobile) setOTPError(data.mobile);
@@ -649,6 +704,26 @@ export default function Checkout() {
     }
     if (Object.keys(errs).length) { setFieldErrors(errs); return; }
     setFieldErrors({});
+
+    // First-party AhmedTracker: emit begin_checkout with validated customer details
+    if (typeof window !== "undefined" && window.AhmedTracker) {
+      window.AhmedTracker.track("begin_checkout", {
+        total: parseFloat(totalPrice || 0),
+        items_count: (cartProducts || []).length,
+        email: b.email,
+        phone: b.mobile,
+        customer_phone: b.mobile,
+        customer_name: `${b.first_name} ${b.last_name}`.trim(),
+        city: b.area || b.province || null,
+        items: (cartProducts || []).map((i) => ({
+          product_id: (i.product_id || i.id)?.toString(),
+          product_name: i.product_name || i.name || "",
+          price: parseFloat(i.price || 0),
+          quantity: i.quantity || 1,
+        })),
+      });
+    }
+
     setDoneSection1(true);
     setActiveSection(2);
   };
