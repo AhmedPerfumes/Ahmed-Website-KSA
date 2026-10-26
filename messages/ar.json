@@ -4,30 +4,30 @@
     "CheckoutDescription": "استخدم أي بطاقة"
   },
   "refund": {
-    "title": "Returns & Exchanges",
-    "effective_date": "Effective: June 4, 2026",
-    "desc": "Returns or exchanges are only accepted in the following cases:",
+    "title": "الاسترجاع والاستبدال",
+    "effective_date": "تاريخ السريان: 4 يونيو 2026",
+    "desc": "يتم قبول طلبات الاسترجاع أو الاستبدال في الحالات التالية فقط:",
     "items": [
-      "Wrong item received",
-      "Damaged product received",
-      "Defective item received"
+      "استلام منتج غير مطابق للطلب",
+      "استلام منتج تالف أو مكسور أثناء الشحن والتوصيل",
+      "استلام منتج به عيب مصنعي عند الاستلام"
     ],
-    "desc2": "Any return or exchange request must be reported within 48 hours from the date of delivery.",
-    "desc3": "To process the request, customers must provide:",
+    "desc2": "يجب الإبلاغ عن أي طلب استرجاع أو استبدال في غضون 48 ساعة من تاريخ ووقت الاستلام.",
+    "desc3": "لمعالجة طلبكم بسلاسة، يرجى تزويد فريق الدعم بما يلي:",
     "items2": [
-      "Order number",
-      "Photos/videos of the product",
-      "Clear description of the issue"
+      "رقم الطلب الرسمي المسجل في متجرنا",
+      "صور أو مقاطع فيديو واضحة للمنتج والتغليف ورمز الدفعة",
+      "وصف واضح ومفصل للمشكلة"
     ],
-    "desc4": "Returned items must:",
+    "desc4": "شروط المنتجات المرتجعة:",
     "items4": [
-      "Be unused and unopened",
-      "Be in original packaging"
+      "أن يكون المنتج غير مستخدم تماماً وغير مفتوح",
+      "أن يكون المنتج في غلافه وعبوته الأصلية محكمة الإغلاق"
     ],
-    "title2": "Refund Policy",
-    "desc5": "Refunds will only be processed after inspection and approval of the returned item.",
-    "desc6": "Approved refunds will be issued through the original payment method within [7-14] business days depending on bank or payment provider processing timelines.",
-    "desc7": "We reserve the right to reject refund or exchange requests if the returned product does not meet the above conditions."
+    "title2": "سياسة استرداد الأموال",
+    "desc5": "تتم معالجة استرداد المبالغ بعد فحص المنتج المرتجع والموافقة على حالته من قِبل قسم الجودة.",
+    "desc6": "يتم تحويل المبالغ المستردة المعتمدة إلى وسيلة الدفع الأصلية نفسها في غضون [7-14] يوم عمل، وفقاً لمواعيد وإجراءات البنك أو مزود خدمة الدفع.",
+    "desc7": "نحتفظ بالحق في رفض طلب الاسترجاع أو الاستبدال إذا كان المنتج المرتجع لا يستوفي الشروط المذكورة أعلاه."
   },
   "BILLING DETAILS": "تفاصيل الفاتورة",
   "First Name": "الاسم",
@@ -277,6 +277,7 @@
   "Exports Text": "تنتشر شركة أحمد المغربي للعطور في أكثر من 91 دولة حيث تشارك عطورها الفاخرة مع العالم. ومع التزامنا الثابت بالحرفية والتميز، أصبحت روائحنا المميزة متاحة الآن للتوزيع العالمي، لتنشر جوهر الفخامة الخالدة والتقاليد الغنية في كل ركن من أركان العالم. الكرة الأرضية.",
   "Shipping & Delivery": "الشحن والتوصيل",
   "Refund Policy": "سياسة الاسترجاع",
+  "Return, Refund & Exchange Policy": "سياسة الاسترجاع والاسترداد والاستبدال",
   "Grace": "نعمة",
   "Be the First": "كن اول مايحصل على احدث الاخبار حول الاتجاهات والعروض الترويجية والمزيد",
   "Exude effortless allure": "أظهر سحرك دون عناء",

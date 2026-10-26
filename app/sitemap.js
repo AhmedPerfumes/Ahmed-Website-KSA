@@ -40,23 +40,34 @@ function resolveSubcat(catSlug, subcategory) {
     return catSlug;
 }
 
-/** Build localized entries with hreflang alternates */
+/** Build localized entries with hreflang alternates; only emits lastmod when a genuine date is provided */
 function loc(path, lastMod) {
-    const d = lastMod ? new Date(lastMod) : new Date();
-    // Safety check for invalid dates
-    const safeDate = isNaN(d.getTime()) ? new Date() : d;
+    let validDate = null;
+    if (lastMod) {
+        const d = new Date(lastMod);
+        if (!isNaN(d.getTime())) {
+            validDate = d;
+        }
+    }
 
-    return LOCALES.map((locale) => ({
-        url: `${BASE_URL}/${locale}${path}`,
-        lastModified: safeDate,
-        alternates: {
-            languages: {
-                "ar-SA": `${BASE_URL}/ar${path}`,
-                en: `${BASE_URL}/en${path}`,
-                "x-default": `${BASE_URL}/ar${path}`,
+    return LOCALES.map((locale) => {
+        const entry = {
+            url: `${BASE_URL}/${locale}${path}`,
+            alternates: {
+                languages: {
+                    "ar-SA": `${BASE_URL}/ar${path}`,
+                    en: `${BASE_URL}/en${path}`,
+                    "x-default": `${BASE_URL}/ar${path}`,
+                },
             },
-        },
-    }));
+        };
+
+        if (validDate) {
+            entry.lastModified = validDate;
+        }
+
+        return entry;
+    });
 }
 
 /** Authenticated API fetch that forwards the required origin header */
@@ -83,19 +94,19 @@ async function apiFetch(endpoint, body = {}) {
 // ── Static pages ────────────────────────────────────────────────────────────
 
 const STATIC_PAGES = [
-    "",
-    "/shop",
-    "/sale",
-    "/about",
-    "/contact",
-    "/store-locator",
-    "/shipping-and-delivery",
-    "/refund-policy",
-    "/privacy",
-    "/terms",
-    "/export",
-    "/lookbook",
-    "/blog",
+    { path: "" },
+    { path: "/shop" },
+    { path: "/sale" },
+    { path: "/about", lastMod: "2026-06-01" },
+    { path: "/contact", lastMod: "2026-06-01" },
+    { path: "/store-locator", lastMod: "2026-06-01" },
+    { path: "/shipping-and-delivery", lastMod: "2026-06-01" },
+    { path: "/refund-policy", lastMod: "2026-10-24" },
+    { path: "/privacy", lastMod: "2026-06-01" },
+    { path: "/terms", lastMod: "2026-06-01" },
+    { path: "/export", lastMod: "2026-06-01" },
+    { path: "/lookbook", lastMod: "2026-06-01" },
+    { path: "/blog" },
 ];
 
 // ── Main export ────────────────────────────────────────────────────────────
@@ -112,7 +123,9 @@ export default async function sitemap() {
 
     // 1. Static pages
     for (const page of STATIC_PAGES) {
-        addEntry(page);
+        const pagePath = typeof page === "string" ? page : page.path;
+        const pageLastMod = typeof page === "object" ? page.lastMod : null;
+        addEntry(pagePath, pageLastMod);
     }
 
     // 2. Live categories and subcategories (including gel, hair-mist, etc.)
