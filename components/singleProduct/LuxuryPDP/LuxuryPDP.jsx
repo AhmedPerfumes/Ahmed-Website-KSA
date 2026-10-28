@@ -27,6 +27,7 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import dynamic from "next/dynamic";
 import "./LuxuryPDP.css";
+import { useLocale } from "next-intl";
 
 // ── Above-fold sections (eagerly loaded)
 import TrustBar from "./sections/TrustBar";
@@ -100,6 +101,7 @@ const useFadeInObserver = () => {
 /* ──────────────────────────────────────────────────────────────── */
 
 const LuxuryPDP = ({ product, category, subcategory }) => {
+  const locale = useLocale();
   const [activeIndex, setActiveIndex] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -151,9 +153,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
       <ProductSchema
         product={product}
         reviews={reviews}
-        canonicalUrl={
-          typeof window !== "undefined" ? window.location.href : ""
-        }
+        canonicalUrl={`${process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com"}/${locale}/shop/${category}/${subcategory}/${String(product.product_name || "").trim().split(" ").join("-").toLowerCase()}`}
       />
 
       {/* ── Section 1: Trust / Announcement Bar ── */}

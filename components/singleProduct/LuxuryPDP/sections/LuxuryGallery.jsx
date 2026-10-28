@@ -97,6 +97,14 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
     return () => window.removeEventListener("keydown", onKey);
   }, [lightboxOpen]);
 
+  // Lock background page scroll while lightbox is open (mobile)
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [lightboxOpen]);
+
   const openLightbox = useCallback((idx) => {
     setLightboxIndex(idx);
     setLightboxOpen(true);
@@ -291,11 +299,8 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           )}
 
           {/* Image */}
-          <div
-            className="pdp-lightbox__img-wrap"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="pdp-lightbox__close" onClick={closeLightbox} aria-label="Close" type="button">&times;</button>
+          <div className="pdp-lightbox__img-wrap">
+            <button className="pdp-lightbox__close" onClick={(e) => { e.stopPropagation(); closeLightbox(); }} aria-label="Close" type="button">&times;</button>
             <Image
               src={images[lightboxIndex] ? `${API_URL}storage/${images[lightboxIndex]}` : "/assets/images/general_product.png"}
               alt={he.decode(product?.product_name || "Product")}

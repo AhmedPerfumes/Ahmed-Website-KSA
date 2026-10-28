@@ -2840,6 +2840,9 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   inset: 0;
   background: rgba(0, 0, 0, .92);
   z-index: 9000;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2853,15 +2856,16 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   position: relative;
   width: min(90vw, 720px);
   height: min(88vh, 720px);
+  height: min(88dvh, 720px);
 }
 .pdp-lightbox__close {
-  position: absolute;
-  top: -2.5rem;
-  right: 0;
-  width: 36px; height: 36px;
-  border: 1px solid rgba(255,255,255,.3);
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+  width: 44px; height: 44px;
+  background: rgba(0,0,0,.6);
+  border: 1px solid rgba(255,255,255,.4);
   border-radius: 50%;
-  background: transparent;
   color: #fff;
   font-size: 1.3rem;
   cursor: pointer;

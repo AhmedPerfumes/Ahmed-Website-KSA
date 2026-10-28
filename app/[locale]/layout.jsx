@@ -232,15 +232,19 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                 url: baseUrl,
                 logo: {
                     "@type": "ImageObject",
-                    url: `${baseUrl}/assets/images/ahmed-favicon.png`,
+                    url: `${baseUrl}/assets/images/logo/Logo%20for%20website%20desktop.png`,
                 },
                 sameAs: [
-                    "https://www.instagram.com/ahmedalmaghribiperfumes",
-                    "https://www.facebook.com/ahmedalmaghribiperfumes",
+                    "https://www.instagram.com/ahmedalmaghribiperfumes/",
+                    "https://www.facebook.com/ahmedalmaghribiperfumesllc/",
+                    "https://www.tiktok.com/@ahmedalmaghribiperfumes",
+                    "https://www.youtube.com/channel/UCzUsyi2q3zCR4YTeAA1okkg",
+                    "https://x.com/AhmedPerfumesa",
                 ],
                 contactPoint: {
                     "@type": "ContactPoint",
                     contactType: "customer service",
+                    telephone: "+966555073629",
                     areaServed: "SA",
                     availableLanguage: ["Arabic", "English"],
                 },

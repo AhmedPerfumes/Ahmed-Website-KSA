@@ -337,11 +337,7 @@ const ProductDetailsPage16 = async ({ params }) => {
             content="Ahmed Al Maghribi Perfumes"
           />
         </Head>
-        <ProductSchema
-                    category={categoryName}
-                    subcategory={subCategoryName}
-                    product={data}
-                />
+        {/* Product JSON-LD is rendered once by LuxuryPDP/ProductSchema */}
         <main>
           <div className="mb-md-1 pb-md-3"></div>
           <SingleProduct11 category={ categoryName } subcategory={ subCategoryName } product={ data } />
