@@ -240,14 +240,6 @@ export default function CartDrawer() {
         {/* ── Footer Actions ──────────────────────────────────────── */}
         {cartProducts.length > 0 && (
           <div className="cd-footer">
-            {/* Delivery notice */}
-            <div className="cd-notice">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c5a05a" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <span>Deliveries may take 8–10 days due to high demand</span>
-            </div>
-
             {/* Subtotal */}
             <div className="cd-subtotal">
               <span className="cd-subtotal__label">Subtotal</span>

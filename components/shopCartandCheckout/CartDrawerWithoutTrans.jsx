@@ -198,12 +198,6 @@ export default function CartDrawerWithoutTrans() {
         {/* Footer */}
         {cartProducts.length > 0 && (
           <div className="cd-footer">
-            <div className="cd-notice">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c5a05a" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <span>Deliveries may take 8–10 days due to high demand</span>
-            </div>
             <div className="cd-subtotal">
               <span className="cd-subtotal__label">Subtotal</span>
               <span className="cd-subtotal__value">{totalPrice.toFixed(2)} {currency?.symbol}</span>

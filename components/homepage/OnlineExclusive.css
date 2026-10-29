@@ -90,7 +90,7 @@
 
 .oe-eyebrow {
   display: block;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
@@ -107,7 +107,7 @@
 
 /* Subtitle */
 .oe-subtitle {
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: clamp(0.7rem, 1.5vw, 0.88rem);
   font-weight: 300;
   color: #3d3d3d;
@@ -151,7 +151,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.1em;
@@ -356,7 +356,7 @@
   left: 10px;
   z-index: 3;
   padding: 4px 9px;
-  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), sans-serif);
   font-size: 0.52rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -372,7 +372,7 @@
   right: 10px;
   z-index: 3;
   padding: 3px 8px;
-  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), sans-serif);
   font-size: 0.55rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -438,7 +438,7 @@
 }
 
 .oe-card__sub {
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.6rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -449,7 +449,7 @@
 }
 
 .oe-card__name {
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--oe-text);
@@ -473,7 +473,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--oe-text);
@@ -502,7 +502,7 @@
   justify-content: center;
   width: 100%;
   padding: 9px 10px;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.1em;

@@ -112,7 +112,7 @@
   font-weight: inherit;
   line-height: 1.2;
   margin: 0;
-  font-family: var(--font-heading);
+  font-family: "SAR Symbol", var(--font-heading);
 }
 
 /* Product title — elegant, not ultra-thin (300 looks washed out on Windows) */
@@ -721,7 +721,7 @@
   font-size: .88rem;
   line-height: 1.6;
   color: #55524E;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif);
 }
 
 .pdp-info__desc-content--clamped {
@@ -777,13 +777,13 @@
   gap: .75rem;
   flex-wrap: wrap;
   margin-bottom: .35rem;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
 }
 
 .pdp-price {
   font-size: clamp(1.1rem, 1.6vw, 1.4rem) !important;
   font-weight: 600;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
   color: var(--pdp-ink);
   letter-spacing: -.01em;
   line-height: 1;
@@ -792,7 +792,7 @@
 .pdp-price--sale {
   color: var(--pdp-sale) !important;
   font-size: clamp(1.1rem, 1.6vw, 1.4rem) !important;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
 }
 
 .pdp-price--old {
@@ -818,7 +818,7 @@
   font-size: var(--t-sm);
   color: var(--pdp-success);
   font-weight: 500;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif) !important;
   margin-bottom: .85rem;
 }
 
@@ -2511,7 +2511,7 @@ tamara-widget [class*="tamara-summary"] {
   font-size: var(--t-base);
   color: var(--pdp-ink);
   font-weight: 700;
-  font-family: var(--font-inter, var(--font-dm-sans), sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), sans-serif);
   transition: color var(--ease);
 }
 

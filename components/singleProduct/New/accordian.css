@@ -49,7 +49,7 @@
     cursor: pointer;
     text-align: start; /* logical: left in LTR, right in RTL */
     font-size: 0.82rem;
-    font-family: var(--font-heading);
+    font-family: "SAR Symbol", var(--font-heading);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -101,7 +101,7 @@
 /* Inner padding */
 .pdp-acc-content {
     padding: var(--space-sm) var(--space-md) var(--space-xl);
-    font-family: var(--font-body);
+    font-family: "SAR Symbol", var(--font-body);
     font-size: 0.875rem;
     line-height: 1.7;
     color: var(--color-text-secondary);
@@ -150,7 +150,7 @@
 }
 
 .note-item-title {
-    font-family: var(--font-heading);
+    font-family: "SAR Symbol", var(--font-heading);
     font-weight: 400;
     margin-bottom: 0.25rem;
     font-size: 0.9rem;
@@ -183,7 +183,7 @@
 }
 
 .highlight-title {
-    font-family: var(--font-body);
+    font-family: "SAR Symbol", var(--font-body);
     font-weight: 400;
     font-size: 0.9rem;
     color: var(--color-text-primary);
@@ -214,7 +214,7 @@
 }
 
 .usage-guide h4 {
-    font-family: var(--font-heading);
+    font-family: "SAR Symbol", var(--font-heading);
     font-weight: 500;
     margin-bottom: var(--space-md);
     font-size: 1.1rem;
@@ -242,7 +242,7 @@
 
 .usage-steps li::before {
     content: '0' counter(steps-counter) '.';
-    font-family: var(--font-heading);
+    font-family: "SAR Symbol", var(--font-heading);
     font-weight: 600;
     font-size: 1rem;
     color: var(--color-accent);
@@ -322,7 +322,7 @@
 }
 
 .collection-card-name {
-    font-family: var(--font-heading);
+    font-family: "SAR Symbol", var(--font-heading);
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--color-text-primary);
@@ -363,7 +363,7 @@
 }
 
 .summary-row span:last-child {
-    font-family: var(--font-heading);
+    font-family: "SAR Symbol", var(--font-heading);
     font-weight: 600;
     color: var(--color-text-primary);
 }
