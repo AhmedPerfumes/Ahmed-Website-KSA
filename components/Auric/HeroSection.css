@@ -1,0 +1,267 @@
+@import "./auric.css";
+
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: auto;
+  font-family: 'Wonderful Melanesia', Georgia, serif;
+  /* Seamless black to charcoal gradient that matches VideoSection */
+  background: linear-gradient(180deg, #000000 0%, #040304 40%, #080608 100%);
+  overflow: hidden;
+  padding: 30px 20px 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-section .overlay {
+  position: absolute;
+  inset: 0;
+  /* Subtle dark vignette with warm maroon mid-tones to preserve bottle radiance */
+  background:
+    radial-gradient(circle at 25% 45%, rgba(138, 30, 48, 0.09) 0%, transparent 45%),
+    radial-gradient(circle at 75% 70%, rgba(223, 186, 115, 0.06) 0%, transparent 45%),
+    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.8) 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Colors */
+.text-gold { color: #d4af37; }
+
+.auric-gold-text {
+  color: #f5cb6c;
+  background: linear-gradient(135deg, #FFF3D0 0%, #FAD06C 25%, #DDA136 50%, #FDE28A 75%, #B37B22 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Text */
+.hero-section h1,
+.hero-section h2 { 
+  font-family: 'Wonderful Melanesia', Georgia, serif !important;
+  letter-spacing: 0.03em; 
+  font-weight: 400;
+  line-height: 1.22;
+}
+
+.hero-section .lead { 
+  color: rgba(255, 255, 255, 0.82); 
+  font-size: 1.1rem; 
+  line-height: 1.85; 
+  font-weight: 300;
+  letter-spacing: 0.015em;
+}
+
+.perfume-comparison-wrapper {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 460px;
+  animation: floatCenter 7s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+@media (hover: none) {
+  .perfume-comparison-wrapper {
+    animation: none; /* Disable continuous floating on touch devices for solid touch precision */
+  }
+}
+
+.perfume-comparison-wrapper:hover {
+  animation-play-state: paused;
+}
+
+/* Master Showcase Frame */
+.auric-compare-showcase {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 432 / 560;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 85%, rgba(138, 30, 48, 0.16) 0%, rgba(212, 175, 55, 0.1) 40%, #080608 85%);
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(138, 30, 48, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y; /* CRITICAL: Enables native vertical page scrolling on mobile */
+  cursor: default;
+}
+
+/* Subtle Pedestal Reflection Under Bottles */
+.auric-compare-pedestal {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.auric-compare-pedestal-light {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(223, 186, 115, 0.28) 0%, transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Luminous Gold Seam / Divider */
+.auric-compare-divider-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    rgba(191, 149, 63, 0.4) 10%, 
+    #fcf6ba 50%, 
+    rgba(170, 119, 28, 0.4) 90%, 
+    transparent 100%
+  );
+  box-shadow: 
+    0 0 10px rgba(223, 186, 115, 0.7),
+    0 0 20px rgba(138, 30, 48, 0.35);
+  pointer-events: none;
+}
+
+/* Touch & Drag Target Area for the Handle */
+.auric-compare-handle-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  transform: translateX(-50%);
+  z-index: 8;
+  cursor: ew-resize;
+  touch-action: none; /* Only the handle has touchAction none so dragging it slides smoothly */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bespoke Luxury Drag Handle Box with Brand Logo */
+.auric-compare-handle-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1c1518 0%, #0d080a 100%);
+  border: 1.5px solid #dfba73;
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.85),
+    0 0 18px rgba(212, 175, 55, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  pointer-events: none;
+}
+
+.auric-compare-handle-wrap:hover .auric-compare-handle-box,
+.auric-compare-handle-wrap:active .auric-compare-handle-box {
+  transform: scale(1.08);
+  border-color: #fcf6ba;
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.95),
+    0 0 26px rgba(252, 246, 186, 0.55);
+}
+
+.auric-compare-handle-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes floatCenter {
+  0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+  50% { transform: translateY(-12px) rotateZ(0.4deg); }
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .hero-section h1 { font-size: 2.5rem; }
+  .hero-section .lead { font-size: 1.1rem; }
+  .hero-section { padding: 70px 15px; min-height: auto; }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 15px;
+    min-height: auto;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-section .lead {
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .hero-message {
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 50px 12px;
+    min-height: auto;
+  }
+
+  .hero-section h1 {
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+  }
+
+  .hero-section .lead {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .container {
+    padding: 0 !important;
+  }
+
+  .row {
+    row-gap: 2rem;
+  }
+
+  .auric-compare-showcase {
+    border-radius: 20px;
+  }
+
+  .auric-compare-handle-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .auric-compare-handle-logo {
+    width: 26px;
+    height: 26px;
+  }
+}
+
