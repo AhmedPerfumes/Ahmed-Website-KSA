@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import CartLength from "./components/CartLength";
 import { openCart } from "@/utlis/openCart";
 import MobileNav from "./components/MobileNav";
+import LanguageCountrySelectors from "../common/LanguageCountrySelectors";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -365,6 +366,11 @@ export default function MobileHeader() {
               <ul className="navigation__list list-unstyled position-relative mb-0 pb-3">
                 <MobileNav />
               </ul>
+            </div>
+
+            {/* Language + Country selectors */}
+            <div className="header-mobile__settings d-flex flex-column gap-2 pt-3 border-top">
+              <LanguageCountrySelectors namePrefix="drawer" />
             </div>
           </div>
         </nav>

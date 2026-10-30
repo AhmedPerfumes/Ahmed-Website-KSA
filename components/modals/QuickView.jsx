@@ -40,6 +40,9 @@ export default function QuickView() {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
+  // SEO: quick-view content is only rendered while the modal is open,
+  // so the initial HTML of listing pages has no empty H1 / price / stock text.
+  const [isOpen, setIsOpen] = useState(false);
   const t=useTranslations();
   
 
@@ -194,9 +197,18 @@ export default function QuickView() {
     );
 
     // myModal.show();
-    modalElement.current.addEventListener("hidden.bs.modal", () => {
+    const el = modalElement.current;
+    const onShow = () => setIsOpen(true);
+    const onHidden = () => {
+      setIsOpen(false);
       myModal.hide();
-    });
+    };
+    el.addEventListener("show.bs.modal", onShow);
+    el.addEventListener("hidden.bs.modal", onHidden);
+    return () => {
+      el.removeEventListener("show.bs.modal", onShow);
+      el.removeEventListener("hidden.bs.modal", onHidden);
+    };
   }, []);
 
   const price = (elm) => {
@@ -274,6 +286,7 @@ export default function QuickView() {
             data-bs-dismiss="modal"
             aria-label="Close"
           ></button>
+          {isOpen && quickViewItem?.product_id && (
           <div className="product-single">
             <div className="product-single__media m-0">
               <div className="product-single__image position-relative w-100">
@@ -454,6 +467,7 @@ export default function QuickView() {
               </div> */}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

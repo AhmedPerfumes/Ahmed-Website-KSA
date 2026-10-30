@@ -2,6 +2,7 @@ import Footer14 from "@/components/footers/Footer14";
 import Cart from "@/components/shopCartandCheckout/Cart";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
+import { getTranslations } from "next-intl/server";
 
 import React from "react";
 
@@ -13,12 +14,13 @@ export const metadata = {
   },
 };
 
-export default function () {
+export default async function () {
+  const t = await getTranslations("CartPage");
   return (
     <>
       <main className="page-wrapper">
         <section className="shop-checkout container">
-          <h1 className="page-title">Cart</h1>
+          <h1 className="page-title">{t("pageTitle")}</h1>
           <ChectoutSteps />
           <Cart />
         </section>
