@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const IconCart = () => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -20,11 +20,12 @@ const IconConfirmed = () => (
 
 export default function ChectoutSteps({ step = 1 }) {
   const locale = useLocale();
+  const t = useTranslations("CartPage");
 
   const steps = [
-    { num: 1, label: "Cart",      sub: "Your items",           href: `/${locale}/shop-cart`,           Icon: IconCart      },
-    { num: 2, label: "Checkout",  sub: "Shipping & payment",   href: `/${locale}/shop-checkout`,        Icon: IconCheckout  },
-    { num: 3, label: "Confirmed", sub: "Order placed",         href: `/${locale}/shop-order-complete`,  Icon: IconConfirmed },
+    { num: 1, label: t("stepCart"),      sub: t("stepCartSub"),      href: `/${locale}/shop-cart`,           Icon: IconCart      },
+    { num: 2, label: t("stepCheckout"),  sub: t("stepCheckoutSub"),  href: `/${locale}/shop-checkout`,        Icon: IconCheckout  },
+    { num: 3, label: t("stepConfirmed"), sub: t("stepConfirmedSub"), href: `/${locale}/shop-order-complete`,  Icon: IconConfirmed },
   ];
 
   return (
