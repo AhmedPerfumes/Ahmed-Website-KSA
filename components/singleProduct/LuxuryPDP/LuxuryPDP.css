@@ -2991,4 +2991,104 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   /* Gallery thumbnails */
   .pdp-gallery__thumb-strip { gap: .4rem; }
   .pdp-gallery__thumb { width: 52px; height: 52px; }
-}
+}
+/* ═══════════════════════════════════════════════════════════════
+   Minimal info column — decluttered right side of the PDP hero
+   (overrides earlier rules; keep at end of file)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Price: single line, breathing room below */
+.pdp-price-wrap { margin: .35rem 0 .85rem; }
+.pdp-price-block { margin-bottom: 0; }
+
+/* Size + stock on one quiet line */
+.pdp-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-bottom: 1.25rem;
+  font-size: var(--t-sm);
+}
+.pdp-meta-row__size { color: var(--pdp-ink); font-weight: 500; }
+.pdp-meta-row__sep { width: 1px; height: 12px; background: var(--pdp-line); }
+.pdp-meta-row .pdp-stock { margin: 0; font-weight: 500; }
+.pdp-stock__dot { width: 6px; height: 6px; animation: none; }
+.pdp-stock--in .pdp-stock__dot,
+.pdp-stock--low .pdp-stock__dot { box-shadow: none; }
+
+/* Buy block: [qty | Add to Cart] then full-width Buy Now */
+.pdp-buy { display: flex; flex-direction: column; gap: .6rem; }
+.pdp-buy__row { display: flex; align-items: stretch; gap: .6rem; }
+.pdp-buy__row .pdp-pre-qty { margin: 0; flex-shrink: 0; }
+.pdp-buy__row .pdp-pre-qty__ctrl,
+.pdp-buy__row .pdp-pre-qty__btn,
+.pdp-buy__row .pdp-pre-qty__num { height: 52px; }
+.pdp-buy__row .pdp-atc-btn { flex: 1; min-height: 52px; }
+.pdp-buy > .pdp-atc-btn--buynow { flex: none; width: 100%; min-height: 52px; }
+.pdp-atc-btn { box-shadow: none; }
+
+/* Tabby / Tamara: one quiet line; official widgets open on "Details" */
+.pdp-bnpl { margin-top: .85rem; }
+.pdp-bnpl__line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem .6rem;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: start;
+  cursor: pointer;
+  font-size: .8rem;
+  color: #635F59;
+  line-height: 1.4;
+}
+.pdp-bnpl__text { flex: 1 1 auto; min-width: 0; }
+.pdp-bnpl__amount {
+  color: var(--pdp-ink);
+  font-weight: 600;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif);
+}
+.pdp-bnpl__brands { display: inline-flex; gap: .3rem; }
+.pdp-bnpl__brand {
+  font-family: var(--font-inter, var(--font-dm-sans), 'Segoe UI', sans-serif);
+  font-size: .66rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: .22rem .45rem;
+  border-radius: 4px;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+.pdp-bnpl__brand--tabby { background: #3EEDBF; color: #1A1A1A; }
+.pdp-bnpl__brand--tamara { background: #F4E9F7; color: #1A1A1A; }
+.pdp-bnpl__more {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-size: .75rem;
+  color: #8C877E;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pdp-bnpl__line:hover .pdp-bnpl__more { color: var(--pdp-gold-dark); }
+.pdp-bnpl__more svg { transition: transform var(--ease); }
+.pdp-bnpl__more svg.is-open { transform: rotate(180deg); }
+
+/* Expanded: the providers' own widgets, no extra boxes from us */
+.pdp-bnpl .pdp-bnpl-row { margin: .75rem 0 0; gap: .75rem; }
+.pdp-bnpl .pdp-bnpl-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+}
+.pdp-bnpl .pdp-bnpl-card:hover { box-shadow: none; }
+
+@media (max-width: 360px) {
+  .pdp-buy__row .pdp-pre-qty__btn { width: 32px; }
+  .pdp-buy__row .pdp-pre-qty__num { min-width: 28px; }
+}

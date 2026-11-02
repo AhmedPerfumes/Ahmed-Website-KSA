@@ -10,7 +10,7 @@ import { useMenu } from '../../context/MenuContext';
 export default function CartDrawerWithoutTrans() {
   const { currency } = useMenu();
   const [error, setError] = useState(null);
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, freeShippingThreshold } = useContextElement();
   const pathname = usePathname();
 
   const closeCart = () => {
@@ -54,7 +54,6 @@ export default function CartDrawerWithoutTrans() {
 
   useEffect(() => { closeCart(); }, [pathname]);
 
-  const freeShippingThreshold = 300;
   const progressPercentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
 
   const getItemPrice = (elm) => {

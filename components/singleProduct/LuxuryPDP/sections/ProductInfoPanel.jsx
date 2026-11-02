@@ -20,13 +20,12 @@ import he from "he";
  *  - Product H1 title + olfactory family subtitle
  *  - Star rating row (scrolls to reviews on click)
  *  - Price block with discount logic
- *  - Tabby/Tamara BNPL widgets
- *  - Size/volume tags display
- *  - Stock status indicator
- *  - Pre-cart quantity stepper (Fix #1)
+ *  - Size + stock status on one compact meta line
+ *  - Pre-cart quantity stepper inline with Add to Cart (Fix #1)
  *  - Add-to-Cart block with Buy Now (Fix #2)
  *  - Unified in-cart stepper (Fix #6)
  *  - Share row (WhatsApp + Copy Link)
+ *  - Tabby/Tamara BNPL widgets
  *
  * Audit fixes:
  *  #1 — Quantity selector shown BEFORE first Add to Cart
@@ -103,12 +102,8 @@ const PriceBlock = ({ product, currency, isArabic }) => {
     }
   }
 
-  const savings = salePrice
-    ? (parseFloat(product.price) - parseFloat(salePrice)).toFixed(2)
-    : null;
-
   return (
-    <div>
+    <div className="pdp-price-wrap">
       <div className="pdp-price-block">
         {salePrice ? (
           <>
@@ -126,13 +121,6 @@ const PriceBlock = ({ product, currency, isArabic }) => {
           </span>
         )}
       </div>
-      {savings && (
-        <p className="pdp-price-savings">
-          {isArabic
-            ? `وفرت ${currency?.symbol}${savings}`
-            : `You save ${currency?.symbol}${savings}`}
-        </p>
-      )}
     </div>
   );
 };
@@ -303,10 +291,57 @@ const ShareRow = ({ productName, isArabic }) => {
   );
 };
 
+/* ─── BNPL — one minimal line; official Tabby/Tamara widgets on demand ─── */
+const BnplLine = ({ price, currency, locale }) => {
+  const [open, setOpen] = useState(false);
+  const isArabic = locale === "ar";
+  const amount = parseFloat(price) || 0;
+  if (amount <= 0) return null;
+  const perPayment = (amount / 4).toFixed(2);
+
+  return (
+    <div className="pdp-bnpl">
+      <button
+        type="button"
+        className="pdp-bnpl__line"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="pdp-bnpl-details"
+      >
+        <span className="pdp-bnpl__text">
+          {isArabic ? "قسّمها على 4 دفعات بدون فوائد بقيمة " : "Or 4 interest-free payments of "}
+          <strong className="pdp-bnpl__amount">{currency?.symbol}{perPayment}</strong>
+        </span>
+        <span className="pdp-bnpl__brands" aria-hidden="true">
+          <span className="pdp-bnpl__brand pdp-bnpl__brand--tabby">tabby</span>
+          <span className="pdp-bnpl__brand pdp-bnpl__brand--tamara">tamara</span>
+        </span>
+        <span className="pdp-bnpl__more">
+          {isArabic ? "التفاصيل" : "Details"}
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" className={open ? "is-open" : ""}>
+            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      {/* Official widgets mount only when opened — keeps the panel quiet and avoids load-time flicker */}
+      {open && (
+        <div id="pdp-bnpl-details" className="pdp-bnpl-row">
+          <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
+            <TabbyPromoWidget price={amount} currency="SAR" lang={locale} source="luxury-pdp" />
+          </div>
+          <div className="pdp-bnpl-card pdp-bnpl-card--tamara">
+            <TamaraWidget amount={amount.toFixed(2)} inlineType="6" inlineVariant="none" locale={locale} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 /* ─── Pre-Cart Quantity Stepper (Fix #1) ─── */
 const PreCartQtyStepper = ({ quantity, onDecrease, onIncrease, max, isArabic }) => (
   <div className="pdp-pre-qty" role="group" aria-label={isArabic ? "تحديد الكمية" : "Select quantity"}>
-    <span className="pdp-pre-qty__label">{isArabic ? "الكمية" : "Qty"}</span>
     <div className="pdp-pre-qty__ctrl">
       <button
         className="pdp-pre-qty__btn"
@@ -511,8 +546,10 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
         <p className="pdp-info__subtitle">{displaySubtitle}</p>
       )}
 
-      {/* Star Rating Row */}
-      <StarDisplay rating={avgRating} count={reviewCount} isArabic={locale === "ar"} />
+      {/* Star Rating Row — only when the product actually has reviews */}
+      {reviewCount > 0 && (
+        <StarDisplay rating={avgRating} count={reviewCount} isArabic={locale === "ar"} />
+      )}
 
       {/* Product Description from API — directly below product name & star rating */}
       <ProductDescription
@@ -523,42 +560,19 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       {/* Price Block */}
       <PriceBlock product={product} currency={currency} isArabic={locale === "ar"} />
 
-      {/* BNPL Row: Tabby + Tamara (compact side-by-side in same line) */}
-      <div className="pdp-bnpl-row">
-        <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
-          <TabbyPromoWidget
-            price={parseFloat(getTabbyPrice(product))}
-            currency="SAR"
-            lang={locale}
-            source="luxury-pdp"
-          />
-        </div>
-        <div className="pdp-bnpl-card pdp-bnpl-card--tamara">
-          <TamaraWidget
-            amount={parseFloat(getTabbyPrice(product)).toFixed(2)}
-            inlineType="6"
-            inlineVariant="none"
-            locale={locale}
-          />
-        </div>
+      {/* Size + Stock — one compact meta line */}
+      <div className="pdp-meta-row">
+        {tags.length > 0 && (
+          <>
+            <span className="pdp-meta-row__size">
+              <span className="visually-hidden">{locale === "ar" ? "الحجم: " : "Size: "}</span>
+              {tags.join(" · ")}
+            </span>
+            <span className="pdp-meta-row__sep" aria-hidden="true" />
+          </>
+        )}
+        <StockStatus qty={product?.product_qty ?? 0} isArabic={locale === "ar"} />
       </div>
-
-      {/* Size / Volume Tags */}
-      {tags.length > 0 && (
-        <div className="pdp-size-row">
-          <span className="pdp-size-row__label">{locale === "ar" ? "الحجم" : "Size"}</span>
-          <div className="pdp-size-tags">
-            {tags.map((tag, i) => (
-              <div key={i} className="pdp-size-tag pdp-size-tag--active">
-                {tag}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Stock Status */}
-      <StockStatus qty={product?.product_qty ?? 0} isArabic={locale === "ar"} />
 
       {/* Error Message */}
       <AnimatePresence>
@@ -597,19 +611,18 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
             </button>
           </div>
         ) : !isInCart ? (
-          /* ── B: Pre-cart — show qty stepper THEN ATC + Buy Now ── */
-          <>
-            {/* Fix #1 — Pre-cart quantity selector */}
-            <PreCartQtyStepper
-              quantity={quantity}
-              onDecrease={handlePreDecrease}
-              onIncrease={handlePreIncrease}
-              max={qtyLimit}
-              isArabic={locale === "ar"}
-            />
+          /* ── B: Pre-cart — [qty | Add to Cart] then full-width Buy Now ── */
+          <div className="pdp-buy">
+            <div className="pdp-buy__row">
+              {/* Fix #1 — Pre-cart quantity selector (inline with ATC) */}
+              <PreCartQtyStepper
+                quantity={quantity}
+                onDecrease={handlePreDecrease}
+                onIncrease={handlePreIncrease}
+                max={qtyLimit}
+                isArabic={locale === "ar"}
+              />
 
-            {/* CTA row: Add to Cart + Buy Now */}
-            <div className="pdp-atc-row pdp-atc-row--ctas">
               <button
                 id="product-detail-top"
                 type="button"
@@ -623,18 +636,18 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
                 </svg>
                 {locale === "ar" ? "أضف إلى السلة" : "Add to Cart"}
               </button>
-
-              {/* Fix #2 — Buy Now */}
-              <button
-                id="product-detail-buynow"
-                type="button"
-                className="pdp-atc-btn pdp-atc-btn--buynow"
-                onClick={buyNow}
-              >
-                {locale === "ar" ? "اشتري الآن" : "Buy Now"}
-              </button>
             </div>
-          </>
+
+            {/* Fix #2 — Buy Now */}
+            <button
+              id="product-detail-buynow"
+              type="button"
+              className="pdp-atc-btn pdp-atc-btn--buynow"
+              onClick={buyNow}
+            >
+              {locale === "ar" ? "اشتري الآن" : "Buy Now"}
+            </button>
+          </div>
         ) : (
           /* ── C: In-cart — unified qty pill (Fix #6) ── */
           <motion.div
@@ -711,6 +724,9 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
 
       {/* Share Row */}
       <ShareRow productName={productName} isArabic={locale === "ar"} />
+
+      {/* BNPL: Tabby + Tamara — one minimal line below Share */}
+      <BnplLine price={getTabbyPrice(product)} currency={currency} locale={locale} />
     </div>
   );
 };

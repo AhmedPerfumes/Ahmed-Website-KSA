@@ -1343,7 +1343,7 @@
       "proceedToCheckout": "Proceed to Checkout",
       "assurances": "Shopping assurances",
       "securePayment": "Secure Payment",
-      "freeShip300": "Free Ship 300+ SAR",
+      "freeShipOver": "Free Ship {amount}+ SAR",
       "vatIncluded": "VAT Included",
       "authentic": "Authentic Guarantee",
       "payMethods": "🔒 Visa · Mastercard · Mada · Tamara · Tabby",
@@ -1504,5 +1504,26 @@
       "continueShopping": "Continue Shopping",
       "closeDismissAria": "Close and stop showing recommendations this session",
       "continueAria": "Continue shopping — go to the shop page"
+    },
+  "CartDrawer": {
+      "yourBag": "Your Bag",
+      "itemCount": "{count, plural, one {# item} other {# items}}",
+      "closeCart": "Close cart",
+      "addMore": "Add <b>{amount}</b> more for free shipping ✈",
+      "qualifies": "✓ You qualify for <b>free shipping!</b>",
+      "stockExceeded": "Quantity exceeds available stock",
+      "maxAllowed": "Max allowed: {max}",
+      "decrease": "Decrease quantity",
+      "increase": "Increase quantity",
+      "freeGift": "🎁 Free Gift",
+      "removeItem": "Remove item",
+      "emptyTitle": "Your bag is empty",
+      "emptySub": "Discover our exclusive fragrances",
+      "exploreCollection": "Explore Collection",
+      "subtotal": "Subtotal",
+      "vatNote": "Includes VAT · Shipping calculated at checkout",
+      "viewCart": "View Cart",
+      "checkout": "Checkout",
+      "paymentNote": "🔒 Secure checkout · Visa · Mastercard · Mada · Tamara · Tabby"
     }
 }

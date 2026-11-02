@@ -5,14 +5,15 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import he from 'he';
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMenu } from '../../context/MenuContext';
 
 export default function CartDrawer() {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   const locale = useLocale();
+  const t = useTranslations("CartDrawer");
   const [error, setError] = useState(null);
-  const { cartProducts, setCartProducts, totalPrice, couponDataContext } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, couponDataContext, freeShippingThreshold } = useContextElement();
   const pathname = usePathname();
 
   const closeCart = () => {
@@ -36,7 +37,7 @@ export default function CartDrawer() {
       if (giftItemIndex !== -1) items[giftItemIndex].quantity = quantity;
       setCartProducts(items);
     } else {
-      setError(!withinStock ? "Quantity exceeds available stock" : `Max allowed: ${MAX_LIMIT}`);
+      setError(!withinStock ? t("stockExceeded") : t("maxAllowed", { max: MAX_LIMIT }));
     }
   };
 
@@ -56,8 +57,7 @@ export default function CartDrawer() {
 
   useEffect(() => { closeCart(); }, [pathname]);
 
-  // Free shipping progress
-  const freeShippingThreshold = 300;
+  // Free shipping progress — threshold comes from admin via Context
   const progressPercentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
 
   const getItemPrice = (elm) => {
@@ -105,11 +105,11 @@ export default function CartDrawer() {
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 01-8 0"/>
             </svg>
-            <h3 className="cd-header__title">Your Bag</h3>
+            <h3 className="cd-header__title">{t("yourBag")}</h3>
           </div>
           <div className="cd-header__right">
-            <span className="cd-header__count">{cartProducts.length} {cartProducts.length === 1 ? 'item' : 'items'}</span>
-            <button onClick={closeCart} className="cd-close-btn js-close-aside btn-close-aside" aria-label="Close cart">
+            <span className="cd-header__count">{t("itemCount", { count: cartProducts.length })}</span>
+            <button onClick={closeCart} className="cd-close-btn js-close-aside btn-close-aside" aria-label={t("closeCart")}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -122,7 +122,10 @@ export default function CartDrawer() {
           {totalPrice < freeShippingThreshold ? (
             <>
               <p className="cd-shipping-bar__text">
-                Add <strong>{(freeShippingThreshold - totalPrice).toFixed(2)} {currency?.symbol}</strong> more for free shipping ✈
+                {t.rich("addMore", {
+                  amount: `${(freeShippingThreshold - totalPrice).toFixed(2)} ${currency?.symbol ?? ""}`,
+                  b: (chunks) => <strong>{chunks}</strong>,
+                })}
               </p>
               <div className="cd-shipping-progress">
                 <div className="cd-shipping-progress__fill" style={{ width: `${progressPercentage}%` }} />
@@ -130,7 +133,7 @@ export default function CartDrawer() {
             </>
           ) : (
             <p className="cd-shipping-bar__text cd-shipping-bar__text--free">
-              ✓ You qualify for <strong>free shipping!</strong>
+              {t.rich("qualifies", { b: (chunks) => <strong>{chunks}</strong> })}
             </p>
           )}
         </div>
@@ -166,7 +169,7 @@ export default function CartDrawer() {
 
                     {/* Info */}
                     <div className="cd-item__info">
-                      <p className="cd-item__name">{elm?.product_name && he.decode(elm.product_name)}</p>
+                      <p className="cd-item__name">{locale === "ar" && elm?.product_name_ar?.trim() ? elm.product_name_ar : elm?.product_name && he.decode(elm.product_name)}</p>
 
                       {/* Price row */}
                       <div className="cd-item__price-row">
@@ -187,19 +190,19 @@ export default function CartDrawer() {
                             className="cd-qty__btn"
                             onClick={() => setQuantity(elm.product_id, elm.quantity - 1, elm.product_qty, elm?.maximum_order_quantity)}
                             disabled={elm.quantity <= 1}
-                            aria-label="Decrease"
+                            aria-label={t("decrease")}
                             type="button"
                           >−</button>
                           <span className="cd-qty__num">{elm.quantity}</span>
                           <button
                             className="cd-qty__btn"
                             onClick={() => setQuantity(elm.product_id, elm.quantity + 1, elm.product_qty, elm?.maximum_order_quantity)}
-                            aria-label="Increase"
+                            aria-label={t("increase")}
                             type="button"
                           >+</button>
                         </div>
                       ) : (
-                        <span className="cd-item__gift-badge">🎁 Free Gift</span>
+                        <span className="cd-item__gift-badge">{t("freeGift")}</span>
                       )}
                     </div>
 
@@ -207,7 +210,7 @@ export default function CartDrawer() {
                     <button
                       className="cd-item__remove"
                       onClick={() => removeItem(elm.product_id)}
-                      aria-label="Remove item"
+                      aria-label={t("removeItem")}
                       type="button"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -229,10 +232,10 @@ export default function CartDrawer() {
                 <path d="M16 10a4 4 0 01-8 0"/>
               </svg>
             </div>
-            <p className="cd-empty__title">Your bag is empty</p>
-            <p className="cd-empty__sub">Discover our exclusive fragrances</p>
+            <p className="cd-empty__title">{t("emptyTitle")}</p>
+            <p className="cd-empty__sub">{t("emptySub")}</p>
             <Link href={`/${locale}/shop`} className="cd-btn cd-btn--gold" onClick={closeCart}>
-              Explore Collection
+              {t("exploreCollection")}
             </Link>
           </div>
         )}
@@ -242,24 +245,24 @@ export default function CartDrawer() {
           <div className="cd-footer">
             {/* Subtotal */}
             <div className="cd-subtotal">
-              <span className="cd-subtotal__label">Subtotal</span>
+              <span className="cd-subtotal__label">{t("subtotal")}</span>
               <span className="cd-subtotal__value">{totalPrice.toFixed(2)} {currency?.symbol}</span>
             </div>
-            <p className="cd-subtotal__vat">Includes VAT · Shipping calculated at checkout</p>
+            <p className="cd-subtotal__vat">{t("vatNote")}</p>
 
             {/* CTAs */}
             <div className="cd-ctas">
               <Link href={`/${locale}/shop-cart`} className="cd-btn cd-btn--outline" onClick={closeCart}>
-                View Cart
+                {t("viewCart")}
               </Link>
               <Link href={`/${locale}/shop-checkout`} className="cd-btn cd-btn--gold" onClick={closeCart}>
-                Checkout
+                {t("checkout")}
               </Link>
             </div>
 
             {/* Payment methods note */}
             <p className="cd-payment-note">
-              🔒 Secure checkout · Visa · Mastercard · Mada · Tamara · Tabby
+              {t("paymentNote")}
             </p>
           </div>
         )}

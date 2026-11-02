@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
+import { useContextElement } from "@/context/Context";
 
 /**
  * TrustBar — Section 1
@@ -13,6 +14,7 @@ const TrustBar = ({ text, link, linkText }) => {
   const [dismissed, setDismissed] = useState(false);
   const locale = useLocale();
   const isAr = locale === "ar";
+  const { freeShippingThreshold } = useContextElement();
 
   const handleDismiss = () => {
     setDismissed(true);
@@ -25,7 +27,7 @@ const TrustBar = ({ text, link, linkText }) => {
   return (
     <div className="pdp-trust-bar" role="status" aria-live="polite">
       <div className="pdp-trust-bar__text">
-        <span>{text || (isAr ? "شحن مجاني للطلبات الأكثر من 300 ريال" : "Free delivery on orders above 300 SAR")}</span>
+        <span>{text || (isAr ? `شحن مجاني للطلبات الأكثر من ${freeShippingThreshold} ريال` : `Free delivery on orders above ${freeShippingThreshold} SAR`)}</span>
         {link && linkText && (
           <>
             <span className="pdp-trust-bar__sep" aria-hidden="true">·</span>

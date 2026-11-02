@@ -26,9 +26,7 @@ const TabbyPromoWidget = ({
   merchantCode = "assaaste",
 }) => {
   const [isClient, setIsClient] = useState(false);
-  const scriptLoadedRef = useRef(false);
   const containerRef    = useRef(null);
-  const initAttempts    = useRef(0);
 
   // Guard: only run client-side (mirrors TamaraWidget's isClient pattern)
   useEffect(() => { setIsClient(true); }, []);
@@ -37,13 +35,20 @@ const TabbyPromoWidget = ({
   useEffect(() => {
     if (!isClient) return;
     const scriptId = "tabby-promo-js";
+    let cancelled = false;
+    let timer = null;
+    let attempts = 0;
 
+    // NOTE: never wipe + re-init the same element. Tabby renders with Preact and
+    // caches its root per element, so re-rendering into a cleared node can leave it
+    // blank ("shows then disappears"). A price/lang change instead swaps in a fresh
+    // container element via the `key` below, and we init that one exactly once.
     const attemptInit = () => {
-      if (!containerRef.current) return;
+      if (cancelled || !containerRef.current) return;
       try {
         if (window.TabbyPromo) {
-          // Clear previous injection so TabbyPromo writes fresh HTML
-          containerRef.current.innerHTML = "";
+          if (containerRef.current.dataset.tabbyInit === "1") return;
+          containerRef.current.dataset.tabbyInit = "1";
           new window.TabbyPromo({
             selector: `#${containerRef.current.id}`,
             currency,
@@ -53,17 +58,16 @@ const TabbyPromoWidget = ({
             publicKey,
             merchantCode,
           });
-          scriptLoadedRef.current = true;
-        } else if (initAttempts.current < 12) {
-          // Script not ready yet — retry with back-off (max ~6s)
-          initAttempts.current += 1;
-          setTimeout(attemptInit, 500);
+        } else if (attempts < 12) {
+          // Script not ready yet — retry (max ~6s)
+          attempts += 1;
+          timer = setTimeout(attemptInit, 500);
         }
       } catch (_) {}
     };
 
     if (document.getElementById(scriptId)) {
-      // Script already in DOM — just init
+      // Script already in DOM (possibly still loading) — init / poll until ready
       attemptInit();
     } else {
       const s = document.createElement("script");
@@ -73,7 +77,12 @@ const TabbyPromoWidget = ({
       s.onload = attemptInit;
       document.body.appendChild(s);
     }
-  }, [isClient, price, lang]); // re-init when price or lang changes
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [isClient, price, lang]); // fresh container (via key) when price or lang changes
 
   if (!isClient) return null;
 
@@ -82,6 +91,7 @@ const TabbyPromoWidget = ({
 
   return (
     <div
+      key={`${parseFloat(price) || 0}-${lang}`}
       id={containerId}
       ref={containerRef}
       aria-label="Tabby — Pay in 4 instalments"

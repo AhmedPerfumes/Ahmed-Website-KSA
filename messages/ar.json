@@ -1454,7 +1454,7 @@
       "proceedToCheckout": "المتابعة إلى الدفع",
       "assurances": "ضمانات التسوق",
       "securePayment": "دفع آمن",
-      "freeShip300": "شحن مجاني فوق 300 ريال",
+      "freeShipOver": "شحن مجاني فوق {amount} ريال",
       "vatIncluded": "شامل الضريبة",
       "authentic": "ضمان الأصالة",
       "payMethods": "🔒 فيزا · ماستركارد · مدى · تمارا · تابي",
@@ -1615,5 +1615,26 @@
       "continueShopping": "متابعة التسوق",
       "closeDismissAria": "إغلاق وإيقاف عرض الاقتراحات في هذه الجلسة",
       "continueAria": "متابعة التسوق — الانتقال إلى صفحة المتجر"
+    },
+  "CartDrawer": {
+      "yourBag": "حقيبتك",
+      "itemCount": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {# منتجات} many {# منتجًا} other {# منتج}}",
+      "closeCart": "إغلاق السلة",
+      "addMore": "أضف <b>{amount}</b> للحصول على شحن مجاني ✈",
+      "qualifies": "✓ طلبك مؤهل <b>للشحن المجاني!</b>",
+      "stockExceeded": "الكمية تتجاوز المخزون المتوفر",
+      "maxAllowed": "الحد الأقصى المسموح: {max}",
+      "decrease": "تقليل الكمية",
+      "increase": "زيادة الكمية",
+      "freeGift": "🎁 هدية مجانية",
+      "removeItem": "إزالة المنتج",
+      "emptyTitle": "حقيبتك فارغة",
+      "emptySub": "اكتشف عطورنا الحصرية",
+      "exploreCollection": "تصفح المجموعة",
+      "subtotal": "المجموع الفرعي",
+      "vatNote": "شامل الضريبة · تُحسب رسوم الشحن عند الدفع",
+      "viewCart": "عرض السلة",
+      "checkout": "إتمام الطلب",
+      "paymentNote": "🔒 دفع آمن · فيزا · ماستركارد · مدى · تمارا · تابي"
     }
 }
