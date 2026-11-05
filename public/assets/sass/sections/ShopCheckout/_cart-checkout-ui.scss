@@ -2384,3 +2384,439 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     }
   }
 }
+// ============================================================
+// ONE-PAGE CHECKOUT (Contact → Delivery → Payment)
+// Salla-style flow, Shopify-style single page. Keep at end of file.
+// ============================================================
+.cc-onepage {
+  .cc-step {
+    border-color: #ece7dc;
+    box-shadow: none;
+
+    .cc-step__header {
+      cursor: default;
+      padding-bottom: 0.35rem;
+    }
+
+    .cc-acc-body {
+      display: block !important;
+      padding-top: 0.25rem;
+    }
+  }
+
+  .cc-step__note {
+    font-size: 0.78rem;
+    color: #8a8478;
+    margin: 0 0 0.65rem;
+  }
+
+  .cc-hint {
+    font-size: 0.7rem;
+    color: #999;
+    margin: 3px 2px 0;
+    line-height: 1.35;
+  }
+
+  .form-select {
+    border-radius: 4px;
+  }
+
+  // Phone / email / codes always read left-to-right, also in Arabic
+  input[dir="ltr"] {
+    text-align: start;
+  }
+  [dir="rtl"] & input[dir="ltr"] {
+    text-align: right;
+  }
+}
+
+// ── Inline OTP ──
+.cc-otp {
+  background: #fafaf8;
+  border: 1px solid #eee9df;
+  border-radius: 6px;
+  padding: 0.75rem;
+
+  &--ok {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #eef7ef;
+    border-color: #cfe8d2;
+    color: #2e7d32;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.55rem 0.75rem;
+  }
+
+  &__prompt {
+    display: block;
+    font-size: 0.78rem;
+    color: #555;
+    margin-bottom: 0.45rem;
+  }
+
+  &__row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__input {
+    flex: 1;
+    height: 2.8rem;
+    font-size: 1.15rem;
+    letter-spacing: 0.5em;
+    text-align: center !important;
+    font-weight: 600;
+  }
+
+  &__verify,
+  &__send {
+    border: 0;
+    border-radius: 4px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0 1.1rem;
+    height: 2.8rem;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+  }
+
+  &__send {
+    width: 100%;
+  }
+
+  &__resend {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin-top: 0.45rem;
+    font-size: 0.74rem;
+    color: $gold-dark;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:disabled {
+      color: #aaa;
+      text-decoration: none;
+      cursor: default;
+    }
+  }
+}
+
+// ── National Address verify button (inside the field) ──
+.cc-sna-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  inset-inline-end: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: #bbb;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: default;
+
+  &.is-ready {
+    background: #fdfaf3;
+    border: 1px solid #d4be8a;
+    color: #8a6c2d;
+    cursor: pointer;
+  }
+
+  &--busy {
+    color: $gold-main;
+  }
+}
+
+// ── Gift toggle + recipient ──
+.cc-gift-toggle {
+  margin: 0.9rem 0 0;
+
+  .form-check-label {
+    font-size: 0.84rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+}
+
+.cc-recipient {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e6dfd0;
+
+  &__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888;
+    margin: 0 0 0.5rem;
+  }
+}
+
+// ── Payment list: one method per row ──
+.cc-payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  .cc-payment-card {
+    align-items: center;
+    padding: 0.8rem 0.9rem;
+    border-radius: 6px;
+  }
+
+  .cc-payment-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .cc-payment-card__logos {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  .cc-payment-card__widget {
+    font-size: 0.72rem;
+    color: #777;
+  }
+}
+
+.cc-place-order {
+  margin-top: 0.25rem;
+}
+
+.cc-terms-line {
+  font-size: 0.72rem;
+  color: #999;
+  text-align: center;
+  margin: 0.65rem 0 0;
+  line-height: 1.5;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
+// ── Summary items with thumbnails (desktop sidebar + mobile bar) ──
+.cc-sum-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0;
+
+  &__thumb {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background: #fff;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+  }
+
+  &__qty {
+    position: absolute;
+    top: -6px;
+    inset-inline-end: -6px;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #6b6b6b;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.82rem;
+    color: #333;
+    line-height: 1.35;
+  }
+
+  &__price {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    text-align: end;
+
+    .cc-price-old {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #aaa;
+      text-decoration: line-through;
+    }
+  }
+}
+
+// ── Mobile summary bar (top of page) ──
+.cc-mobile-summary {
+  border: 1px solid #ece7dc;
+  border-radius: 6px;
+  background: $gold-bg;
+  margin-bottom: 0.75rem;
+
+  &__toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: none;
+    border: 0;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $gold-dark;
+    cursor: pointer;
+  }
+
+  &__total {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #1a1a1a;
+    font-weight: 700;
+
+    svg {
+      transition: transform 0.2s ease;
+      color: #999;
+
+      &.open {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &__body {
+    background: #fff;
+    border-top: 1px solid #ece7dc;
+    padding: 0.5rem 0.9rem 0.75rem;
+    border-radius: 0 0 6px 6px;
+  }
+}
+
+// ── Sticky Place Order bar (mobile / tablet) ──
+.cc-sticky-cta {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1030;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-top: 1px solid #ece7dc;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+
+  &__total {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    span {
+      font-size: 0.68rem;
+      color: #888;
+    }
+
+    strong {
+      font-size: 1rem;
+      color: #1a1a1a;
+      white-space: nowrap;
+    }
+  }
+
+  .cc-btn-gold {
+    flex: 1;
+    margin: 0;
+    height: 2.9rem;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  // Room for the sticky bar; the site's bottom nav is hidden on checkout
+  .cc-onepage {
+    padding-bottom: 5.5rem;
+  }
+
+  body:has(.cc-sticky-cta) .footer-mobile {
+    display: none !important;
+  }
+}
+
+// Region select — same height/look as the floating inputs, no floating label
+.cc-onepage .cc-select {
+  height: calc(3.5rem + 2px);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #777;
+  padding-inline-start: 0.75rem;
+  &.has-value { color: #1a1a1a; font-size: 1rem; }
+}
+.cc-onepage .cc-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23999%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px 10px !important;
+  background-position: right 0.85rem center !important;
+  padding-inline-end: 2.25rem;
+  appearance: none;
+}
+[dir="rtl"] .cc-onepage .cc-select { background-position: left 0.85rem center !important; }
+
+// Guest steps: folded / locked states + payment preview
+.cc-onepage {
+  .cc-step { scroll-margin-top: 5rem; }
+  .cc-step.is-locked { opacity: 0.6; }
+  .cc-step.is-completed .cc-step__header { padding-bottom: 0.85rem; }
+  .cc-step__continue { margin-top: 1rem; }
+  .cc-acc-summary-line {
+    display: block;
+    font-size: 0.76rem;
+    color: #777;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.cc-pay-preview {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0 1rem 0.9rem;
+  padding-inline-start: 3.4rem;
+  &__text { font-size: 0.74rem; color: #777; }
+}

@@ -4,7 +4,6 @@ import Footer14 from "@/components/footers/Footer14";
 import LoginRegister from "@/components/otherPages/LoginRegister";
 import React from "react";
 
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 export const metadata = {
   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -23,17 +22,7 @@ export default function LoginPage() {
       </main>
 
       <div className="mb-5 pb-xl-5"></div>
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-        
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-      <div className="MobileFooter">
-      
-
-      <MobileFooter2/>
-      </div>
-    </section>
+      <Footer14 />
     </>
   );
 }

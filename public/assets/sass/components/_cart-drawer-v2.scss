@@ -1,0 +1,776 @@
+/* =============================================================
+   Cart Drawer v2 — the only cart (with "Complete your collection" upsell)
+   Mobile: full width · Desktop: 460px · RTL: opens from the left
+   ============================================================= */
+
+.cd2 {
+  --cd2-gold: #a67b30;
+  --cd2-gold-soft: #c5a05a;
+  --cd2-gold-bg: #fdf9f2;
+  --cd2-ink: #1a1a1a;
+  --cd2-mid: #5a5650;
+  --cd2-muted: #8c877e;
+  --cd2-line: #eeebe5;
+  --cd2-sale: #b3261e;
+
+  display: flex;
+  flex-direction: column;
+  width: 460px;
+  max-width: 100vw;
+  padding: 0 !important;
+  background: #fff;
+  color: var(--cd2-ink);
+  font-family: var(--font-dm-sans, "DM Sans"), "Helvetica Neue", Arial, sans-serif;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.08);
+  opacity: 1;
+
+  &.aside_right {
+    right: -480px;
+
+    &.aside_visible {
+      right: 0;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    width: 100vw;
+
+    &.aside_right {
+      right: -100vw;
+    }
+  }
+}
+
+// Arabic: mirror — slide in from the left
+[dir="rtl"] .cd2 {
+  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.08);
+
+  &.aside_right {
+    right: auto;
+    left: -480px;
+
+    &.aside_visible {
+      left: 0;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    &.aside_right {
+      left: -100vw;
+
+      &.aside_visible {
+        left: 0;
+      }
+    }
+  }
+}
+
+/* ── Header ── */
+.cd2-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cd2-line);
+  flex-shrink: 0;
+}
+
+.cd2-header__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.cd2-header__count {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--cd2-muted);
+}
+
+.cd2-close {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cd2-ink);
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #f4f1ec;
+  }
+}
+
+/* ── Free-shipping bar ── */
+.cd2-ship {
+  padding: 0.75rem 1.25rem 0.85rem;
+  background: var(--cd2-gold-bg);
+  border-bottom: 1px solid var(--cd2-line);
+  flex-shrink: 0;
+}
+
+.cd2-ship__text {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  color: var(--cd2-mid);
+  text-align: center;
+
+  strong {
+    color: var(--cd2-ink);
+    font-weight: 700;
+  }
+}
+
+.cd2-ship__track {
+  height: 4px;
+  border-radius: 99px;
+  background: #ece4d3;
+  overflow: hidden;
+}
+
+.cd2-ship__fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--cd2-gold-soft), var(--cd2-gold));
+  transition: width 0.5s ease;
+
+  [dir="rtl"] & {
+    margin-inline-start: 0;
+    background: linear-gradient(270deg, var(--cd2-gold-soft), var(--cd2-gold));
+  }
+
+  &.is-done {
+    background: #2e7d32;
+  }
+}
+
+/* ── Scrollable body ── */
+.cd2-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--cd2-line);
+    border-radius: 99px;
+  }
+}
+
+/* ── Items ── */
+.cd2-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cd2-item {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cd2-line);
+  transition: background 0.6s ease;
+
+  &.is-new {
+    background: var(--cd2-gold-bg);
+  }
+}
+
+.cd2-item__img {
+  flex-shrink: 0;
+  width: 84px;
+  height: 104px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f7f4ef;
+  display: block;
+
+  img {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.cd2-item__ph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #f0ebe0;
+}
+
+.cd2-item__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cd2-item__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cd2-item__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--cd2-ink);
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &:hover {
+    color: var(--cd2-gold);
+  }
+}
+
+.cd2-item__remove {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin: -4px -6px 0 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cd2-muted);
+  cursor: pointer;
+
+  [dir="rtl"] & {
+    margin: -4px 0 0 -6px;
+  }
+
+  &:hover {
+    color: var(--cd2-sale);
+    background: #fbf1f0;
+  }
+}
+
+.cd2-item__meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.74rem;
+  color: var(--cd2-muted);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.cd2-item__bottom {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cd2-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ddd6ca;
+  border-radius: 999px;
+  height: 34px;
+}
+
+.cd2-qty__btn {
+  width: 34px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--cd2-ink);
+  cursor: pointer;
+
+  &:disabled {
+    color: #c9c4ba;
+    cursor: default;
+  }
+}
+
+.cd2-qty__num {
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cd2-item__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans)), "Segoe UI", sans-serif;
+
+  s {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--cd2-muted);
+  }
+
+  .is-sale {
+    color: var(--cd2-sale);
+  }
+
+  .is-free {
+    color: #2e7d32;
+  }
+}
+
+.cd2-item__gift {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #2e7d32;
+  background: #eef7ef;
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+}
+
+.cd2-item__error {
+  margin: 0.4rem 0 0;
+  font-size: 0.74rem;
+  color: var(--cd2-sale);
+}
+
+/* ── Upsell slider ── */
+.cdu {
+  padding: 1.1rem 0 1.25rem;
+  background: #faf8f4;
+  border-bottom: 1px solid var(--cd2-line);
+}
+
+.cdu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem 0.75rem;
+}
+
+.cdu__title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[dir="rtl"] .cdu__title {
+  letter-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.cdu__nav {
+  display: none;
+  gap: 0.35rem;
+
+  @media (hover: hover) and (pointer: fine) {
+    display: flex;
+  }
+}
+
+.cdu__arrow {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd6ca;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--cd2-ink);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--cd2-gold-soft);
+    color: var(--cd2-gold);
+  }
+
+  [dir="rtl"] & svg {
+    transform: scaleX(-1);
+  }
+}
+
+.cdu__track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1.25rem;
+  padding: 0 1.25rem 0.25rem;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ~2.3 cards visible on phones, 2.6 on the 460px desktop drawer
+.cdu-card {
+  flex: 0 0 calc((100% - 2.5rem - 24px) / 2.3);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--cd2-line);
+  border-radius: 8px;
+  overflow: hidden;
+
+  @media (min-width: 576px) {
+    flex-basis: 150px;
+  }
+
+  &--skeleton {
+    height: 250px;
+    background: linear-gradient(90deg, #f3efe8 25%, #faf7f2 50%, #f3efe8 75%);
+    background-size: 200% 100%;
+    animation: cdu-shimmer 1.2s infinite;
+  }
+}
+
+@keyframes cdu-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.cdu-card__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  background: #f7f4ef;
+}
+
+.cdu-card__ph {
+  position: absolute;
+  inset: 0;
+  background: #f0ebe0;
+}
+
+.cdu-card__name {
+  margin: 0.55rem 0.6rem 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.3;
+  min-height: 2.05em;
+  color: var(--cd2-ink);
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cdu-card__price {
+  margin: 0.25rem 0.6rem 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans)), "Segoe UI", sans-serif;
+
+  .is-sale {
+    color: var(--cd2-sale);
+  }
+
+  s {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--cd2-muted);
+  }
+}
+
+.cdu-card__add {
+  margin: 0.55rem 0.6rem 0.65rem;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  border: 1px solid var(--cd2-ink);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--cd2-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  [dir="rtl"] & {
+    letter-spacing: 0;
+    font-size: 0.8rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--cd2-ink);
+    color: #fff;
+  }
+
+  &.is-added {
+    border-color: #2e7d32;
+    background: #2e7d32;
+    color: #fff;
+  }
+}
+
+/* ── Footer ── */
+.cd2-footer {
+  flex-shrink: 0;
+  padding: 0.9rem 1.25rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--cd2-line);
+  background: #fff;
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.cd2-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.95rem;
+
+  strong {
+    font-size: 1.15rem;
+    font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans)), "Segoe UI", sans-serif;
+  }
+}
+
+.cd2-footer__note {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  color: var(--cd2-muted);
+}
+
+.cd2-bnpl {
+  margin: 0.55rem 0 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--cd2-mid);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans)), "Segoe UI", sans-serif;
+}
+
+.cd2-bnpl__tag {
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  color: #1a1a1a;
+  text-transform: lowercase;
+
+  &--tabby { background: #3eedbf; }
+  &--tamara { background: #f4e9f7; }
+}
+
+.cd2-checkout {
+  margin-top: 0.75rem;
+  width: 100%;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 6px;
+  background: var(--cd2-ink);
+  color: #fff !important;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans)), "Segoe UI", sans-serif;
+  transition: background 0.2s ease;
+
+  [dir="rtl"] & {
+    letter-spacing: 0;
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background: var(--cd2-gold);
+  }
+
+  &--outline {
+    width: auto;
+    padding: 0 1.75rem;
+    height: 46px;
+    background: #fff;
+    color: var(--cd2-ink) !important;
+    border: 1px solid var(--cd2-ink);
+
+    &:hover {
+      background: var(--cd2-ink);
+      color: #fff !important;
+    }
+  }
+}
+
+.cd2-pay {
+  margin-top: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  opacity: 0.85;
+}
+
+.cd2-pay__text {
+  font-size: 0.7rem;
+  color: var(--cd2-muted);
+}
+
+/* ── Empty state ── */
+.cd2-body--empty {
+  display: flex;
+  flex-direction: column;
+}
+
+.cd2-empty {
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cd2-empty__title {
+  margin: 0.5rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.cd2-empty__sub {
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+  color: var(--cd2-muted);
+}
+
+.cd2-body--empty .cdu {
+  border-top: 1px solid var(--cd2-line);
+  border-bottom: 0;
+}
+
+/* ── Layout: items fill + scroll; upsell strip fixed directly above the footer ── */
+// Items fill the free space, so the upsell strip always sits directly on top of Subtotal
+.cd2 > .cd2-body:not(.cd2-body--empty) {
+  flex: 1 1 auto;
+}
+
+.cdu-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Compact strip: horizontal mini cards (image | name, price, add) */
+.cdu--compact {
+  flex-shrink: 0;
+  padding: 0.7rem 0 0.8rem;
+  border-top: 1px solid var(--cd2-line);
+  border-bottom: 0;
+
+  .cdu__head {
+    padding-bottom: 0.5rem;
+  }
+
+  .cdu__title {
+    font-size: 0.74rem;
+  }
+
+  .cdu__track {
+    gap: 10px;
+  }
+
+  .cdu-card {
+    flex: 0 0 78%;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding: 0.5rem;
+
+    @media (min-width: 576px) {
+      flex-basis: 255px;
+    }
+
+    &--skeleton {
+      height: 92px;
+    }
+  }
+
+  .cdu-card__img {
+    flex: 0 0 60px;
+    width: 60px;
+    height: 76px;
+    aspect-ratio: auto;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .cdu-card__name {
+    margin: 0;
+    min-height: 0;
+    font-size: 0.78rem;
+  }
+
+  .cdu-card__price {
+    margin: 0.15rem 0 0;
+    font-size: 0.76rem;
+  }
+
+  .cdu-card__add {
+    margin: auto 0 0;
+    align-self: flex-start;
+    height: 28px;
+    padding: 0 0.85rem;
+    font-size: 0.68rem;
+
+    [dir="rtl"] & {
+      font-size: 0.76rem;
+    }
+  }
+}
+
+// Short screens (small phones / landscape): keep the bag usable
+@media (max-height: 640px) {
+  .cdu--compact {
+    padding: 0.5rem 0 0.55rem;
+
+    .cdu__head { padding-bottom: 0.35rem; }
+    .cdu-card__img { height: 60px; flex-basis: 48px; width: 48px; }
+  }
+
+  .cd2-footer .cd2-pay,
+  .cd2-footer .cd2-footer__note {
+    display: none;
+  }
+}

@@ -1,6 +1,5 @@
 import Footer14 from "@/components/footers/Footer14";
 import HomePage from "@/components/HomePage";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";
 
 /**
@@ -91,14 +90,7 @@ export default async function HomePage8() {
                 />
             </main>
 
-            <section className="d-none d-md-block" style={{ height: "100%" }}>
-                <Footer14 />
-            </section>
-            <section className="d-sm-block d-md-none bg-dark pt-5">
-                <div className="MobileFooter">
-                    <MobileFooter2 />
-                </div>
-            </section>
+            <Footer14 />
         </div>
     );
 }

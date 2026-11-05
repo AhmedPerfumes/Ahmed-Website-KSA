@@ -9,6 +9,7 @@ import { usePathname } from "@/i18n/routing";
 import LanguageCountrySelectors from "@/components/common/LanguageCountrySelectors";
 import { socialLinks } from "@/data/socials";
 import { IoLocationOutline } from "react-icons/io5";
+import { openCart } from "@/utlis/openCart";
 
 /**
  * MobileFooter1 — fixed bottom nav bar for mobile with 5 tabs:
@@ -203,6 +204,7 @@ export default function MobileFooter1() {
           <div className="footer-mobile__col">
             <Link
               href={`/${locale}/shop-cart`}
+              onClick={(e) => { e.preventDefault(); openCart(); }}
               className={`footer-mobile__link d-flex flex-column align-items-center ${
                 isCartActive ? "active" : ""
               }`}

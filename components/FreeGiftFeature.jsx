@@ -9,6 +9,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Discount } from '@mui/icons-material';
 import { useUser } from "@/context/UserContext";
+import { useLocale } from "next-intl";
 
 // const swiperOptions = {
 //   autoplay: false,
@@ -371,6 +372,7 @@ const FreeGiftFeature = ({ couponData }) => {
   }, [activeThreshold, cartProducts, selectedGift, removeGiftFromCart]);
 
   // Calculate next threshold message
+  const locale = useLocale();
   const getNextThresholdMessage = () => {
     if (activeThreshold) {
       return null;
@@ -379,7 +381,9 @@ const FreeGiftFeature = ({ couponData }) => {
       (threshold) => nonCollectionTotalPrice < threshold.min
     );
     if (nextThreshold) {
-      return <span className='t-subtitle' style={{ color:'#198754',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>Spend AED {(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} more to unlock a free gift!</span>;
+      return <span className='t-subtitle' style={{ color:'#198754',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>{locale === 'ar'
+        ? `أضف ${(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} ريال للحصول على هدية مجانية!`
+        : `Spend ${(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} SAR more to unlock a free gift!`}</span>;
     }
   };
 

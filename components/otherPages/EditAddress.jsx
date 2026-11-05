@@ -252,8 +252,11 @@ export default function EditAddress() {
         if (!form.building?.trim())
             newErrors.building = "Full Address is required";
         if (!form.province?.trim()) newErrors.province = "Province is required";
-        if (!form.short_national_address?.trim()) newErrors.short_national_address = "Short National Address is required";
-        if (!/^[A-Za-z]{4}[0-9]{4}$/.test(form.short_national_address)) newErrors.short_national_address = "Valid 8-digit Short National Address is required. Enter 4 letters followed by 4 numbers.";
+        // Short National Address is optional — validate format only when entered
+        if (form.short_national_address?.trim() && !/^[A-Za-z]{4}[0-9]{4}$/.test(form.short_national_address.trim()))
+            newErrors.short_national_address = locale === "ar"
+                ? "يجب أن يتكون العنوان الوطني المختصر من 4 أحرف و4 أرقام (مثال: ABCD1234)."
+                : "Short National Address must be 4 letters followed by 4 numbers (e.g. ABCD1234).";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors); // show inline errors
@@ -417,7 +420,7 @@ export default function EditAddress() {
                         {/* Short National Address with auto-verify */}
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                {locale === "ar" ? "العنوان الوطني المختصر *" : "Short National Address *"}
+                                {locale === "ar" ? "العنوان الوطني المختصر (اختياري)" : "Short National Address (optional)"}
                             </Form.Label>
                             <div className="position-relative">
                                 <Form.Control

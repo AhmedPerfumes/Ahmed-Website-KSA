@@ -1,6 +1,5 @@
 import Footer14 from "@/components/footers/Footer14";
 import OrderPaymentCompleted from "@/components/shopCartandCheckout/OrderPaymentCompleted";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";
 import { headers } from 'next/headers';
 
@@ -54,14 +53,7 @@ const ShopOrderPaymentComplete = async ({ searchParams  }) => {
               <OrderPaymentCompleted orderDetails={ data } initialOrderCode={q && atob(q)} />
             </section>
           </main>
-          <section className="d-none d-lg-block" style={{ height: "100%" }}>
-            <Footer14 />
-          </section>
-          <section className="d-sm-block d-md-none bg-dark pt-5  ">
-          <div className="MobileFooter">
-            <MobileFooter2/>
-          </div>
-          </section>
+          <Footer14 />
         </>
     );
   } catch (error) {
@@ -70,14 +62,7 @@ const ShopOrderPaymentComplete = async ({ searchParams  }) => {
         <main className="page-wrapper">
           <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Data Found</h2>
         </main>
-        <section className="d-none d-lg-block" style={{ height: "100%" }}>
-          <Footer14 />
-        </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5  ">
-          <div className="MobileFooter">
-            <MobileFooter2/>
-          </div>
-        </section></>;
+        <Footer14 /></>;
   }
 }
 

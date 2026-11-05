@@ -1,4 +1,5 @@
 "use client";
+import { linePrice } from "@/utlis/cartPricing";
 
 import { allProducts } from "@/data/products";
 import React, { createContext, useContext, useReducer, useEffect, useState, useRef } from "react";
@@ -140,49 +141,8 @@ export default function Context({ children }) {
     const isCustomerCoupon = couponDataContext && couponDataContext.type === "customer";
     const isCustomerCouponActive = isCustomerCoupon && (!couponDataContext.start_date || !couponDataContext.end_date || (new Date(current_date_time) >= new Date(couponDataContext.start_date) && new Date(current_date_time) <= new Date(couponDataContext.end_date)));
     
-    const subtotal = state.products.reduce((accumulator, product) => {
-      const qty = Number(product?.quantity || 0);
-      const basePrice = Number(product?.price || 0);
-
-      // Skip free gifts entirely
-      if (product?.is_gift) return accumulator;
-
-      if (product?.discount?.value) {
-        let discounted = basePrice;
-        if (product.discount.discount_type === 'percent') {
-          discounted = basePrice - (basePrice * Number(product.discount.value)) / 100;
-        } else if (product.discount.discount_type === 'amount') {
-          discounted = product.discount.final_price
-            ? Number(product.discount.final_price)
-            : basePrice - Number(product.discount.value);
-        }
-        if (discounted < basePrice) {
-          return accumulator + qty * Number(discounted.toFixed(2));
-        }
-      }
-
-      // Legacy flat sale_price field
-      if (product?.sale_price && Number(product.sale_price) > 0 && Number(product.sale_price) < basePrice) {
-        return accumulator + qty * Number(Number(product.sale_price).toFixed(2));
-      }
-
-      // Customer/global coupon (apply across all products)
-      if (isCustomerCouponActive && !product.discount && !promotionsContext.some((promo) => promo.buy_products.some((item) => item.product_id === product.product_id))) {
-        const value = Number(couponDataContext?.value || 0);
-        let discounted = basePrice; 
-
-        if (couponDataContext.coupon_type === "percent") {
-          discounted = basePrice - (basePrice * value) / 100;
-        } else if (couponDataContext.coupon_type === "amount") {
-          discounted = basePrice - value;
-        }
-
-        return accumulator + qty * Number(discounted.toFixed(2));
-      }
-
-      // Default
-      return accumulator + qty * basePrice;
-    }, 0);
+    // Same per-line rule as the cart drawer (utlis/cartPricing) — lines always add up to the subtotal
+    const subtotal = state.products.reduce((acc, product) => acc + Number(product?.quantity || 0) * linePrice(product, couponDataContext, promotionsContext).unit, 0);
 
     setTotalPrice(subtotal);
     

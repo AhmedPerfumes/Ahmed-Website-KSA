@@ -62,7 +62,7 @@ export default function Footer14() {
                   Swift Complimentary Shipping
                 </h3>
                 <p className="service-promotion__content text-secondary mb-0 text-white">
-                  Free delivery on orders over AED 400
+                  Free delivery on orders over SAR 300
                 </p>
               </div>
             </div>
@@ -136,18 +136,17 @@ export default function Footer14() {
             </div>
             {/* <!-- /.logo --> */}
             <p className="footer-address">
-              Ahmed Al Maghrebi Perfume Manuf <br />
-              Jurf Industrial Zone 3 <br />
-              AJMAN, P. O. Box – 3850 <br />
-              UAE
+              Ahmad Lilutur <br />
+              Madinah Al Munawwarah <br />
+              Kingdom Of Saudi Arabia
             </p>
 
             <p className="m-0">
-              <strong className="fw-medium">estore@ahmedalmaghribi.com</strong>
+              <strong className="fw-medium">info@ahmedalmaghribi.com</strong>
             </p>
             <p>
-              <strong className="fw-medium">
-                +971 67420602 / 67422496 / 67446076
+              <strong className="fw-medium" dir="ltr" style={{ display: 'inline-block' }}>
+                +966 55 5073629 / +966 53 6654399
               </strong>
             </p>
 

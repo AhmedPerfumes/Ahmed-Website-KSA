@@ -10,6 +10,11 @@ export default function LoginRegister() {
     const locale = useLocale();
     const router = useRouter();
     const searchParams = useSearchParams();
+    // Return to where the customer came from (e.g. checkout). Same-site paths only.
+    const getRedirect = () => {
+        const r = searchParams.get("redirect");
+        return r && r.startsWith("/") && !r.startsWith("//") ? r : null;
+    };
     const [activeTab, setActiveTab] = useState("login");
 
     const [isLoading, setIsLoading] = useState(false);
@@ -188,7 +193,7 @@ export default function LoginRegister() {
                 //         (window.location.href = `/${locale}/account_dashboard`),
                 //     1000
                 // );
-                router.push(`/${locale}/account_dashboard`);
+                router.push(getRedirect() || `/${locale}/account_dashboard`);
             }
         } catch (error) {
             setError(error.message);
@@ -244,7 +249,7 @@ export default function LoginRegister() {
                 }
                 setIsLoggedIn(true);
                 // setTimeout(() => (window.location.href = "/"), 1000);
-                router.push("/");
+                router.push(getRedirect() || "/");
             }
         } catch (error) {
             setError(error.message);

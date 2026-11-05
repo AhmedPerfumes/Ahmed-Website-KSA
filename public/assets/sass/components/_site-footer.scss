@@ -1,0 +1,464 @@
+/* =============================================================
+   SiteFooter — one responsive footer (mobile accordions → tablet → desktop)
+   ============================================================= */
+.sf {
+  --sf-bg: #0f0f0f;
+  --sf-bg-2: #161616;
+  --sf-text: #d9d4ca;
+  --sf-muted: #9a958c;
+  --sf-line: rgba(255, 255, 255, 0.09);
+  --sf-gold: #c5a05a;
+  background: var(--sf-bg);
+  color: var(--sf-text);
+  font-size: 0.9rem;
+  line-height: 1.6;
+
+  a {
+    color: var(--sf-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--sf-gold);
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  // Room for the fixed mobile bottom nav (MobileFooter1, < 768px)
+  @media (max-width: 767.98px) {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.sf-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+
+  @media (min-width: 992px) {
+    padding: 0 2rem;
+  }
+}
+
+/* ── 1. Trust strip ── */
+.sf-trust {
+  border-bottom: 1px solid var(--sf-line);
+  padding: 1.5rem 0;
+
+  @media (min-width: 768px) {
+    padding: 2.25rem 0;
+  }
+}
+
+.sf-trust__grid {
+  display: grid;
+  gap: 1.1rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+.sf-trust__item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: #fff;
+
+  svg {
+    flex-shrink: 0;
+    color: var(--sf-gold);
+  }
+
+  @media (min-width: 992px) {
+    justify-content: center;
+  }
+}
+
+.sf-trust__title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+
+  [dir="rtl"] & {
+    letter-spacing: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.sf-trust__text {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--sf-muted);
+}
+
+/* ── 2. Main: brand + columns ── */
+.sf-main {
+  display: grid;
+  gap: 1.75rem;
+  padding-top: 2rem;
+  padding-bottom: 1.5rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding-top: 2.75rem;
+    padding-bottom: 2.5rem;
+  }
+
+  @media (min-width: 992px) {
+    grid-template-columns: minmax(240px, 1.1fr) minmax(0, 3fr);
+    gap: 3rem;
+    padding-top: 3.5rem;
+  }
+}
+
+.sf-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+
+  @media (max-width: 767.98px) {
+    order: 2; // links first on phones, brand + contact after
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.sf-brand__logo img {
+  width: 84px;
+  height: auto;
+  display: block;
+}
+
+.sf-brand__address {
+  margin: 0;
+  font-style: normal;
+  color: var(--sf-muted);
+  font-size: 0.86rem;
+}
+
+.sf-brand__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.86rem;
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 0.3rem;
+      color: var(--sf-gold);
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    align-items: center;
+
+    li { justify-content: center; }
+  }
+}
+
+.sf-social {
+  display: flex;
+  gap: 0.5rem;
+
+  a {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--sf-line);
+    border-radius: 50%;
+    color: #fff;
+
+    &:hover {
+      border-color: var(--sf-gold);
+    }
+  }
+
+  svg {
+    fill: currentColor;
+    max-width: 16px;
+    max-height: 16px;
+  }
+}
+
+.sf-cols {
+  display: grid;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+.sf-col__title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+// Mobile: accordion button · ≥768px: static heading
+.sf-col__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.95rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--sf-line);
+  background: transparent;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  [dir="rtl"] & {
+    letter-spacing: 0;
+    font-size: 0.95rem;
+  }
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+
+  .is-open & svg {
+    transform: rotate(180deg);
+  }
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.sf-col__heading {
+  display: none;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  [dir="rtl"] & {
+    letter-spacing: 0;
+    font-size: 0.95rem;
+  }
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
+.sf-col__list {
+  display: none;
+  padding: 0.5rem 0 1rem;
+
+  li + li {
+    margin-top: 0.15rem;
+  }
+
+  a {
+    display: inline-block;
+    padding: 0.35rem 0;
+    color: var(--sf-muted);
+    font-size: 0.88rem;
+
+    &:hover {
+      color: var(--sf-gold);
+    }
+  }
+
+  .is-open & {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    display: block;
+    padding: 0;
+
+    a { padding: 0.25rem 0; }
+  }
+}
+
+/* ── 3. Bottom bar ── */
+.sf-bottom {
+  border-top: 1px solid var(--sf-line);
+  background: var(--sf-bg-2);
+  padding: 1.25rem 0;
+}
+
+.sf-bottom__grid {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  text-align: center;
+
+  @media (min-width: 992px) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "pay settings" "legal legal";
+    justify-items: start;
+    text-align: start;
+    align-items: center;
+
+    // Named areas only where they are defined — on smaller screens items stack in source order
+    .sf-pay { grid-area: pay; }
+    .sf-settings { grid-area: settings; }
+    .sf-legal { grid-area: legal; }
+  }
+}
+
+.sf-pay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    padding: 0 0.5rem;
+    border-radius: 4px;
+    background: #fff;
+  }
+
+  img {
+    height: 16px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  @media (min-width: 992px) {
+    justify-content: flex-start;
+  }
+}
+
+.sf-pay__chip {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #1a1f71;
+
+  &--mc {
+    gap: 0;
+
+    span {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #eb001b;
+    }
+
+    span + span {
+      margin-inline-start: -5px;
+      background: #f79e1b;
+      mix-blend-mode: multiply;
+    }
+  }
+
+  &--tamara {
+    background: linear-gradient(90deg, #fbd5c4, #e7c6f2, #c9d8fb) !important;
+    color: #1a1a1a;
+    text-transform: lowercase;
+  }
+
+  &--cod {
+    background: transparent !important;
+    border: 1px solid var(--sf-line);
+    color: var(--sf-text);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+}
+
+.sf-pay__invert {
+  filter: none;
+}
+
+.sf-settings {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.sf-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0.75rem;
+  height: 34px;
+  border: 1px solid var(--sf-line);
+  border-radius: 999px;
+  color: var(--sf-text);
+
+  svg {
+    flex-shrink: 0;
+    color: var(--sf-gold);
+  }
+
+  select {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 0.82rem;
+    padding: 0 0.15rem;
+    cursor: pointer;
+    outline: none;
+
+    option {
+      color: #1a1a1a;
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--sf-gold);
+  }
+}
+
+.sf-legal {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--sf-muted);
+
+  @media (min-width: 992px) {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--sf-line);
+    width: 100%;
+  }
+}
+
+// Site-wide `p` / `address` colours are dark — keep footer text readable on the dark ground
+.sf {
+  p.sf-legal,
+  p.sf-trust__text,
+  .sf-brand__address {
+    color: var(--sf-muted);
+  }
+
+  p.sf-trust__title {
+    color: #fff;
+  }
+}

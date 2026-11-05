@@ -10,7 +10,7 @@ import Context from "@/context/Context";
 import { MenuProvider } from "@/context/MenuContext";
 import { UserProvider } from "@/context/UserContext";
 import CartDrawer from "@/components/shopCartandCheckout/CartDrawer";
-import CartToast from "@/components/shoplist/premium/CartToast";
+// CartToast replaced: the cart drawer now opens on add-to-cart (see CartDrawer.jsx)
 import SiteMap from "@/components/modals/SiteMap";
 import NewsLetter from "@/components/modals/NewsLetter";
 import MobileHeader from "@/components/headers/MobileHeader";
@@ -448,8 +448,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                     <LoginFormPopup />
                                     <SizeGuide />
                                     <Delivery />
-                                    <CartDrawer />
-                                    <CartToast />
+                                    <CartDrawer />
                                     <NewsLetter />
                                     <SiteMap />
                                     <CustomerLogin />

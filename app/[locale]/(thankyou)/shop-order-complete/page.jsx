@@ -1,7 +1,6 @@
 import Footer14 from "@/components/footers/Footer14";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import OrderCompleted from "@/components/shopCartandCheckout/OrderCompleted";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 import React from "react";
 
@@ -24,17 +23,7 @@ export default function () {
           <OrderCompleted />
         </section>
       </main>
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-        
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-      <div className="MobileFooter">
-      
-
-      <MobileFooter2/>
-      </div>
-      </section>
+      <Footer14 />
     </>
   );
 }

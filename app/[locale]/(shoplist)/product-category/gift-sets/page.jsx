@@ -1,5 +1,4 @@
 import Footer14 from "@/components/footers/Footer14";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import PremiumProductGrid from "@/components/shoplist/premium/PremiumProductGrid";
 import React from "react";
 import QuickView from "@/components/modals/QuickView";
@@ -74,14 +73,7 @@ const GiftSetsPage = async ({ params }) => {
           />
           <CollapsibleDescription description={activeDescription} locale={locale} />
         </main>
-        <section className="d-none d-lg-block" style={{ height: "100%" }}>
-          <Footer14 />
-        </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5">
-          <div className="MobileFooter">
-            <MobileFooter2 />
-          </div>
-        </section>
+        <Footer14 />
       </>
     );
   } catch (error) {
@@ -92,14 +84,7 @@ const GiftSetsPage = async ({ params }) => {
           <h1 style={{ textAlign: "center", padding: "4rem 1rem", fontSize: "1.2rem" }}>Gift Sets</h1>
           <p style={{ textAlign: "center", color: "#888" }}>No products found. Please try again later.</p>
         </main>
-        <section className="d-none d-lg-block" style={{ height: "100%" }}>
-          <Footer14 />
-        </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5">
-          <div className="MobileFooter">
-            <MobileFooter2 />
-          </div>
-        </section>
+        <Footer14 />
       </>
     );
   }

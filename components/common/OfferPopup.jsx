@@ -11,6 +11,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
+import { openCart } from "@/utlis/openCart";
 
 const css = `
 /* ── OfferPopup ────────────────────────────────────────────────────── */
@@ -204,7 +205,7 @@ export default function OfferPopup() {
                 <div className="offer-popup__discount">{formatDiscount()}</div>
                 {formatEnd() && <p className="offer-popup__end">{formatEnd()}</p>}
                 <div className="offer-popup__footer">
-                  <Link href={`/${locale}/shop-cart`} className="offer-popup__cta" onClick={dismiss}>
+                  <Link href={`/${locale}/shop-cart`} className="offer-popup__cta" onClick={(e) => { e.preventDefault(); dismiss(); openCart(); }}>
                     View Cart
                   </Link>
                   <button className="offer-popup__dismiss" onClick={dismiss} type="button" aria-label="Dismiss">

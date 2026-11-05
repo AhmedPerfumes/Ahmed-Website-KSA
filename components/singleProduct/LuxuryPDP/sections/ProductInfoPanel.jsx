@@ -19,7 +19,7 @@ import he from "he";
  *  - Breadcrumb (SEO-safe, server-renderable content)
  *  - Product H1 title + olfactory family subtitle
  *  - Star rating row (scrolls to reviews on click)
- *  - Price block with discount logic
+ *  - Price block with discount logic, then the product description
  *  - Size + stock status on one compact meta line
  *  - Pre-cart quantity stepper inline with Add to Cart (Fix #1)
  *  - Add-to-Cart block with Buy Now (Fix #2)
@@ -551,14 +551,14 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
         <StarDisplay rating={avgRating} count={reviewCount} isArabic={locale === "ar"} />
       )}
 
-      {/* Product Description from API — directly below product name & star rating */}
+      {/* Price Block */}
+      <PriceBlock product={product} currency={currency} isArabic={locale === "ar"} />
+
+      {/* Product Description — below the price */}
       <ProductDescription
         description={locale === "ar" ? (product?.description_ar || product?.description || "") : (product?.description || "")}
         isArabic={locale === "ar"}
       />
-
-      {/* Price Block */}
-      <PriceBlock product={product} currency={currency} isArabic={locale === "ar"} />
 
       {/* Size + Stock — one compact meta line */}
       <div className="pdp-meta-row">

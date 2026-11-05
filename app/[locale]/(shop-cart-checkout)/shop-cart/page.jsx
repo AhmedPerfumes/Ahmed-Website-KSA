@@ -1,41 +1,11 @@
-import Footer14 from "@/components/footers/Footer14";
-import Cart from "@/components/shopCartandCheckout/Cart";
-import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
-import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
-import React from "react";
+// The cart is now the slide-out cart drawer. Old links, emails and ads that point to
+// /shop-cart land on the homepage with the drawer opened (CartDrawer reads ?cart=open).
+// Rollback: render <CartPageClassic /> from "@/components/shopCartandCheckout/CartPageClassic".
+export const metadata = { robots: { index: false, follow: true } };
 
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
-      icon: "/assets/images/ahmed-favicon.png",
-  },
-};
-
-export default async function () {
-  const t = await getTranslations("CartPage");
-  return (
-    <>
-      <main className="page-wrapper">
-        <section className="shop-checkout container">
-          <h1 className="page-title">{t("pageTitle")}</h1>
-          <ChectoutSteps />
-          <Cart />
-        </section>
-      </main>
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-        
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-      <div className="MobileFooter">
-      
-
-      <MobileFooter2/>
-      </div>
-      </section>
-    </>
-  );
+export default function ShopCartRedirect({ params }) {
+  const locale = params?.locale || "en";
+  redirect(`/${locale}?cart=open`);
 }

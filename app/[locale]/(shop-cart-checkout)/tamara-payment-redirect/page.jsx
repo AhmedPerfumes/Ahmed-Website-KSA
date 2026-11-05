@@ -1,6 +1,5 @@
 ﻿import Footer14 from "@/components/footers/Footer14";
 import TamaraPaymentRedirect from "@/components/shopCartandCheckout/TamaraPaymentRedirect";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import React from "react";
 import { headers } from 'next/headers';
 
@@ -22,14 +21,7 @@ const TamaraPayment = async () => {
               <TamaraPaymentRedirect/>
             </section>
           </main>
-          <section className="d-none d-lg-block" style={{ height: "100%" }}>
-            <Footer14 />
-          </section>
-          <section className="d-sm-block d-md-none bg-dark pt-5  ">
-          <div className="MobileFooter">
-            <MobileFooter2/>
-          </div>
-          </section>
+          <Footer14 />
         </>
     );
 }

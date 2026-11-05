@@ -3092,3 +3092,19 @@ html[dir="rtl"] .pdp-metric-bar__fill {
   .pdp-buy__row .pdp-pre-qty__btn { width: 32px; }
   .pdp-buy__row .pdp-pre-qty__num { min-width: 28px; }
 }
+
+/* Mobile: Buy Now first (direct purchase is easier to find), then [qty | Add to Cart] */
+@media (max-width: 767.98px) {
+  .pdp-buy > .pdp-atc-btn--buynow {
+    order: -1;
+    background: var(--pdp-ink);
+    color: #fff;
+    border-color: var(--pdp-ink);
+  }
+  .pdp-buy__row .pdp-atc-btn {
+    background: transparent;
+    color: var(--pdp-ink);
+    border-color: var(--pdp-ink);
+  }
+  .pdp-buy__row .pdp-atc-btn svg { stroke: currentColor; }
+}

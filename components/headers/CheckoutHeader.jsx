@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import { openCart } from "@/utlis/openCart";
 import "./checkout-header.css";
 
 /**
@@ -26,6 +27,7 @@ export default function CheckoutHeader() {
                 <div className="ck-header__col ck-header__col--left">
                     <Link
                         href={`/${locale}/shop-cart`}
+                        onClick={(e) => { e.preventDefault(); openCart(); }}
                         className="ck-header__back"
                         aria-label={isRtl ? "العودة إلى السلة" : "Return to cart"}
                     >

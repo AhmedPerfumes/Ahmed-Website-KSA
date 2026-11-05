@@ -149,7 +149,7 @@ export default function MyCoupons() {
                   >
                     {c.baseOn === "Percent"
                       ? `${c.value}% OFF`
-                      : `AED${c.value} OFF`}
+                      : `${c.value} SAR OFF`}
                   </div>
                   <div style={{ fontSize: 13, color: "#aaa" }}>
                     {expired
@@ -219,7 +219,7 @@ export default function MyCoupons() {
                   >
                     {c.baseOn === "Percent"
                       ? `${c.value}% OFF`
-                      : `AED${c.value} OFF`}
+                      : `${c.value} SAR OFF`}
                   </span>
                   {!expired && !redeemed && (
                     <span

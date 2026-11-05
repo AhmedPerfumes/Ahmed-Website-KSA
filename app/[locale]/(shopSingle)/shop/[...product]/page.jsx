@@ -4,7 +4,6 @@ import RelatedSlider from "@/components/singleProduct/RelatedSlider";
 import SingleProduct11 from "@/components/singleProduct/SingleProduct11";
 import React from "react";
 // import { allProducts } from "@/data/products";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import Head from "next/head";
 import { headers } from 'next/headers';
 import CollapsibleDescription from "@/components/shoplist/CollapsibleDescription";
@@ -344,17 +343,7 @@ const ProductDetailsPage16 = async ({ params }) => {
           <RelatedSlider relatedProds={ data.related_prods }/>
           <CollapsibleDescription description={activeDescription} title={title} />
         </main>
-        <section className="d-none d-lg-block" style={{ height: "100%" }}>
-          <Footer14 />
-
-        </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5  ">
-          <div className="MobileFooter">
-
-
-            <MobileFooter2 />
-          </div>
-        </section>
+        <Footer14 />
       </>
     );
   } catch (error) {
@@ -365,14 +354,7 @@ const ProductDetailsPage16 = async ({ params }) => {
               {/* <RelatedSlider relatedProds={ null }/> */}
               <a href='/' className="btn btn-primary w-50 text-uppercase mb-3 mx-auto">Continue Shopping</a>
             </main>
-            <section className="d-none d-lg-block" style={{ height: "100%" }}>
-              <Footer14 />
-            </section>
-            <section className="d-sm-block d-md-none bg-dark pt-5  ">
-              <div className="MobileFooter">
-                <MobileFooter2/>
-              </div>
-            </section>
+            <Footer14 />
           </>;
   }
 }
