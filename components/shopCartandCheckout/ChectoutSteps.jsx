@@ -20,11 +20,30 @@ const IconConfirmed = () => (
 
 export default function ChectoutSteps({ step = 1 }) {
   const locale = useLocale();
+  const isAr   = locale === "ar";
 
   const steps = [
-    { num: 1, label: "Cart",      sub: "Your items",           href: `/${locale}/shop-cart`,           Icon: IconCart      },
-    { num: 2, label: "Checkout",  sub: "Shipping & payment",   href: `/${locale}/shop-checkout`,        Icon: IconCheckout  },
-    { num: 3, label: "Confirmed", sub: "Order placed",         href: `/${locale}/shop-order-complete`,  Icon: IconConfirmed },
+    {
+      num: 1,
+      label: isAr ? "السلة" : "Cart",
+      sub: isAr ? "منتجاتك" : "Your items",
+      href: `/${locale}/shop-cart`,
+      Icon: IconCart,
+    },
+    {
+      num: 2,
+      label: isAr ? "إتمام الطلب" : "Checkout",
+      sub: isAr ? "الشحن والدفع" : "Shipping & payment",
+      href: `/${locale}/shop-checkout`,
+      Icon: IconCheckout,
+    },
+    {
+      num: 3,
+      label: isAr ? "تم التأكيد" : "Confirmed",
+      sub: isAr ? "تم إرسال الطلب" : "Order placed",
+      href: `/${locale}/shop-order-complete`,
+      Icon: IconConfirmed,
+    },
   ];
 
   return (

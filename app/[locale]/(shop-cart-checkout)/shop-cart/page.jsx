@@ -5,21 +5,29 @@ import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 import React from "react";
 
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
+export async function generateMetadata({ params: { locale } }) {
+  const isAr = locale === "ar";
+  return {
+    title: isAr
+      ? "سلة التسوق | عطور أحمد المغربي"
+      : "Shopping Cart | Ahmed Al Maghribi Perfumes",
+    description: isAr
+      ? "سلة التسوق الخاصة بك في متجر عطور أحمد المغربي."
+      : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
+    icons: {
       icon: "/assets/images/ahmed-favicon.png",
-  },
-};
+    },
+  };
+}
 
-export default function () {
+export default function CartPage({ params: { locale } }) {
+  const isAr = locale === "ar";
   return (
     <>
       <main className="page-wrapper">
         <section className="shop-checkout container">
-          <h1 className="page-title">Cart</h1>
-          <ChectoutSteps />
+          <h1 className="page-title">{isAr ? "سلة التسوق" : "Cart"}</h1>
+          <ChectoutSteps step={1} />
           <Cart />
         </section>
       </main>

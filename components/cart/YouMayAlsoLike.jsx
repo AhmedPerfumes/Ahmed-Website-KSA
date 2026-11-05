@@ -28,7 +28,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import he from "he";
 
 /* ── Session / Storage keys ─────────────────────────────────── */
@@ -400,6 +400,37 @@ export default function YouMayAlsoLike() {
   const { currency } = useMenu();
   const { cartProducts, addProductToCart, isAddedToCartProducts } = useContextElement();
   const locale = useLocale();
+  const isAr   = locale === "ar";
+  const t      = useTranslations();
+
+  const getLocalizedProdName = useCallback(
+    (p) => {
+      if (!p) return "";
+      const raw = he.decode(p.product_name || p.name || p.title || "");
+      if (isAr) {
+        if (p.product_name_ar && p.product_name_ar.trim()) {
+          return he.decode(p.product_name_ar.trim());
+        }
+        if (t) {
+          try {
+            if (typeof t.has === "function") {
+              if (t.has(raw)) return t(raw);
+              if (p.product_name && t.has(p.product_name)) return t(p.product_name);
+              const trimmed = raw.trim();
+              if (t.has(trimmed)) return t(trimmed);
+            } else {
+              const tr = t(raw);
+              if (tr && tr !== raw) return tr;
+            }
+          } catch {
+            // fallback
+          }
+        }
+      }
+      return raw;
+    },
+    [isAr, t]
+  );
 
   const [open,     setOpen]     = useState(false);
   const [loading,  setLoading]  = useState(true);
@@ -645,21 +676,26 @@ export default function YouMayAlsoLike() {
     const s  = new Date(elm.discount.start_date).getTime();
     const e2 = new Date(elm.discount.end_date).getTime();
     if (now < s || now > e2) return null;
-    return elm.discount.discount_type === "percent" ? `${Math.round(elm.discount.value)}% OFF` : `SALE`;
+    return elm.discount.discount_type === "percent"
+      ? (isAr ? `${Math.round(elm.discount.value)}% خصم` : `${Math.round(elm.discount.value)}% OFF`)
+      : (isAr ? "تخفيض" : "SALE");
   };
 
   /* ── Product card ───────────────────────────────────────────── */
   const ProductCard = ({ elm }) => {
     const img    = getImg(elm);
-    const name   = he.decode(elm.product_name || elm.name || "");
-    const slug   = slugify(name);
+    const name   = getLocalizedProdName(elm);
+    const rawName = he.decode(elm.product_name || elm.name || "");
+    const slug   = slugify(rawName);
     // Derive URL slugs from the product's own category/subcategory
     const catSlug    = slugify(elm.category_name || "");
     const subcatSlug = slugify(elm.subcategory?.subcategory_name || elm.subcategory_name || "");
     const href   = `/${locale}/shop/${catSlug || "perfumes"}/${subcatSlug || "all"}/${slug}`;
     const inCart = isAddedToCartProducts(elm.product_id);
     const badge  = getDiscountBadge(elm);
-    const subcat = elm.subcategory?.subcategory_name || "";
+    const subcat = isAr
+      ? (elm.subcategory?.subcategory_name_ar || elm.subcategory?.subcategory_name || "")
+      : (elm.subcategory?.subcategory_name || "");
 
     const handleATC = (e) => {
       e.preventDefault();
@@ -696,14 +732,18 @@ export default function YouMayAlsoLike() {
             className={`ymal-card__atc${inCart ? " ymal-card__atc--added" : ""}`}
             type="button"
             onClick={handleATC}
-            aria-label={inCart ? `${name} added to cart` : `Add ${name} to cart`}
+            aria-label={
+              inCart
+                ? (isAr ? `تمت إضافة ${name} إلى السلة` : `${name} added to cart`)
+                : (isAr ? `أضف ${name} إلى السلة` : `Add ${name} to cart`)
+            }
           >
             {inCart ? (
               <>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Added
+                {isAr ? "تمت الإضافة" : "Added"}
               </>
-            ) : "Add to Cart"}
+            ) : (isAr ? "أضف إلى السلة" : "Add to Cart")}
           </button>
         </div>
       </article>
@@ -743,28 +783,28 @@ export default function YouMayAlsoLike() {
         onClick={onOverlay}
         role="dialog"
         aria-modal="true"
-        aria-label="You may also like these products"
+        aria-label={isAr ? "قد ينال إعجابك أيضاً" : "You may also like these products"}
       >
         <div className="ymal-modal">
 
           {/* ── Header ───────────────────────────────────────────── */}
           <header className="ymal-header">
             <div className="ymal-header-text">
-              <p className="ymal-eyebrow">Curated for you</p>
-              <h2 className="ymal-title">You May Also <em>Like</em></h2>
+              <p className="ymal-eyebrow">{isAr ? "مختارات خصيصاً لك" : "Curated for you"}</p>
+              <h2 className="ymal-title">{isAr ? <>قد يعجبك <em>أيضاً</em></> : <>You May Also <em>Like</em></>}</h2>
               {cartProducts.length > 0 && (
-                <div className="ymal-anchor-chip" aria-label="Based on your recent choices">
+                <div className="ymal-anchor-chip" aria-label={isAr ? "بناءً على اختياراتك الأخيرة" : "Based on your recent choices"}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
-                  Based on Your Choices
+                  {isAr ? "بناءً على اختياراتك" : "Based on Your Choices"}
                 </div>
               )}
             </div>
             <button
               className="ymal-close"
               onClick={closeX}
-              aria-label="Close recommendations"
+              aria-label={isAr ? "إغلاق التوصيات" : "Close recommendations"}
               type="button"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -781,7 +821,7 @@ export default function YouMayAlsoLike() {
               /* Loading skeletons */
               <div className="ymal-section">
                 <div className="ymal-section-head">
-                  <span className="ymal-section-label">Loading recommendations…</span>
+                  <span className="ymal-section-label">{isAr ? "جارٍ تحميل التوصيات…" : "Loading recommendations…"}</span>
                   <span className="ymal-section-line" aria-hidden="true" />
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
@@ -797,7 +837,7 @@ export default function YouMayAlsoLike() {
                   <section className="ymal-section" aria-labelledby="ymal-related-heading">
                     <div className="ymal-section-head">
                       <h3 id="ymal-related-heading" className="ymal-section-label">
-                        Pairs Well With Your Choices
+                        {isAr ? "يتناسب تماماً مع اختياراتك" : "Pairs Well With Your Choices"}
                       </h3>
                       <span className="ymal-section-line" aria-hidden="true" />
                     </div>
@@ -816,7 +856,7 @@ export default function YouMayAlsoLike() {
                   <section className="ymal-section" aria-labelledby="ymal-bestsell-heading">
                     <div className="ymal-section-head">
                       <h3 id="ymal-bestsell-heading" className="ymal-section-label">
-                        Best Sellers
+                        {isAr ? "الأكثر مبيعاً" : "Best Sellers"}
                       </h3>
                       <span className="ymal-section-line" aria-hidden="true" />
                     </div>
@@ -845,15 +885,15 @@ export default function YouMayAlsoLike() {
                   checked={dontShow}
                   onChange={(e) => setDontShow(e.target.checked)}
                 />
-                <span>Don’t remind me again</span>
+                <span>{isAr ? "لا تذكرني مرة أخرى" : "Don’t remind me again"}</span>
               </label>
               <button
                 type="button"
                 className="ymal-footer-close"
                 onClick={closeDismissed}
-                aria-label={dontShow ? "Close and stop showing recommendations this session" : "Continue shopping — go to the shop page"}
+                aria-label={dontShow ? (isAr ? "إغلاق وعدم إظهار التوصيات في هذه الجلسة" : "Close and stop showing recommendations this session") : (isAr ? "متابعة التسوق والذهاب للمتجر" : "Continue shopping — go to the shop page")}
               >
-                {dontShow ? "Got it, Close" : "Continue Shopping"}
+                {dontShow ? (isAr ? "حسناً، إغلاق" : "Got it, Close") : (isAr ? "متابعة التسوق" : "Continue Shopping")}
               </button>
             </footer>
           )}
