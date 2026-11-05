@@ -4,7 +4,6 @@ import Footer14 from "@/components/footers/Footer14";
 
 import { allBlogs } from "@/data/blogs";
 import React from "react";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import { headers } from 'next/headers';
 
 // export const metadata = {
@@ -184,17 +183,7 @@ const BlogDetailsPage = async({ params }) => {
           <div className="mb-4 pb-4"></div>
           <BlogDetails blog={data} />
         </main>
-        <section className="d-none d-lg-block" style={{ height: "100%" }}>
-          <Footer14 />
-          
-        </section>
-        <section className="d-sm-block d-md-none bg-dark pt-5  ">
-        <div className="MobileFooter">
-        
-
-        <MobileFooter2/>
-        </div>
-      </section>
+        <Footer14 />
       </>
     );
   } catch (error) {

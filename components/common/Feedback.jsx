@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-const RATING_LABELS = {
-  1: "1 Star - Needs Improvement",
-  2: "2 Stars - Fair Experience",
-  3: "3 Stars - Good Experience",
-  4: "4 Stars - Very Good!",
-  5: "5 Stars - Excellent! Loved it ✨",
-};
+import { useTranslations } from "next-intl";
 
 export default function FeedbackForm({ orderId = null, customerName = "Guest" }) {
   const [rating, setRating] = useState(0);
@@ -17,6 +10,7 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const t = useTranslations("Feedback");
 
   const activeRating = hoverRating || rating;
 
@@ -31,7 +25,7 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
     setError("");
 
     if (rating === 0) {
-      setError("Please select a star rating (1 to 5 stars) before submitting.");
+      setError(t("errRating"));
       return;
     }
 
@@ -58,14 +52,14 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
       } else {
         try {
           const data = await response.json();
-          setError(data.message || "Error submitting feedback. Please try again.");
+          setError(data.message || t("errSubmit"));
         } catch {
-          setError("Error submitting feedback. Please try again.");
+          setError(t("errSubmit"));
         }
       }
     } catch (err) {
       console.error("Feedback submit error:", err);
-      setError("Network error. Please try again.");
+      setError(t("errNetwork"));
     } finally {
       setSubmitting(false);
     }
@@ -106,10 +100,10 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
             </svg>
           </div>
           <h4 className="fw-bold mb-2" style={{ color: "#222" }}>
-            Thank You for Your Feedback!
+            {t("doneTitle")}
           </h4>
           <p className="text-muted mb-3" style={{ fontSize: "14px" }}>
-            Your review helps us continuously elevate our fragrances and customer experience.
+            {t("doneText")}
           </p>
           <div className="d-flex justify-content-center align-items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -161,13 +155,13 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
                 fontWeight: 600,
               }}
             >
-              Order Feedback
+              {t("badge")}
             </span>
             <h4 className="fw-bold mb-1" style={{ color: "#222" }}>
-              How Was Your Experience?
+              {t("title")}
             </h4>
             <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
-              Your feedback helps us continuously improve our services.
+              {t("subtitle")}
             </p>
           </div>
 
@@ -192,14 +186,14 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
               }}
             >
               <label className="form-label d-block fw-semibold mb-2" style={{ color: "#333", fontSize: "14px" }}>
-                Rate Your Experience <span style={{ color: "#B9A16B" }}>*</span>
+                {t("rateLabel")} <span style={{ color: "#B9A16B" }}>*</span>
               </label>
 
               {/* Interactive SVG Star Buttons */}
               <div
                 className="d-flex justify-content-center align-items-center gap-1 my-1"
                 role="radiogroup"
-                aria-label="Star Rating"
+                aria-label={t("starsAria")}
               >
                 {[1, 2, 3, 4, 5].map((star) => {
                   const isFilled = star <= activeRating;
@@ -210,7 +204,7 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
                       onClick={() => handleStarClick(star)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
-                      aria-label={`${star} star${star > 1 ? "s" : ""}`}
+                      aria-label={t("starAria", { count: star })}
                       style={{
                         background: "none",
                         border: "none",
@@ -253,7 +247,7 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
                   transition: "color 0.2s ease",
                 }}
               >
-                {activeRating > 0 ? RATING_LABELS[activeRating] : "Tap a star to rate"}
+                {activeRating > 0 ? t(`r${activeRating}`) : t("tapToRate")}
               </div>
             </div>
 
@@ -264,7 +258,7 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
                 className="form-label fw-semibold mb-2"
                 style={{ color: "#444", fontSize: "13px" }}
               >
-                Write your feedback or suggestions <span className="text-muted fw-normal">(Optional)</span>
+                {t("commentLabel")} <span className="text-muted fw-normal">{t("optional")}</span>
               </label>
               <textarea
                 className="form-control"
@@ -272,7 +266,7 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={4}
-                placeholder="Share your thoughts about your shopping experience or products..."
+                placeholder={t("placeholder")}
                 style={{
                   fontSize: "14px",
                   borderColor: "#E2DDD5",
@@ -326,10 +320,10 @@ export default function FeedbackForm({ orderId = null, customerName = "Guest" })
                       role="status"
                       aria-hidden="true"
                     />
-                    <span>Submitting...</span>
+                    <span>{t("submitting")}</span>
                   </>
                 ) : (
-                  <span>Submit Feedback</span>
+                  <span>{t("submit")}</span>
                 )}
               </button>
             </div>

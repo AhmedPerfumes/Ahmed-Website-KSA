@@ -75,18 +75,17 @@ export default function MobileFooter2() {
         </div>
         {/* <!-- /.logo --> */}
         <p className="footer-address text-white text-center">
-          Ahmed Al Maghrebi Perfume Manuf L.L.C, <br />
-          Jurf Industrial Zone 3 <br />
-          AJMAN, P. O. Box – 3850 <br />
-          UAE
+          Ahmad Lilutur <br />
+          Madinah Al Munawwarah <br />
+          Kingdom Of Saudi Arabia
         </p>
 
         <p className="m-0 text-white text-center">
-          <strong className="fw-medium">estore@ahmedalmaghribi.com</strong>
+          <strong className="fw-medium">info@ahmedalmaghribi.com</strong>
         </p>
         <p className="text-center">
           <strong className="fw-medium text-white text-center">
-            +971 67420602 / 67422496 / 67446076
+            <span dir="ltr">+966 55 5073629 / +966 53 6654399</span>
           </strong>
         </p>
 

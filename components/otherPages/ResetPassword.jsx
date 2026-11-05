@@ -3,9 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function ResetPasswordOTP() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("Account");
+  // Backend messages are English-only — on Arabic pages show our own translated message
+  const srv = (msg, key) => (locale === "ar" || !msg ? t(key) : msg);
 
   // Steps: 1 = mobile, 2 = otp, 3 = new password
   const [step, setStep] = useState(1);
@@ -44,10 +49,10 @@ export default function ResetPasswordOTP() {
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
       if (user) {
-        router.replace("/account_dashboard");
+        router.replace(`/${locale}/account_dashboard`);
       }
     } catch {}
-  }, [router]);
+  }, [router, locale]);
 
   // Autofocus based on step
   useEffect(() => {
@@ -99,7 +104,7 @@ export default function ResetPasswordOTP() {
 
   // ✅ Block before API if invalid
   if (!isValidUAEMobile) {
-    setMobileError("Please enter a valid UAE mobile number starting with 05 (10 digits total).");
+    setMobileError(t("errKsaMobile"));
     return; // stop here
   }
 
@@ -115,16 +120,16 @@ export default function ResetPasswordOTP() {
     if (res.ok && data.message?.toLowerCase().includes("otp sent")) {
       // ✅ Only go to step 2 if OTP actually sent
       setMobileError(null);
-      setMessage(data.message || "OTP sent successfully.");
+      setMessage(srv(data.message, "otpSent"));
       setStep(2);
       bumpStepKey();
       startResendTimer();
     } else {
       // stay in Step 1
-      setMobileError(data.message || "Failed to send OTP.");
+      setMobileError(srv(data.message, "otpSendFailed"));
     }
   } catch {
-    setMobileError("Something went wrong. Please try again.");
+    setMobileError(t("somethingWrong"));
   } finally {
     setLoading(false);
   }
@@ -155,7 +160,7 @@ export default function ResetPasswordOTP() {
         setCustomerId(data?.data?.id ?? null);
         if (data?.access_token) setAccessToken(data.access_token);
 
-        setMessage(data.message || "OTP verified successfully.");
+        setMessage(srv(data.message, "otpVerified"));
         setShowOtpSuccessIcon(true);
         setTimeout(() => {
           setMessage(null);
@@ -165,10 +170,10 @@ export default function ResetPasswordOTP() {
         setStep(3);
         bumpStepKey();
       } else {
-        setError(data.message || "Invalid Mobile Number or OTP");
+        setError(srv(data.message, "errInvalidMobileOtp"));
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("somethingWrong"));
     } finally {
       setLoading(false);
     }
@@ -182,12 +187,12 @@ export default function ResetPasswordOTP() {
     setMessage(null);
 
     if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError(t("errPwd6"));
       setLoading(false);
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError(t("errPwdNoMatch"));
       setLoading(false);
       return;
     }
@@ -208,13 +213,13 @@ export default function ResetPasswordOTP() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage(data.message || "Password updated successfully.");
-        setTimeout(() => router.replace("/login_register"), 1500);
+        setMessage(srv(data.message, "pwdUpdated"));
+        setTimeout(() => router.replace(`/${locale}/login_register`), 1500);
       } else {
-        setError(data.message || "Failed to update password.");
+        setError(srv(data.message, "pwdUpdateFailed"));
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("somethingWrong"));
     } finally {
       setLoading(false);
     }
@@ -230,15 +235,15 @@ export default function ResetPasswordOTP() {
   return (
     <section className="login-register container">
       <h2 className="section-title text-center fs-3 mb-xl-4">
-        {step === 1 && "Reset Your Password"}
-        {step === 2 && "Verify OTP"}
-        {step === 3 && "Set Your New Password"}
+        {step === 1 && t("resetTitle")}
+        {step === 2 && t("verifyOtp")}
+        {step === 3 && t("setNewTitle")}
       </h2>
 
       {/* OTP success check icon */}
       {showOtpSuccessIcon && (
         <div className="d-flex justify-content-center mb-2 fade-in">
-          <span aria-hidden="true" title="Verified" className="check-wrap">
+          <span aria-hidden="true" title={t("verified")} className="check-wrap">
             <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="2" opacity="0.2"></circle>
               <path d="M7 12l3 3 7-7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -270,12 +275,12 @@ export default function ResetPasswordOTP() {
                   if (mobileError) setMobileError(null);
                 }}
                 className="form-control"
-                placeholder="Eg. 0500000000 *"
+                placeholder={t("mobileLabel")}
                 required
                 aria-invalid={!!mobileError}
                 aria-describedby="uae-mobile-help"
               />
-              <label>Mobile Number (Eg. 0500000000)*</label>
+              <label>{t("mobileLabel")}</label>
             </div>
 
             {/* ✅ Step-1-only inline warning */}
@@ -290,7 +295,7 @@ export default function ResetPasswordOTP() {
               type="submit"
               disabled={loading /* Let server-side error show if needed */}
             >
-              {loading ? "Sending OTP..." : "Send OTP"}
+              {loading ? t("sendingOtp") : t("sendOtp")}
             </button>
           </form>
         )}
@@ -306,10 +311,10 @@ export default function ResetPasswordOTP() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 className="form-control"
-                placeholder="Enter OTP *"
+                placeholder={t("otpLabel")}
                 required
               />
-              <label>Enter OTP *</label>
+              <label>{t("otpLabel")}</label>
             </div>
 
             <div className="d-flex gap-2">
@@ -322,7 +327,7 @@ export default function ResetPasswordOTP() {
                   bumpStepKey();
                 }}
               >
-                Change Mobile
+                {t("changeMobile")}
               </button>
 
               <button
@@ -330,13 +335,13 @@ export default function ResetPasswordOTP() {
                 type="submit"
                 disabled={loading || !otp.trim()}
               >
-                {loading ? "Verifying..." : "Verify OTP"}
+                {loading ? t("verifying") : t("verifyOtp")}
               </button>
             </div>
 
             <div className="text-center mt-3">
               {resendTimer > 0 ? (
-                <small className="text-muted">Resend OTP in {resendTimer}s</small>
+                <small className="text-muted">{t("resendIn", { seconds: resendTimer })}</small>
               ) : (
                 <button
                   type="button"
@@ -344,7 +349,7 @@ export default function ResetPasswordOTP() {
                   onClick={handleResendOTP}
                   disabled={loading}
                 >
-                  Resend OTP
+                  {t("resendOtp")}
                 </button>
               )}
             </div>
@@ -361,11 +366,11 @@ export default function ResetPasswordOTP() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="form-control"
-                placeholder="New Password *"
+                placeholder={t("newPasswordLabel")}
                 required
                 minLength={6}
               />
-              <label>New Password *</label>
+              <label>{t("newPasswordLabel")}</label>
             </div>
             <div className="form-floating mb-3">
               <input
@@ -373,26 +378,26 @@ export default function ResetPasswordOTP() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="form-control"
-                placeholder="Confirm Password *"
+                placeholder={t("confirmPasswordLabel")}
                 required
                 minLength={6}
               />
-              <label>Confirm Password *</label>
+              <label>{t("confirmPasswordLabel")}</label>
             </div>
             <button
               className="btn btn-primary w-100"
               type="submit"
               disabled={loading || !newPassword || !confirmPassword}
             >
-              {loading ? "Updating..." : "Save New Password"}
+              {loading ? t("updating") : t("saveNewPassword")}
             </button>
           </form>
         )}
 
         <div className="customer-option mt-4 text-center">
-          <span className="text-secondary">Back to</span>{" "}
-          <Link href="/login_register" className="btn-text">
-            Login
+          <span className="text-secondary">{t("backTo")}</span>{" "}
+          <Link href={`/${locale}/login_register`} className="btn-text">
+            {t("login")}
           </Link>
         </div>
       </div>

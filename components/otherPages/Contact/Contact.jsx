@@ -1,63 +1,39 @@
 "use client";
 
-import { storesLocations } from "@/data/storeLocations";
 import React, { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+
+const PHONES = "+966 55 5073629 / +966 53 6654399";
+const SUPPORT_EMAIL = "customersupport@ahmedalmaghribi.com";
+const INFO_EMAIL = "info@ahmedalmaghribi.com";
 
 export default function Contact() {
+  const t = useTranslations("ContactPage");
+  const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
-  const router = useRouter();
-
   const formRef = useRef(null);
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-
     try {
       const formData = new FormData(formRef.current);
-      const formValues = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        subject: formData.get("subject"),
-        message: formData.get("message"),
-      };
-
-      console.log("Form submitted:", formValues);
-
-      // Clear the form fields by resetting the form using the ref
-      formRef.current.reset(); // This will clear all form fields
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}api/contact`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to submit the data. Please try again.");
-      }
-
-      // Handle response if necessary
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/contact`, { method: "POST", body: formData });
+      if (!response.ok) throw new Error(t("submitFailed"));
       const data = await response.json();
-      if (data.message.split(" ")[0] != "Contact") {
-        setError(data.message);
+      if (data.message?.split(" ")[0] != "Contact") {
+        setError(data.message || t("submitFailed"));
         setSuccess(null);
       } else {
-        setSuccess(data.message);
+        setSuccess(t("submitSuccess"));
         setError(null);
-        // localStorage.setItem('token', data.access_token);
-        // setTimeout(() => router.push('/contact'), 1000);
+        formRef.current.reset();
       }
-      // console.log(data);
-    } catch (error) {
-      // Capture the error message to display to the user
-      setError(error.message);
-      console.error(error);
+    } catch (err) {
+      setError(err.message || t("submitFailed"));
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -65,12 +41,13 @@ export default function Contact() {
 
   return (
     <section className="contact-us">
-      {/* Embedded Google Maps */}
+      {/* Map — Madinah Al Munawwarah */}
       <div className="row">
         <div className="col-12">
           <div className="map-container">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d548912.0419635491!2d55.485115147598435!3d25.3351151799685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sAhmed%20Al%20Maghribi%20Perfumes!5e0!3m2!1sen!2sus!4v1723718972956!5m2!1sen!2sus"
+              title={t("mapTitle")}
+              src={`https://www.google.com/maps?q=${encodeURIComponent("Ahmed Al Maghribi Perfumes, Madinah, Saudi Arabia")}&hl=${locale}&z=12&output=embed`}
               width="100%"
               height="450"
               style={{ border: 0 }}
@@ -82,101 +59,55 @@ export default function Contact() {
         </div>
       </div>
       <div className="container d-flex justify-content-center">
-        {/* Contact Form and Information */}
         <div className="row">
-          {/* Left Side - Form */}
+          {/* Form */}
           <div className="col-lg-6 mb-5">
-            <div className="contact-us__form ">
-              <form
-                className="needs-validation mx-5"
-                onSubmit={onSubmit}
-                ref={formRef}
-              >
-                <h4 className="pt-5 fs-3">Drop us a Line</h4>
-                <p className="fs-5">
-                  Simply fill out the form, include your message, and we’ll get
-                  back to you as soon as we can.
-                </p>
-                {error ? (
-                  <div style={{ color: "red" }}>{error}</div>
-                ) : (
-                  <div style={{ color: "green" }}>{success}</div>
-                )}
+            <div className="contact-us__form">
+              <form className="needs-validation mx-lg-5" onSubmit={onSubmit} ref={formRef}>
+                <h4 className="pt-5 fs-3">{t("formTitle")}</h4>
+                <p className="fs-5">{t("formIntro")}</p>
+                {error ? <div style={{ color: "#b3261e" }} role="alert">{error}</div> : success && <div style={{ color: "#2e7d32" }} role="status">{success}</div>}
                 <div className="form-floating my-4">
-                  <input
-                    type="text"
-                    name="name"
-                    className="form-control"
-                    id="contact_us_name"
-                    placeholder="Name *"
-                    required
-                  />
-                  <label htmlFor="contact_us_name">Name *</label>
+                  <input type="text" name="name" className="form-control" id="contact_us_name" placeholder={t("name")} autoComplete="name" required />
+                  <label htmlFor="contact_us_name">{t("name")} *</label>
                 </div>
                 <div className="form-floating my-4">
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    id="contact_us_email"
-                    placeholder="Email address *"
-                    required
-                  />
-                  <label htmlFor="contact_us_email">Email address *</label>
+                  <input type="email" name="email" className="form-control" id="contact_us_email" placeholder={t("email")} autoComplete="email" inputMode="email" dir="ltr" required />
+                  <label htmlFor="contact_us_email">{t("email")} *</label>
                 </div>
                 <div className="form-floating my-4">
-                  <input
-                    type="text"
-                    name="subject"
-                    className="form-control"
-                    id="contact_us_subject"
-                    placeholder="Subject *"
-                    required
-                  />
-                  <label htmlFor="contact_us_subject">Subject *</label>
+                  <input type="text" name="subject" className="form-control" id="contact_us_subject" placeholder={t("subject")} required />
+                  <label htmlFor="contact_us_subject">{t("subject")} *</label>
                 </div>
                 <div className="my-4">
-                  <textarea
-                    name="message"
-                    className="form-control form-control_gray"
-                    placeholder="Your Message"
-                    cols="30"
-                    rows="8"
-                    required
-                  ></textarea>
+                  <textarea name="message" className="form-control form-control_gray" placeholder={t("message")} aria-label={t("message")} cols="30" rows="8" required></textarea>
                 </div>
                 <div className="my-4">
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Loading..." : "Submit"}
+                  <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                    {isLoading ? t("sending") : t("submit")}
                   </button>
                 </div>
               </form>
             </div>
           </div>
 
-          {/* Right Side - Contact Information and Office Timing */}
-          <div className="col-lg-6 ">
-            <h4 className="pt-5 mb-4 fs-3">Customer Service</h4>
-            <p className="mb-2 fs-5">1.	Our customer care team aims to respond to all queries within 24 to 48 working hours.</p>
-            <p className="mb-2 fs-5">2.	For any further questions or specific requests regarding refunds and returns, please contact us at <b>'customersupport@ahmedalmaghribi.com'</b>. We are committed to ensuring a smooth and satisfactory shopping experience.</p>
-            <p className="mb-2 fs-5">3.	Your privacy and security are of utmost importance to us, and we strive to ensure your experience with Ahmed Al Maghribi Perfumes LLC is both secure and enjoyable.</p>
-            <h4 className="pt-5 mb-4 fs-3">Contact Information</h4>
+          {/* Contact information */}
+          <div className="col-lg-6">
+            <h4 className="pt-5 mb-4 fs-3">{t("serviceTitle")}</h4>
+            <p className="mb-2 fs-5">1. {t("service1")}</p>
             <p className="mb-2 fs-5">
-              Address: Ahmed Al Maghrebi Perfume Manuf L.L.C, Jurf Industrial
-              Zone 3, AJMAN, P. O. Box – 3850, U.A.E
+              2. {t.rich("service2", { email: () => <b><a href={`mailto:${SUPPORT_EMAIL}`} dir="ltr">{SUPPORT_EMAIL}</a></b> })}
             </p>
-            <p className="mb-2 fs-5">Email: info@ahmedalmaghribi.com</p>
-            <p className="mb-2 fs-5">
-              Phone: +971 67420602 / 67422496 / 67446076
-            </p>
+            <p className="mb-2 fs-5">3. {t("service3")}</p>
 
-            <h4 className="pt-4 mb-2 fs-3">Head Office Timing</h4>
-            <p className="mb-2 fs-5">Monday – Saturday: 8:00 AM to 5:00 PM</p>
-            <p className="fs-5">Sunday: Closed</p>
+            <h4 className="pt-5 mb-4 fs-3">{t("infoTitle")}</h4>
+            <p className="mb-2 fs-5">{t("address")}</p>
+            <p className="mb-2 fs-5">{t("emailLabel")}: <a href={`mailto:${INFO_EMAIL}`} dir="ltr">{INFO_EMAIL}</a></p>
+            <p className="mb-2 fs-5">{t("phoneLabel")}: <a href={`tel:${PHONES.split(" / ")[0].replace(/\s/g, "")}`} dir="ltr">{PHONES}</a></p>
+
+            <h4 className="pt-4 mb-2 fs-3">{t("hoursTitle")}</h4>
+            <p className="mb-2 fs-5">{t("hoursWeek")}</p>
+            <p className="fs-5">{t("hoursClosed")}</p>
           </div>
         </div>
       </div>

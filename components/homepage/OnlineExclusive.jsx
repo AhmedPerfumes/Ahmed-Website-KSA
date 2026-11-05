@@ -13,7 +13,7 @@ import he from "he";
 import "./OnlineExclusive.css";
 
 /**
- * OnlineExclusive â€” product carousel for the "online-exclusive" category.
+ * OnlineExclusive — product carousel for the "online-exclusive" category.
  * Structurally identical to SpecialOffers, fetches products whose category
  * name resolves to the "online-exclusive" slug (or subcategory is null and
  * category is not gift-sets / hair-mist / extrait-de-parfum).

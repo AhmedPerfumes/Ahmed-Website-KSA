@@ -1,10 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { useLocale, useTranslations } from "next-intl";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export default function MyDetails() {
+  const locale = useLocale();
+  const t = useTranslations("Account");
   const [details, setDetails] = useState({
     customer_name: "",
     customer_email: "",
@@ -132,12 +135,12 @@ export default function MyDetails() {
 
     if (values.new_password || values.confirm_password) {
       if (values.new_password.length < 6) {
-        setError("New password must be at least 6 characters.");
+        setError(t("errPwdShort"));
         setSaveLoading(false);
         return;
       }
       if (values.new_password !== values.confirm_password) {
-        setError("New password and confirm password do not match.");
+        setError(t("errPwdMatch"));
         setSaveLoading(false);
         return;
       }
@@ -158,12 +161,12 @@ export default function MyDetails() {
         passCheck.message &&
         passCheck.message.toLowerCase().includes("incorrect password")
       ) {
-        setError("Incorrect password. Please try again.");
+        setError(t("errIncorrectPwd"));
         setSaveLoading(false);
         return;
       }
     } catch {
-      setError("Could not verify password. Please try again.");
+      setError(t("errVerifyPwd"));
       setSaveLoading(false);
       return;
     }
@@ -190,25 +193,25 @@ export default function MyDetails() {
       if (res.error?.customer_mobile || (Array.isArray(res.customer_mobile) && res.customer_mobile.length > 0)) {
         setFieldErrors((f) => ({
           ...f,
-          customer_mobile: "Mobile already exists",
+          customer_mobile: t("mobileExists"),
         }));
       }
     if (res.error?.customer_email || (Array.isArray(res.customer_email) && res.customer_email.length > 0)) {
       setFieldErrors((f) => ({
         ...f,
-        customer_email: "Email already exists",
+        customer_email: t("emailExists"),
       }));
     }
     if(res?.error || res?.message) {
       if(res.error == 'Unauthorized' || res.message == 'Unauthorized') {
-        setError('Your session has expired. Please login again');
+        setError(t("sessionExpired"));
         setSaveLoading(false);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login_register';
+        window.location.href = `/${locale}/login_register`;
       }
     }
-  setError("Data already exists. Please check inputs.");
+  setError(t("dataExists"));
   setSaveLoading(false);
   return;
 }
@@ -244,29 +247,28 @@ setValues((v) => ({
   confirm_password: "",
 }));
 setError("");
-setSuccess("Details updated successfully!");
+setSuccess(t("detailsUpdated"));
 setTimeout(() => {
   setSaveDialog(false);
-  console.log("Modal closed after 2 seconds");
 }, 2000);
 setSaveLoading(false);
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("networkError"));
       setSaveLoading(false);
     }
   };
 
   const FIELDS = [
-    { key: "customer_name", label: "NAME" },
-    { key: "customer_email", label: "E-MAIL" },
-    { key: "customer_mobile", label: "MOBILE" },
-    { key: "password", label: "PASSWORD" },
+    { key: "customer_name", label: t("fieldName") },
+    { key: "customer_email", label: t("fieldEmail") },
+    { key: "customer_mobile", label: t("fieldMobile") },
+    { key: "password", label: t("fieldPassword") },
   ];
 
   return (
     <div style={{ maxWidth: 520, margin: "60px auto" }}>
       <h2 className="section-head section-title text-uppercase fs-25 fw-medium text-center mb-4" style={{ letterSpacing: ".02em" }}>
-        MY DETAILS
+        {t("detailsTitle")}
       </h2>
       <div>
         {FIELDS.map((f) => (
@@ -277,13 +279,13 @@ setSaveLoading(false);
                 {edit[f.key] ? (
                   f.key === "password" ? (
                     <>
-                      <Form.Control type="password" placeholder="New password" className="mb-2"
+                      <Form.Control type="password" placeholder={t("newPassword")} className="mb-2"
                         value={values.new_password} onChange={(e) => handleChange("new_password", e.target.value)} autoFocus />
-                      <Form.Control type="password" placeholder="Confirm new password"
+                      <Form.Control type="password" placeholder={t("confirmNewPassword")}
                         value={values.confirm_password} onChange={(e) => handleChange("confirm_password", e.target.value)} />
                       <div className="mt-1">
                         <Button size="sm" variant="link" onClick={() => cancelEdit("password")} style={{ textDecoration: "underline" }}>
-                          Cancel
+                          {t("cancel")}
                         </Button>
                       </div>
                     </>
@@ -297,7 +299,7 @@ setSaveLoading(false);
                       )}
                       <div className="mt-1">
                         <Button size="sm" variant="link" onClick={() => cancelEdit(f.key)} style={{ textDecoration: "underline" }}>
-                          Cancel
+                          {t("cancel")}
                         </Button>
                       </div>
                     </>
@@ -305,16 +307,16 @@ setSaveLoading(false);
                 ) : f.key === "password" ? (
                   <span>••••••••</span>
                 ) : loading ? (
-                  <span className="text-muted">Loading…</span>
+                  <span className="text-muted">{t("loading")}</span>
                 ) : (
-                  values[f.key]
+                  <bdi dir={f.key === "customer_name" ? undefined : "ltr"}>{values[f.key]}</bdi>
                 )}
               </div>
             </div>
-            <div style={{ flex: 1, textAlign: "right" }}>
+            <div style={{ flex: 1, textAlign: "end" }}>
               {!edit[f.key] && (
                 <Button size="sm" variant="link" onClick={() => startEdit(f.key)} style={{ textDecoration: "underline" }}>
-                  Edit
+                  {t("edit")}
                 </Button>
               )}
             </div>
@@ -324,19 +326,19 @@ setSaveLoading(false);
 
       <div className="text-center mt-4">
         <Button disabled={!isEdited} onClick={handleShowSave}>
-          Save Changes
+          {t("saveChanges")}
         </Button>
       </div>
 
       <Modal show={saveDialog} onHide={() => setSaveDialog(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Save</Modal.Title>
+          <Modal.Title>{t("confirmSave")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {error && error != '' && <Alert variant="danger">{error}</Alert>}
           {success && success != '' && <Alert variant="success">{success}</Alert>}
           <Form.Group>
-            <Form.Label>Enter your current password to save changes</Form.Label>
+            <Form.Label>{t("enterCurrentPassword")}</Form.Label>
             <Form.Control
               type="password"
               value={verifyPassword}
@@ -346,10 +348,10 @@ setSaveLoading(false);
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setSaveDialog(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button variant="primary" onClick={handleSave} disabled={saveLoading}>
-            {saveLoading ? "Saving…" : "Save"}
+            {saveLoading ? t("saving") : t("save")}
           </Button>
         </Modal.Footer>
       </Modal>

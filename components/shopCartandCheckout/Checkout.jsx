@@ -15,6 +15,7 @@ import FreeGiftFeature from '@/components/FreeGiftFeature';
 import BogoFeature from "@/components/BogoFeature";
 import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
+import { SAUDI_CITIES, SAUDI_REGIONS, regionForCity } from "@/data/saudiCities";
 
 // Section 1 billing field rules — shared by Continue and live re-validation on change
 const required = v => (v || '').trim() ? null : 'required';
@@ -25,7 +26,8 @@ const billingRules = {
   area: required,
   province: required,
   mobile: v => /^\d{10}$/.test(v || '') ? null : 'invalidMobileDigits',
-  short_national_address: v => /^[A-Za-z]{4}[0-9]{4}$/.test((v || '').trim()) ? null : 'snaFormat',
+  // Optional — empty is fine; if entered it must be 4 letters + 4 numbers
+  short_national_address: v => !(v || '').trim() || /^[A-Za-z]{4}[0-9]{4}$/.test((v || '').trim()) ? null : 'snaFormat',
 };
 
 // Android Arabic keyboards emit Arabic-Indic digits and autofill may add +966/spaces —
@@ -53,7 +55,8 @@ export default function Checkout() {
   const [fieldErrors, setFieldErrors] = useState({});
   // Logged-in accounts registered with a single-word name have no last name — show name inputs for them
   const [needsName, setNeedsName] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+  // Card (mada / Apple Pay) pre-selected — the most used method in KSA; one less tap
+  const [selectedOption, setSelectedOption] = useState("paytabs");
   const [createAccount, setCreateAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -76,7 +79,17 @@ export default function Checkout() {
   const [showNote, setShowNote] = useState(false);
   const [showShipping, setShowShipping] = useState(false);
   const [showCouponPanel, setShowCouponPanel] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(true);          // desktop: visible by default
+  const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
+  // OTP helpers: auto-send once per number, resend cooldown, reset if the number changes
+  const [otpCooldown, setOtpCooldown] = useState(0);
+  const lastOtpMobileRef = useRef('');
+  const verifiedMobileRef = useRef('');
+  const detailsTrackedRef = useRef(false);
+  // Guests go through steps (Contact → Delivery → Payment); logged-in customers keep one page
+  const [guestStep, setGuestStep] = useState(1);
+  const [stepsDone, setStepsDone] = useState({ 1: false, 2: false });
+  const stepMountedRef = useRef(false);
 
   // Inline address-edit modal (logged-in users)
   const [showAddrModal, setShowAddrModal] = useState(false);
@@ -105,7 +118,7 @@ export default function Checkout() {
   /*  CONTEXT & HOOKS                                                     */
   /* ------------------------------------------------------------------ */
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
-  const { cartProducts, totalPrice, freeShippingFlag, setOrderDetails, setCouponDataContext, setCartProducts } = useContextElement();
+  const { cartProducts, totalPrice, freeShippingFlag, setOrderDetails, setCouponDataContext, setCartProducts, removeGiftFromCart, promotionsContext } = useContextElement();
   const router = useRouter();
   const locale = useLocale();
   const { isLoggedIn } = useUser();
@@ -115,26 +128,59 @@ export default function Checkout() {
   const tc = useTranslations('CheckoutPage');
 
   const shippingLoaded = Array.isArray(shippingServiceCharges) && shippingServiceCharges.length >= 2;
-  const grandTotal = shippingLoaded
-    ? (!freeShippingFlag
-      ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)
-      : (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2))
-    : totalPrice.toFixed(2);
-  const vatAmount = shippingLoaded
-    ? (!freeShippingFlag
-      ? ((parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + vatTax.percentage / 100)) + (totalPrice - totalPrice / (1 + vatTax.percentage / 100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage / 100))).toFixed(2)
-      : (0 + (totalPrice - totalPrice / (1 + vatTax.percentage / 100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage / 100))).toFixed(2))
-    : '0.00';
+  // Admin-managed charges (shipping_service_charges): [0] shipping · [1] service fee · [2] COD fee · [3] free-shipping threshold
+  const shippingFee = shippingLoaded && !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) || 0 : 0;
+  const serviceFee = shippingLoaded ? parseFloat(shippingServiceCharges[1].price) || 0 : 0;
+  const codFeeSetting = shippingLoaded ? parseFloat(shippingServiceCharges[2]?.price) || 0 : 0;
+  const codFee = selectedOption === 'cod' ? codFeeSetting : 0;
+  const vatRate = (parseFloat(vatTax?.percentage) || 0) / 100;
+  const grandTotalNum = totalPrice + shippingFee + serviceFee + codFee; // all prices are VAT-inclusive
+  const grandTotal = grandTotalNum.toFixed(2);
+  const vatAmount = shippingLoaded ? (grandTotalNum - grandTotalNum / (1 + vatRate)).toFixed(2) : '0.00';
   const shippingCostDisplay = shippingLoaded ? shippingServiceCharges[0].price : '...';
 
-  const disablePlaceOrder = isLoading
-    || (!isLoggedIn && !isOTPVerified)
-    || (isLoggedIn && formData.shippingAdd && !isOTPVerified);
+  // Never silently disable — Place Order validates and tells the customer what is missing
+  const disablePlaceOrder = isLoading;
 
   /* ------------------------------------------------------------------ */
   /*  EFFECTS                                                             */
   /* ------------------------------------------------------------------ */
-  useEffect(() => { setCouponDataContext(null); }, []);
+  const removeGiftFromCartRef = useRef(removeGiftFromCart);
+  useEffect(() => {
+    removeGiftFromCartRef.current = removeGiftFromCart;
+  });
+
+  // Clean up FOC gifts when leaving checkout — runs ONLY on unmount (empty deps [])
+  useEffect(() => {
+    return () => {
+      removeGiftFromCartRef.current?.();
+    };
+  }, []);
+
+  const hasCleaned = useRef(false);
+  useEffect(() => {
+    if (hasCleaned.current) return;
+    // Check if any regular (non-gift, non-free) products are in BOGO
+    const hasBogoRegularItems = cartProducts.some((item) =>
+      !item.is_gift &&
+      promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === item.product_id))
+    );
+
+    if (!hasBogoRegularItems) {
+      // Only remove coupon properties from products that have no BOGO and no discount
+      const cleanedCart = cartProducts.map((item) => {
+        const hasDiscount = item.discount != null;
+        if (!hasDiscount) {
+          const { is_coupon, value, ...rest } = item;
+          return rest;
+        }
+        return item;
+      });
+      setCartProducts(cleanedCart);
+      setCouponDataContext(null);
+      hasCleaned.current = true; // prevent future runs
+    }
+  }, [cartProducts, promotionsContext, setCartProducts, setCouponDataContext]);
 
   // First-party AhmedTracker: begin_checkout on checkout load
   useEffect(() => {
@@ -261,6 +307,35 @@ export default function Checkout() {
     return () => { document.body.removeChild(s1); document.body.removeChild(s2); };
   }, [selectedOption]);
 
+  // Guest: send the code automatically once a full mobile number is entered (once per number)
+  useEffect(() => {
+    if (isLoggedIn || isOTPVerified || isSendOTPLoading) return;
+    const m = formData.billingAddress.mobile;
+    if (!/^05\d{8}$/.test(m) || lastOtpMobileRef.current === m) return;
+    const id = setTimeout(() => sendOTP(), 700);
+    return () => clearTimeout(id);
+  }, [formData.billingAddress.mobile, isLoggedIn, isOTPVerified]);
+
+  // Resend countdown
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const id = setTimeout(() => setOtpCooldown(c => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [otpCooldown]);
+
+  // Verify automatically when the 4-digit code is complete (typed or SMS autofill)
+  useEffect(() => {
+    if (isLoggedIn || isOTPVerified || isSendOTPLoading) return;
+    if (/^\d{4}$/.test(formData.otp || '')) verifyOTP();
+  }, [formData.otp]);
+
+  useEffect(() => {
+    if (!stepMountedRef.current) { stepMountedRef.current = true; return; }
+    if (isLoggedIn) return;
+    const el = document.getElementById(`cc-step-${guestStep}`);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  }, [guestStep]);
+
   const handleRadioChange = e => {
     setSelectedOption(e.target.value);
     if (error === tc('choosePayment')) {
@@ -291,7 +366,7 @@ export default function Checkout() {
               ...p.billingAddress,
               short_national_address: code,
               area: res.city,
-              province: res.city,
+              province: regionForCity(res.city) || res.city,
               building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || p.billingAddress.building,
               building_name: res.buildingNumber || p.billingAddress.building_name,
               postalCode: res.postalCode || '',
@@ -312,7 +387,7 @@ export default function Checkout() {
               ...p.shippingAddress,
               short_national_address: code,
               area: res.city,
-              province: res.city,
+              province: regionForCity(res.city) || res.city,
               building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || p.shippingAddress.building,
               building_name: res.buildingNumber || p.shippingAddress.building_name,
               postalCode: res.postalCode || '',
@@ -323,7 +398,7 @@ export default function Checkout() {
             ...p,
             short_national_address: code,
             area: res.city,
-            province: res.city,
+            province: regionForCity(res.city) || res.city,
             building: [res.street, res.district].filter(Boolean).join(', ') || res.formattedAddress || p.building,
             building_name: res.buildingNumber || p.building_name,
             postalCode: res.postalCode || '',
@@ -369,7 +444,22 @@ export default function Checkout() {
     if (name.startsWith('shipping') || name.startsWith('billing')) {
       const addr = name.startsWith('shipping') ? 'shippingAddress' : 'billingAddress';
       const field = name.split('.')[1];
-      if (field === 'mobile') value = normalizeMobile(value);
+      if (field === 'mobile') {
+        value = normalizeMobile(value);
+        // Guest changed the number after verifying — the code belonged to the old number
+        if (addr === 'billingAddress' && !isLoggedIn && isOTPVerified && value !== verifiedMobileRef.current) {
+          setIsOTPVerified(false); setIsOTPButton(true); setOTPSuccess(null); setOTPError(null);
+          setFormData(p => ({ ...p, otp: '' }));
+        }
+      }
+      // Picking a known city fills the region automatically
+      if (field === 'area') {
+        const reg = regionForCity(value);
+        if (reg) {
+          setFormData(p => ({ ...p, [addr]: { ...p[addr], province: reg } }));
+          if (addr === 'billingAddress') setFieldErrors(prev => { const next = { ...prev }; delete next.province; return next; });
+        }
+      }
       // Re-check a flagged billing field as the user types/autofills so stale errors clear
       if (addr === 'billingAddress' && fieldErrors[field] && billingRules[field]) {
         const msg = billingRules[field](value);
@@ -389,6 +479,12 @@ export default function Checkout() {
           }, 350);
         }
       }
+      // Clear flags that have no live rule as soon as the field has content
+      const looseKey = addr === 'shippingAddress' ? `ship_${field}` : (field === 'building' ? 'building' : null);
+      if (looseKey && fieldErrors[looseKey]) {
+        const ok = field === 'mobile' ? /^\d{10}$/.test(value) : !!String(value).trim();
+        if (ok) setFieldErrors(prev => { const next = { ...prev }; delete next[looseKey]; return next; });
+      }
       setFormData(p => ({ ...p, [addr]: { ...p[addr], [field]: value } }));
     } else {
       if (name === 'otp') value = toLatinDigits(value);
@@ -397,6 +493,7 @@ export default function Checkout() {
   };
 
   const handleCheckboxChange = () => {
+    setFieldErrors(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => !k.startsWith('ship_'))));
     setFormData(p => ({
       ...p,
       shippingAdd: !p.shippingAdd,
@@ -427,7 +524,11 @@ export default function Checkout() {
         }, 350);
       }
     }
-    setAddrForm(f => ({ ...f, [name]: finalVal }));
+    setAddrForm(f => {
+      const next = { ...f, [name]: finalVal };
+      if (name === 'area') { const reg = regionForCity(finalVal); if (reg) next.province = reg; }
+      return next;
+    });
   };
 
   const selectAddrAsDefault = idx => {
@@ -462,8 +563,8 @@ export default function Checkout() {
     if (!addrForm.area?.trim()) errs.area = 'cityRequired';
     if (!addrForm.building?.trim()) errs.building = 'fullAddressRequired';
     if (!addrForm.province?.trim()) errs.province = 'provinceRequired';
-    if (!addrForm.short_national_address?.trim()) errs.short_national_address = 'snaRequiredShort';
-    else if (!/^[A-Za-z]{4}[0-9]{4}$/.test(addrForm.short_national_address)) errs.short_national_address = 'snaMust';
+    // Short National Address is optional; validate format only when entered
+    if (addrForm.short_national_address?.trim() && !/^[A-Za-z]{4}[0-9]{4}$/.test(addrForm.short_national_address.trim())) errs.short_national_address = 'snaMust';
     if (Object.keys(errs).length) { setAddrFormErrors(errs); return; }
     setAddrFormErrors({});
     setAddrSaving(true);
@@ -557,7 +658,10 @@ export default function Checkout() {
     const user = isLoggedIn ? JSON.parse(atob(localStorage.getItem('user'))) : null;
     if (!couponCode.trim()) { setCouponError(tc('couponRequired')); return; }
     if (!isOTPVerified && !isLoggedIn) { setCouponError(tc('verifyMobileFirst')); return; }
-    const eligibleItems = cartProducts.filter(i => !i.discount && !i.is_gift);
+    const eligibleItems = cartProducts.filter(i => {
+      const isBogoProduct = promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === i.product_id));
+      return !i.discount && !isBogoProduct && !i.is_gift && !i.collection_name;
+    });
     if (!eligibleItems.length) { setCouponError(tc('couponNotApplicable')); setCouponCode(''); return; }
     const validCoupon = coupons.find(c => c.code.toLowerCase() === couponCode.toLowerCase());
     const payload = { company: 'KSA', salesType: 'EComm', couponRegistrationId: validCoupon ? validCoupon.couponRegistrationId : 0, couponCode: validCoupon ? '' : couponCode.trim(), mobileNo: user?.phone || formData.billingAddress.mobile, email: user?.email || formData.billingAddress.email };
@@ -570,51 +674,120 @@ export default function Checkout() {
     }
     const couponToApply = validCoupon || apiCoupon;
     if (!couponToApply) { setCouponError(tc('couponInvalid')); setCouponCode(''); return; }
-    setCartProducts(cartProducts.map(item => ({ ...item, ...((!item.discount && !item.is_gift) ? { is_coupon: true, value: couponToApply.value, coupon_type: couponToApply.coupon_type } : {}) })));
+    const updatedCartProducts = cartProducts.map(item => {
+      const isBogoProduct = promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === item.product_id));
+      const isEligible = !item.discount && !isBogoProduct && !item.is_gift;
+      return { ...item, ...(isEligible ? { is_coupon: true, value: couponToApply.value, coupon_type: couponToApply.coupon_type } : {}) };
+    });
+    setCartProducts(updatedCartProducts);
     setCouponError(null); setCouponData(couponToApply); setCouponDataContext(couponToApply);
     setCouponSuccess(tc('couponApplied', { code: couponToApply.code, title: couponToApply.title || '' }));
   };
 
-  const mapProductsFromFormData = products => products.map(item => ({
-    product_id: item.product_id, product_name: item.product_name, quantity: item.quantity,
-    category_name: item.category_name, subcategory_name: item.subcategory_name,
-    coupon: item.coupon, discount: item.discount,
-    ...('is_coupon' in item && { is_coupon: item.is_coupon }),
-    ...('is_gift' in item && { is_gift: item.is_gift }),
-    ...('coupon_type' in item && { coupon_type: item.coupon_type }),
-    ...('value' in item && { value: item.value }),
-    ...('campaign' in item && { campaign: item.campaign }),
-    ...('type' in item && { type: item.type }),
-  }));
+  const mapProductsFromFormData = (products) => {
+    const mapped = [];
+    products.forEach((item) => {
+      if (item.bogo_free_qty && item.bogo_free_qty > 0) {
+        const paidQty = (item.quantity || 0) - item.bogo_free_qty;
+
+        // Paid portion
+        if (paidQty > 0) {
+          mapped.push({
+            product_id: item.product_id,
+            product_name: item.product_name,
+            quantity: paidQty,
+            category_name: item.category_name,
+            subcategory_name: item.subcategory_name,
+            collection_name: item.collection_name || null,
+            coupon: item.coupon,
+            discount: null,
+            _original_discount: item._original_discount || null,
+            ...('is_coupon' in item && { is_coupon: item.is_coupon }),
+            ...('coupon_type' in item && { coupon_type: item.coupon_type }),
+            ...('value' in item && { value: item.value }),
+          });
+        }
+
+        // BOGO free portion
+        mapped.push({
+          product_id: item.product_id,
+          product_name: item.product_name,
+          quantity: item.bogo_free_qty,
+          category_name: item.category_name,
+          subcategory_name: item.subcategory_name,
+          collection_name: item.collection_name || null,
+          coupon: [],
+          discount: null,
+          is_gift: true,
+          type: 'bogo',
+          campaign: item.bogo_campaign,
+        });
+      } else {
+        // Regular product (no BOGO)
+        mapped.push({
+          product_id: item.product_id,
+          product_name: item.product_name,
+          quantity: item.quantity,
+          category_name: item.category_name,
+          subcategory_name: item.subcategory_name,
+          collection_name: item.collection_name || null,
+          coupon: item.coupon,
+          discount: item.discount,
+          ...('_original_discount' in item && { _original_discount: item._original_discount }),
+          ...('is_coupon' in item && { is_coupon: item.is_coupon }),
+          ...('is_gift' in item && { is_gift: item.is_gift }),
+          ...('coupon_type' in item && { coupon_type: item.coupon_type }),
+          ...('value' in item && { value: item.value }),
+          ...('campaign' in item && { campaign: item.campaign }),
+          ...('type' in item && { type: item.type }),
+        });
+      }
+    });
+    return mapped;
+  };
 
   // storeOrder request body — shared by Place Order and the Apple Pay widget
   function buildOrderPayload(paymentMethod) {
+    // COD fee applies only to cash on delivery, never to Apple Pay / card
+    const methodCodFee = paymentMethod === 'cod' ? codFeeSetting : 0;
     const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
     const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
-    const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1].price);
-    const servicePrice = shippingServiceCharges[1].price;
+    const finalPrice = totalPrice + shippingFee + serviceFee + methodCodFee;
+    const codPrice = methodCodFee;
+    const codPriceVat = codPrice / 100 * vatTax.percentage;
+    const servicePrice = serviceFee + methodCodFee;
     const servicePriceVat = servicePrice / 100 * vatTax.percentage;
     let userJson = null;
     if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
     const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
-    return { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: paymentMethod, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+    // Gift / different address: recipient email isn't asked for — use the customer's
+    if (shippingAdd) {
+      cleanFormData.shippingAddress = {
+        ...cleanFormData.shippingAddress,
+        email: cleanFormData.shippingAddress.email || cleanFormData.billingAddress.email,
+        country: cleanFormData.shippingAddress.country || 'KSA',
+      };
+    }
+    return { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: paymentMethod, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
   }
 
   // Synchronous pre-checks for Apple Pay (must run inside the click gesture).
   // Returns an error message, or null when the sheet may open.
   function validateBeforePay() {
     if (!cartProducts?.length || !shippingLoaded) return tc('applePayFailed');
-    if (!doneSection1) return tc('addressIncompleteTitle');
-    if ((!isLoggedIn && !isOTPVerified) || (isLoggedIn && formData.shippingAdd && !isOTPVerified)) return tc('verifyMobileFirst');
-    if (!/^[A-Za-z]{4}[0-9]{4}$/.test(formData.billingAddress.short_national_address?.trim() || '')) return tc('snaRequired');
-    const terms = document.getElementById('terms_chk');
-    if (terms && !terms.checked) { terms.focus(); return tc('applePayAcceptTerms'); }
+    if (!validateDetails()) return tc('addressIncompleteTitle');
+    // Short National Address is optional — block only a malformed value
+    const sna = formData.billingAddress.short_national_address?.trim();
+    if (sna && !/^[A-Za-z]{4}[0-9]{4}$/.test(sna)) return tc('snaRequired');
     return null;
   }
 
   async function onOrder(event) {
     event.preventDefault();
-    setIsLoading(true); setError(null); setSuccess(null);
+    if (!isLoggedIn && guestStep < 3) { goNextStep(guestStep); return; }
+    setError(null); setSuccess(null);
+    if (!validateDetails()) return;
+    setIsLoading(true);
 
     if (!selectedOption || !selectedOption.trim()) {
       setIsLoading(false);
@@ -648,8 +821,9 @@ export default function Checkout() {
       }
     } catch (e) { }
 
+    // Short National Address is optional — block only a malformed value
     const short_national_address = formData.billingAddress.short_national_address?.trim();
-    if (!/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
+    if (short_national_address && !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
       setIsLoading(false);
       setError(tc('snaRequired'));
       return;
@@ -672,7 +846,25 @@ export default function Checkout() {
       const data = await response.json();
 
       if (data.message?.split(' ')[0] === 'Order') {
-        setSuccess(tc('orderPlaced')); setError(null); setOrderDetails(data);
+        setSuccess(tc('orderPlaced')); setError(null);
+
+        // Sanitize data.products using cartProducts to accurately preserve is_gift for each line item
+        const sanitizedProducts = data.products?.map((item, idx) => {
+          const originalCartItem = cartProducts[idx] || cartProducts.find((cp) => cp.product_id === item.product_id);
+          return {
+            ...item,
+            is_gift: originalCartItem ? Boolean(originalCartItem.is_gift) : Boolean(item.is_gift),
+            type: originalCartItem?.type || item.type,
+          };
+        });
+
+        const orderCampaign = data.campaign || cartProducts?.map((cp) => cp.campaign || cp.bogo_campaign).find(Boolean) || null;
+
+        setOrderDetails({
+          ...data,
+          campaign: orderCampaign,
+          products: sanitizedProducts || data.products,
+        });
         setFormData({ shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', building_name: '', province: '' }, billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', building_name: '', province: '', short_national_address: '' }, shippingAdd: false });
         setTimeout(() => router.push(`/${locale}/shop-order-complete`), 1000);
       } else if (data.message === 'Redirecting to Payfort...') {
@@ -684,7 +876,7 @@ export default function Checkout() {
       else if (data.message === 'Redirecting to Paytabs...') { setSuccess(tc('redirectingPayment')); setError(null); router.push(data.redirect_url); }
       else if (data.message === 'Redirecting to Tamara...') { setSuccess(tc('redirectingPayment')); setError(null); router.push(data.redirect_url); }
       else {
-        const errField = ['qtyMessage', 'discountMessage', 'couponMessage', 'duplicateOrderMessage', 'error', 'payment_method'].find(k => data[k]);
+        const errField = ['qtyMessage', 'discountMessage', 'couponMessage', 'bogoMessage', 'duplicateOrderMessage', 'error', 'payment_method'].find(k => data[k]);
         if (errField) {
           const msg = Array.isArray(data[errField]) ? data[errField][0] : data[errField];
           setError(msg);
@@ -699,7 +891,8 @@ export default function Checkout() {
   }
 
   async function sendOTP(e) {
-    e.preventDefault(); setIsSendOTPLoading(true);
+    e?.preventDefault?.(); setIsSendOTPLoading(true);
+    lastOtpMobileRef.current = formData.billingAddress.mobile;
     if (!formData.billingAddress.mobile) { setOTPError(tc('mobileRequired')); setOTPSuccess(null); setIsSendOTPLoading(false); return; }
     if (!/^\d{10}$/.test(formData.billingAddress.mobile)) { setOTPError(tc('invalidMobile')); setOTPSuccess(null); setIsSendOTPLoading(false); return; }
     setOTPError(null);
@@ -707,13 +900,13 @@ export default function Checkout() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/sendOTP`, { method: 'POST', body: JSON.stringify({ mobile: formData.billingAddress.mobile }), headers: { 'Content-Type': 'application/json' } });
       if (!res.ok) throw new Error(tc('otpSendFailed'));
       const data = await res.json();
-      if (data.message?.split(' ')[0] === 'OTP') { setOTPSuccess(tc('otpSent')); setOTPError(null); setIsOTPButton(false); }
+      if (data.message?.split(' ')[0] === 'OTP') { setOTPSuccess(tc('otpSent')); setOTPError(null); setIsOTPButton(false); setOtpCooldown(30); }
       else { if (data.mobile) setOTPError(data.mobile); }
     } catch (err) { setOTPError(err.message); } finally { setIsSendOTPLoading(false); }
   }
 
   async function verifyOTP(e) {
-    e.preventDefault(); setIsSendOTPLoading(true);
+    e?.preventDefault?.(); setIsSendOTPLoading(true);
     if (!formData.otp) { setOTPError(tc('otpRequired')); setOTPSuccess(null); setIsSendOTPLoading(false); return; }
     if (!/^\d+$/.test(formData.otp)) { setOTPError(tc('invalidOtp')); setOTPSuccess(null); setIsSendOTPLoading(false); return; }
     setOTPError(null);
@@ -724,6 +917,7 @@ export default function Checkout() {
       if (data.message?.split(' ')[0] === 'Invalid') { setOTPSuccess(null); setOTPError(tc('invalidOtp')); }
       else if (data.message?.split(' ')[0] === 'OTP') {
         setOTPSuccess(data.message); setIsOTPVerified(true); setOTPError(null);
+        verifiedMobileRef.current = formData.billingAddress.mobile;
         setFieldErrors(prev => { const next = { ...prev }; delete next._otp; return next; });
         localStorage.setItem('token', data.access_token);
         if (typeof window !== "undefined" && window.AhmedTracker) {
@@ -750,59 +944,121 @@ export default function Checkout() {
     } catch (err) { setOTPError(err.message); } finally { setIsSendOTPLoading(false); }
   }
 
-  // Section 1 client-side validation + OTP check for guests
-  const handleSection1Continue = () => {
+  // Collect validation errors for a scope: 'contact' | 'delivery' | 'all'
+  const collectErrors = scope => {
     const b = formData.billingAddress;
     const errs = {};
     const check = field => { const msg = billingRules[field](b[field]); if (msg) errs[field] = msg; };
-    ['first_name', 'last_name', 'mobile', 'email'].forEach(check);
-    // Only validate address fields for guest users — logged-in users have pre-filled address from account
-    if (!isLoggedIn) {
-      ['area', 'province', 'short_national_address'].forEach(check);
-      if (b.building && !b.building.trim()) errs.building = 'invalid';
-      // Guest must verify OTP before continuing
-      if (!isOTPVerified) {
-        errs._otp = 'verifyMobileBeforeContinue';
+    if (scope !== 'delivery') {
+      ['first_name', 'last_name', 'mobile', 'email'].forEach(check);
+      if (!isLoggedIn && !isOTPVerified) errs._otp = 'verifyMobileBeforeContinue';
+    }
+    if (scope !== 'contact') {
+      if (!isLoggedIn) {
+        ['area', 'province', 'short_national_address'].forEach(check);
+        if (!b.building?.trim()) errs.building = 'fullAddressRequired';
+      } else if (!b.area?.trim() || !b.province?.trim() || !b.building?.trim()) {
+        // New accounts may have no saved address yet
+        errs._address = 'noAddressTitle';
+      } else if (billingRules.short_national_address(b.short_national_address)) {
+        errs._address = 'addressIncompleteTitle';
       }
-    } else if (!b.area?.trim() || !b.province?.trim() || !b.building?.trim()) {
-      // New accounts may have no saved address yet — the card would otherwise render empty
-      errs._address = 'noAddressTitle';
-    } else if (billingRules.short_national_address(b.short_national_address)) {
-      // Place Order requires a Short National Address; older saved addresses may lack one
-      errs._address = 'addressIncompleteTitle';
+      if (formData.shippingAdd) {
+        const sa = formData.shippingAddress;
+        if (!sa.first_name?.trim()) errs.ship_first_name = 'required';
+        if (!sa.last_name?.trim()) errs.ship_last_name = 'required';
+        if (!/^\d{10}$/.test(sa.mobile || '')) errs.ship_mobile = 'invalidMobileDigits';
+        if (!sa.area?.trim()) errs.ship_area = 'cityRequired';
+        if (!sa.province?.trim()) errs.ship_province = 'provinceRequired';
+        if (!sa.building?.trim()) errs.ship_building = 'fullAddressRequired';
+      }
     }
-    if (Object.keys(errs).length) { setFieldErrors(errs); return; }
+    return errs;
+  };
+
+  const CONTACT_KEYS = ['first_name', 'last_name', 'mobile', 'email', '_otp'];
+
+  const showErrors = errs => {
+    setFieldErrors(errs);
+    setTimeout(() => {
+      const el = document.querySelector('.cc-checkout-left .border-danger, .cc-checkout-left .cc-field-error');
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (el.focus) el.focus({ preventScroll: true }); }
+    }, 60);
+  };
+
+  // First-party AhmedTracker: details completed (was emitted on the old "Continue" step)
+  const trackDetailsComplete = () => {
+    if (detailsTrackedRef.current || typeof window === "undefined" || !window.AhmedTracker) return;
+    detailsTrackedRef.current = true;
+    const b = formData.billingAddress;
+    window.AhmedTracker.track("begin_checkout", {
+      total: parseFloat(totalPrice || 0),
+      items_count: (cartProducts || []).length,
+      email: b.email,
+      phone: b.mobile,
+      customer_phone: b.mobile,
+      customer_name: `${b.first_name} ${b.last_name}`.trim(),
+      city: b.area || b.province || null,
+      items: (cartProducts || []).map((i) => ({
+        product_id: (i.product_id || i.id)?.toString(),
+        product_name: i.product_name || i.name || "",
+        price: parseFloat(i.price || 0),
+        quantity: i.quantity || 1,
+      })),
+    });
+  };
+
+  // Step funnel event — shows exactly where guests drop off
+  const trackStep = (step, name) => {
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'checkout_step', checkout_step: step, checkout_step_name: name });
+      if (window.AhmedTracker) window.AhmedTracker.track('checkout_step', { step, step_name: name, total: parseFloat(totalPrice || 0) });
+    } catch { }
+  };
+
+  // Guest "Continue": validate only the current step, then fold it and open the next
+  const goNextStep = step => {
+    const errs = collectErrors(step === 1 ? 'contact' : 'delivery');
+    if (Object.keys(errs).length) { showErrors(errs); return; }
     setFieldErrors({});
+    setStepsDone(d => ({ ...d, [step]: true }));
+    // Editing Contact after Delivery was done goes straight back to Payment
+    setGuestStep(step === 1 && stepsDone[2] ? 3 : step + 1);
+    trackStep(step, step === 1 ? 'contact' : 'delivery');
+    if (step === 2) trackDetailsComplete();
+  };
 
-    // First-party AhmedTracker: emit begin_checkout with validated customer details
-    if (typeof window !== "undefined" && window.AhmedTracker) {
-      window.AhmedTracker.track("begin_checkout", {
-        total: parseFloat(totalPrice || 0),
-        items_count: (cartProducts || []).length,
-        email: b.email,
-        phone: b.mobile,
-        customer_phone: b.mobile,
-        customer_name: `${b.first_name} ${b.last_name}`.trim(),
-        city: b.area || b.province || null,
-        items: (cartProducts || []).map((i) => ({
-          product_id: (i.product_id || i.id)?.toString(),
-          product_name: i.product_name || i.name || "",
-          price: parseFloat(i.price || 0),
-          quantity: i.quantity || 1,
-        })),
-      });
+  // Place Order: validate everything; for guests jump back to the step that needs attention
+  const validateDetails = () => {
+    const errs = collectErrors('all');
+    if (Object.keys(errs).length) {
+      if (!isLoggedIn) {
+        const contactBad = Object.keys(errs).some(k => CONTACT_KEYS.includes(k));
+        setGuestStep(contactBad ? 1 : 2);
+      }
+      showErrors(errs);
+      return false;
     }
-
-    setDoneSection1(true);
-    setActiveSection(2);
+    setFieldErrors({});
+    trackDetailsComplete();
+    return true;
   };
 
   // Utility: item subtotal for order summary (discounted final price)
   const itemSubtotal = (elm) => {
     const nowGST = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
     const now = nowGST.toISOString().slice(0, 19).replace('T', ' ');
+    const bogoFreeQty = Number(elm.bogo_free_qty || 0);
+    const paidQty = Math.max(0, (elm.quantity || 0) - bogoFreeQty);
     let p = parseFloat(elm.price);
     if (elm.is_gift) return `0.00${currency.symbol}`;
+
+    // BOGO: charge only paid quantity
+    if (bogoFreeQty > 0) {
+      return `${(p * paidQty).toFixed(2)}${currency.symbol}`;
+    }
+
     if (elm?.discount && new Date(now) >= new Date(elm.discount.start_date) && new Date(now) <= new Date(elm.discount.end_date)) {
       if (elm.discount.discount_type === 'percent') p = p - p / 100 * elm.discount.value;
       else p = elm.discount.final_price || p;
@@ -818,6 +1074,7 @@ export default function Checkout() {
 
   // Whether an item has an active price reduction (for strikethrough display)
   const itemIsDiscounted = (elm) => {
+    if (elm.bogo_free_qty && elm.bogo_free_qty > 0) return true;
     const nowGST = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
     const now = nowGST.toISOString().slice(0, 19).replace('T', ' ');
     if (elm?.discount && new Date(now) >= new Date(elm.discount.start_date) && new Date(now) <= new Date(elm.discount.end_date)) return true;
@@ -834,6 +1091,16 @@ export default function Checkout() {
 
   const isExpired = d => new Date(d) < new Date();
 
+  const productImage = elm => {
+    const base = `${process.env.NEXT_PUBLIC_API_URL}storage/`;
+    if (elm.image) return base + elm.image;
+    try {
+      const imgs = typeof elm.images === 'string' ? JSON.parse(elm.images) : elm.images;
+      if (imgs?.[0]) return base + imgs[0];
+    } catch { }
+    return '/assets/images/general_product.png';
+  };
+
   /* ------------------------------------------------------------------ */
   /*  GUARDS                                                              */
   /* ------------------------------------------------------------------ */
@@ -848,15 +1115,174 @@ export default function Checkout() {
   // Human-readable names for the error banner, so users know exactly what to fix
   const fieldErrorLabels = {
     first_name: tc('firstName'), last_name: tc('lastName'), email: tc('emailAddress'), mobile: tc('mobileNumber'),
-    area: tc('city'), province: tc('province'), building: tc('fullAddress'),
+    area: tc('city'), province: tc('region'), building: tc('districtStreet'),
+    ship_first_name: tc('firstName'), ship_last_name: tc('lastName'), ship_mobile: tc('mobileNumber'),
+    ship_area: tc('city'), ship_province: tc('region'), ship_building: tc('districtStreet'),
     short_national_address: tc('shortNationalAddress'), _otp: tc('mobileVerification'), _address: tc('deliveryAddress'),
   };
-  const section1Summary = doneSection1
-    ? `${b.first_name} ${b.last_name} · ${b.mobile} · ${b.area}`
-    : '';
+  const regionLabel = key => { const r = SAUDI_REGIONS.find(x => x.key === key); return r ? (locale === 'ar' ? r.ar : r.en) : key; };
 
   /* ------------------------------------------------------------------ */
-  /*  JSX                                                                 */
+  /*  FIELD HELPERS (plain render functions — not components, so inputs   */
+  /*  keep focus between renders)                                         */
+  /* ------------------------------------------------------------------ */
+  const fieldError = key => fieldErrors[key]
+    ? <div className="cc-alert cc-alert--error cc-field-error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors[key])}</div>
+    : null;
+
+  const textField = ({ id, name, value, label, required = false, type = 'text', autoComplete, inputMode, errKey, hint, list, maxLength, dir }) => (
+    <div className="col-12">
+      <div className="form-floating">
+        <input
+          type={type}
+          className={`form-control${errKey && fieldErrors[errKey] ? ' border-danger' : ''}`}
+          id={id}
+          placeholder={label}
+          name={name}
+          value={value || ''}
+          onChange={handleChange}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
+          list={list}
+          maxLength={maxLength}
+          dir={dir}
+        />
+        <label htmlFor={id}>{label}{required ? ' *' : ''}</label>
+      </div>
+      {hint && <p className="cc-hint">{hint}</p>}
+      {errKey && fieldError(errKey)}
+    </div>
+  );
+
+  const regionField = ({ id, name, value, errKey, prefix = '' }) => {
+    const known = SAUDI_REGIONS.some(r => r.key === value);
+    return (
+      <div className="col-12">
+        <div className="cc-select-wrap">
+          <select
+            className={`form-select cc-select${value ? ' has-value' : ''}${errKey && fieldErrors[errKey] ? ' border-danger' : ''}`}
+            id={id}
+            name={name}
+            value={value || ''}
+            onChange={handleChange}
+            autoComplete={`${prefix}address-level1`}
+            aria-label={tc('region')}
+          >
+            <option value="">{tc('region')} *</option>
+            {SAUDI_REGIONS.map(r => <option key={r.key} value={r.key}>{locale === 'ar' ? r.ar : r.en}</option>)}
+            {value && !known && <option value={value}>{value}</option>}
+          </select>
+        </div>
+        {errKey && fieldError(errKey)}
+      </div>
+    );
+  };
+
+  const summaryRows = (
+    <>
+      <div className="cc-osr__row cc-osr__row--sub">
+        <span>{tc('subtotal')}</span>
+        <span>{totalPrice.toFixed(2)}{currency.symbol}</span>
+      </div>
+      <div className="cc-osr__row cc-osr__row--sub">
+        <span>{tc('shipping')}</span>
+        <span>{freeShippingFlag ? <span className="cc-osr__free">{tc('free')}</span> : `${shippingCostDisplay}${currency.symbol}`}</span>
+      </div>
+      {serviceFee > 0 && (
+        <div className="cc-osr__row cc-osr__row--sub">
+          <span>{tc('serviceFee')}</span>
+          <span>{serviceFee.toFixed(2)}{currency.symbol}</span>
+        </div>
+      )}
+      {codFee > 0 && (
+        <div className="cc-osr__row cc-osr__row--sub">
+          <span>{tc('codFee')}</span>
+          <span>{codFee.toFixed(2)}{currency.symbol}</span>
+        </div>
+      )}
+      {couponData && (
+        <div className="cc-osr__row cc-osr__row--sub cc-osr__row--discount">
+          <span>{tc('discount', { code: couponData.code })}</span>
+          <span>&minus;{couponData.value}{couponData.coupon_type === 'percent' ? '%' : currency.symbol}</span>
+        </div>
+      )}
+      <div className="cc-osr__divider" />
+      <div className="cc-osr__row cc-osr__row--total">
+        <span>{tc('total')}</span>
+        <span>{grandTotal}{currency.symbol} <em>{tc('inclVat', { amount: `${vatAmount}${currency.symbol}` })}</em></span>
+      </div>
+    </>
+  );
+
+  const summaryItems = cartProducts.map((elm, i) => {
+    const bogoFreeQty = Number(elm.bogo_free_qty || 0);
+    return (
+      <div key={i} className="cc-sum-item">
+        <span className="cc-sum-item__thumb">
+          <img src={productImage(elm)} alt="" loading="lazy" />
+          <span className="cc-sum-item__qty">{elm.quantity}</span>
+        </span>
+        <span className="cc-sum-item__name">
+          {locale === 'ar' && elm.product_name_ar?.trim() ? elm.product_name_ar : he.decode(elm.product_name || '')}
+          {bogoFreeQty > 0 && (
+            <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '12px' }}>
+              🎁 {bogoFreeQty} {locale === 'ar' ? 'مجاني' : 'FREE'}
+            </span>
+          )}
+          {elm.is_gift && (
+            <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '12px' }}>
+              🎁 {locale === 'ar' ? 'هدية مجانية' : 'Free Gift'}
+            </span>
+          )}
+        </span>
+        <span className="cc-sum-item__price">
+          {itemIsDiscounted(elm) && <span className="cc-price-old">{itemOriginalSubtotal(elm)}</span>}
+          <span>{itemSubtotal(elm)}</span>
+        </span>
+      </div>
+    );
+  });
+
+  const isGuestFlow = !isLoggedIn;
+  const stepOpen = n => !isGuestFlow || guestStep === n;
+  const stepClass = n => {
+    if (!isGuestFlow || guestStep === n) return 'cc-acc-section is-active cc-step';
+    return `cc-acc-section cc-step ${stepsDone[n] ? 'is-completed' : 'is-locked'}`;
+  };
+  const stepHeader = (n, title, summary) => {
+    const folded = isGuestFlow && stepsDone[n] && guestStep !== n;
+    return (
+      <div
+        className="cc-acc-header cc-step__header"
+        onClick={folded ? () => setGuestStep(n) : undefined}
+        role={folded ? 'button' : undefined}
+        style={folded ? { cursor: 'pointer' } : undefined}
+      >
+        <div className="cc-acc-dot">{folded ? '✓' : n}</div>
+        <div className="cc-acc-title-group">
+          <span className="cc-acc-title">{title}</span>
+          {folded && summary && <span className="cc-acc-summary-line">{summary}</span>}
+        </div>
+        {folded && (
+          <button type="button" className="cc-acc-edit" onClick={e => { e.stopPropagation(); setGuestStep(n); }}>{tc('edit')}</button>
+        )}
+      </div>
+    );
+  };
+  const stepContinue = n => isGuestFlow && (
+    <button type="button" className="cc-acc-continue cc-step__continue" onClick={() => goNextStep(n)}>
+      {tc('continue')}
+    </button>
+  );
+  const contactSummary = [`${b.first_name || ''} ${b.last_name || ''}`.trim(), b.mobile].filter(Boolean).join(' · ');
+  const deliverySummary = [
+    [b.area, regionLabel(b.province)].filter(Boolean).join(locale === 'ar' ? '، ' : ', '),
+    b.building,
+    formData.shippingAdd ? tc('giftShort') : null,
+  ].filter(Boolean).join(' · ');
+
+  /* ------------------------------------------------------------------ */
+  /*  JSX — single-page checkout: Contact → Delivery → Payment          */
   /* ------------------------------------------------------------------ */
   return (
     <>
@@ -864,59 +1290,142 @@ export default function Checkout() {
         <>
           <FreeGiftFeature couponData={couponData} />
           <BogoFeature />
-          <form onSubmit={onOrder} >
-            <div className="cc-checkout-layout">
+          <form onSubmit={onOrder} noValidate>
+            <datalist id="sa-city-list">
+              {SAUDI_CITIES.map(c => <option key={c.en} value={locale === 'ar' ? c.ar : c.en} />)}
+            </datalist>
+
+            <div className="cc-checkout-layout cc-onepage">
 
               {/* ============================================
-                LEFT — ACCORDION
+                LEFT — ONE PAGE
             ============================================ */}
               <div className="cc-checkout-left">
+
+                {/* Mobile: order summary bar at the top */}
+                <div className="cc-mobile-summary d-xl-none">
+                  <button type="button" className="cc-mobile-summary__toggle" onClick={() => setMobileSummaryOpen(v => !v)} aria-expanded={mobileSummaryOpen}>
+                    <span>{mobileSummaryOpen ? tc('hideOrderSummary') : tc('showOrderSummary')}</span>
+                    <span className="cc-mobile-summary__total">
+                      {grandTotal}{currency.symbol}
+                      <svg className={mobileSummaryOpen ? 'open' : ''} width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                    </span>
+                  </button>
+                  {mobileSummaryOpen && (
+                    <div className="cc-mobile-summary__body">
+                      {summaryItems}
+                      <div className="cc-osr__divider" />
+                      {summaryRows}
+                    </div>
+                  )}
+                </div>
+
+                {/* Error banner — names exactly what is missing */}
+                {Object.keys(fieldErrors).length > 0 && (
+                  <div className="cc-alert cc-alert--error" role="alert">
+                    {tc('fixFields', {
+                      fields: [...new Set(Object.keys(fieldErrors).map(k => fieldErrorLabels[k]).filter(Boolean))]
+                        .join(locale === 'ar' ? '، ' : ', '),
+                    })}
+                  </div>
+                )}
+
                 <div className="cc-acc">
 
-                  {/* ── SECTION 1: DELIVERY ── */}
-                  <div className={`cc-acc-section ${activeSection === 1 ? 'is-active' : doneSection1 ? 'is-completed' : 'is-locked'}`}>
-                    <div className="cc-acc-header" onClick={() => doneSection1 && setActiveSection(1)} role="button" tabIndex={0}>
-                      <div className="cc-acc-dot">{doneSection1 ? '✓' : '1'}</div>
-                      <div className="cc-acc-title-group">
-                        <span className="cc-acc-title">{tc('deliveryDetails')}</span>
-                        {doneSection1 && activeSection !== 1 && (
-                          <span className="cc-acc-summary-line">{section1Summary}</span>
+                  {/* ── 1. CONTACT ── */}
+                  <section id="cc-step-1" className={stepClass(1)}>
+                    {stepHeader(1, tc('contactTitle'), contactSummary)}
+                    {stepOpen(1) && (
+                      <div className="cc-acc-body">
+                        {isLoggedIn ? (
+                          <div className="row g-2">
+                            {(needsName || fieldErrors.first_name || fieldErrors.last_name) && (
+                              <>
+                                {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
+                                {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
+                              </>
+                            )}
+                            {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: tc('egMobile'), dir: 'ltr' })}
+                            {textField({ id: 'bill_email', name: 'billingAddress.email', value: b.email, label: tc('emailAddress'), required: true, type: 'email', inputMode: 'email', autoComplete: 'email', errKey: 'email', dir: 'ltr' })}
+                          </div>
+                        ) : (
+                          <>
+                            <p className="cc-step__note">
+                              {tc.rich('haveAccount', {
+                                login: (chunks) => <Link href={`/${locale}/login_register?redirect=${encodeURIComponent(`/${locale}/shop-checkout`)}`} className="cc-guest-notice__login-link">{chunks}</Link>,
+                              })}
+                            </p>
+                            <div className="row g-2">
+                              {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: isOTPVerified ? null : tc('otpWhy'), dir: 'ltr' })}
+
+                              {/* Inline OTP — sent automatically, verified automatically on the 4th digit */}
+                              {/^\d{10}$/.test(b.mobile) && (
+                                <div className="col-12">
+                                  {isOTPVerified ? (
+                                    <div className="cc-otp cc-otp--ok">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+                                      {tc('mobileVerifiedShort')}
+                                    </div>
+                                  ) : (
+                                    <div className={`cc-otp${fieldErrors._otp ? ' cc-field-error' : ''}`}>
+                                      {isOTPButton ? (
+                                        <button type="button" className="cc-otp__send" disabled={isSendOTPLoading} onClick={sendOTP}>
+                                          {isSendOTPLoading ? tc('sendingOtp') : tc('sendOtp')}
+                                        </button>
+                                      ) : (
+                                        <>
+                                          <label htmlFor="otp_input" className="cc-otp__prompt">{tc('otpPrompt', { mobile: b.mobile })}</label>
+                                          <div className="cc-otp__row">
+                                            <input
+                                              type="text"
+                                              inputMode="numeric"
+                                              autoComplete="one-time-code"
+                                              pattern="[0-9]*"
+                                              maxLength={4}
+                                              className="form-control cc-otp__input"
+                                              id="otp_input"
+                                              name="otp"
+                                              value={formData.otp}
+                                              onChange={handleChange}
+                                              dir="ltr"
+                                              autoFocus
+                                            />
+                                            <button type="button" className="cc-otp__verify" disabled={isSendOTPLoading || (formData.otp || '').length < 4} onClick={verifyOTP}>
+                                              {isSendOTPLoading ? tc('verifying') : tc('verify')}
+                                            </button>
+                                          </div>
+                                          <button type="button" className="cc-otp__resend" disabled={otpCooldown > 0 || isSendOTPLoading} onClick={sendOTP}>
+                                            {otpCooldown > 0 ? tc('resendIn', { s: otpCooldown }) : tc('resend')}
+                                          </button>
+                                        </>
+                                      )}
+                                      {OTPError && <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.75rem' }}>{OTPError}</div>}
+                                      {fieldErrors._otp && !OTPError && <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.75rem' }}>{tc(fieldErrors._otp)}</div>}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
+                              {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
+                              {textField({ id: 'bill_email', name: 'billingAddress.email', value: b.email, label: tc('emailAddress'), required: true, type: 'email', inputMode: 'email', autoComplete: 'email', errKey: 'email', dir: 'ltr' })}
+                            </div>
+                          </>
                         )}
+                        {stepContinue(1)}
                       </div>
-                      {doneSection1 && activeSection !== 1 && (
-                        <button type="button" className="cc-acc-edit" onClick={e => { e.stopPropagation(); setActiveSection(1); }}>{tc('edit')}</button>
-                      )}
-                      <span className="cc-acc-chevron">{activeSection === 1 ? '▲' : '▼'}</span>
-                    </div>
+                    )}
+                  </section>
 
-                    <div className="cc-acc-body">
-                      {/* Field errors */}
-                      {Object.keys(fieldErrors).length > 0 && (
-                        <div className="cc-alert cc-alert--error" role="alert">
-                          {tc('fixFields', {
-                            fields: Object.keys(fieldErrors)
-                              .map(k => fieldErrorLabels[k])
-                              .filter(Boolean)
-                              .join(locale === 'ar' ? '، ' : ', '),
-                          })}
-                        </div>
-                      )}
+                  {/* ── 2. DELIVERY ── */}
+                  <section id="cc-step-2" className={stepClass(2)}>
+                    {stepHeader(2, tc('deliveryTitle'), deliverySummary)}
+                    {stepOpen(2) && (
+                      <div className="cc-acc-body">
+                        <p className="cc-step__note">{tc('deliveringKsa')}</p>
 
-                      {isLoggedIn ? (
-                        /* ── LOGGED-IN: Clean address card display ── */
-                        <div>
-                          {/* Hidden inputs to keep form data for submission */}
-                          <input type="hidden" name="billingAddress.first_name" value={b.first_name} />
-                          <input type="hidden" name="billingAddress.last_name" value={b.last_name} />
-                          <input type="hidden" name="billingAddress.country" value="Saudi Arabia" />
-                          <input type="hidden" name="billingAddress.short_national_address" value={b.short_national_address} />
-                          <input type="hidden" name="billingAddress.area" value={b.area} />
-                          <input type="hidden" name="billingAddress.building" value={b.building} />
-                          <input type="hidden" name="billingAddress.building_name" value={b.building_name || ''} />
-                          <input type="hidden" name="billingAddress.province" value={b.province} />
-
-                          {/* Address Summary Card */}
-                          <div className="cc-address-card" style={fieldErrors._address ? { borderColor: '#d32f2f' } : undefined}>
+                        {isLoggedIn ? (
+                          <div className={`cc-address-card${fieldErrors._address ? ' cc-field-error' : ''}`} style={fieldErrors._address ? { borderColor: '#d32f2f' } : undefined}>
                             <div className="cc-address-card__header">
                               <div className="cc-address-card__badge">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -924,29 +1433,18 @@ export default function Checkout() {
                                 </svg>
                                 {tc('defaultAddress')}
                               </div>
-                              <button
-                                type="button"
-                                className="cc-address-card__edit-btn"
-                                onClick={hasAddress ? openAddrModal : openAddFirstAddr}
-                                aria-label={tc('changeAddressAria')}
-                              >
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                </svg>
+                              <button type="button" className="cc-address-card__edit-btn" onClick={hasAddress ? openAddrModal : openAddFirstAddr} aria-label={tc('changeAddressAria')}>
                                 {hasAddress ? tc('changeAddress') : tc('addAddress')}
                               </button>
                             </div>
-
                             <div className="cc-address-card__body">
                               {hasAddress ? (
                                 <>
                                   <p className="cc-address-card__name">{b.first_name} {b.last_name}</p>
                                   {b.building && <p className="cc-address-card__line">{b.building}</p>}
-                                  {b.building_name && <p className="cc-address-card__line">🏢 {locale === 'ar' ? 'مبنى: ' : 'Building: '}{b.building_name}</p>}
-                                  {b.area && b.province && <p className="cc-address-card__line">{b.area}, {b.province}</p>}
-                                  {b.short_national_address && <p className="cc-address-card__line cc-address-card__line--sna">📍 {b.short_national_address}</p>}
-                                  <p className="cc-address-card__line">{tc('saudiArabia')}</p>
+                                  {b.building_name && <p className="cc-address-card__line">{b.building_name}</p>}
+                                  {b.area && <p className="cc-address-card__line">{[b.area, regionLabel(b.province)].filter(Boolean).join(', ')}</p>}
+                                  {b.short_national_address && <p className="cc-address-card__line cc-address-card__line--sna">{b.short_national_address}</p>}
                                 </>
                               ) : (
                                 <>
@@ -966,791 +1464,212 @@ export default function Checkout() {
                               )}
                             </div>
                           </div>
-
-                          {/* Name fields — only when the account's name is incomplete (e.g. single-word registration) */}
-                          {(needsName || fieldErrors.first_name || fieldErrors.last_name) && (
-                            <div className="row g-2 mt-1">
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className={`form-control${fieldErrors.first_name ? ' border-danger' : ''}`} id="bill_fn" placeholder={tc('firstName')} name="billingAddress.first_name" value={b.first_name} onChange={handleChange} required />
-                                  <label htmlFor="bill_fn">{tc('firstName')} *</label>
-                                </div>
-                                {fieldErrors.first_name && <div className="cc-alert cc-alert--error py-1 mt-1">{tc(fieldErrors.first_name)}</div>}
-                              </div>
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className={`form-control${fieldErrors.last_name ? ' border-danger' : ''}`} id="bill_ln" placeholder={tc('lastName')} name="billingAddress.last_name" value={b.last_name} onChange={handleChange} required />
-                                  <label htmlFor="bill_ln">{tc('lastName')} *</label>
-                                </div>
-                                {fieldErrors.last_name && <div className="cc-alert cc-alert--error py-1 mt-1">{tc(fieldErrors.last_name)}</div>}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Editable contact fields for logged-in */}
-                          <div className="row g-2 mt-1">
-                            <div className="col-12">
-                              <div className="form-floating">
-                                <input type="email" className={`form-control${fieldErrors.email ? ' border-danger' : ''}`} id="bill_email" placeholder={tc('email')} name="billingAddress.email" value={b.email} onChange={handleChange} required />
-                                <label htmlFor="bill_email">{tc('emailAddress')} *</label>
-                              </div>
-                              {fieldErrors.email && <div className="cc-alert cc-alert--error py-1 mt-1">{tc(fieldErrors.email)}</div>}
-                            </div>
-                            <div className="col-12">
-                              <div className="form-floating">
-                                <input type="text" pattern="^\d{10}$" className={`form-control${fieldErrors.mobile ? ' border-danger' : ''}`} id="bill_mobile" placeholder={tc('mobileNumber')} name="billingAddress.mobile" value={b.mobile} onChange={handleChange} required />
-                                <label htmlFor="bill_mobile">{tc('mobileNumber')} *</label>
-                              </div>
-                              <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egMobile')}</p>
-                              {fieldErrors.mobile && <div className="cc-alert cc-alert--error py-1 mt-1">{tc(fieldErrors.mobile)}</div>}
-                            </div>
-                          </div>
-
-                          {/* Ship to different address */}
-                          <div className="mt-2">
-                            <div className="form-check mb-0">
-                              <input className="form-check-input" type="checkbox" id="ship_diff" onChange={handleCheckboxChange} />
-                              <label className="form-check-label small" htmlFor="ship_diff">{tc('shipDifferent')}</label>
-                            </div>
-                          </div>
-
-                          {/* Shipping address (collapsible) */}
-                          {showShipping && (
-                            <div className="row g-2 mt-1">
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_fn" placeholder={tc('firstName')} name="shippingAddress.first_name" value={formData.shippingAddress.first_name} onChange={handleChange} required />
-                                  <label htmlFor="ship_fn">{tc('firstName')} *</label>
-                                </div>
-                              </div>
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_ln" placeholder={tc('lastName')} name="shippingAddress.last_name" value={formData.shippingAddress.last_name} onChange={handleChange} required />
-                                  <label htmlFor="ship_ln">{tc('lastName')} *</label>
-                                </div>
-                              </div>
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_country" name="shippingAddress.country" value={tc('saudiArabia')} readOnly />
-                                  <label htmlFor="ship_country">{tc('country')}</label>
-                                </div>
-                              </div>
-                              <div className="col-6">
-                                <div className="form-floating position-relative">
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    id="ship_sna"
-                                    placeholder={tc('shortNationalAddress')}
-                                    name="shippingAddress.short_national_address"
-                                    value={formData.shippingAddress.short_national_address || ''}
-                                    onChange={handleChange}
-                                    required
-                                    maxLength="8"
-                                    pattern="^[A-Za-z]{4}[0-9]{4}$"
-                                    style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                                  />
-                                  <label htmlFor="ship_sna" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
-                                    {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
-                                  </label>
-                                  {lookupLoading.shipping ? (
-                                    <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
-                                      ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
-                                    </span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleLookup('shipping', formData.shippingAddress.short_national_address)}
-                                      disabled={!formData.shippingAddress.short_national_address || formData.shippingAddress.short_national_address.length < 8}
-                                      style={{
-                                        position: 'absolute',
-                                        right: locale === 'ar' ? 'auto' : '8px',
-                                        left: locale === 'ar' ? '8px' : 'auto',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: formData.shippingAddress.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
-                                        border: formData.shippingAddress.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
-                                        borderRadius: '4px',
-                                        color: formData.shippingAddress.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
-                                        fontSize: '0.72rem',
-                                        fontWeight: 700,
-                                        cursor: formData.shippingAddress.short_national_address?.length === 8 ? 'pointer' : 'default',
-                                        padding: '3px 8px',
-                                      }}
-                                    >
-                                      {locale === 'ar' ? 'تحقق' : 'Verify'}
-                                    </button>
-                                  )}
-                                </div>
-                                {lookupStatus.shipping && (
-                                  <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.shipping.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
-                                    {lookupStatus.shipping.message}
-                                  </div>
-                                )}
-                                {!lookupStatus.shipping && (
-                                  <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egSna')}</p>
-                                )}
-                              </div>
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_area" placeholder={tc('city')} name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required />
-                                  <label htmlFor="ship_area">{tc('city')} *</label>
-                                </div>
-                              </div>
-                              <div className="col-6">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_prov" placeholder={tc('province')} name="shippingAddress.province" value={formData.shippingAddress.province} onChange={handleChange} required />
-                                  <label htmlFor="ship_prov">{tc('province')} *</label>
-                                </div>
-                              </div>
-                              <div className="col-12">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_bldg" placeholder={tc('fullAddress')} name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
-                                  <label htmlFor="ship_bldg">{tc('fullAddress')} *</label>
-                                </div>
-                              </div>
-                              <div className="col-12">
-                                <div className="form-floating">
-                                  <input type="text" className="form-control" id="ship_bldg_name" placeholder={tc('buildingOptional')} name="shippingAddress.building_name" value={formData.shippingAddress.building_name || ''} onChange={handleChange} />
-                                  <label htmlFor="ship_bldg_name">{locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)'}</label>
-                                </div>
-                              </div>
-                              <div className="col-12">
-                                <div className="form-floating">
-                                  <input type="email" className="form-control" id="ship_email" placeholder={tc('email')} name="shippingAddress.email" value={formData.shippingAddress.email} onChange={handleChange} required />
-                                  <label htmlFor="ship_email">{tc('email')} *</label>
-                                </div>
-                              </div>
-                              <div className="col-12">
-                                <div className="form-floating">
-                                  <input type="text" pattern="^\d{10}$" className="form-control" id="ship_mob" placeholder={tc('mobileNumber')} name="shippingAddress.mobile" value={formData.shippingAddress.mobile} onChange={handleChange} required />
-                                  <label htmlFor="ship_mob" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{tc('mobileNumber')} *</label>
-                                </div>
-                                <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egMobile')}</p>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Add / Remove note toggle — logged-in DISABLED */}
-                          {/* <div className="mt-2">
-                          {!showNote ? (
-                            <button type="button" className="cc-toggle-link" onClick={() => setShowNote(true)}>
-                              <span className="cc-toggle-icon">+</span>
-                              Add order note (optional)
-                            </button>
-                          ) : (
-                            <div>
-                              <textarea className="form-control mt-1" placeholder="Order notes…" rows="3" name="note" value={formData.note} onChange={handleChange} autoFocus />
-                              <button type="button" className="cc-toggle-link" style={{marginTop:'0.35rem',color:'#c0392b'}} onClick={() => { setShowNote(false); setFormData(p=>({...p,note:''})); }}>
-                                <span className="cc-toggle-icon" style={{color:'#c0392b'}}>−</span>
-                                Remove order note
-                              </button>
-                            </div>
-                          )}
-                        </div> */}
-                        </div>
-                      ) : (
-                        /* ── GUEST: Full form ── */
-                        <div>
-                          {/* Guest checkout notice — audit MEDIUM fix */}
-                          <div className="cc-guest-notice" role="note" aria-label={tc('guestAria')}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                            </svg>
-                            <span>
-                              {tc.rich('guestNotice', {
-                                b: (chunks) => <strong>{chunks}</strong>,
-                                login: (chunks) => <Link href={`/${locale}/login_register`} className="cc-guest-notice__login-link">{chunks}</Link>,
-                              })}
-                            </span>
-                          </div>
+                        ) : (
                           <div className="row g-2">
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.first_name ? ' border-danger' : ''}`} id="bill_fn" placeholder={tc('firstName')} name="billingAddress.first_name" value={b.first_name} onChange={handleChange} required />
-                                <label htmlFor="bill_fn">{tc('firstName')} *</label>
-                              </div>
-                              {fieldErrors.first_name && <div className="cc-alert cc-alert--error py-1 mt-1">{tc(fieldErrors.first_name)}</div>}
-                            </div>
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.last_name ? ' border-danger' : ''}`} id="bill_ln" placeholder={tc('lastName')} name="billingAddress.last_name" value={b.last_name} onChange={handleChange} required />
-                                <label htmlFor="bill_ln">{tc('lastName')} *</label>
-                              </div>
-                              {fieldErrors.last_name && <div className="cc-alert cc-alert--error py-1 mt-1">{tc(fieldErrors.last_name)}</div>}
-                            </div>
-
-                            {/* Row: Country + Short National Address */}
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" className="form-control" id="bill_country" name="billingAddress.country" value={tc('saudiArabia')} readOnly />
-                                <label htmlFor="bill_country">{tc('country')}</label>
-                              </div>
-                            </div>
-                            <div className="col-6">
+                            {/* Optional shortcut: National Address fills the rest automatically */}
+                            <div className="col-12">
                               <div className="form-floating position-relative">
                                 <input
                                   type="text"
                                   className={`form-control${fieldErrors.short_national_address ? ' border-danger' : ''}`}
                                   id="bill_sna"
-                                  placeholder={tc('shortNationalAddress')}
+                                  placeholder={tc('snaOptional')}
                                   name="billingAddress.short_national_address"
-                                  value={b.short_national_address}
+                                  value={b.short_national_address || ''}
                                   onChange={handleChange}
-                                  required
                                   maxLength="8"
-                                  pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                  autoComplete="off"
+                                  dir="ltr"
                                   style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
                                 />
-                                <label htmlFor="bill_sna">{locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}</label>
+                                <label htmlFor="bill_sna">{tc('snaOptional')}</label>
                                 {lookupLoading.billing ? (
-                                  <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
-                                    ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
-                                  </span>
+                                  <span className="cc-sna-btn cc-sna-btn--busy">{locale === 'ar' ? 'جارٍ التحقق…' : 'Checking…'}</span>
                                 ) : (
                                   <button
                                     type="button"
+                                    className={`cc-sna-btn${b.short_national_address?.length === 8 ? ' is-ready' : ''}`}
                                     onClick={() => handleLookup('billing', b.short_national_address)}
                                     disabled={!b.short_national_address || b.short_national_address.length < 8}
-                                    style={{
-                                      position: 'absolute',
-                                      right: locale === 'ar' ? 'auto' : '8px',
-                                      left: locale === 'ar' ? '8px' : 'auto',
-                                      top: '50%',
-                                      transform: 'translateY(-50%)',
-                                      background: b.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
-                                      border: b.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
-                                      borderRadius: '4px',
-                                      color: b.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
-                                      fontSize: '0.72rem',
-                                      fontWeight: 700,
-                                      cursor: b.short_national_address?.length === 8 ? 'pointer' : 'default',
-                                      padding: '3px 8px',
-                                    }}
                                   >
                                     {locale === 'ar' ? 'تحقق' : 'Verify'}
                                   </button>
                                 )}
                               </div>
-                              {lookupStatus.billing && (
-                                <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
-                                  {lookupStatus.billing.message}
-                                </div>
-                              )}
-                              {!lookupStatus.billing && (
-                                <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egSna')}</p>
-                              )}
-                              {fieldErrors.short_national_address && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors.short_national_address)}</div>}
+                              {lookupStatus.billing
+                                ? <div className="cc-hint" style={{ color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>{lookupStatus.billing.message}</div>
+                                : <p className="cc-hint">{tc('snaHint')}</p>}
+                              {fieldError('short_national_address')}
                             </div>
 
-                            {/* Row: City + Province */}
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.area ? ' border-danger' : ''}`} id="bill_city" placeholder={tc('city')} name="billingAddress.area" value={b.area} onChange={handleChange} required />
-                                <label htmlFor="bill_city">{tc('city')} *</label>
-                              </div>
-                              {fieldErrors.area && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors.area)}</div>}
-                            </div>
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.province ? ' border-danger' : ''}`} id="bill_prov" placeholder={tc('province')} name="billingAddress.province" value={b.province} onChange={handleChange} required />
-                                <label htmlFor="bill_prov">{tc('province')} *</label>
-                              </div>
-                              {fieldErrors.province && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors.province)}</div>}
-                            </div>
-
-                            {/* Row: Full Address — full width */}
-                            <div className="col-12">
-                              <div className="form-floating">
-                                <input type="text" className={`form-control${fieldErrors.building ? ' border-danger' : ''}`} id="bill_addr" placeholder={tc('fullAddress')} name="billingAddress.building" value={b.building} onChange={handleChange} />
-                                <label htmlFor="bill_addr">{tc('fullAddress')} *</label>
-                              </div>
-                              {fieldErrors.building && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors.building)}</div>}
-                            </div>
-
-                            {/* Row: Building (Optional) — full width */}
-                            <div className="col-12">
-                              <div className="form-floating">
-                                <input type="text" className="form-control" id="bill_bldg_name" placeholder={tc('buildingOptional')} name="billingAddress.building_name" value={b.building_name || ''} onChange={handleChange} />
-                                <label htmlFor="bill_bldg_name">{locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)'}</label>
-                              </div>
-                            </div>
-
-                            {/* Row: Email + Mobile */}
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="email" className={`form-control${fieldErrors.email ? ' border-danger' : ''}`} id="bill_email" placeholder={tc('email')} name="billingAddress.email" value={b.email} onChange={handleChange} required />
-                                <label htmlFor="bill_email">{tc('emailAddress')} *</label>
-                              </div>
-                              {fieldErrors.email && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors.email)}</div>}
-                            </div>
-                            <div className="col-6">
-                              <div className="form-floating">
-                                <input type="text" pattern="^\d{10}$" className={`form-control${fieldErrors.mobile ? ' border-danger' : ''}`} id="bill_mobile" placeholder={tc('mobileNumber')} name="billingAddress.mobile" value={b.mobile} onChange={handleChange} required />
-                                <label htmlFor="bill_mobile" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{tc('mobileNumber')} *</label>
-                              </div>
-                              <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egMobile')}</p>
-                              {fieldErrors.mobile && <div className="cc-alert cc-alert--error py-1 mt-1" style={{ fontSize: '0.72rem' }}>{tc(fieldErrors.mobile)}</div>}
-                            </div>
-
-                            {/* ── INLINE OTP (guest users only) ──
-                            Only renders once a valid 10-digit KSA mobile is entered.
-                            Collapses to a success badge once verified. */}
-                            {/^\d{10}$/.test(b.mobile) && (
-                              <div className="col-12">
-                                <div style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: '4px', padding: '0.85rem', marginTop: '0.25rem' }}>
-                                  <p style={{ fontSize: '0.78rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#555', marginBottom: '0.6rem' }}>
-                                    {tc('verifyMobileTitle')}
-                                  </p>
-
-                                  {OTPError && <div className="cc-alert cc-alert--error" style={{ marginBottom: '0.5rem' }}>{OTPError}</div>}
-                                  {OTPSuccess && !isOTPVerified && <div className="cc-alert cc-alert--success" style={{ marginBottom: '0.5rem' }}>{OTPSuccess}</div>}
-
-                                  {isOTPVerified ? (
-                                    <div className="cc-alert cc-alert--success" style={{ margin: 0 }}>{tc('mobileVerified')}</div>
-                                  ) : isOTPButton ? (
-                                    <button
-                                      type="button"
-                                      className="cc-acc-continue"
-                                      disabled={isSendOTPLoading}
-                                      onClick={sendOTP}
-                                      style={{ height: '2.6rem', fontSize: '0.8rem' }}
-                                    >
-                                      {isSendOTPLoading ? tc('sendingOtp') : tc('sendOtp')}
-                                    </button>
-                                  ) : (
-                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'stretch' }}>
-                                      <input
-                                        type="number"
-                                        className="form-control"
-                                        id="otp_input"
-                                        placeholder={tc('enterOtp')}
-                                        name="otp"
-                                        value={formData.otp}
-                                        onChange={handleChange}
-                                        autoFocus
-                                        style={{ flex: 1, height: '2.8rem' }}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="cc-acc-continue"
-                                        disabled={isSendOTPLoading}
-                                        onClick={verifyOTP}
-                                        style={{ width: 'auto', padding: '0 1rem', height: '2.8rem', fontSize: '0.78rem', flex: '0 0 auto', marginTop: 0 }}
-                                      >
-                                        {isSendOTPLoading ? tc('verifying') : tc('verify')}
-                                      </button>
-                                      <button
-                                        type="button"
-                                        style={{ background: 'none', border: 'none', fontSize: '0.72rem', color: '#aaa', textDecoration: 'underline', cursor: 'pointer', flex: '0 0 auto', padding: '0 0.25rem' }}
-                                        onClick={sendOTP}
-                                        disabled={isSendOTPLoading}
-                                      >
-                                        {tc('resend')}
-                                      </button>
-                                    </div>
-                                  )}
-
-                                  {fieldErrors._otp && !isOTPVerified && (
-                                    <div className="cc-alert cc-alert--error" style={{ marginTop: '0.5rem' }}>{tc(fieldErrors._otp)}</div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Optional extras */}
-                            <div className="col-12">
-                              <div className="d-flex gap-3 flex-wrap">
-                                <div className="form-check mb-0">
-                                  <input className="form-check-input" type="checkbox" id="ship_diff" onChange={handleCheckboxChange} />
-                                  <label className="form-check-label small" htmlFor="ship_diff">{tc('shipDifferent')}</label>
-                                </div>
-                                <div className="form-check mb-0">
-                                  <input className="form-check-input" type="checkbox" id="create_acc" onChange={() => setCreateAccount(v => !v)} />
-                                  <label className="form-check-label small" htmlFor="create_acc">{tc('createAccount')}</label>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Shipping address (collapsible) */}
-                            {showShipping && (
-                              <>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_fn" placeholder={tc('firstName')} name="shippingAddress.first_name" value={formData.shippingAddress.first_name} onChange={handleChange} required />
-                                    <label htmlFor="ship_fn">{tc('firstName')} *</label>
-                                  </div>
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_ln" placeholder={tc('lastName')} name="shippingAddress.last_name" value={formData.shippingAddress.last_name} onChange={handleChange} required />
-                                    <label htmlFor="ship_ln">{tc('lastName')} *</label>
-                                  </div>
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_country" name="shippingAddress.country" value={tc('saudiArabia')} readOnly />
-                                    <label htmlFor="ship_country">{tc('country')}</label>
-                                  </div>
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating position-relative">
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      id="ship_sna2"
-                                      placeholder={tc('shortNationalAddress')}
-                                      name="shippingAddress.short_national_address"
-                                      value={formData.shippingAddress.short_national_address || ''}
-                                      onChange={handleChange}
-                                      required
-                                      maxLength="8"
-                                      pattern="^[A-Za-z]{4}[0-9]{4}$"
-                                      style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                                    />
-                                    <label htmlFor="ship_sna2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
-                                      {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
-                                    </label>
-                                    {lookupLoading.shipping ? (
-                                      <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
-                                        ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
-                                      </span>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        onClick={() => handleLookup('shipping', formData.shippingAddress.short_national_address)}
-                                        disabled={!formData.shippingAddress.short_national_address || formData.shippingAddress.short_national_address.length < 8}
-                                        style={{
-                                          position: 'absolute',
-                                          right: locale === 'ar' ? 'auto' : '8px',
-                                          left: locale === 'ar' ? '8px' : 'auto',
-                                          top: '50%',
-                                          transform: 'translateY(-50%)',
-                                          background: formData.shippingAddress.short_national_address?.length === 8 ? '#fdfaf3' : 'transparent',
-                                          border: formData.shippingAddress.short_national_address?.length === 8 ? '1px solid #d4be8a' : 'none',
-                                          borderRadius: '4px',
-                                          color: formData.shippingAddress.short_national_address?.length === 8 ? '#8a6c2d' : '#bbb',
-                                          fontSize: '0.72rem',
-                                          fontWeight: 700,
-                                          cursor: formData.shippingAddress.short_national_address?.length === 8 ? 'pointer' : 'default',
-                                          padding: '3px 8px',
-                                        }}
-                                      >
-                                        {locale === 'ar' ? 'تحقق' : 'Verify'}
-                                      </button>
-                                    )}
-                                  </div>
-                                  {lookupStatus.shipping && (
-                                    <div style={{ fontSize: '0.72rem', marginTop: '3px', color: lookupStatus.shipping.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
-                                      {lookupStatus.shipping.message}
-                                    </div>
-                                  )}
-                                  {!lookupStatus.shipping && (
-                                    <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egSna')}</p>
-                                  )}
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_area" placeholder={tc('city')} name="shippingAddress.area" value={formData.shippingAddress.area} onChange={handleChange} required />
-                                    <label htmlFor="ship_area">{tc('city')} *</label>
-                                  </div>
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_prov" placeholder={tc('province')} name="shippingAddress.province" value={formData.shippingAddress.province} onChange={handleChange} required />
-                                    <label htmlFor="ship_prov">{tc('province')} *</label>
-                                  </div>
-                                </div>
-                                <div className="col-12">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_bldg" placeholder={tc('fullAddress')} name="shippingAddress.building" value={formData.shippingAddress.building} onChange={handleChange} required />
-                                    <label htmlFor="ship_bldg">{tc('fullAddress')} *</label>
-                                  </div>
-                                </div>
-                                <div className="col-12">
-                                  <div className="form-floating">
-                                    <input type="text" className="form-control" id="ship_bldg_name2" placeholder={tc('buildingOptional')} name="shippingAddress.building_name" value={formData.shippingAddress.building_name || ''} onChange={handleChange} />
-                                    <label htmlFor="ship_bldg_name2">{locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)'}</label>
-                                  </div>
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="email" className="form-control" id="ship_email" placeholder={tc('email')} name="shippingAddress.email" value={formData.shippingAddress.email} onChange={handleChange} required />
-                                    <label htmlFor="ship_email">{tc('email')} *</label>
-                                  </div>
-                                </div>
-                                <div className="col-6">
-                                  <div className="form-floating">
-                                    <input type="text" pattern="^\d{10}$" className="form-control" id="ship_mob" placeholder={tc('mobileNumber')} name="shippingAddress.mobile" value={formData.shippingAddress.mobile} onChange={handleChange} required />
-                                    <label htmlFor="ship_mob" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{tc('mobileNumber')} *</label>
-                                  </div>
-                                  <p style={{ fontSize: '0.65rem', color: '#aaa', margin: '2px 0 0 2px', lineHeight: 1.3 }}>{tc('egMobile')}</p>
-                                </div>
-                              </>
-                            )}
-
-                            {createAccount && (
-                              <div className="col-12">
-                                <div className="form-floating">
-                                  <input type="password" className="form-control" id="acc_pass" placeholder={tc('password')} name="password" value={formData.password} onChange={handleChange} required />
-                                  <label htmlFor="acc_pass">{tc('password')} *</label>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Add / Remove note toggle — guest DISABLED */}
-                            {/* <div className="col-12">
-                          {!showNote ? (
-                            <button type="button" className="cc-toggle-link" onClick={() => setShowNote(true)}>
-                              <span className="cc-toggle-icon">+</span>
-                              Add order note (optional)
-                            </button>
-                          ) : (
-                            <div>
-                              <textarea className="form-control mt-1" placeholder="Order notes…" rows="3" name="note" value={formData.note} onChange={handleChange} autoFocus />
-                              <button type="button" className="cc-toggle-link" style={{marginTop:'0.35rem',color:'#c0392b'}} onClick={() => { setShowNote(false); setFormData(p=>({...p,note:''})); }}>
-                                <span className="cc-toggle-icon" style={{color:'#c0392b'}}>−</span>
-                                Remove order note
-                              </button>
-                            </div>
-                          )}
-                        </div> */}
-                          </div>{/* /row.g-2 */}
-                        </div>
-                      )}
-
-
-                      <button type="button" className="cc-acc-continue" onClick={handleSection1Continue}>
-                        {tc('continue')}
-                      </button>
-                    </div>
-                  </div>
-
-
-                  {/* ── SECTION 2: PAYMENT & ORDER ── */}
-                  <div className={`cc-acc-section ${activeSection === 2 ? 'is-active'
-                      : !doneSection1 ? 'is-locked'
-                        : ''
-                    }`}>
-                    <div className="cc-acc-header"
-                      onClick={() => doneSection1 && setActiveSection(activeSection === 2 ? 1 : 2)}
-                      role="button" tabIndex={0}
-                      style={{ cursor: doneSection1 ? 'pointer' : 'default' }}
-                    >
-                      <div className="cc-acc-dot">{isLoggedIn ? '2' : '2'}</div>
-                      <div className="cc-acc-title-group">
-                        <span className="cc-acc-title">{tc('paymentOrder')}</span>
-                      </div>
-                      <span className="cc-acc-chevron">{activeSection === 2 ? '▲' : '▼'}</span>
-                    </div>
-
-                    <div className="cc-acc-body">
-                      {/* Mini order summary */}
-                      {/* ── MOBILE-ONLY Collapsible Promo Code ── above order summary ── */}
-                      <div className="d-xl-none" style={{ marginBottom: '0.75rem' }}>
-                        {couponData ? (
-                          /* Applied state — always visible, no collapse needed */
-                          <div className="cc-coupon-card" style={{ padding: '0.65rem 0.75rem' }}>
-                            <div className="cc-coupon-applied">
-                              <span className="cc-coupon-applied__icon">🏷️</span>
-                              <div className="cc-coupon-applied__text">
-                                <span className="cc-coupon-applied__code">{couponData.code}</span>
-                                <span className="cc-coupon-applied__desc">{couponData.title}</span>
-                              </div>
-                              <button type="button" className="cc-coupon-applied__remove" onClick={removeCoupon} title={tc('removeCoupon')}>&times;</button>
-                            </div>
-                            {couponError && <div className="cc-coupon-msg cc-coupon-msg--err">{couponError}</div>}
-                            {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok">{couponSuccess}</div>}
-                          </div>
-                        ) : (
-                          /* Collapsible input state */
-                          <div className="cc-promo-mobile">
-                            {/* Toggle header */}
-                            <button
-                              type="button"
-                              className="cc-promo-mobile__toggle"
-                              onClick={() => setShowCouponPanel(v => !v)}
-                              aria-expanded={showCouponPanel}
-                            >
-                              <span className="cc-promo-mobile__toggle-label">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
-                                {tc('havePromo')}
-                              </span>
-                              <svg
-                                className={`cc-promo-mobile__chevron${showCouponPanel ? ' open' : ''}`}
-                                width="12" height="12" viewBox="0 0 10 6" fill="none"
-                              >
-                                <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                              </svg>
-                            </button>
-
-                            {/* Collapsible body */}
-                            {showCouponPanel && (
-                              <div className="cc-promo-mobile__body">
-                                <div className="cc-coupon-label-row" style={{ marginBottom: '0.5rem' }}>
-                                  <span style={{ fontSize: '0.72rem', color: '#888' }}>{tc('enterCodeBelow')}</span>
-                                  <button type="button" className="cc-coupon-view-offers" onClick={() => setShowCouponModal(true)}>{tc('viewOffers')}</button>
-                                </div>
-                                <div className="cc-coupon-input-wrap">
-                                  <input
-                                    className="cc-coupon-input"
-                                    type="text"
-                                    placeholder={tc('promoPlaceholder')}
-                                    value={couponCode}
-                                    onChange={handleCouponChange}
-                                    onKeyDown={e => e.key === 'Enter' && applyCoupon(e)}
-                                    autoFocus
-                                  />
-                                  <button type="button" className="cc-coupon-apply-btn" onClick={applyCoupon}>{tc('apply')}</button>
-                                </div>
-                                {couponError && <div className="cc-coupon-msg cc-coupon-msg--err" style={{ marginTop: '0.4rem' }}>{couponError}</div>}
-                                {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok" style={{ marginTop: '0.4rem' }}>{couponSuccess}</div>}
-                              </div>
-                            )}
+                            {textField({ id: 'bill_city', name: 'billingAddress.area', value: b.area, label: tc('city'), required: true, autoComplete: 'address-level2', errKey: 'area', list: 'sa-city-list' })}
+                            {regionField({ id: 'bill_prov', name: 'billingAddress.province', value: b.province, errKey: 'province' })}
+                            {textField({ id: 'bill_addr', name: 'billingAddress.building', value: b.building, label: tc('districtStreet'), required: true, autoComplete: 'street-address', errKey: 'building' })}
+                            {textField({ id: 'bill_bldg_name', name: 'billingAddress.building_name', value: b.building_name, label: tc('buildingApt'), autoComplete: 'address-line2' })}
                           </div>
                         )}
-                      </div>
 
-                      {/* Mini order summary */}
-                      <div className="cc-order-mini">
-                        <div className={`cc-order-mini__toggle ${summaryOpen ? 'open' : ''}`} onClick={() => setSummaryOpen(v => !v)} role="button">
-                          <span>{tc('orderSummaryCount', { count: cartProducts.length })}</span>
-                          <span><strong>{grandTotal}{currency.symbol}</strong></span>
-                          <svg width="12" height="12" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                        {/* Gift / different address */}
+                        <div className="form-check cc-gift-toggle">
+                          <input className="form-check-input" type="checkbox" id="ship_diff" checked={!!formData.shippingAdd} onChange={handleCheckboxChange} />
+                          <label className="form-check-label" htmlFor="ship_diff">{tc('giftToggle')}</label>
                         </div>
 
-                        <div className={`cc-order-mini__items ${summaryOpen ? 'open' : ''}`}>
-                          {cartProducts.map((elm, i) => (
-                            <div key={i}>
-                              <span>{he.decode(elm.product_name)} &times;{elm.quantity}</span>
-                              <span>
-                                {itemIsDiscounted(elm) && (
-                                  <span style={{ textDecoration: 'line-through', color: '#aaa', fontSize: '0.72rem', display: 'block', fontWeight: 400 }}>{itemOriginalSubtotal(elm)}</span>
-                                )}
-                                {itemSubtotal(elm)}
-                              </span>
+                        {formData.shippingAdd && (
+                          <div className="cc-recipient">
+                            <p className="cc-recipient__title">{tc('recipientTitle')}</p>
+                            <div className="row g-2">
+                              {textField({ id: 'ship_fn', name: 'shippingAddress.first_name', value: formData.shippingAddress.first_name, label: tc('firstName'), required: true, autoComplete: 'shipping given-name', errKey: 'ship_first_name' })}
+                              {textField({ id: 'ship_ln', name: 'shippingAddress.last_name', value: formData.shippingAddress.last_name, label: tc('lastName'), required: true, autoComplete: 'shipping family-name', errKey: 'ship_last_name' })}
+                              {textField({ id: 'ship_mob', name: 'shippingAddress.mobile', value: formData.shippingAddress.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'shipping tel-national', maxLength: 14, errKey: 'ship_mobile', hint: tc('egMobile'), dir: 'ltr' })}
+                              {textField({ id: 'ship_area', name: 'shippingAddress.area', value: formData.shippingAddress.area, label: tc('city'), required: true, autoComplete: 'shipping address-level2', errKey: 'ship_area', list: 'sa-city-list' })}
+                              {regionField({ id: 'ship_prov', name: 'shippingAddress.province', value: formData.shippingAddress.province, errKey: 'ship_province', prefix: 'shipping ' })}
+                              {textField({ id: 'ship_bldg', name: 'shippingAddress.building', value: formData.shippingAddress.building, label: tc('districtStreet'), required: true, autoComplete: 'shipping street-address', errKey: 'ship_building' })}
+                              {textField({ id: 'ship_bldg_name', name: 'shippingAddress.building_name', value: formData.shippingAddress.building_name, label: tc('buildingApt'), autoComplete: 'shipping address-line2' })}
                             </div>
-                          ))}
-                        </div>
-
-                        <div className="cc-order-mini__totals">
-                          <div>
-                            <span>{tc('subtotal')}</span>
-                            <span>{totalPrice.toFixed(2)}{currency.symbol}</span>
                           </div>
-                          <div>
-                            <span>{tc('shipping')}</span>
-                            <span>{freeShippingFlag ? `🎉 ${tc('free')}` : `${shippingCostDisplay}${currency.symbol}`}</span>
-                          </div>
-                          <div className="total-row">
-                            <span>{tc('totalVatIncl')}</span>
-                            <span>{grandTotal}{currency.symbol}</span>
-                          </div>
-                        </div>
+                        )}
+                        {stepContinue(2)}
                       </div>
+                    )}
+                  </section>
 
-                      {/* Coupon: REMOVED from accordion — now exclusively in right-side "Your Order" card */}
-
-
-                      {/* Tamara widget */}
-                      <TamaraWidget amount={grandTotal} inlineType='2' inlineVariant='outlined' locale={locale} />
-
-                      {/* Apple Pay (direct) — rendered only when the backend marks the customer eligible */}
-                      <ApplePayWidget
-                        locale={locale}
-                        amount={grandTotal}
-                        disabled={isLoading}
-                        isLoggedIn={isLoggedIn}
-                        validateBeforePay={validateBeforePay}
-                        buildOrderPayload={buildOrderPayload}
-                        onProcessingChange={setIsLoading}
-                      />
-
-                      {/* Payment methods — compact 2-column grid */}
-                      <p className="cc-pay-label">{tc('selectPayment')}</p>
-                      {error && !selectedOption && error === tc('choosePayment') && (
-                        <div className="text-danger small fw-semibold mb-2" role="alert">
-                          ⚠️ {tc('choosePayment')}
+                  {/* ── 3. PAYMENT ── */}
+                  <section id="cc-step-3" className={stepClass(3)}>
+                    {stepHeader(3, tc('paymentTitle'))}
+                    {!stepOpen(3) && (
+                      <div className="cc-pay-preview" aria-hidden="true">
+                        <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="" width={34} height={14} style={{ objectFit: 'contain' }} />
+                        <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="" width={34} height={14} style={{ objectFit: 'contain' }} />
+                        <Image src="/assets/images/paymentGateway/Tabby.png" alt="" width={40} height={16} style={{ objectFit: 'contain' }} />
+                        <span className="cc-pay-preview__text">Tamara · {tc('cod')}</span>
+                      </div>
+                    )}
+                    {stepOpen(3) && (
+                      <div className="cc-acc-body">
+                        {/* Mobile-only promo code (desktop has it in the right column) */}
+                        <div className="d-xl-none" style={{ marginBottom: '0.75rem' }}>
+                          {couponData ? (
+                            <div className="cc-coupon-card" style={{ padding: '0.65rem 0.75rem' }}>
+                              <div className="cc-coupon-applied">
+                                <div className="cc-coupon-applied__text">
+                                  <span className="cc-coupon-applied__code">{couponData.code}</span>
+                                  <span className="cc-coupon-applied__desc">{couponData.title}</span>
+                                </div>
+                                <button type="button" className="cc-coupon-applied__remove" onClick={removeCoupon} title={tc('removeCoupon')}>&times;</button>
+                              </div>
+                              {couponError && <div className="cc-coupon-msg cc-coupon-msg--err">{couponError}</div>}
+                              {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok">{couponSuccess}</div>}
+                            </div>
+                          ) : (
+                            <div className="cc-promo-mobile">
+                              <button type="button" className="cc-promo-mobile__toggle" onClick={() => setShowCouponPanel(v => !v)} aria-expanded={showCouponPanel}>
+                                <span className="cc-promo-mobile__toggle-label">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                                  {tc('havePromo')}
+                                </span>
+                                <svg className={`cc-promo-mobile__chevron${showCouponPanel ? ' open' : ''}`} width="12" height="12" viewBox="0 0 10 6" fill="none">
+                                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                </svg>
+                              </button>
+                              {showCouponPanel && (
+                                <div className="cc-promo-mobile__body">
+                                  <div className="cc-coupon-label-row" style={{ marginBottom: '0.5rem' }}>
+                                    <span style={{ fontSize: '0.72rem', color: '#888' }}>{tc('enterCodeBelow')}</span>
+                                    <button type="button" className="cc-coupon-view-offers" onClick={() => setShowCouponModal(true)}>{tc('viewOffers')}</button>
+                                  </div>
+                                  <div className="cc-coupon-input-wrap">
+                                    <input className="cc-coupon-input" type="text" placeholder={tc('promoPlaceholder')} value={couponCode} onChange={handleCouponChange} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(e); } }} autoFocus />
+                                    <button type="button" className="cc-coupon-apply-btn" onClick={applyCoupon}>{tc('apply')}</button>
+                                  </div>
+                                  {couponError && <div className="cc-coupon-msg cc-coupon-msg--err" style={{ marginTop: '0.4rem' }}>{couponError}</div>}
+                                  {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok" style={{ marginTop: '0.4rem' }}>{couponSuccess}</div>}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      )}
-                      <div className="cc-payment-grid cc-payment-grid--compact">
-                        {/* COD */}
-                        <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
-                          <input type="radio" id="pay_cod" name="checkout_payment_method" value="cod" checked={selectedOption === 'cod'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('cod')}</span>
-                            <span className="cc-payment-card__subtitle">{tc('codSub')}</span>
-                          </div>
-                        </label>
 
-                        {/* PayTabs */}
-                        <label className={`cc-payment-card ${selectedOption === 'paytabs' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_pt">
-                          <input type="radio" id="pay_pt" name="checkout_payment_method" value="paytabs" checked={selectedOption === 'paytabs'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('cardPayment')}</span>
+                        {error && !selectedOption && error === tc('choosePayment') && (
+                          <div className="text-danger small fw-semibold mb-2" role="alert">{tc('choosePayment')}</div>
+                        )}
+
+                        {/* Ordered by KSA preference: card (mada / Apple Pay) → Tabby → Tamara → Cash on delivery */}
+                        <div className="cc-payment-list" role="radiogroup" aria-label={tc('selectPayment')}>
+                          <label className={`cc-payment-card ${selectedOption === 'paytabs' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_pt">
+                            <input type="radio" id="pay_pt" name="checkout_payment_method" value="paytabs" checked={selectedOption === 'paytabs'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('cardPayment')}</span>
+                              <span className="cc-payment-card__subtitle">{tc('cardSub')}</span>
+                            </div>
                             <div className="cc-payment-card__logos">
-                              <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="Mada" width={36} height={14} style={{ objectFit: 'contain' }} />
+                              <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="mada" width={36} height={14} style={{ objectFit: 'contain' }} />
                               <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={36} height={14} style={{ objectFit: 'contain' }} />
                             </div>
-                          </div>
-                        </label>
+                          </label>
 
-                        {/* Tamara */}
-                        <label className={`cc-payment-card ${selectedOption === 'tamara' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tmr">
-                          <input type="radio" id="pay_tmr" name="checkout_payment_method" value="tamara" checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('tamara')}</span>
-                            <div className="cc-payment-card__logos">
-                              <TamaraWidget inlineType='4' inlineVariant='text' locale={locale} />
+                          <label className={`cc-payment-card ${selectedOption === 'tabby' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tbb">
+                            <input type="radio" id="pay_tbb" name="checkout_payment_method" value="tabby" checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('tabbyPayIn4')}</span>
+                              {selectedOption === 'tabby' && <div id="tabbyCard" style={{ marginTop: '0.5rem' }}></div>}
                             </div>
-                          </div>
-                        </label>
-
-                        {/* Tabby */}
-                        <label className={`cc-payment-card ${selectedOption === 'tabby' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tbb">
-                          <input type="radio" id="pay_tbb" name="checkout_payment_method" value="tabby" checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('tabbyPayIn4')}</span>
                             <div className="cc-payment-card__logos">
                               <Image src="/assets/images/paymentGateway/Tabby.png" width={50} height={20} alt="Tabby" style={{ objectFit: 'contain' }} />
                             </div>
-                            {selectedOption === 'tabby' && <div id="tabbyCard" style={{ marginTop: '0.5rem' }}></div>}
-                          </div>
-                        </label>
-                      </div>
+                          </label>
 
-                      {/* Terms */}
-                      <div style={{ fontSize: '0.76rem', color: '#888', margin: '0.5rem 0 0.75rem' }}>
-                        {tc.rich('privacyNote', {
-                          link: (chunks) => <Link href={`/${locale}/privacy`} target="_blank" style={{ color: 'inherit', textDecoration: 'underline' }}>{chunks}</Link>,
-                        })}
-                      </div>
-                      <div className="form-check mb-3">
-                        <input className="form-check-input" type="checkbox" id="terms_chk" required style={{ cursor: 'pointer' }} />
-                        <label className="form-check-label" htmlFor="terms_chk" style={{ fontSize: '0.78rem', cursor: 'pointer' }}>
-                          {tc.rich('agreeTerms', {
-                            link: (chunks) => <Link href={`/${locale}/terms`} target="_blank" style={{ color: '#b9a16b', textDecoration: 'underline' }}>{chunks}</Link>,
-                          })} <span style={{ color: 'red' }}>*</span>
-                        </label>
-                      </div>
+                          <label className={`cc-payment-card ${selectedOption === 'tamara' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tmr">
+                            <input type="radio" id="pay_tmr" name="checkout_payment_method" value="tamara" checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('tamara')}</span>
+                              <div className="cc-payment-card__widget">
+                                <TamaraWidget inlineType='4' inlineVariant='text' locale={locale} />
+                              </div>
+                            </div>
+                          </label>
 
-                      {/* Alerts */}
-                      {error && <div className="cc-alert cc-alert--error" role="alert">⚠️ {error}</div>}
-                      {success && <div className="cc-alert cc-alert--success" role="status">✅ {success}</div>}
+                          {/* Apple Pay (direct) — rendered only when the backend marks the customer eligible */}
+                          <ApplePayWidget
+                            locale={locale}
+                            amount={(grandTotalNum - codFee).toFixed(2)}
+                            disabled={isLoading}
+                            isLoggedIn={isLoggedIn}
+                            validateBeforePay={validateBeforePay}
+                            buildOrderPayload={buildOrderPayload}
+                            onProcessingChange={setIsLoading}
+                          />
 
-                      {/* Place Order */}
-                      <button className="cc-btn-gold" type="submit" disabled={disablePlaceOrder}>
-                        {isLoading
-                          ? <span>{tc('processing')}</span>
-                          : <>{tc('placeOrder', { amount: `${grandTotal}${currency.symbol}` })}</>
-                        }
-                      </button>
-                    </div>
-                  </div>
+                          <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
+                            <input type="radio" id="pay_cod" name="checkout_payment_method" value="cod" checked={selectedOption === 'cod'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('cod')}</span>
+                              <span className="cc-payment-card__subtitle">{tc('codSub')}{codFeeSetting > 0 && <> · {tc('codFeeNote', { amount: `${codFeeSetting.toFixed(2)}${currency.symbol}` })}</>}</span>
+                            </div>
+                          </label>
+                        </div>
+
+                        {/* Alerts */}
+                        {error && error !== tc('choosePayment') && <div className="cc-alert cc-alert--error" role="alert">{error}</div>}
+                        {success && <div className="cc-alert cc-alert--success" role="status">{success}</div>}
+
+                        {/* Place Order */}
+                        <button className="cc-btn-gold cc-place-order" type="submit" disabled={disablePlaceOrder}>
+                          {isLoading ? <span>{tc('processing')}</span> : <>{tc('placeOrder', { amount: `${grandTotal}${currency.symbol}` })}</>}
+                        </button>
+                        <p className="cc-terms-line">
+                          {tc.rich('termsLine', {
+                            terms: (chunks) => <Link href={`/${locale}/terms`} target="_blank">{chunks}</Link>,
+                            privacy: (chunks) => <Link href={`/${locale}/privacy`} target="_blank">{chunks}</Link>,
+                          })}
+                        </p>
+                      </div>
+                    )}
+                  </section>
                 </div>{/* end .cc-acc */}
               </div>{/* end .cc-checkout-left */}
 
@@ -1759,66 +1678,25 @@ export default function Checkout() {
             ============================================ */}
               <div className="cc-checkout-right d-none d-xl-block">
                 <div className="cc-order-summary-right">
-                  {/* Header row — toggleable */}
                   <div className="cc-osr__header" onClick={() => setSummaryOpen(v => !v)} role="button" tabIndex={0}>
-                    <span className="cc-osr__title">{summaryOpen ? tc('hideOrderSummary') : tc('showOrderSummary')}</span>
+                    <span className="cc-osr__title">{tc('orderSummary')}</span>
                     <div className="cc-osr__header-right">
                       <span className="cc-osr__total-pill">{grandTotal}{currency.symbol}</span>
                       <svg className={`cc-osr__chevron${summaryOpen ? ' cc-osr__chevron--open' : ''}`} width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                     </div>
                   </div>
-
-                  {/* Collapsible product table */}
                   {summaryOpen && (
                     <div className="cc-osr__body">
-                      <div className="cc-osr__col-heads">
-                        <span>{tc('product')}</span>
-                        <span>{tc('subtotal')}</span>
-                      </div>
-                      {cartProducts.map((elm, i) => (
-                        <div key={i} className="cc-osr__row">
-                          <span className="cc-osr__product-name">{he.decode(elm.product_name)} <strong>&times;{elm.quantity}</strong></span>
-                          <span className="cc-osr__product-price">
-                            {itemIsDiscounted(elm) ? (
-                              <>
-                                <span className="cc-price-old">{itemOriginalSubtotal(elm)}</span>
-                                <span className="cc-price-sale">{itemSubtotal(elm)}</span>
-                              </>
-                            ) : (
-                              <span className="cc-price-regular">{itemSubtotal(elm)}</span>
-                            )}
-                          </span>
-                        </div>
-                      ))}
+                      {summaryItems}
                       <div className="cc-osr__divider" />
-                      <div className="cc-osr__row cc-osr__row--sub">
-                        <span>{tc('subtotal')}</span>
-                        <span>{totalPrice.toFixed(2)}{currency.symbol}</span>
-                      </div>
-                      <div className="cc-osr__row cc-osr__row--sub">
-                        <span>{tc('shipping')}</span>
-                        <span>{freeShippingFlag ? <span className="cc-osr__free">{tc('free')}</span> : `${shippingCostDisplay}${currency.symbol}`}</span>
-                      </div>
-                      {couponData && (
-                        <div className="cc-osr__row cc-osr__row--sub cc-osr__row--discount">
-                          <span>{tc('discount', { code: couponData.code })}</span>
-                          <span>&minus;{couponData.value}{couponData.coupon_type === 'percent' ? '%' : currency.symbol}</span>
-                        </div>
-                      )}
-                      <div className="cc-osr__divider" />
-                      <div className="cc-osr__row cc-osr__row--total">
-                        <span>{tc('total')}</span>
-                        <span>{grandTotal}{currency.symbol} <em>{tc('inclVat', { amount: `${vatAmount}${currency.symbol}` })}</em></span>
-                      </div>
+                      {summaryRows}
                     </div>
                   )}
                 </div>
 
                 <div className="cc-coupon-card">
                   {couponData ? (
-                    /* Applied state */
                     <div className="cc-coupon-applied">
-                      <span className="cc-coupon-applied__icon">🏷️</span>
                       <div className="cc-coupon-applied__text">
                         <span className="cc-coupon-applied__code">{couponData.code}</span>
                         <span className="cc-coupon-applied__desc">{couponData.title}</span>
@@ -1826,21 +1704,13 @@ export default function Checkout() {
                       <button type="button" className="cc-coupon-applied__remove" onClick={removeCoupon} title={tc('removeCoupon')}>&times;</button>
                     </div>
                   ) : (
-                    /* Input state — label + input row, View Offers link */
                     <>
                       <div className="cc-coupon-label-row">
                         <span className="cc-coupon-label-text">{tc('havePromo')}</span>
                         <button type="button" className="cc-coupon-view-offers" onClick={() => setShowCouponModal(true)}>{tc('viewOffers')}</button>
                       </div>
                       <div className="cc-coupon-input-wrap">
-                        <input
-                          className="cc-coupon-input"
-                          type="text"
-                          placeholder={tc('enterCode')}
-                          value={couponCode}
-                          onChange={handleCouponChange}
-                          onKeyDown={e => e.key === 'Enter' && applyCoupon(e)}
-                        />
+                        <input className="cc-coupon-input" type="text" placeholder={tc('enterCode')} value={couponCode} onChange={handleCouponChange} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(e); } }} />
                         <button type="button" className="cc-coupon-apply-btn" onClick={applyCoupon}>{tc('apply')}</button>
                       </div>
                     </>
@@ -1849,7 +1719,6 @@ export default function Checkout() {
                   {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok">{couponSuccess}</div>}
                 </div>
 
-                {/* Trust badges below coupon */}
                 <div className="cc-trust-bar cc-trust-bar--right">
                   <span className="cc-trust-item">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
@@ -1867,10 +1736,23 @@ export default function Checkout() {
               </div>
             </div>{/* end cc-checkout-layout */}
 
+            {/* Mobile: sticky Place Order bar — the main action is always in reach */}
+            {(!isGuestFlow || guestStep === 3) && (
+              <div className="cc-sticky-cta d-xl-none">
+                <div className="cc-sticky-cta__total">
+                  <span>{tc('total')}</span>
+                  <strong>{grandTotal}{currency.symbol}</strong>
+                </div>
+                <button className="cc-btn-gold" type="submit" disabled={disablePlaceOrder}>
+                  {isLoading ? tc('processing') : tc('placeOrderShort')}
+                </button>
+              </div>
+            )}
+
             {/* ── COUPON MODAL ── */}
             {showCouponModal && (
               <div className="coupon-modal-overlay" onClick={() => setShowCouponModal(false)}>
-                <div className="coupon-modal" onClick={e => e.stopPropagation()}>
+                <div className="coupon-modal" data-lenis-prevent onClick={e => e.stopPropagation()}>
                   <div className="coupon-header">
                     <h3>{tc('availableCoupons')}</h3>
                     <button className="close-btn" onClick={() => setShowCouponModal(false)}>&times;</button>
@@ -1978,7 +1860,7 @@ export default function Checkout() {
           {/* ═══ INLINE ADDRESS MODAL (logged-in) ═══ */}
           {showAddrModal && (
             <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }} onClick={e => { if (e.target === e.currentTarget) { setShowAddrModal(false); setEditingAddrIdx(null); } }}>
-              <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 40px rgba(0,0,0,0.2)' }}>
+              <div data-lenis-prevent style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 40px rgba(0,0,0,0.2)' }}>
                 {/* Modal Header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', borderBottom: '1px solid #f0ece3' }}>
                   <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, fontFamily: 'inherit', letterSpacing: '0.03em' }}>
@@ -2045,7 +1927,7 @@ export default function Checkout() {
                       {/* Short National Address with auto-verify */}
                       <div>
                         <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>
-                          {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
+                          {locale === 'ar' ? 'العنوان الوطني المختصر (اختياري)' : 'Short National Address (optional)'}
                         </label>
                         <div style={{ position: 'relative' }}>
                           <input
@@ -2107,18 +1989,28 @@ export default function Checkout() {
                       </div>
 
                       {[
-                        { label: locale === 'ar' ? 'المدينة *' : 'City *', field: 'area', type: 'text', err: addrFormErrors.area },
-                        { label: locale === 'ar' ? 'المنطقة / المحافظة *' : 'Province *', field: 'province', type: 'text', err: addrFormErrors.province },
-                        { label: locale === 'ar' ? 'العنوان الكامل *' : 'Full Address *', field: 'building', type: 'text', err: addrFormErrors.building },
-                        { label: locale === 'ar' ? 'المبنى (اختياري)' : 'Building (Optional)', field: 'building_name', type: 'text', err: null },
-                      ].map(({ label, field, type, err }) => (
-                        <div key={field}>
-                          <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>{label}</label>
-                          <input type={type} name={field} value={addrForm[field] || ''} onChange={handleAddrFormChange}
-                            style={{ width: '100%', border: `1px solid ${err ? '#e53935' : '#ddd'}`, borderRadius: '6px', padding: '0.5rem 0.75rem', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit' }} />
-                          {err && <p style={{ margin: '3px 0 0', fontSize: '0.75rem', color: '#e53935' }}>{tc(err)}</p>}
-                        </div>
-                      ))}
+                        { label: `${tc('city')} *`, field: 'area', err: addrFormErrors.area, list: 'sa-city-list' },
+                        { label: `${tc('region')} *`, field: 'province', err: addrFormErrors.province, select: true },
+                        { label: `${tc('districtStreet')} *`, field: 'building', err: addrFormErrors.building },
+                        { label: tc('buildingApt'), field: 'building_name', err: null },
+                      ].map(({ label, field, err, list, select }) => {
+                        const boxStyle = { width: '100%', border: `1px solid ${err ? '#e53935' : '#ddd'}`, borderRadius: '6px', padding: '0.5rem 0.75rem', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', background: '#fff' };
+                        return (
+                          <div key={field}>
+                            <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>{label}</label>
+                            {select ? (
+                              <select name={field} value={addrForm[field] || ''} onChange={handleAddrFormChange} style={boxStyle}>
+                                <option value="">{tc('selectRegion')}</option>
+                                {SAUDI_REGIONS.map(r => <option key={r.key} value={r.key}>{locale === 'ar' ? r.ar : r.en}</option>)}
+                                {addrForm[field] && !SAUDI_REGIONS.some(r => r.key === addrForm[field]) && <option value={addrForm[field]}>{addrForm[field]}</option>}
+                              </select>
+                            ) : (
+                              <input type="text" name={field} value={addrForm[field] || ''} onChange={handleAddrFormChange} list={list} style={boxStyle} />
+                            )}
+                            {err && <p style={{ margin: '3px 0 0', fontSize: '0.75rem', color: '#e53935' }}>{tc(err)}</p>}
+                          </div>
+                        );
+                      })}
 
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', marginTop: '0.25rem' }}>
                         <input type="checkbox" name="isDefault" checked={!!addrForm.isDefault} onChange={handleAddrFormChange} />

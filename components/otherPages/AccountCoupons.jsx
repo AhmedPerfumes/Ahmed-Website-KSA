@@ -1,7 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export default function MyCoupons() {
+  const t = useTranslations("Account");
+  const offText = (c) => (c.baseOn === "Percent" ? t("percentOff", { value: c.value }) : t("amountOff", { value: c.value }));
   const [coupons, setCoupons] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -85,14 +88,14 @@ export default function MyCoupons() {
           fontSize: 23,
         }}
       >
-        My Coupons
+        {t("pageCoupons")}
       </h2>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 40 }}>Loading…</div>
+        <div style={{ textAlign: "center", padding: 40 }}>{t("loading")}</div>
       ) : coupons.length === 0 ? (
         <div style={{ textAlign: "center", color: "#888", padding: 30 }}>
-          You have no coupons yet.
+          {t("noCoupons")}
         </div>
       ) : (
         <div className="d-flex flex-column gap-3">
@@ -123,7 +126,7 @@ export default function MyCoupons() {
                 <div
                   style={{
                     flex: 2.2,
-                    padding: "18px 18px 18px 22px",
+                    paddingBlock: 18, paddingInlineStart: 22, paddingInlineEnd: 18,
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
@@ -137,7 +140,7 @@ export default function MyCoupons() {
                       letterSpacing: 0.7,
                     }}
                   >
-                    {c.promotionName || "Special Coupon"}
+                    {c.promotionName || t("specialCoupon")}
                   </div>
                   <div
                     style={{
@@ -147,14 +150,12 @@ export default function MyCoupons() {
                       color: "#222",
                     }}
                   >
-                    {c.baseOn === "Percent"
-                      ? `${c.value}% OFF`
-                      : `AED${c.value} OFF`}
+                    {offText(c)}
                   </div>
                   <div style={{ fontSize: 13, color: "#aaa" }}>
                     {expired
-                      ? `Expired: ${c.validTo?.slice(0, 10)}`
-                      : `Valid until: ${c.validTo?.slice(0, 10)}`}
+                      ? t("expiredOn", { date: c.validTo?.slice(0, 10) })
+                      : t("validUntil", { date: c.validTo?.slice(0, 10) })}
                   </div>
                 </div>
 
@@ -217,9 +218,7 @@ export default function MyCoupons() {
                       letterSpacing: ".5px",
                     }}
                   >
-                    {c.baseOn === "Percent"
-                      ? `${c.value}% OFF`
-                      : `AED${c.value} OFF`}
+                    {offText(c)}
                   </span>
                   {!expired && !redeemed && (
                     <span
@@ -228,16 +227,16 @@ export default function MyCoupons() {
                       }`}
                     >
                       {copiedId === c.couponCode
-                        ? "Copied!"
-                        : "Click to Copy"}
+                        ? t("copied")
+                        : t("clickToCopy")}
                     </span>
                   )}
                 </div>
 
                 {/* Overlays */}
-                {expired && <div className="coupon-overlay">Expired Coupon</div>}
+                {expired && <div className="coupon-overlay">{t("expiredCoupon")}</div>}
                 {!expired && redeemed && (
-                  <div className="coupon-overlay">Redeemed Coupon</div>
+                  <div className="coupon-overlay">{t("redeemedCoupon")}</div>
                 )}
               </div>
             );

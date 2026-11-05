@@ -3,6 +3,16 @@ import React, { useEffect } from "react";
 import { dashboardMenuItems } from "@/data/menu";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+
+// Menu titles (data/menu.js) → Account message keys
+const NAV_KEYS = {
+  "/account_dashboard": "navOverview",
+  "/account_orders": "navPurchases",
+  "/account_edit_address": "navAddresses",
+  "/account_coupons": "navCoupons",
+  "/account_loyalty": "navLoyalty",
+};
 
 // Add/adjust locales here if you support more
 const LOCALES = ["en", "ar"];
@@ -39,13 +49,15 @@ function isActive(currentPathname, itemHref) {
 export default function DashboardSidebar() {
   const pathname = usePathname() || "/";
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("Account");
 
   // Redirect to login if not authenticated
   useEffect(() => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem("user");
-    if (!token) router.replace("/login_register");
-  }, [router]);
+    if (!token) router.replace(`/${locale}/login_register`);
+  }, [router, locale]);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -53,7 +65,7 @@ export default function DashboardSidebar() {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     }
-    router.replace("/login_register");
+    router.replace(`/${locale}/login_register`);
   };
 
   return (
@@ -66,15 +78,15 @@ export default function DashboardSidebar() {
             <li key={i}>
               {elm.title === "Logout" ? (
                 <a href="#" onClick={handleLogout} className="menu-link menu-link_us-s">
-                  Logout
+                  {t("navLogout")}
                 </a>
               ) : (
                 <Link
-                  href={elm.href}
+                  href={`/${locale}${elm.href}`}
                   className={`menu-link menu-link_us-s ${active ? "menu-link_active" : ""}`}
                   aria-current={active ? "page" : undefined}
                 >
-                  {elm.title}
+                  {NAV_KEYS[elm.href] ? t(NAV_KEYS[elm.href]) : elm.title}
                 </Link>
               )}
             </li>

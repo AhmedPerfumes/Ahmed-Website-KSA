@@ -537,7 +537,7 @@ p {
 }
 
 [class*="order"] p,
-[class*="order"] span,
+[class*="order"] span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]),
 [class*="account"] p,
 [class*="account"] label {
   font-family: var(--font-family-base) !important;

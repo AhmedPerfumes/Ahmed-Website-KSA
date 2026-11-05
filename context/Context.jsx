@@ -1,4 +1,5 @@
 "use client";
+import { linePrice } from "@/utlis/cartPricing";
 
 import { allProducts } from "@/data/products";
 import React, { createContext, useContext, useReducer, useEffect, useState, useRef } from "react";
@@ -10,18 +11,24 @@ export const useContextElement = () => useContext(dataContext);
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_PRODUCT': {
-      const existingProduct = state.products.find(
-        (p) =>
+      const existingProduct = state.products.find((p) => {
+        // 🚨 DO NOT merge gift cards
+        if (action.payload.is_gift_card) return false;
+
+        return (
           p.product_id === action.payload.product_id &&
-          p.campaign === action.payload.campaign
-      );
+          p.campaign === action.payload.campaign &&
+          Boolean(p.is_gift) === Boolean(action.payload.is_gift)
+        );
+      });
 
       let updatedProducts;
 
       if (existingProduct) {
         updatedProducts = state.products.map((p) =>
           p.product_id === action.payload.product_id &&
-          p.campaign === action.payload.campaign
+            p.campaign === action.payload.campaign &&
+            Boolean(p.is_gift) === Boolean(action.payload.is_gift)
             ? { ...p, quantity: (p.quantity || 0) + (action.payload.quantity || 1) }
             : p
         );
@@ -53,18 +60,25 @@ const cartReducer = (state, action) => {
     case 'REMOVE_GIFT':
       return {
         ...state,
-        products: state.products.filter(
-          (p) =>
-            !p.is_gift ||
-            (action.payload.productId && p.product_id !== action.payload.productId) ||
-            (action.payload.campaign && p.campaign !== action.payload.campaign)
-        ),
+        products: state.products.filter((p) => {
+          if (!p.is_gift) return true;
+          // If no specific parameters passed, remove all gifts
+          if (!action.payload?.productId && !action.payload?.campaign) return false;
+          // If parameters passed, remove matching gift
+          const matchId = action.payload.productId ? p.product_id === action.payload.productId : true;
+          const matchCampaign = action.payload.campaign ? p.campaign === action.payload.campaign : true;
+          return !(matchId && matchCampaign);
+        }),
         isProcessing: false,
       };
     case 'REMOVE_PRODUCT':
       return {
         ...state,
-        products: state.products.filter((p) => p.product_id !== action.payload.productId),
+        products: state.products.filter((p) =>
+          p.unique_key
+            ? p.unique_key !== action.payload.uniqueKey
+            : (p.product_id !== action.payload.productId || Boolean(p.is_gift))
+        ),
         isProcessing: false,
       };
     case 'SET_PRODUCTS':
@@ -82,7 +96,7 @@ export default function Context({ children }) {
     products: [],
     isProcessing: false,
   });
-  
+
   const [wishList, setWishList] = useState([]);
   const [quickViewItem, setQuickViewItem] = useState(allProducts[0]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -92,7 +106,7 @@ export default function Context({ children }) {
 
   const [promotionsContext, setPromotionsContext] = useState([]);
 
-  const { shippingServiceCharges } = useMenu() ;
+  const { shippingServiceCharges } = useMenu();
   // Single source for the free-shipping threshold (admin value, 300 SAR fallback) — used by cart, drawer and checkout
   const freeShippingThreshold = Number(shippingServiceCharges?.[3]?.price) || 300;
 
@@ -136,58 +150,35 @@ export default function Context({ children }) {
     const currentUTC = new Date();
     const currentGST = new Date(currentUTC.getTime() + 4 * 60 * 60 * 1000);
     const current_date_time = currentGST.toISOString().slice(0, 19).replace("T", " ");
-    
-    const isCustomerCoupon = couponDataContext && couponDataContext.type === "customer";
-    const isCustomerCouponActive = isCustomerCoupon && (!couponDataContext.start_date || !couponDataContext.end_date || (new Date(current_date_time) >= new Date(couponDataContext.start_date) && new Date(current_date_time) <= new Date(couponDataContext.end_date)));
-    
-    const subtotal = state.products.reduce((accumulator, product) => {
+
+    // Per-line calculation accounting for BOGO free units:
+    const subtotal = state.products.reduce((acc, product) => {
+      // 🚨 NEVER apply discounts/coupons on gift cards
+      if (product?.is_gift_card) {
+        const qty = Number(product?.quantity || 0);
+        const basePrice = Number(product?.price || 0);
+        return acc + qty * basePrice;
+      }
+
+      // Ensure numbers
       const qty = Number(product?.quantity || 0);
-      const basePrice = Number(product?.price || 0);
+      const bogoFreeQty = Number(product?.bogo_free_qty || 0);
+      const paidQty = Math.max(0, qty - bogoFreeQty); // BOGO free units don't get charged
 
-      // Skip free gifts entirely
-      if (product?.is_gift) return accumulator;
+      // Skip free gifts entirely (FOC, etc.)
+      if (product?.is_gift) return acc;
 
-      if (product?.discount?.value) {
-        let discounted = basePrice;
-        if (product.discount.discount_type === 'percent') {
-          discounted = basePrice - (basePrice * Number(product.discount.value)) / 100;
-        } else if (product.discount.discount_type === 'amount') {
-          discounted = product.discount.final_price
-            ? Number(product.discount.final_price)
-            : basePrice - Number(product.discount.value);
-        }
-        if (discounted < basePrice) {
-          return accumulator + qty * Number(discounted.toFixed(2));
-        }
-      }
+      // If all units are free via BOGO, skip
+      if (paidQty <= 0) return acc;
 
-      // Legacy flat sale_price field
-      if (product?.sale_price && Number(product.sale_price) > 0 && Number(product.sale_price) < basePrice) {
-        return accumulator + qty * Number(Number(product.sale_price).toFixed(2));
-      }
-
-      // Customer/global coupon (apply across all products)
-      if (isCustomerCouponActive && !product.discount && !promotionsContext.some((promo) => promo.buy_products.some((item) => item.product_id === product.product_id))) {
-        const value = Number(couponDataContext?.value || 0);
-        let discounted = basePrice; 
-
-        if (couponDataContext.coupon_type === "percent") {
-          discounted = basePrice - (basePrice * value) / 100;
-        } else if (couponDataContext.coupon_type === "amount") {
-          discounted = basePrice - value;
-        }
-
-        return accumulator + qty * Number(discounted.toFixed(2));
-      }
-
-      // Default
-      return accumulator + qty * basePrice;
+      const unit = linePrice(product, couponDataContext, promotionsContext).unit;
+      return acc + paidQty * unit;
     }, 0);
 
     setTotalPrice(subtotal);
-    
+
     setFreeShippingFlag(Number(subtotal.toFixed(2)) >= freeShippingThreshold);
-  }, [state.products, couponDataContext, freeShippingThreshold]);
+  }, [state.products, couponDataContext, freeShippingThreshold, promotionsContext]);
 
   const addProductToCart = (product) => {
     if (state.isProcessing) return;
@@ -210,11 +201,17 @@ export default function Context({ children }) {
     const MAX_LIMIT =
       product.maximum_order_quantity && product.maximum_order_quantity > 0
         ? product.maximum_order_quantity
-        : product.product_qty; 
+        : product.product_qty;
 
-    const existingItemIndex = cartProducts.findIndex(
-      (p) => p.product_id === product.product_id
-    );
+    const existingItemIndex = cartProducts.findIndex((p) => {
+      // 🚨 Gift cards should NEVER merge
+      if (product.is_gift_card) return false;
+
+      return (
+        p.product_id === product.product_id &&
+        Boolean(p.is_gift) === Boolean(product.is_gift)
+      );
+    });
 
     if (existingItemIndex !== -1 && !product.is_gift) {
       const currentQty = cartProducts[existingItemIndex].quantity || 1;
@@ -229,7 +226,7 @@ export default function Context({ children }) {
         quantity: Math.min(currentQty + 1, MAX_LIMIT),
       };
       dispatch({ type: 'UPDATE_CART', payload: cartProducts });
-      
+
       // Open cart drawer (unless caller requested silent mode)
       if (!product._silent) {
         document.getElementById("cartDrawerOverlay")?.classList.add("page-overlay_visible");
@@ -295,8 +292,8 @@ export default function Context({ children }) {
     if (!product.is_gift && product.product_name) {
       try {
         localStorage.setItem("ahmed_last_cart_item", JSON.stringify({
-          name:        product.product_name,
-          category:    product.category_name    || "",
+          name: product.product_name,
+          category: product.category_name || "",
           subcategory: product.subcategory_name || product.subcategory?.subcategory_name || "",
         }));
         // Allow the popup to re-fire for this new product on next cart visit.
@@ -313,7 +310,7 @@ export default function Context({ children }) {
     dispatch({ type: 'REMOVE_GIFT', payload: { productId, campaign } });
   };
 
-  const removeProduct = (productId) => {
+  const removeProduct = (productId, uniqueKey = null) => {
     if (state.isProcessing) return;
 
     if (typeof window !== "undefined" && window.AhmedTracker) {
@@ -332,7 +329,7 @@ export default function Context({ children }) {
     }
 
     dispatch({ type: 'SET_PROCESSING', payload: true });
-    dispatch({ type: 'REMOVE_PRODUCT', payload: { productId } });
+    dispatch({ type: 'REMOVE_PRODUCT', payload: { productId, uniqueKey } });
   };
 
   const setCartProducts = (productsOrFn) => {

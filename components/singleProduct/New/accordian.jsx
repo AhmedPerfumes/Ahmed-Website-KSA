@@ -402,7 +402,7 @@ const ProductAccordion = ({ product, hideFragranceProfile = false }) => {
     const deliveryInfoData = [
         {
             head: t("delivery.shipping"),
-            text: t("delivery.shippingText", { price: shippingServiceCharges[3]?.price }),
+            text: t("delivery.shippingText", { price: Number(shippingServiceCharges?.[3]?.price) || 300 }),
             icon: "/assets/svg/package.svg",
         },
         {

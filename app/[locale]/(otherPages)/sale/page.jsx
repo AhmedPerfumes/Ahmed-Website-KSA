@@ -1,6 +1,5 @@
 import React from "react";
 import Footer14 from "@/components/footers/Footer14";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import CityWalk from "@/components/campagin/Citywalk";
 
 import { buildStaticPageMetadata } from "@/utlis/seoHelper";
@@ -34,22 +33,8 @@ const Citywalk = () => {
         <CityWalk />
       </main>
 
-      {/* Responsive Footer Strategy */}
-      <footer>
-        {/* Desktop Footer */}
-        <section className="d-none d-lg-block border-top">
-          <Footer14 />
-        </section>
-
-        {/* Mobile Footer */}
-        <section className="d-block d-lg-none bg-dark pt-5 pb-4">
-          <div className="container">
-            <div className="MobileFooter">
-              <MobileFooter2 />
-            </div>
-          </div>
-        </section>
-      </footer>
+      {/* Responsive footer (all widths) */}
+      <Footer14 />
     </div>
   );
 };

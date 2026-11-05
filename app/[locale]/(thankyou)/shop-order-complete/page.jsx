@@ -1,9 +1,9 @@
 import Footer14 from "@/components/footers/Footer14";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import OrderCompleted from "@/components/shopCartandCheckout/OrderCompleted";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 export const metadata = {
   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -13,28 +13,19 @@ export const metadata = {
   },
 };
 
-export default function () {
+export default function OrderCompletePage() {
+  const t = useTranslations("OrderComplete");
   return (
     <>
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="shop-checkout container">
-          <h2 className="page-title">ORDER RECEIVED</h2>
+          <h2 className="page-title">{t("pageTitle")}</h2>
           <ChectoutSteps step={3} />
           <OrderCompleted />
         </section>
       </main>
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-        
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-      <div className="MobileFooter">
-      
-
-      <MobileFooter2/>
-      </div>
-      </section>
+      <Footer14 />
     </>
   );
 }

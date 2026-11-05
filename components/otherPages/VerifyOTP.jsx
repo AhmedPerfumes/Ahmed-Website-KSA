@@ -2,10 +2,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function VerifyOTP() {
 
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("Account");
+  const srv = (msg, key) => (locale === "ar" || !msg ? t(key) : msg);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,14 +25,14 @@ export default function VerifyOTP() {
     event.preventDefault();
     setIsLoading(true);
     if(mobile == '') {
-     setError('Mobile Number is Required');
+     setError(t("errMobileRequired"));
      setSuccess(null);
      setIsLoading(false);
      return;
    }
    const regex = /^\d{10}$/;
    if(!regex.test(mobile)) {
-     setError('Invalid Mobile Number');
+     setError(t("errMobileInvalid"));
      setSuccess(null);
      setIsLoading(false);
      return;
@@ -44,21 +48,21 @@ export default function VerifyOTP() {
       })
  
       if (!response.ok) {
-        throw new Error('Failed to submit the data. Please try again.');
+        throw new Error(t("submitFailed"));
       }
  
       // Handle response if necessary
       const data = await response.json();
       if(data.message.split(' ')[0] != 'Customer') {
-        setError(data.message);
+        setError(srv(data.message, "errInvalidMobileOtp"));
         setSuccess(null);
       } else {
-        setSuccess(data.message);
+        setSuccess(srv(data.message, "accountVerified"));
         setError(null);
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', btoa(JSON.stringify(data.data)));
         // setTimeout(() => router.push('/'), 1000);
-        setTimeout(() => window.location.href='/', 1000);
+        setTimeout(() => window.location.href = `/${locale}`, 1000);
       }
       // console.log(data);
     } catch (error) {
@@ -72,7 +76,7 @@ export default function VerifyOTP() {
 
   return (
     <section className="login-register container">
-      <h2 className="d-none">Verify OTP</h2>
+      <h2 className="d-none">{t("verifyOtp")}</h2>
         <div
           className="tab-pane fade show active"
           id="tab-item-login"
@@ -93,11 +97,11 @@ export default function VerifyOTP() {
                   name="mobile"
                   type="number"
                   className="form-control form-control_gray"
-                  placeholder="Mobile Number *"
+                  placeholder={t("mobileLabel")}
                   onChange={validateMobile}
                   required
                 />
-                <label>Mobile Number (Eg. 0500000000)*</label>
+                <label>{t("mobileLabel")}</label>
               </div>
 
               <div className="pb-3"></div>
@@ -108,10 +112,10 @@ export default function VerifyOTP() {
                   type="number"
                   className="form-control form-control_gray"
                   id="customerPasswodInput"
-                  placeholder="OTP *"
+                  placeholder={t("otpLabelShort")}
                   required
                 />
-                <label htmlFor="customerPasswodInput">OTP *</label>
+                <label htmlFor="customerPasswodInput">{t("otpLabelShort")}</label>
               </div>              
 
               <button
@@ -119,7 +123,7 @@ export default function VerifyOTP() {
                 type="submit"
                 disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : 'Verify OTP'}
+                {isLoading ? t("loadingBtn") : t("verifyOtp")}
               </button>
             </form>
           </div>

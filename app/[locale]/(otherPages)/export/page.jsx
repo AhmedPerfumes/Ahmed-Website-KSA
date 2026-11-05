@@ -1,5 +1,4 @@
 import Footer14 from "@/components/footers/Footer14";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import Export from "@/components/otherPages/Contact/Export"
 
 import Contact from "@/components/otherPages/Contact/Contact";
@@ -36,14 +35,7 @@ const ExportPage = () => {
     <>
       {/* <Loader/> */}
       <Export />
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-        <div className="MobileFooter">
-          <MobileFooter2/>
-        </div>
-      </section>
+      <Footer14 />
     </>
   );
 }

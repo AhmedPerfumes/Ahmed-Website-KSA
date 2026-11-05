@@ -1,7 +1,6 @@
 import React from "react";
 import Script from "next/script";
 import Footer14 from "@/components/footers/Footer14";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import VideoSection from "@/components/Auric/VideoSection";
 import NoteSection from "@/components/Auric/NoteSection";
 import FamilySection from "@/components/Auric/FamilySection";
@@ -314,14 +313,7 @@ export default function AuricPage({ params }) {
         <FamilySection data={data} shopUrl={shopUrl} />
       </main>
 
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5">
-        <div className="MobileFooter">
-          <MobileFooter2 />
-        </div>
-      </section>
+      <Footer14 />
     </>
   );
 }

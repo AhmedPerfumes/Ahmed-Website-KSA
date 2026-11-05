@@ -68,7 +68,10 @@ export default function Header14() {
     categoriesSubCategories,
     isLoading: isMenuLoading,
     error,
+    shippingServiceCharges,
   } = useMenu();
+  // Free-delivery threshold set in admin (same source as cart / checkout)
+  const freeShippingThreshold = Number(shippingServiceCharges?.[3]?.price) || 300;
 
   if (isMenuLoading) {
     return <div></div>;
@@ -141,7 +144,7 @@ export default function Header14() {
                   href="#"
                   className="animate animate_fade animate_btt animate_delay-5 lh-2rem text-white"
                 >
-                  {elm.description.split(" ").slice(0, 13).join(" ")}
+                  {elm.description.replace("SAR 300", `SAR ${freeShippingThreshold}`).split(" ").slice(0, 13).join(" ")}
                 </Link>
               </div>
             </SwiperSlide>

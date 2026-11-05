@@ -2,7 +2,6 @@ import Footer14 from "@/components/footers/Footer14";
 import PremiumShopGrid from "@/components/shoplist/premium/PremiumShopGrid";
 import QuickView from "@/components/modals/QuickView";
 import React from "react";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
@@ -135,14 +134,7 @@ const ShopPage = async ({ params, searchParams }) => {
       <main>
         <PremiumShopGrid search={search} />
       </main>
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-        <Footer14 />
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5">
-        <div className="MobileFooter">
-          <MobileFooter2 />
-        </div>
-      </section>
+      <Footer14 />
     </>
   );
 };

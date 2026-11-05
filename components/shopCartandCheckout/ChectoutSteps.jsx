@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { openCart } from "@/utlis/openCart";
 
 const IconCart = () => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -37,7 +38,9 @@ export default function ChectoutSteps({ step = 1 }) {
 
         // Completed steps are back-nav links; active/pending are non-link spans
         const Tag      = isCompleted ? Link : 'span';
-        const tagProps = isCompleted ? { href: s.href, prefetch: false } : {};
+        const tagProps = isCompleted
+          ? { href: s.href, prefetch: false, ...(s.num === 1 ? { onClick: (e) => { e.preventDefault(); openCart(); } } : {}) }
+          : {};
 
         return (
           <div

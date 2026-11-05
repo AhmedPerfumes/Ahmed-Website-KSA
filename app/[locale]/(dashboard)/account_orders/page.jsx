@@ -1,8 +1,8 @@
 import Footer14 from "@/components/footers/Footer14";
-import MobileFooter2 from "@/components/footers/MobileFooter2";
 import AccountOrders from "@/components/otherPages/AccountOrders";
 import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 export const metadata = {
   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -13,12 +13,13 @@ export const metadata = {
 };
 
 export default function AccountOrderPage() {
+  const t = useTranslations("Account");
   return (
     <>
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="my-account container">
-          <h2 className="page-title">My Purchases</h2>
+          <h2 className="page-title">{t("pagePurchases")}</h2>
           <div className="row">
             <DashboardSidebar />
             <AccountOrders />
@@ -27,14 +28,7 @@ export default function AccountOrderPage() {
       </main>
 
       <div className="mb-5 pb-xl-5"></div>
-      <section className="d-none d-lg-block" style={{ height: "100%" }}>
-            <Footer14 />        
-      </section>
-      <section className="d-sm-block d-md-none bg-dark pt-5  ">
-        <div className="MobileFooter">
-            <MobileFooter2/>
-        </div>
-      </section>
+      <Footer14 />
     </>
   );
 }

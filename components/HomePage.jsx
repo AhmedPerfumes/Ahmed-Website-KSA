@@ -3,6 +3,7 @@
 // import HeroBanner from "@/components/homepage/HeroBanner"; // ← restore to revert
 import VideoHeroBanner from "@/components/homepage/VideoHeroBanner";
 import dynamic from "next/dynamic";
+import { useLocale } from "next-intl";
 
 /* ── Below-fold sections: code-split so their JS chunks don't ship in the
    initial bundle. Loaded on demand but mounted immediately so the footer
@@ -38,15 +39,23 @@ const SmallBanner = dynamic(() => import("@/components/homepage/SmallBanner"), {
  * Each section manages its own loading skeleton internally.
  */
 const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
+    // Oud & Roses Auric hero — separate EN/AR cuts; "full" = 16:9 desktop, "reel" = 9:16 mobile
+    const lang = useLocale() === "ar" ? "ar" : "en";
+    const auric = "/assets/videos/auric";
     return (
         <div id="main">
             {/* ── Video Hero Banner — desktop + mobile ── */}
             <VideoHeroBanner
-                desktopMp4Src="/assets/videos/banner-video.mp4"
-                desktopPoster="/assets/videos/banner-poster.jpg"
-                mobileMp4Src="/assets/videos/banner-video-mobile.mp4"
-                mobilePoster="/assets/videos/banner-poster-mobile.jpg"
+                desktopMp4Src={`${auric}/auric-full-${lang}.mp4`}
+                desktopPoster={`${auric}/auric-full-${lang}-poster.jpg`}
+                mobileMp4Src={`${auric}/auric-reel-${lang}.mp4`}
+                mobilePoster={`${auric}/auric-reel-${lang}-poster.jpg`}
+                mediaHref="/oud-roses-auric"
+                mediaLabel="Oud & Roses Auric"
             />
+            {/* Previous hero:
+                desktopMp4Src="/assets/videos/banner-video.mp4"  desktopPoster="/assets/videos/banner-poster.jpg"
+                mobileMp4Src="/assets/videos/banner-video-mobile.mp4"  mobilePoster="/assets/videos/banner-poster-mobile.jpg" */}
             {/* To revert: comment VideoHeroBanner above, uncomment below:
             <HeroBanner initialSliders={initialSliders} initialMobileSliders={initialMobileSliders} /> */}
 

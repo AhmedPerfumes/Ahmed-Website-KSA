@@ -1,17 +1,21 @@
 import React from "react";
-import PageNotFound from "./(otherPages)/page-not-found/page";
+import BrandedErrorPage from "@/components/otherPages/BrandedErrorPage";
+import Footer14 from "@/components/footers/Footer14";
 
 export const metadata = {
-  title: "Perfumes | Buy Best Perfumes Online | Ahmed Perfume",
-  description: "Buy Best Perfumes Online Ahmed Perfume",
-  icons: {
-    icon: "https://www.ahmedalmaghribi.com/wp-content/uploads/2021/08/Ahmed-Logo-e1631552829722-100x100.png",
-  },
+  title: "Page not found | Ahmed Al Maghribi Perfumes",
+  description: "The page you were looking for could not be found. Search our perfumes or browse the collection.",
+  robots: { index: false, follow: true },
+  icons: { icon: "/assets/images/ahmed-favicon.png" },
 };
+
 export default function NotFound() {
   return (
     <>
-      <PageNotFound />
+      <main className="page-wrapper">
+        <BrandedErrorPage variant="notFound" />
+      </main>
+      <Footer14 />
     </>
   );
 }
