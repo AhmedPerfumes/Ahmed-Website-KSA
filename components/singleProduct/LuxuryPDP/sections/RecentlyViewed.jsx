@@ -72,6 +72,7 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
       const entry = {
         product_id: product.product_id,
         product_name: product.product_name,
+        product_name_ar: product.product_name_ar || "",
         slug: removeSpecialCharactersAndAmp(product.slug || product.product_name || "").split(" ").join("-").toLowerCase(),
         // Store the URL-safe slugs passed from the route (not the raw API names)
         category_slug: removeSpecialCharactersAndAmp(category || product.category_name || "").split(" ").join("-").toLowerCase() || "perfumes",
@@ -118,7 +119,7 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
   return (
     <section className="products-carousel container my-4 pdp-rv-section" aria-labelledby="rv-heading">
       <h2 className="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4 mt-4" id="rv-heading">
-        Recently Viewed
+        {locale === "ar" ? "شوهدت مؤخراً" : "Recently Viewed"}
       </h2>
 
       <div className="position-relative" id="rv-slider">
@@ -145,12 +146,16 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
             if (isDiscountActive) {
               if (d.discount_type === "percent") {
                 salePrice = (item.price - (item.price / 100) * d.value).toFixed(2);
-                discountLabel = `${d.value}% OFF`;
+                discountLabel = locale === "ar" ? `${d.value}% خصم` : `${d.value}% OFF`;
               } else {
                 salePrice = parseFloat(d.final_price || item.price - d.value).toFixed(2);
-                discountLabel = `${d.value} OFF`;
+                discountLabel = locale === "ar" ? `خصم ${d.value}` : `${d.value} OFF`;
               }
             }
+
+            const displayName = (locale === "ar" && item.product_name_ar)
+              ? item.product_name_ar
+              : (item.product_name || "");
 
             return (
               <SwiperSlide key={idx} className="swiper-slide product-card">
@@ -162,7 +167,7 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
                       src={imgSrc}
                       width={330}
                       height={400}
-                      alt={he.decode(item.product_name || "Recently viewed product")}
+                      alt={he.decode(displayName || "Recently viewed product")}
                       className="pc__img"
                     />
                   </Link>
@@ -196,7 +201,7 @@ const RecentlyViewed = ({ product, category, subcategory }) => {
                 <div className="pc__info position-relative">
                   {/* <p className="pc__category">{locale === "ar" ? "" : "Recently Viewed"}</p> */}
                   <h6 className="pc__title">
-                    <Link href={href}>{he.decode(item.product_name || "")}</Link>
+                    <Link href={href}>{he.decode(displayName || "")}</Link>
                   </h6>
 
                   {/* Price — uses the official Saudi Riyal symbol, no "SAR" text */}

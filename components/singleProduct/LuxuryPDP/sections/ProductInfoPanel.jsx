@@ -20,13 +20,12 @@ import he from "he";
  *  - Product H1 title + olfactory family subtitle
  *  - Star rating row (scrolls to reviews on click)
  *  - Price block with discount logic
- *  - Tabby/Tamara BNPL widgets
- *  - Size/volume tags display
- *  - Stock status indicator
- *  - Pre-cart quantity stepper (Fix #1)
+ *  - Size + stock status on one compact meta line
+ *  - Pre-cart quantity stepper inline with Add to Cart (Fix #1)
  *  - Add-to-Cart block with Buy Now (Fix #2)
  *  - Unified in-cart stepper (Fix #6)
  *  - Share row (WhatsApp + Copy Link)
+ *  - Tabby/Tamara BNPL widgets
  *
  * Audit fixes:
  *  #1 — Quantity selector shown BEFORE first Add to Cart
@@ -48,12 +47,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const STAR_COLORS = ['#E5C07A', '#D4A84B', '#C9903A', '#B87730', '#8B5E10'];
 const STAR_EMPTY  = '#D9D2CA';
 
-const StarDisplay = ({ rating = 0, count = 0 }) => {
+const StarDisplay = ({ rating = 0, count = 0, isArabic }) => {
   const stars = [1, 2, 3, 4, 5];
   const rounded = Math.round(rating);
   return (
     <div className="pdp-info__rating-row">
-      <div className="pdp-stars" aria-label={`Rated ${rating} out of 5 stars`}>
+      <div className="pdp-stars" aria-label={isArabic ? `التقييم ${rating} من 5 نجوم` : `Rated ${rating} out of 5 stars`}>
         {stars.map((s) => (
           <span
             key={s}
@@ -69,9 +68,9 @@ const StarDisplay = ({ rating = 0, count = 0 }) => {
         <a
           href="#pdp-reviews"
           className="pdp-info__review-count"
-          aria-label={`See all ${count} reviews`}
+          aria-label={isArabic ? `عرض جميع التقييمات (${count})` : `See all ${count} reviews`}
         >
-          {count} {count === 1 ? "Review" : "Reviews"}
+          {count} {isArabic ? "تقييم" : count === 1 ? "Review" : "Reviews"}
         </a>
       )}
     </div>
@@ -79,7 +78,7 @@ const StarDisplay = ({ rating = 0, count = 0 }) => {
 };
 
 /* ─── Price Block ─── */
-const PriceBlock = ({ product, currency }) => {
+const PriceBlock = ({ product, currency, isArabic }) => {
   const now = new Date();
   const discount = product?.discount;
   const isDiscountActive =
@@ -96,19 +95,15 @@ const PriceBlock = ({ product, currency }) => {
         product.price -
         (product.price / 100) * discount.value
       ).toFixed(2);
-      discountLabel = `${discount.value}% OFF`;
+      discountLabel = isArabic ? `${discount.value}% خصم` : `${discount.value}% OFF`;
     } else if (discount.discount_type === "amount") {
       salePrice = parseFloat(discount.final_price || product.price - discount.value).toFixed(2);
-      discountLabel = `${currency?.symbol}${discount.value} OFF`;
+      discountLabel = isArabic ? `خصم ${currency?.symbol}${discount.value}` : `${currency?.symbol}${discount.value} OFF`;
     }
   }
 
-  const savings = salePrice
-    ? (parseFloat(product.price) - parseFloat(salePrice)).toFixed(2)
-    : null;
-
   return (
-    <div>
+    <div className="pdp-price-wrap">
       <div className="pdp-price-block">
         {salePrice ? (
           <>
@@ -126,11 +121,6 @@ const PriceBlock = ({ product, currency }) => {
           </span>
         )}
       </div>
-      {savings && (
-        <p className="pdp-price-savings">
-          You save {currency?.symbol}{savings}
-        </p>
-      )}
     </div>
   );
 };
@@ -153,12 +143,12 @@ const getTabbyPrice = (product) => {
 };
 
 /* ─── Stock Status Indicator ─── */
-const StockStatus = ({ qty }) => {
+const StockStatus = ({ qty, isArabic }) => {
   if (qty <= 0) {
     return (
       <div className="pdp-stock pdp-stock--out">
         <span className="pdp-stock__dot" />
-        <span className="pdp-stock__label">Out of Stock</span>
+        <span className="pdp-stock__label">{isArabic ? "غير متوفر" : "Out of Stock"}</span>
       </div>
     );
   }
@@ -166,14 +156,16 @@ const StockStatus = ({ qty }) => {
     return (
       <div className="pdp-stock pdp-stock--low">
         <span className="pdp-stock__dot" />
-        <span className="pdp-stock__label">Only {qty} left — order soon</span>
+        <span className="pdp-stock__label">
+          {isArabic ? `متبقي ${qty} فقط — اطلب قريباً` : `Only ${qty} left — order soon`}
+        </span>
       </div>
     );
   }
   return (
     <div className="pdp-stock pdp-stock--in">
       <span className="pdp-stock__dot" />
-      <span className="pdp-stock__label">In Stock</span>
+      <span className="pdp-stock__label">{isArabic ? "متوفر بالمخزون" : "In Stock"}</span>
     </div>
   );
 };
@@ -299,16 +291,63 @@ const ShareRow = ({ productName, isArabic }) => {
   );
 };
 
+/* ─── BNPL — one minimal line; official Tabby/Tamara widgets on demand ─── */
+const BnplLine = ({ price, currency, locale }) => {
+  const [open, setOpen] = useState(false);
+  const isArabic = locale === "ar";
+  const amount = parseFloat(price) || 0;
+  if (amount <= 0) return null;
+  const perPayment = (amount / 4).toFixed(2);
+
+  return (
+    <div className="pdp-bnpl">
+      <button
+        type="button"
+        className="pdp-bnpl__line"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="pdp-bnpl-details"
+      >
+        <span className="pdp-bnpl__text">
+          {isArabic ? "قسّمها على 4 دفعات بدون فوائد بقيمة " : "Or 4 interest-free payments of "}
+          <strong className="pdp-bnpl__amount">{currency?.symbol}{perPayment}</strong>
+        </span>
+        <span className="pdp-bnpl__brands" aria-hidden="true">
+          <span className="pdp-bnpl__brand pdp-bnpl__brand--tabby">tabby</span>
+          <span className="pdp-bnpl__brand pdp-bnpl__brand--tamara">tamara</span>
+        </span>
+        <span className="pdp-bnpl__more">
+          {isArabic ? "التفاصيل" : "Details"}
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" className={open ? "is-open" : ""}>
+            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      {/* Official widgets mount only when opened — keeps the panel quiet and avoids load-time flicker */}
+      {open && (
+        <div id="pdp-bnpl-details" className="pdp-bnpl-row">
+          <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
+            <TabbyPromoWidget price={amount} currency="SAR" lang={locale} source="luxury-pdp" />
+          </div>
+          <div className="pdp-bnpl-card pdp-bnpl-card--tamara">
+            <TamaraWidget amount={amount.toFixed(2)} inlineType="6" inlineVariant="none" locale={locale} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 /* ─── Pre-Cart Quantity Stepper (Fix #1) ─── */
-const PreCartQtyStepper = ({ quantity, onDecrease, onIncrease, max }) => (
-  <div className="pdp-pre-qty" role="group" aria-label="Select quantity">
-    <span className="pdp-pre-qty__label">Qty</span>
+const PreCartQtyStepper = ({ quantity, onDecrease, onIncrease, max, isArabic }) => (
+  <div className="pdp-pre-qty" role="group" aria-label={isArabic ? "تحديد الكمية" : "Select quantity"}>
     <div className="pdp-pre-qty__ctrl">
       <button
         className="pdp-pre-qty__btn"
         onClick={onDecrease}
         disabled={quantity <= 1}
-        aria-label="Decrease quantity"
+        aria-label={isArabic ? "تقليل الكمية" : "Decrease quantity"}
         type="button"
       >
         −
@@ -318,7 +357,7 @@ const PreCartQtyStepper = ({ quantity, onDecrease, onIncrease, max }) => (
         className="pdp-pre-qty__btn"
         onClick={onIncrease}
         disabled={quantity >= max}
-        aria-label="Increase quantity"
+        aria-label={isArabic ? "زيادة الكمية" : "Increase quantity"}
         type="button"
       >
         +
@@ -507,8 +546,10 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
         <p className="pdp-info__subtitle">{displaySubtitle}</p>
       )}
 
-      {/* Star Rating Row */}
-      <StarDisplay rating={avgRating} count={reviewCount} />
+      {/* Star Rating Row — only when the product actually has reviews */}
+      {reviewCount > 0 && (
+        <StarDisplay rating={avgRating} count={reviewCount} isArabic={locale === "ar"} />
+      )}
 
       {/* Product Description from API — directly below product name & star rating */}
       <ProductDescription
@@ -517,44 +558,21 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
       />
 
       {/* Price Block */}
-      <PriceBlock product={product} currency={currency} />
+      <PriceBlock product={product} currency={currency} isArabic={locale === "ar"} />
 
-      {/* BNPL Row: Tabby + Tamara (compact side-by-side in same line) */}
-      <div className="pdp-bnpl-row">
-        <div className="pdp-bnpl-card pdp-bnpl-card--tabby">
-          <TabbyPromoWidget
-            price={parseFloat(getTabbyPrice(product))}
-            currency="SAR"
-            lang={locale}
-            source="luxury-pdp"
-          />
-        </div>
-        <div className="pdp-bnpl-card pdp-bnpl-card--tamara">
-          <TamaraWidget
-            amount={parseFloat(getTabbyPrice(product)).toFixed(2)}
-            inlineType="6"
-            inlineVariant="none"
-            locale={locale}
-          />
-        </div>
+      {/* Size + Stock — one compact meta line */}
+      <div className="pdp-meta-row">
+        {tags.length > 0 && (
+          <>
+            <span className="pdp-meta-row__size">
+              <span className="visually-hidden">{locale === "ar" ? "الحجم: " : "Size: "}</span>
+              {tags.join(" · ")}
+            </span>
+            <span className="pdp-meta-row__sep" aria-hidden="true" />
+          </>
+        )}
+        <StockStatus qty={product?.product_qty ?? 0} isArabic={locale === "ar"} />
       </div>
-
-      {/* Size / Volume Tags */}
-      {tags.length > 0 && (
-        <div className="pdp-size-row">
-          <span className="pdp-size-row__label">{t("Size")}</span>
-          <div className="pdp-size-tags">
-            {tags.map((tag, i) => (
-              <div key={i} className="pdp-size-tag pdp-size-tag--active">
-                {tag}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Stock Status */}
-      <StockStatus qty={product?.product_qty ?? 0} />
 
       {/* Error Message */}
       <AnimatePresence>
@@ -589,22 +607,22 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
               disabled
               aria-disabled="true"
             >
-              {t("Out of Stock")}
+              {locale === "ar" ? "غير متوفر" : "Out of Stock"}
             </button>
           </div>
         ) : !isInCart ? (
-          /* ── B: Pre-cart — show qty stepper THEN ATC + Buy Now ── */
-          <>
-            {/* Fix #1 — Pre-cart quantity selector */}
-            <PreCartQtyStepper
-              quantity={quantity}
-              onDecrease={handlePreDecrease}
-              onIncrease={handlePreIncrease}
-              max={qtyLimit}
-            />
+          /* ── B: Pre-cart — [qty | Add to Cart] then full-width Buy Now ── */
+          <div className="pdp-buy">
+            <div className="pdp-buy__row">
+              {/* Fix #1 — Pre-cart quantity selector (inline with ATC) */}
+              <PreCartQtyStepper
+                quantity={quantity}
+                onDecrease={handlePreDecrease}
+                onIncrease={handlePreIncrease}
+                max={qtyLimit}
+                isArabic={locale === "ar"}
+              />
 
-            {/* CTA row: Add to Cart + Buy Now */}
-            <div className="pdp-atc-row pdp-atc-row--ctas">
               <button
                 id="product-detail-top"
                 type="button"
@@ -616,20 +634,20 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
                   <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                 </svg>
-                {t("Add to Cart")}
-              </button>
-
-              {/* Fix #2 — Buy Now */}
-              <button
-                id="product-detail-buynow"
-                type="button"
-                className="pdp-atc-btn pdp-atc-btn--buynow"
-                onClick={buyNow}
-              >
-                Buy Now
+                {locale === "ar" ? "أضف إلى السلة" : "Add to Cart"}
               </button>
             </div>
-          </>
+
+            {/* Fix #2 — Buy Now */}
+            <button
+              id="product-detail-buynow"
+              type="button"
+              className="pdp-atc-btn pdp-atc-btn--buynow"
+              onClick={buyNow}
+            >
+              {locale === "ar" ? "اشتري الآن" : "Buy Now"}
+            </button>
+          </div>
         ) : (
           /* ── C: In-cart — unified qty pill (Fix #6) ── */
           <motion.div
@@ -647,15 +665,15 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              In Your Bag
+              {locale === "ar" ? "في سلتك" : "In Your Bag"}
             </div>
 
             {/* Qty stepper + Buy Now */}
             <div className="pdp-incart-unified__row">
-              <div className="pdp-incart-unified__stepper" role="group" aria-label="Update quantity">
+              <div className="pdp-incart-unified__stepper" role="group" aria-label={locale === "ar" ? "تعديل الكمية" : "Update quantity"}>
                 <button
                   className="pdp-incart-unified__btn"
-                  aria-label="Decrease quantity"
+                  aria-label={locale === "ar" ? (cartItem?.quantity === 1 ? "إزالة من السلة" : "تقليل الكمية") : (cartItem?.quantity === 1 ? "Remove from cart" : "Decrease quantity")}
                   type="button"
                   onClick={() => {
                     const cur = cartItem?.quantity ?? 1;
@@ -680,7 +698,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
 
                 <button
                   className="pdp-incart-unified__btn"
-                  aria-label="Increase quantity"
+                  aria-label={locale === "ar" ? "زيادة الكمية" : "Increase quantity"}
                   type="button"
                   onClick={() => {
                     const newQty = (cartItem?.quantity ?? 1) + 1;
@@ -697,7 +715,7 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
                 href={`/${locale}/shop-checkout`}
                 className="pdp-atc-btn pdp-atc-btn--goto-checkout"
               >
-                Go to Checkout
+                {locale === "ar" ? "إتمام الشراء" : "Go to Checkout"}
               </Link>
             </div>
           </motion.div>
@@ -706,6 +724,9 @@ const ProductInfoPanel = ({ product, category, subcategory, reviews = [], review
 
       {/* Share Row */}
       <ShareRow productName={productName} isArabic={locale === "ar"} />
+
+      {/* BNPL: Tabby + Tamara — one minimal line below Share */}
+      <BnplLine price={getTabbyPrice(product)} currency={currency} locale={locale} />
     </div>
   );
 };

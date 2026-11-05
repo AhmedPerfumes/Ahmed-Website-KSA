@@ -93,6 +93,8 @@ export default function Context({ children }) {
   const [promotionsContext, setPromotionsContext] = useState([]);
 
   const { shippingServiceCharges } = useMenu() ;
+  // Single source for the free-shipping threshold (admin value, 300 SAR fallback) — used by cart, drawer and checkout
+  const freeShippingThreshold = Number(shippingServiceCharges?.[3]?.price) || 300;
 
   const isHydratedRef = useRef(false);
   const prevCartRef = useRef([]);
@@ -184,10 +186,8 @@ export default function Context({ children }) {
 
     setTotalPrice(subtotal);
     
-    // Free shipping threshold adapted for KSA
-    const freeShippingThreshold = shippingServiceCharges?.[3]?.price ?? 300;
     setFreeShippingFlag(Number(subtotal.toFixed(2)) >= freeShippingThreshold);
-  }, [state.products, couponDataContext, shippingServiceCharges]);
+  }, [state.products, couponDataContext, freeShippingThreshold]);
 
   const addProductToCart = (product) => {
     if (state.isProcessing) return;
@@ -378,6 +378,7 @@ export default function Context({ children }) {
     setQuickViewItem,
     addProductToQuickView,
     freeShippingFlag,
+    freeShippingThreshold,
     setOrderDetails,
     orderDetails,
     couponDataContext,

@@ -223,7 +223,8 @@ const STYLES = `
   display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
 }
 .ymal-section-label {
-  font-size: 0.6rem; font-weight: 700; white-space: nowrap;
+  /* wraps on narrow screens instead of running off the modal edge */
+  font-size: 0.6rem; font-weight: 700; margin: 0; min-width: 0;
   letter-spacing: 0.22em; text-transform: uppercase; color: #a67b30;
 }
 .ymal-section-line {
@@ -256,7 +257,7 @@ const STYLES = `
 
 /* Discount badge */
 .ymal-card__badge {
-  position: absolute; top: 8px; left: 8px;
+  position: absolute; top: 8px; inset-inline-start: 8px;
   background: linear-gradient(135deg, #a67b30, #c5a05a);
   color: #fff; font-size: 0.58rem; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
@@ -381,12 +382,23 @@ const STYLES = `
   color: #fff; border-color: transparent;
 }
 
+/* ─── RTL ────────────────────────────────────────────────────── */
+/* Letter-spacing breaks Arabic letter joining */
+[dir="rtl"] .ymal-eyebrow, [dir="rtl"] .ymal-section-label, [dir="rtl"] .ymal-anchor-chip,
+[dir="rtl"] .ymal-card__sub, [dir="rtl"] .ymal-card__atc, [dir="rtl"] .ymal-card__badge,
+[dir="rtl"] .ymal-footer-close, [dir="rtl"] .ymal-title, [dir="rtl"] .ymal-card__name {
+  letter-spacing: 0;
+}
+[dir="rtl"] .ymal-section-line { background: linear-gradient(270deg, #e0d5c0, transparent); }
+
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .ymal-overlay { display: flex; align-items: center; justify-content: center; padding: 1rem; }
   .ymal-modal {
     max-width: 100%;
     max-height: 90vh;
+    /* dvh = visible viewport, so the bottom isn't hidden behind mobile browser toolbars */
+    max-height: 90dvh;
     border-radius: 12px;
   }
   .ymal-header { padding: 1rem 1.1rem 0.8rem; }
@@ -400,37 +412,9 @@ export default function YouMayAlsoLike() {
   const { currency } = useMenu();
   const { cartProducts, addProductToCart, isAddedToCartProducts } = useContextElement();
   const locale = useLocale();
-  const isAr   = locale === "ar";
-  const t      = useTranslations();
-
-  const getLocalizedProdName = useCallback(
-    (p) => {
-      if (!p) return "";
-      const raw = he.decode(p.product_name || p.name || p.title || "");
-      if (isAr) {
-        if (p.product_name_ar && p.product_name_ar.trim()) {
-          return he.decode(p.product_name_ar.trim());
-        }
-        if (t) {
-          try {
-            if (typeof t.has === "function") {
-              if (t.has(raw)) return t(raw);
-              if (p.product_name && t.has(p.product_name)) return t(p.product_name);
-              const trimmed = raw.trim();
-              if (t.has(trimmed)) return t(trimmed);
-            } else {
-              const tr = t(raw);
-              if (tr && tr !== raw) return tr;
-            }
-          } catch {
-            // fallback
-          }
-        }
-      }
-      return raw;
-    },
-    [isAr, t]
-  );
+  const t = useTranslations();
+  const ty = useTranslations("YouMayAlsoLike");
+  const isAr = locale === "ar";
 
   const [open,     setOpen]     = useState(false);
   const [loading,  setLoading]  = useState(true);
@@ -676,9 +660,7 @@ export default function YouMayAlsoLike() {
     const s  = new Date(elm.discount.start_date).getTime();
     const e2 = new Date(elm.discount.end_date).getTime();
     if (now < s || now > e2) return null;
-    return elm.discount.discount_type === "percent"
-      ? (isAr ? `${Math.round(elm.discount.value)}% خصم` : `${Math.round(elm.discount.value)}% OFF`)
-      : (isAr ? "تخفيض" : "SALE");
+    return elm.discount.discount_type === "percent" ? ty("percentOff", { value: Math.round(elm.discount.value) }) : ty("sale");
   };
 
   /* ── Product card ───────────────────────────────────────────── */
@@ -693,9 +675,12 @@ export default function YouMayAlsoLike() {
     const href   = `/${locale}/shop/${catSlug || "perfumes"}/${subcatSlug || "all"}/${slug}`;
     const inCart = isAddedToCartProducts(elm.product_id);
     const badge  = getDiscountBadge(elm);
-    const subcat = isAr
-      ? (elm.subcategory?.subcategory_name_ar || elm.subcategory?.subcategory_name || "")
-      : (elm.subcategory?.subcategory_name || "");
+    const subcatEn = elm.subcategory?.subcategory_name || "";
+    // Display names in Arabic when available (same fallback chain as homepage BestSellers); slugs stay English
+    const displayName = isAr ? (elm.product_name_ar?.trim() || name) : name;
+    const subcat = isAr && subcatEn
+      ? (elm.subcategory?.subcategory_name_ar || (t.has(subcatEn) ? t(subcatEn) : subcatEn))
+      : subcatEn;
 
     const handleATC = (e) => {
       e.preventDefault();
@@ -716,34 +701,30 @@ export default function YouMayAlsoLike() {
 
     return (
       <article className="ymal-card">
-        <Link href={href} className="ymal-card__img-link" onClick={close}>
+        <Link href={href} className="ymal-card__img-link" onClick={closeAccidental}>
           {badge && <span className="ymal-card__badge" aria-label={badge}>{badge}</span>}
           {img ? (
-            <Image src={img} alt={name} fill sizes="(max-width:768px) 45vw, 200px" style={{ objectFit: "cover" }} />
+            <Image src={img} alt={displayName} fill sizes="(max-width:768px) 45vw, 200px" style={{ objectFit: "cover" }} />
           ) : (
             <div style={{ background: "#f0ebe0", width: "100%", height: "100%" }} aria-hidden="true" />
           )}
         </Link>
         <div className="ymal-card__info">
           {subcat && <p className="ymal-card__sub">{subcat}</p>}
-          <Link href={href} className="ymal-card__name" title={name} onClick={close}>{name}</Link>
+          <Link href={href} className="ymal-card__name" title={displayName} onClick={closeAccidental}>{displayName}</Link>
           {renderPrice(elm)}
           <button
             className={`ymal-card__atc${inCart ? " ymal-card__atc--added" : ""}`}
             type="button"
             onClick={handleATC}
-            aria-label={
-              inCart
-                ? (isAr ? `تمت إضافة ${name} إلى السلة` : `${name} added to cart`)
-                : (isAr ? `أضف ${name} إلى السلة` : `Add ${name} to cart`)
-            }
+            aria-label={inCart ? ty("addedAria", { name: displayName }) : ty("addAria", { name: displayName })}
           >
             {inCart ? (
               <>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                {isAr ? "تمت الإضافة" : "Added"}
+                {ty("added")}
               </>
-            ) : (isAr ? "أضف إلى السلة" : "Add to Cart")}
+            ) : ty("addToCart")}
           </button>
         </div>
       </article>
@@ -783,28 +764,28 @@ export default function YouMayAlsoLike() {
         onClick={onOverlay}
         role="dialog"
         aria-modal="true"
-        aria-label={isAr ? "قد ينال إعجابك أيضاً" : "You may also like these products"}
+        aria-label={ty("dialogLabel")}
       >
         <div className="ymal-modal">
 
           {/* ── Header ───────────────────────────────────────────── */}
           <header className="ymal-header">
             <div className="ymal-header-text">
-              <p className="ymal-eyebrow">{isAr ? "مختارات خصيصاً لك" : "Curated for you"}</p>
-              <h2 className="ymal-title">{isAr ? <>قد يعجبك <em>أيضاً</em></> : <>You May Also <em>Like</em></>}</h2>
+              <p className="ymal-eyebrow">{ty("eyebrow")}</p>
+              <h2 className="ymal-title">{ty.rich("title", { em: (chunks) => <em>{chunks}</em> })}</h2>
               {cartProducts.length > 0 && (
-                <div className="ymal-anchor-chip" aria-label={isAr ? "بناءً على اختياراتك الأخيرة" : "Based on your recent choices"}>
+                <div className="ymal-anchor-chip" aria-label={ty("basedOnChoices")}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
-                  {isAr ? "بناءً على اختياراتك" : "Based on Your Choices"}
+                  {ty("basedOnChoices")}
                 </div>
               )}
             </div>
             <button
               className="ymal-close"
               onClick={closeX}
-              aria-label={isAr ? "إغلاق التوصيات" : "Close recommendations"}
+              aria-label={ty("closeAria")}
               type="button"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -821,7 +802,7 @@ export default function YouMayAlsoLike() {
               /* Loading skeletons */
               <div className="ymal-section">
                 <div className="ymal-section-head">
-                  <span className="ymal-section-label">{isAr ? "جارٍ تحميل التوصيات…" : "Loading recommendations…"}</span>
+                  <span className="ymal-section-label">{ty("loading")}</span>
                   <span className="ymal-section-line" aria-hidden="true" />
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
@@ -837,7 +818,7 @@ export default function YouMayAlsoLike() {
                   <section className="ymal-section" aria-labelledby="ymal-related-heading">
                     <div className="ymal-section-head">
                       <h3 id="ymal-related-heading" className="ymal-section-label">
-                        {isAr ? "يتناسب تماماً مع اختياراتك" : "Pairs Well With Your Choices"}
+                        {ty("pairsWell")}
                       </h3>
                       <span className="ymal-section-line" aria-hidden="true" />
                     </div>
@@ -856,7 +837,7 @@ export default function YouMayAlsoLike() {
                   <section className="ymal-section" aria-labelledby="ymal-bestsell-heading">
                     <div className="ymal-section-head">
                       <h3 id="ymal-bestsell-heading" className="ymal-section-label">
-                        {isAr ? "الأكثر مبيعاً" : "Best Sellers"}
+                        {ty("bestSellers")}
                       </h3>
                       <span className="ymal-section-line" aria-hidden="true" />
                     </div>
@@ -885,15 +866,15 @@ export default function YouMayAlsoLike() {
                   checked={dontShow}
                   onChange={(e) => setDontShow(e.target.checked)}
                 />
-                <span>{isAr ? "لا تذكرني مرة أخرى" : "Don’t remind me again"}</span>
+                <span>{ty("dontRemind")}</span>
               </label>
               <button
                 type="button"
                 className="ymal-footer-close"
                 onClick={closeDismissed}
-                aria-label={dontShow ? (isAr ? "إغلاق وعدم إظهار التوصيات في هذه الجلسة" : "Close and stop showing recommendations this session") : (isAr ? "متابعة التسوق والذهاب للمتجر" : "Continue shopping — go to the shop page")}
+                aria-label={dontShow ? ty("closeDismissAria") : ty("continueAria")}
               >
-                {dontShow ? (isAr ? "حسناً، إغلاق" : "Got it, Close") : (isAr ? "متابعة التسوق" : "Continue Shopping")}
+                {dontShow ? ty("gotItClose") : ty("continueShopping")}
               </button>
             </footer>
           )}

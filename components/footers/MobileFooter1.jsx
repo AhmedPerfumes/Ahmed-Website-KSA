@@ -5,8 +5,8 @@ import { openModalUserlogin } from "@/utlis/aside";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/routing";
-import { currencyOptions, languageOptions } from "@/data/footer";
+import { usePathname } from "@/i18n/routing";
+import LanguageCountrySelectors from "@/components/common/LanguageCountrySelectors";
 import { socialLinks } from "@/data/socials";
 import { IoLocationOutline } from "react-icons/io5";
 
@@ -23,30 +23,11 @@ import { IoLocationOutline } from "react-icons/io5";
 export default function MobileFooter1() {
   const locale = useLocale();
   const t = useTranslations();
-  const router = useRouter();
   const pathname = usePathname();
   const { cartProducts } = useContextElement();
   const { isLoggedIn } = useUser();
 
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [currentCountryLink, setCurrentCountryLink] = useState("");
-
-  // Detect current country from URL
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const currentOrigin = window.location.origin;
-      const matchedOption = currencyOptions.find(
-        (option) =>
-          option.link &&
-          (currentOrigin.includes(option.link) ||
-            option.link.includes(currentOrigin))
-      );
-      setCurrentCountryLink(
-        matchedOption ? matchedOption.link : currencyOptions[0]?.link ?? ""
-      );
-    }
-  }, []);
-
   // Close popup on route change
   useEffect(() => {
     setIsMoreOpen(false);
@@ -64,11 +45,6 @@ export default function MobileFooter1() {
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMoreOpen]);
-
-  const handleLangChange = (e) => {
-    router.push(pathname, { locale: e.target.value });
-    setIsMoreOpen(false);
-  };
 
   const isHomeActive = pathname === `/${locale}` || pathname === `/${locale}/`;
   const isShopActive = pathname.includes("/shop") && !pathname.includes("/shop-cart");
@@ -143,110 +119,8 @@ export default function MobileFooter1() {
             </svg>
           </Link>
 
-          {/* Stacked Row 2: Language */}
-          <div className="more-menu__item">
-            <div className="more-menu__icon-box">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-            </div>
-            <div className="more-menu__info">
-              <span className="more-menu__title">{t("Language")}</span>
-            </div>
-            <div className="more-menu__control">
-              <select
-                className="more-menu__select"
-                aria-label="Language selector"
-                name="footer-language"
-                value={locale}
-                onChange={handleLangChange}
-              >
-                {languageOptions.map((option, index) => (
-                  <option key={index} value={option.value}>
-                    {option.text}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="more-menu__select-arrow"
-                width="10"
-                height="10"
-                viewBox="0 0 12 12"
-                fill="none"
-              >
-                <path
-                  d="M2.5 4.5L6 8L9.5 4.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* Stacked Row 3: Country */}
-          <div className="more-menu__item">
-            <div className="more-menu__icon-box">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                <line x1="4" y1="22" x2="4" y2="15" />
-              </svg>
-            </div>
-            <div className="more-menu__info">
-              <span className="more-menu__title">{t("Country")}</span>
-            </div>
-            <div className="more-menu__control">
-              <select
-                className="more-menu__select"
-                aria-label="Country selector"
-                name="footer-country"
-                value={currentCountryLink}
-                onChange={(e) => window.open(e.target.value, "_self")}
-              >
-                {currencyOptions.map((option, index) => (
-                  <option key={index} value={option.link}>
-                    {t(option.text)}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="more-menu__select-arrow"
-                width="10"
-                height="10"
-                viewBox="0 0 12 12"
-                fill="none"
-              >
-                <path
-                  d="M2.5 4.5L6 8L9.5 4.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
+          {/* Stacked Rows 2–3: Language + Country */}
+          <LanguageCountrySelectors namePrefix="footer" onChange={() => setIsMoreOpen(false)} />
         </div>
 
         {/* Social links */}

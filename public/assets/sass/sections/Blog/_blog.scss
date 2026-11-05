@@ -8,6 +8,8 @@
       margin: 0 auto;
       background-size: cover;
       position: relative;
+      isolation: isolate;
+      z-index: 1;
       display: flex;
       align-items: center;
       padding: 1.25rem;
@@ -25,6 +27,7 @@
         right: 0.5rem;
         top: 0.5rem;
         bottom: 0.5rem;
+        overflow: hidden;
         z-index: -1;
 
         img {

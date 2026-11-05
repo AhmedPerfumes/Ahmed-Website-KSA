@@ -2,6 +2,7 @@ import Footer14 from "@/components/footers/Footer14";
 import Cart from "@/components/shopCartandCheckout/Cart";
 import ChectoutSteps from "@/components/shopCartandCheckout/ChectoutSteps";
 import MobileFooter2 from "@/components/footers/MobileFooter2";
+import { getTranslations } from "next-intl/server";
 
 import React from "react";
 
@@ -20,14 +21,24 @@ export async function generateMetadata({ params: { locale } }) {
   };
 }
 
+<<<<<<< HEAD
 export default function CartPage({ params: { locale } }) {
   const isAr = locale === "ar";
+=======
+export default async function () {
+  const t = await getTranslations("CartPage");
+>>>>>>> arshad
   return (
     <>
       <main className="page-wrapper">
         <section className="shop-checkout container">
+<<<<<<< HEAD
           <h1 className="page-title">{isAr ? "سلة التسوق" : "Cart"}</h1>
           <ChectoutSteps step={1} />
+=======
+          <h1 className="page-title">{t("pageTitle")}</h1>
+          <ChectoutSteps />
+>>>>>>> arshad
           <Cart />
         </section>
       </main>

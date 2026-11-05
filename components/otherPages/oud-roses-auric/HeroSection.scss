@@ -1,0 +1,450 @@
+// ══════════════════════════════════════════════════════════════════════════
+// OUD & ROSES AURIC — HAUTE PARFUMERIE HERO SCSS
+// Masterful chiaroscuro, volumetric gold aura, centered 3D typography,
+// and balanced luxury editorial hierarchy.
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Wonderful Melanesia Font Duo ─────────────────────────────────────────
+@font-face {
+  font-family: 'Wonderful Melanesia';
+  src: url('/assets/fonts/wonderful-melanesia/wonderful-melanesia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Wonderful Melanesia Signature';
+  src: url('/assets/fonts/wonderful-melanesia/wonderful-melanesia-signature.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+$noir: #060506;
+$noir-rich: #0c090b;
+$maroon-deep: #2c030d;
+$maroon: #800020;
+$maroon-glow: rgba(128, 0, 32, 0.42);
+
+$gold-bright: #fff2c6;
+$gold-light: #f5e0a3;
+$gold-mid: #d4af37;
+$gold-dark: #9e782f;
+$gold-glow: rgba(212, 175, 55, 0.28);
+
+$ivory: #faf5ee;
+$ivory-muted: rgba(250, 245, 238, 0.78);
+$ivory-dim: rgba(250, 245, 238, 0.45);
+
+$gold-gradient-text: linear-gradient(
+  180deg,
+  #ffffff 0%,
+  #fcefc7 25%,
+  #d4af37 65%,
+  rgba(158, 120, 47, 0.4) 100%
+);
+
+$font-melanesia: 'Wonderful Melanesia', 'Cormorant Garamond', 'Playfair Display', serif;
+$font-signature: 'Wonderful Melanesia Signature', 'Courgette', cursive;
+$font-serif: 'Wonderful Melanesia', 'Cormorant Garamond', 'Playfair Display', 'Didot', 'Georgia', serif;
+$font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+// ── Keyframe Animations ──────────────────────────────────────────────────
+@keyframes auricAuraBreathe {
+  0%, 100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes auricFloatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes auricScrollPulse {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes auricFluidShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes auricLiquidGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.25));
+  }
+  50% {
+    filter: drop-shadow(0 0 45px rgba(255, 230, 160, 0.45));
+  }
+}
+
+@keyframes auricFluidSweep {
+  0% {
+    transform: rotate(-15deg) translateY(-20px) scale(0.95);
+    opacity: 0.25;
+  }
+  50% {
+    transform: rotate(-8deg) translateY(20px) scale(1.05);
+    opacity: 0.55;
+  }
+  100% {
+    transform: rotate(-15deg) translateY(-20px) scale(0.95);
+    opacity: 0.25;
+  }
+}
+
+// ── Hero Scroll Container (Pinned Evolution Sequence) ────────────────────
+.auric-hero-scroll-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200vh;
+  background-color: $noir;
+
+  .auric-monolith {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $noir;
+    color: $ivory;
+    font-family: $font-sans;
+    padding: 40px 24px;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    @media (max-width: 768px) {
+      padding: 20px 12px 30px;
+    }
+
+  // ── Pure Obsidian Studio Atmosphere (No Halos / No Fuzzy Glows) ───────
+  &__ambient-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Soft subtle top vignette only
+  &__vignette-edge {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      $noir 95%
+    );
+  }
+
+  // ── Stage Center: Monolith Flacon & Centered 1-2-3 Elements ─────────────
+  &__stage {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1300px;
+    padding: 0;
+    overflow: visible;
+    gap: clamp(4px, 1vh, 12px);
+  }
+
+  // 1-2-3 Typography Blocks (Order 1: Top OUD & ROSES, Order 3: Bottom AURIC)
+  &__title-block {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    user-select: none;
+    pointer-events: none;
+    text-align: center;
+    overflow: visible;
+
+    // 1. Top Element: OUD & ROSES
+    &--primary {
+      order: 1 !important;
+      z-index: 3;
+      margin-bottom: clamp(-16px, -1.5vh, 0px);
+    }
+
+    // 3. Bottom Element: AURIC
+    &--auric {
+      order: 3 !important;
+      z-index: 3;
+      margin-top: clamp(-16px, -1.5vh, 0px);
+    }
+
+    // Arabic typography overrides
+    &--ar,
+    [dir="rtl"] & {
+      .title-line {
+        font-family: inherit !important;
+        letter-spacing: normal !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        text-transform: none !important;
+      }
+    }
+
+    .title-line {
+      display: block;
+      font-family: $font-serif;
+      line-height: 1.1;
+      padding: 0.12em 0.04em;
+      white-space: nowrap;
+      overflow: visible;
+      text-align: center;
+
+      // ── Primary Line: OUD & ROSES (Top Element 1) ─────────────
+      &--primary {
+        font-size: clamp(3.8rem, 9.5vw, 9.5rem);
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        margin-right: -0.1em;
+
+        @media (max-width: 991px) {
+          font-size: clamp(3.0rem, 8.8vw, 6.2rem);
+          letter-spacing: 0.08em;
+          margin-right: -0.08em;
+        }
+
+        @media (max-width: 580px) {
+          font-size: clamp(2.4rem, 11.5vw, 3.8rem);
+          letter-spacing: 0.06em;
+          margin-right: -0.06em;
+        }
+
+        @media (max-width: 380px) {
+          font-size: clamp(2.05rem, 10vw, 2.8rem);
+          letter-spacing: 0.04em;
+          margin-right: -0.04em;
+        }
+      }
+
+      // ── Secondary Line: AURIC (Bottom Element 3) ──
+      &--auric {
+        font-size: clamp(3.2rem, 7.6vw, 7.5rem);
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        margin-right: -0.28em;
+        text-transform: uppercase;
+
+        @media (max-width: 991px) {
+          font-size: clamp(2.5rem, 7.2vw, 4.8rem);
+          letter-spacing: 0.26em;
+          margin-right: -0.26em;
+        }
+
+        @media (max-width: 580px) {
+          font-size: clamp(2.2rem, 10.5vw, 3.4rem);
+          letter-spacing: 0.24em;
+          margin-right: -0.24em;
+        }
+
+        @media (max-width: 380px) {
+          font-size: clamp(1.85rem, 9.5vw, 2.5rem);
+          letter-spacing: 0.2em;
+          margin-right: -0.2em;
+        }
+      }
+
+      // ── Layer 1: Solid luminous 24K imperial gold fill behind the bottle ──
+      &--back {
+        position: relative;
+        z-index: 1;
+        background: linear-gradient(
+          125deg,
+          #fff3d0 0%,
+          #fad06c 22%,
+          #dda136 46%,
+          #fde28a 70%,
+          #b37b22 100%
+        );
+        background-size: 220% 220%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: auricFluidShimmer 8s ease-in-out infinite;
+      }
+
+      // ── Layer 3: Dynamic 3D depth 24K gold outline passing in front of the bottle ─
+      &--front {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        pointer-events: none;
+        background: none !important;
+        -webkit-text-fill-color: transparent !important;
+        color: transparent !important;
+        -webkit-text-stroke-width: 1.35px;
+        -webkit-text-stroke-color: #f5cb6c;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 14px rgba(221, 161, 54, 0.35));
+        animation: none !important;
+
+        @media (max-width: 768px) {
+          -webkit-text-stroke-width: 1.1px;
+        }
+      }
+    }
+  }
+
+  // Flacon Showcase Container (Order 2: Middle Element)
+  &__bottle-anchor {
+    order: 2 !important;
+    position: relative;
+    z-index: 3;
+    width: clamp(220px, 28vw, 380px);
+    height: clamp(280px, 40vh, 460px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: auricFloatGentle 6.5s ease-in-out infinite;
+
+    @media (max-width: 768px) {
+      width: clamp(170px, 44vw, 210px);
+      height: clamp(230px, 35vh, 290px);
+    }
+
+    @media (max-width: 480px) {
+      width: clamp(150px, 40vw, 185px);
+      height: clamp(200px, 30vh, 250px);
+    }
+  }
+
+  &__bottle-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    will-change: opacity, transform;
+
+    &--classic {
+      z-index: 1;
+    }
+
+    &--auric {
+      z-index: 2;
+    }
+  }
+
+  &__bottle-img {
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+
+    &--classic {
+      filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.95)) brightness(0.92) contrast(1.02);
+    }
+
+    &--auric {
+      // Balanced studio lighting: tone down harsh glare, enrich gold depth
+      filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.95)) brightness(0.84) contrast(1.05) saturate(0.92);
+    }
+  }
+
+  // Grounded Pedestal Base Contact Shadow (Pure Black, No Glow)
+  &__pedestal-shadow {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(160px, 22vw, 280px);
+    height: 10px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.4) 60%,
+      transparent 85%
+    );
+    filter: blur(4px);
+    z-index: 2;
+    pointer-events: none;
+
+    @media (max-width: 768px) {
+      width: clamp(120px, 32vw, 155px);
+      height: 8px;
+      bottom: -4px;
+    }
+  }
+
+  // Scroll Down Cue (Minimalist, Positioned at Bottom)
+  &__scroll-cue {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: $ivory-dim;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $gold-bright;
+    }
+
+    span {
+      font-size: 0.64rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+
+    .scroll-arrow {
+      animation: auricScrollPulse 2.4s ease-in-out infinite;
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 768px) {
+      bottom: 16px;
+      gap: 4px;
+
+      span {
+        font-size: 0.56rem;
+        letter-spacing: 0.2em;
+      }
+
+      .scroll-arrow {
+        font-size: 0.7rem;
+      }
+    }
+  }
+}
+}

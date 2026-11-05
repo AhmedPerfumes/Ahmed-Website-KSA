@@ -1,3 +1,26 @@
+/*
+ * Saudi Riyal sign (U+20C1, Unicode 17) — most devices' system fonts don't have it yet.
+ * Tiny self-hosted font (OFL-1.1), used ONLY for this code point via unicode-range.
+ */
+@font-face {
+  font-family: "SAR Symbol";
+  src: url("/assets/fonts/saudi-riyal-regular.woff2") format("woff2");
+  font-weight: 100 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+20C1;
+  size-adjust: 125%;
+}
+@font-face {
+  font-family: "SAR Symbol";
+  src: url("/assets/fonts/saudi-riyal-bold.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+20C1;
+  size-adjust: 125%;
+}
+
 :root {
   --theme-color: #c32929;
 
@@ -28,10 +51,10 @@
  */
 body {
   /* ── 4 semantic roles ── */
-  --font-display: /* "Rasputin", */ var(--font-playfair), var(--font-bodoni), var(--font-cormorant), serif;
-  --font-body:    var(--font-playfair), Georgia, serif;
-  --font-ui:      var(--font-inter), "Helvetica Neue", Arial, sans-serif;
-  --font-label:   var(--font-inter), "Helvetica Neue", Arial, sans-serif;
+  --font-display: "SAR Symbol", /* "Rasputin", */ var(--font-playfair), var(--font-bodoni), var(--font-cormorant), serif;
+  --font-body:    "SAR Symbol", var(--font-playfair), Georgia, serif;
+  --font-ui:      "SAR Symbol", var(--font-inter), "Helvetica Neue", Arial, sans-serif;
+  --font-label:   "SAR Symbol", var(--font-inter), "Helvetica Neue", Arial, sans-serif;
 
   /* ── Legacy aliases → zero breakage across existing codebase ── */
   --font-heading:      var(--font-display);
@@ -52,10 +75,10 @@ body {
  *   Labels    → 600             — eyebrow / tag legibility
  */
 [lang="ar"] body {
-  --font-display:     var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
-  --font-body:        var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
-  --font-ui:          var(--font-brando), "Geeza Pro", Arial, sans-serif;
-  --font-label:       var(--font-brando), "Geeza Pro", Arial, sans-serif;
+  --font-display:     "SAR Symbol", var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
+  --font-body:        "SAR Symbol", var(--font-brando), "Geeza Pro", "Arabic Typesetting", serif;
+  --font-ui:          "SAR Symbol", var(--font-brando), "Geeza Pro", Arial, sans-serif;
+  --font-label:       "SAR Symbol", var(--font-brando), "Geeza Pro", Arial, sans-serif;
 
   /* ── Legacy aliases ── */
   --font-heading:     var(--font-display);

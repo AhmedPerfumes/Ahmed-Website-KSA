@@ -86,7 +86,9 @@ const BundleCard = ({ item, locale, currency, onAddToCart, isInCart }) => {
               cursor: isInCart ? "default" : "pointer",
             }}
           >
-            {isInCart ? "✓ Added" : "Add"}
+            {isInCart
+              ? (locale === "ar" ? "✓ تمت الإضافة" : "✓ Added")
+              : (locale === "ar" ? "+ أضف" : "Add")}
           </button>
         )}
       </div>
@@ -156,26 +158,25 @@ const BundleUpsell = ({ product }) => {
     ? collectionItems.filter((i) => i.child_product_id)
     : familyItems;
 
-  const heading = showCollection
-    ? t("accordion.whatIsIncluded")
-    : t("discoverMore", { familyName: he.decode(product?.product_family || ""), bold: (c) => c });
-
   return (
     <section className="pdp-bundle pdp-fade-in" aria-labelledby="bundle-heading">
       <div className="pdp-container">
         <header className="pdp-section-header">
           <span className="pdp-section-eyebrow">
-            {showCollection ? "What's Included" : "Complete the Collection"}
+            {showCollection
+              ? (locale === "ar" ? "ماذا تتضمن المجموعة" : "What's Included")
+              : (locale === "ar" ? "أكمل مجموعتك" : "Complete the Collection")}
           </span>
           <h2 className="pdp-section-title" id="bundle-heading">
             {showCollection
-              ? "Collection Contents"
-              : "You May Also Love"}
+              ? (locale === "ar" ? "محتويات المجموعة" : "Collection Contents")
+              : (locale === "ar" ? "قد يعجبك أيضاً" : "You May Also Love")}
           </h2>
           {showCollection && savingsPercent > 0 && (
             <p style={{ color: "#2A7A52", fontWeight: 600, marginTop: "0.5rem", fontSize: "0.9rem" }}>
-              Bundle & Save {savingsPercent}% · {currency?.symbol}
-              {savings.toFixed(2)} off individual prices
+              {locale === "ar"
+                ? `وفر ${savingsPercent}% مع المجموعة · خصم ${savings.toFixed(2)} ${currency?.symbol || "ر.س"} عن الشراء المنفرد`
+                : `Bundle & Save ${savingsPercent}% · ${currency?.symbol}${savings.toFixed(2)} off individual prices`}
             </p>
           )}
         </header>

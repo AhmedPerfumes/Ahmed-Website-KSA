@@ -8,6 +8,10 @@
     margin-top: 2.5rem;
     padding-top: 2rem;
     border-top: 1px solid var(--pdp-line, #E5E0D8);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 /* ── Header ── */
@@ -50,11 +54,57 @@
     color: var(--pdp-gold, #C9A96E);
 }
 
-/* ── Grid ── */
+/* ── Slider wrapper & track ── */
+.ifs-slider-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.ifs-slider {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overscroll-behavior-x: contain;
+}
+
+.ifs-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.ifs-slider .ifs-card {
+    flex: 0 0 calc(50% - 0.4rem);
+    width: calc(50% - 0.4rem);
+    min-width: 140px;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+}
+
+@media (min-width: 480px) {
+    .ifs-slider .ifs-card {
+        flex: 0 0 calc(33.33% - 0.5rem);
+        width: calc(33.33% - 0.5rem);
+    }
+}
+
+@media (min-width: 1024px) {
+    .ifs-slider .ifs-card {
+        flex: 0 0 calc(25% - 0.6rem);
+        width: calc(25% - 0.6rem);
+    }
+}
+
+/* ── Legacy Grid (fallback) ── */
 .ifs-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    display: none;
 }
 
 /* ── Card ── */
@@ -83,6 +133,13 @@
     aspect-ratio: 3 / 4;
     overflow: hidden;
     background: #F5F0E8;
+}
+
+.ifs-card__img > a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
 .ifs-card__img img {
@@ -303,11 +360,62 @@
     color: var(--pdp-gold, #C9A96E);
 }
 
+/* ── Arrows (Desktop) ── */
+.ifs-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e8e0d0;
+    border-radius: 50%;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 4;
+    transition: background 0.15s, border-color 0.15s, opacity 0.2s, transform 0.2s;
+}
+
+.ifs-arrow:hover {
+    background: #fdf9f2;
+    border-color: #c5a05a;
+}
+
+.ifs-arrow:disabled {
+    opacity: 0.25;
+    cursor: default;
+}
+
+.ifs-arrow--prev {
+    left: -1rem;
+}
+
+.ifs-arrow--next {
+    right: -1rem;
+}
+
+.ifs-arrow svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* ── Arrow hidden state — fade out at scroll boundaries ── */
 .ifs-arrow--hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
     transform: translateY(-50%) scale(0.85);
+}
+
+/* ── Mobile: touch screens swipe naturally; hide arrows to avoid horizontal overflow ── */
+@media (max-width: 768px) {
+    .ifs-arrow {
+        display: none !important;
+    }
 }
 
 /* ── Mobile: ATC stays inside image, always visible for touch ── */
@@ -332,4 +440,18 @@
 [dir="rtl"] .ifs-badge {
     left: auto;
     right: 8px;
+}
+
+[dir="rtl"] .ifs-arrow--prev {
+    left: auto;
+    right: -1rem;
+}
+
+[dir="rtl"] .ifs-arrow--next {
+    right: auto;
+    left: -1rem;
+}
+
+[dir="rtl"] .ifs-arrow svg {
+    transform: scaleX(-1);
 }

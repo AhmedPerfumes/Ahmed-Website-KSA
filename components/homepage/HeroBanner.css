@@ -204,7 +204,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.22em;
@@ -343,7 +343,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.65rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -485,7 +485,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
+  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans), 'Helvetica Neue', sans-serif);
   font-size: 0.72rem;
   font-weight: 400;
   letter-spacing: 0.12em;

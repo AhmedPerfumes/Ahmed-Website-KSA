@@ -49,9 +49,10 @@ const getChipIcon = (label = "") => {
 
 const OccasionSection = ({ product }) => {
   const locale = useLocale();
+  const isAr = locale === "ar";
 
-  const occasion = product?.occasion || "";
-  const fragranceCategory = product?.fragrance_category || "";
+  const occasion = (isAr ? product?.occasion_ar || product?.occasion : product?.occasion) || "";
+  const fragranceCategory = (isAr ? product?.fragrance_category_ar || product?.fragrance_category : product?.fragrance_category) || "";
 
   // Parse occasion text into chip array
   const rawChips = occasion
@@ -69,16 +70,16 @@ const OccasionSection = ({ product }) => {
     <section className="pdp-occasion pdp-fade-in" aria-labelledby="occasion-heading">
       <div className="pdp-container">
         <header className="pdp-section-header">
-          <span className="pdp-section-eyebrow">Perfect For</span>
+          <span className="pdp-section-eyebrow">{isAr ? "مثالي لـ" : "Perfect For"}</span>
           <h2 className="pdp-section-title" id="occasion-heading">
-            When to Wear It
+            {isAr ? "أوقات ومناسبات الاستخدام" : "When to Wear It"}
           </h2>
         </header>
 
         <div
           className="pdp-occasion__chips"
           role="list"
-          aria-label="Recommended occasions"
+          aria-label={isAr ? "المناسبات الموصى بها" : "Recommended occasions"}
         >
           {rawChips.map((chip, idx) => (
             <div

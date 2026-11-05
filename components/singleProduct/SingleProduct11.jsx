@@ -61,6 +61,18 @@ export default function SingleProduct11({ category, subcategory, product: initia
     fetchLiveStatus();
   }, [initialProduct?.product_id]);
 
+  // First-party AhmedTracker: view_item event for Conversion Funnel & Product Views
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.AhmedTracker && initialProduct?.product_id) {
+      window.AhmedTracker.track("view_item", {
+        product_id: initialProduct.product_id.toString(),
+        product_name: initialProduct.name || initialProduct.product_name || "",
+        price: parseFloat(initialProduct.sale_price || initialProduct.price || 0),
+        currency: "SAR",
+      });
+    }
+  }, [initialProduct?.product_id]);
+
   if (!product || !Object.keys(product).length) {
     return (
       <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">

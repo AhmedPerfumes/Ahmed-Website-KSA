@@ -53,8 +53,10 @@ const ProductSchema = ({ product, canonicalUrl, reviews = [] }) => {
     "@type": "Product",
     name: product.product_name,
     image: imageUrls,
-    description: product.description || `${product.product_name} — A luxury fragrance by Ahmed Al Maghribi Perfumes.`,
-    sku: String(product.product_id),
+    description:
+      (product.description || "").replace(/<\/?[^>]+(>|$)/g, "").trim() ||
+      `${product.product_name} — A luxury fragrance by Ahmed Al Maghribi Perfumes.`,
+    sku: String(product.sku || product.product_id),
     brand: {
       "@type": "Brand",
       name: "Ahmed Al Maghribi Perfumes",

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import Image from "next/image";
@@ -18,10 +18,10 @@ import { useLocale, useTranslations } from "next-intl";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 const NOTE_CONFIG = {
-  top:     { en: "Opening",  ar: "الافتتاح",  subtitle_en: "The First Impression", subtitle_ar: "الانطباع الأول" },
-  heart:   { en: "Heart",    ar: "القلب",      subtitle_en: "The Core Character",   subtitle_ar: "جوهر الرائحة"   },
-  base:    { en: "Legacy",   ar: "الخلاصة",    subtitle_en: "The Lasting Memory",   subtitle_ar: "الذكرى الباقية" },
-  accords: { en: "Notes",    ar: "النوتات",    subtitle_en: "Notes & Accords",      subtitle_ar: "النوتات والأكورد" },
+  top:     { en: "Opening",  ar: "الافتتاحية",  subtitle_en: "The First Impression", subtitle_ar: "الانطباع الأول" },
+  heart:   { en: "Heart",    ar: "قلب العطر",   subtitle_en: "The Core Character",   subtitle_ar: "جوهر الرائحة"   },
+  base:    { en: "Legacy",   ar: "قاعدة العطر", subtitle_en: "The Lasting Memory",   subtitle_ar: "الذكرى الباقية" },
+  accords: { en: "Notes",    ar: "النوتات",     subtitle_en: "Notes & Accords",      subtitle_ar: "النوتات والأكورد" },
 };
 
 const FragranceBreakdown = ({ product }) => {
@@ -33,11 +33,16 @@ const FragranceBreakdown = ({ product }) => {
   /* ── Build notes array ── */
   const notes = [];
   ["top", "heart", "base"].forEach((type) => {
-    const nameKey = isAr ? `${type}_note_ar`             : `${type}_note`;
-    const descKey = isAr ? `${type}_note_description_ar` : `${type}_note_description`;
+    const name = (isAr
+      ? (product?.[`${type}_note_ar`]?.trim() || product?.[`${type}_note`]?.trim())
+      : (product?.[`${type}_note`]?.trim() || product?.[`${type}_note_ar`]?.trim())) || "";
+    const desc = (isAr
+      ? (product?.[`${type}_note_description_ar`]?.trim() || product?.[`${type}_note_description`]?.trim())
+      : (product?.[`${type}_note_description`]?.trim() || product?.[`${type}_note_description_ar`]?.trim())) || "";
     const imgKey  = `${type}_note_image`;
+    const image = product?.[imgKey] || null;
 
-    if (!product?.[nameKey]) return;
+    if (!name && !desc && !image) return;
 
     const cfg  = type === "top" && onlyTop ? NOTE_CONFIG.accords : NOTE_CONFIG[type];
     const tier = isAr ? cfg.ar  : cfg.en;
@@ -47,9 +52,9 @@ const FragranceBreakdown = ({ product }) => {
       id:       type,
       tier,
       subtitle: sub,
-      name:     product[nameKey],
-      desc:     product[descKey] || null,
-      image:    product[imgKey]  || null,
+      name,
+      desc:     desc || null,
+      image,
     });
   });
 
@@ -61,11 +66,13 @@ const FragranceBreakdown = ({ product }) => {
 
         {/* ── Header ── */}
         <header className="pdp-fragrance-ae__header">
-          <span className="pdp-fragrance-ae__eyebrow" id="fragrance-ae-heading">Fragrance Notes</span>
+          <span className="pdp-fragrance-ae__eyebrow" id="fragrance-ae-heading">
+            {isAr ? "مكونات العطر" : "Fragrance Notes"}
+          </span>
           <p className="pdp-fragrance-ae__subtext">
-            Fragrance Notes reveal the essence of a perfume, breaking down its scent
-            journey from the first impression to the lingering aroma, helping you
-            understand its personality and character.
+            {isAr
+              ? "تكشف مكونات العطر عن جوهر العطر، وتقسم رحلة رائحته من الانطباع الأول إلى الرائحة العالقة، مما يساعدك على فهم شخصيته وطابعه الفريد."
+              : "Fragrance Notes reveal the essence of a perfume, breaking down its scent journey from the first impression to the lingering aroma, helping you understand its personality and character."}
           </p>
         </header>
 
@@ -91,7 +98,7 @@ const FragranceBreakdown = ({ product }) => {
                 {note.image ? (
                   <Image
                     src={`${API_URL}storage/${note.image}`}
-                    alt={note.name}
+                    alt={note.name || note.subtitle}
                     width={500}
                     height={320}
                     loading="lazy"
@@ -106,6 +113,11 @@ const FragranceBreakdown = ({ product }) => {
               {/* Card body */}
               <div className="pdp-fragrance-ae__card-body">
                 <h3 className="pdp-fragrance-ae__card-title" itemProp="name">{note.subtitle}</h3>
+                {note.name && (
+                  <p className="pdp-fragrance-ae__card-name" style={{ margin: 0, fontWeight: 500, color: "var(--pdp-ink, #1A1A1A)", fontSize: "0.95rem" }}>
+                    {note.name}
+                  </p>
+                )}
                 {note.desc && (
                   <span className="pdp-fragrance-ae__card-desc" itemProp="description">
                     {note.desc}

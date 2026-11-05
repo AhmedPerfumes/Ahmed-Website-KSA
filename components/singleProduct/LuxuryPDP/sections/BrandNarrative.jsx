@@ -30,7 +30,7 @@ const BrandNarrative = ({ product }) => {
           <span className="pdp-narrative__gold-line" aria-hidden="true" />
           <header style={{ marginBottom: "1.25rem" }}>
             <span className="pdp-section-eyebrow" style={{ color: "#C9A96E" }}>
-              The Story Behind
+              {isAr ? "قصة العطر" : "The Story Behind"}
             </span>
           </header>
 
@@ -43,7 +43,7 @@ const BrandNarrative = ({ product }) => {
           </blockquote>
 
           <p className="pdp-narrative__source">
-            — Ahmed Al Maghribi Perfumes
+            {isAr ? "— أحمد المغربي للعطور" : "— Ahmed Al Maghribi Perfumes"}
           </p>
         </div>
       </div>

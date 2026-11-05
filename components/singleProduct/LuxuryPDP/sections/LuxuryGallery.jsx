@@ -23,10 +23,14 @@ import he from "he";
  *   setActiveIndex — setter from parent
  */
 
+import { useLocale } from "next-intl";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 /* ─── Badge overlay ─────────────────────────────────────────── */
 const Badges = ({ product }) => {
+  const locale = useLocale();
+  const isAr = locale === "ar";
   const isOutOfStock = (product?.product_qty ?? 0) <= 0;
   const now = new Date();
   const discount = product?.discount;
@@ -38,12 +42,12 @@ const Badges = ({ product }) => {
   return (
     <div className="pdp-gallery__badge-row" aria-hidden="true">
       {isOutOfStock && (
-        <span className="pdp-badge pdp-badge--oos">Out of Stock</span>
+        <span className="pdp-badge pdp-badge--oos">{isAr ? "غير متوفر" : "Out of Stock"}</span>
       )}
       {!isOutOfStock && isDiscountActive && (
         <span className="pdp-badge pdp-badge--sale">
-          Save {discount.value}
-          {discount.discount_type === "percent" ? "%" : " SAR"}
+          {isAr ? `وفر ${discount.value}` : `Save ${discount.value}`}
+          {discount.discount_type === "percent" ? "%" : (isAr ? " ر.س" : " SAR")}
         </span>
       )}
       {product?.label_name && !isOutOfStock && (
@@ -91,6 +95,14 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
     const onKey = (e) => { if (e.key === "Escape") setLightboxOpen(false); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxOpen]);
+
+  // Lock background page scroll while lightbox is open (mobile)
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
   }, [lightboxOpen]);
 
   const openLightbox = useCallback((idx) => {
@@ -287,11 +299,8 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           )}
 
           {/* Image */}
-          <div
-            className="pdp-lightbox__img-wrap"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="pdp-lightbox__close" onClick={closeLightbox} aria-label="Close" type="button">&times;</button>
+          <div className="pdp-lightbox__img-wrap">
+            <button className="pdp-lightbox__close" onClick={(e) => { e.stopPropagation(); closeLightbox(); }} aria-label="Close" type="button">&times;</button>
             <Image
               src={images[lightboxIndex] ? `${API_URL}storage/${images[lightboxIndex]}` : "/assets/images/general_product.png"}
               alt={he.decode(product?.product_name || "Product")}

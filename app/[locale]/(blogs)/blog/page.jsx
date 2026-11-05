@@ -5,6 +5,7 @@ import Footer14 from "@/components/footers/Footer14";
 import React from "react";
 
 import { buildPageMetadata } from "@/utlis/seoHelper";
+import MobileFooter2 from "@/components/footers/MobileFooter2";
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

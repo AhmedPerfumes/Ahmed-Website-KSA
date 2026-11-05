@@ -27,8 +27,6 @@ const YouMayAlsoLike = dynamic(
   { ssr: false }
 );
 
-const FREE_SHIPPING_THRESHOLD = 300;
-
 export default function Cart() {
   const {
     shippingServiceCharges,
@@ -38,8 +36,7 @@ export default function Cart() {
     currency,
   } = useMenu();
   const locale = useLocale();
-  const isAr   = locale === "ar";
-  const t      = useTranslations();
+  const t = useTranslations("CartPage");
   const [error, setError] = useState(null);
   // Start closed to avoid SSR/hydration mismatch — open after mount
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -97,13 +94,14 @@ export default function Cart() {
     setCartProducts,
     totalPrice,
     freeShippingFlag,
+    freeShippingThreshold,
     setCouponDataContext,
     removeGiftFromCart,
   } = useContextElement();
 
   // Free-shipping progress
-  const progressPct = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
-  const remaining   = (FREE_SHIPPING_THRESHOLD - totalPrice).toFixed(2);
+  const progressPct = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+  const remaining   = (freeShippingThreshold - totalPrice).toFixed(2);
 
 
   useEffect(() => {
@@ -141,11 +139,7 @@ export default function Cart() {
         )
       );
     } else {
-      setError(
-        quantity < 1
-          ? (isAr ? "الحد الأدنى للكمية هو 1" : "Minimum quantity is 1")
-          : (isAr ? `الحد الأقصى المسموح به للكمية هو ${MAX}` : `Maximum allowed quantity is ${MAX}`)
-      );
+      setError(quantity < 1 ? t("minQty") : t("maxQty", { max: MAX }));
     }
   };
 
@@ -208,9 +202,9 @@ export default function Cart() {
   const applyCoupon = useCallback(async () => {
     if (!couponCode.trim()) return;
     // TODO: wire to full apply logic when checkout coupon API available on cart
-    setCouponError(isAr ? "الرمز غير صالح أو منتهي الصلاحية." : "Invalid or expired code.");
+    setCouponError(t("invalidCoupon"));
     setCouponSuccess(null);
-  }, [couponCode, isAr]);
+  }, [couponCode, t]);
   const removeCoupon = () => {
     setCouponData(null);
     setCouponCode("");
@@ -312,25 +306,23 @@ export default function Cart() {
     <>
       {/* ── SEO/Nav breadcrumb row — sits above the full grid ────── */}
       {/* (B) "Continue Shopping" here — clear nav context, not competing with items */}
-      <nav className="cc-cart-topnav" aria-label={isAr ? "التنقل في سلة التسوق" : "Cart navigation"}>
-        <Link
-          href={`/${locale}/shop`}
-          className="cc-cart-topnav__continue"
-          aria-label={isAr ? "متابعة التسوق" : "Continue shopping"}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            aria-hidden="true"
-            style={{ transform: isAr ? "rotate(180deg)" : "none" }}
-          >
-            <polyline points="15 18 9 12 15 6" />
+      <nav className="cc-cart-topnav" aria-label={t("cartNav")}>
+        {/* <ol className="cc-cart-topnav__breadcrumb">
+          <li>
+            <Link href={`/${locale}`}>Home</Link>
+            <span aria-hidden="true"> / </span>
+          </li>
+          <li>
+            <Link href={`/${locale}/shop`}>Shop</Link>
+            <span aria-hidden="true"> / </span>
+          </li>
+          <li aria-current="page">Shopping Cart</li>
+        </ol> */}
+        <Link href={`/${locale}/shop`} className="cc-cart-topnav__continue" aria-label={t("continueShopping")}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
           </svg>
-          {isAr ? "متابعة التسوق" : "Continue Shopping"}
+          {t("continueShopping")}
         </Link>
       </nav>
 
@@ -349,11 +341,7 @@ export default function Cart() {
               {/* SEO: semantic article list for cart items */}
               <article
                 className="cc-cart-items-list"
-                aria-label={
-                  isAr
-                    ? `سلة التسوق — ${cartProducts.length} ${cartProducts.length !== 1 ? "منتجات" : "منتج"}`
-                    : `Shopping cart — ${cartProducts.length} item${cartProducts.length !== 1 ? "s" : ""}`
-                }
+                aria-label={t("itemsLabel", { count: cartProducts.length })}
               >
                 {cartProducts.map((elm, i) => {
                   const disc     = getDiscountedPrice(elm);
@@ -367,7 +355,7 @@ export default function Cart() {
                       {/* Thumbnail */}
                       <div className="cc-cart-item__image">
                         {pdpHref ? (
-                          <Link href={pdpHref} aria-label={`${isAr ? "عرض" : "View"} ${prodName}`}>
+                          <Link href={pdpHref} aria-label={t("view", { name: he.decode(elm.product_name || "") })}>
                             <Image
                               src={imgSrc}
                               width={80}
@@ -405,7 +393,7 @@ export default function Cart() {
                         )}
 
                         {isGift && (
-                          <span className="cc-gift-badge">🎁 {isAr ? "هدية مجانية" : "Free Gift"}</span>
+                          <span className="cc-gift-badge">{t("freeGift")}</span>
                         )}
 
                         <div className="cc-cart-item__price-row">
@@ -432,12 +420,12 @@ export default function Cart() {
                           <div
                             className="cc-cart-item__qty-row"
                             role="group"
-                            aria-label={isAr ? "الكمية" : "Quantity"}
+                            aria-label={t("quantity")}
                           >
                             <button
                               type="button"
                               className="cc-cart-item__qty-btn"
-                              aria-label={isAr ? "تقليل الكمية" : "Decrease quantity"}
+                              aria-label={t("decreaseQty")}
                               onClick={() =>
                                 setQuantity(
                                   elm.product_id,
@@ -458,7 +446,7 @@ export default function Cart() {
                             <button
                               type="button"
                               className="cc-cart-item__qty-btn"
-                              aria-label={isAr ? "زيادة الكمية" : "Increase quantity"}
+                              aria-label={t("increaseQty")}
                               onClick={() =>
                                 setQuantity(
                                   elm.product_id,
@@ -473,12 +461,12 @@ export default function Cart() {
                           </div>
                         ) : (
                           <span style={{ fontSize: "0.72rem", color: "#888" }}>
-                            {isAr ? "الكمية: 1" : "Qty: 1"}
+                            {t("qtyOne")}
                           </span>
                         )}
 
                         <span className="cc-cart-item__subtotal">
-                          {isAr ? "المجموع الفرعي: " : "Subtotal: "}
+                          {t("subtotal")}:{" "}
                           <strong>
                             {currency.symbol}
                             {getItemSubtotal(elm)}
@@ -490,10 +478,10 @@ export default function Cart() {
                         <button
                           type="button"
                           className="cc-cart-item__remove"
-                          aria-label={isAr ? `إزالة ${prodName} من السلة` : `Remove ${prodName} from cart`}
+                          aria-label={t("removeLabel", { name: he.decode(elm.product_name || "") })}
                           onClick={() => removeItem(elm.product_id)}
                         >
-                          {isAr ? "إزالة" : "Remove"}
+                          {t("remove")}
                         </button>
                       )}
                     </div>
@@ -505,32 +493,19 @@ export default function Cart() {
             {/* ── Order Summary sidebar ─────────────────────────────── */}
             <aside
               className="shopping-cart__totals-wrapper"
-              aria-label={isAr ? "ملخص الطلب" : "Order summary"}
+              aria-label={t("orderSummary")}
             >
               <div className="sticky-content">
 
                 {/* Free-shipping progress bar — always visible above Summary card */}
                 <div className="cc-cart-ship-bar" role="status" aria-live="polite">
-                  {totalPrice < FREE_SHIPPING_THRESHOLD ? (
+                  {totalPrice < freeShippingThreshold ? (
                     <>
                       <p className="cc-cart-ship-bar__text">
-                        {isAr ? (
-                          <>
-                            أضف{" "}
-                            <strong>
-                              {remaining} {currency?.symbol}
-                            </strong>{" "}
-                            إضافية للحصول على شحن مجاني ✈
-                          </>
-                        ) : (
-                          <>
-                            Add{" "}
-                            <strong>
-                              {remaining} {currency?.symbol}
-                            </strong>{" "}
-                            more for free shipping ✈
-                          </>
-                        )}
+                        {t.rich("addMoreForFreeShipping", {
+                          amount: `${remaining} ${currency?.symbol ?? ""}`,
+                          b: (chunks) => <strong>{chunks}</strong>,
+                        })}
                       </p>
                       <div
                         className="cc-cart-ship-bar__track"
@@ -538,7 +513,7 @@ export default function Cart() {
                         aria-valuenow={Math.round(progressPct)}
                         aria-valuemin={0}
                         aria-valuemax={100}
-                        aria-label={isAr ? "التقدم للشحن المجاني" : "Free shipping progress"}
+                        aria-label={t("freeShippingProgress")}
                       >
                         <div
                           className="cc-cart-ship-bar__fill"
@@ -548,35 +523,15 @@ export default function Cart() {
                     </>
                   ) : (
                     <p className="cc-cart-ship-bar__text cc-cart-ship-bar__text--done">
-                      {isAr ? (
-                        <>🎉 لقد حصلت على <strong>شحن مجاني!</strong></>
-                      ) : (
-                        <>🎉 You&apos;ve unlocked <strong>free shipping!</strong></>
-                      )}
+                      {t.rich("freeShippingUnlocked", {
+                        b: (chunks) => <strong>{chunks}</strong>,
+                      })}
                     </p>
                   )}
-                  <div className="cc-cart-ship-bar__notice">
-                    <svg
-                      width="11"
-                      height="11"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      aria-hidden="true"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="8" x2="12" y2="12" />
-                      <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
-                    {isAr
-                      ? "قد يستغرق التوصيل من 8 إلى 10 أيام نظرًا لزيادة الطلب"
-                      : "Deliveries may take 8–10 days due to high demand"}
-                  </div>
                 </div>
 
                 {/* Collapsible Order Summary card */}
-                <section className="cc-order-summary-right" aria-label={isAr ? "تفاصيل ملخص الطلب" : "Order summary details"}>
+                <section className="cc-order-summary-right" aria-label={t("orderSummaryDetails")}>
                   <div
                     className="cc-osr__header"
                     onClick={() => setSummaryOpen((v) => !v)}
@@ -588,9 +543,7 @@ export default function Cart() {
                     }
                   >
                     <span className="cc-osr__title">
-                      {isAr
-                        ? (summaryOpen ? "إخفاء ملخص الطلب" : "عرض ملخص الطلب")
-                        : (summaryOpen ? "Hide" : "Show") + " Order Summary"}
+                      {summaryOpen ? t("hideOrderSummary") : t("showOrderSummary")}
                     </span>
                     <div className="cc-osr__header-right">
                       <span className="cc-osr__total-pill">
@@ -617,8 +570,8 @@ export default function Cart() {
                   {summaryOpen && (
                     <div className="cc-osr__body">
                       <div className="cc-osr__col-heads">
-                        <span>{isAr ? "المنتج" : "Product"}</span>
-                        <span>{isAr ? "المجموع الفرعي" : "Subtotal"}</span>
+                        <span>{t("product")}</span>
+                        <span>{t("subtotal")}</span>
                       </div>
 
                       {cartProducts.map((elm, i) => {
@@ -656,16 +609,16 @@ export default function Cart() {
                       <div className="cc-osr__divider" />
 
                       <div className="cc-osr__row cc-osr__row--sub">
-                        <span>{isAr ? "المجموع الفرعي" : "Subtotal"}</span>
+                        <span>{t("subtotal")}</span>
                         <span>
                           {totalPrice.toFixed(2)} {currency.symbol}
                         </span>
                       </div>
                       <div className="cc-osr__row cc-osr__row--sub">
-                        <span>{isAr ? "الشحن" : "Shipping"}</span>
+                        <span>{t("shipping")}</span>
                         <span>
                           {freeShippingFlag ? (
-                            <span className="cc-osr__free">{isAr ? "🎉 مجاني" : "🎉 Free"}</span>
+                            <span className="cc-osr__free">{t("free")}</span>
                           ) : shippingLoaded ? (
                             `${shippingServiceCharges[0].price} ${currency.symbol}`
                           ) : (
@@ -676,7 +629,7 @@ export default function Cart() {
 
                       {couponData && (
                         <div className="cc-osr__row cc-osr__row--sub cc-osr__row--discount">
-                          <span>{isAr ? `الخصم (${couponData.code})` : `Discount (${couponData.code})`}</span>
+                          <span>{t("discount", { code: couponData.code })}</span>
                           <span>
                             −{couponData.value}
                             {couponData.coupon_type === "percent"
@@ -689,13 +642,11 @@ export default function Cart() {
                       <div className="cc-osr__divider" />
 
                       <div className="cc-osr__row cc-osr__row--total">
-                        <span>{isAr ? "المجموع الكلي" : "Total"}</span>
+                        <span>{t("total")}</span>
                         <span>
                           {grandTotal} {currency.symbol}{" "}
                           <em>
-                            {isAr
-                              ? `(شامل ${vatAmount ?? "—"} ${currency.symbol} ضريبة القيمة المضافة)`
-                              : `(Incl. ${vatAmount ?? "—"} ${currency.symbol} VAT)`}
+                            {t("inclVat", { amount: `${vatAmount ?? "—"} ${currency.symbol}` })}
                           </em>
                         </span>
                       </div>
@@ -729,20 +680,20 @@ export default function Cart() {
                     marginTop: "1rem",
                   }}
                 >
-                  {isAr ? "متابعة إتمام الطلب" : "Proceed to Checkout"}
+                  {t("proceedToCheckout")}
                 </Link>
 
                 {/* Trust badges — 2×2 grid, high-contrast */}
                 <div
                   className="cc-trust-bar cc-trust-bar--cart"
-                  aria-label={isAr ? "ضمانات التسوق" : "Shopping assurances"}
+                  aria-label={t("assurances")}
                 >
                   <div className="cc-trust-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
                       <rect x="3" y="11" width="18" height="11" rx="2"/>
                       <path d="M7 11V7a5 5 0 0110 0v4"/>
                     </svg>
-                    {isAr ? "دفع آمن 100%" : "Secure Payment"}
+                    {t("securePayment")}
                   </div>
                   <div className="cc-trust-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
@@ -751,26 +702,24 @@ export default function Cart() {
                       <circle cx="5.5" cy="18.5" r="2.5"/>
                       <circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
-                    {isAr ? "شحن مجاني فوق 300 ر.س" : "Free Ship 300+ SAR"}
+                    {t("freeShipOver", { amount: freeShippingThreshold })}
                   </div>
                   <div className="cc-trust-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
-                    {isAr ? "شامل ضريبة القيمة المضافة" : "VAT Included"}
+                    {t("vatIncluded")}
                   </div>
                   <div className="cc-trust-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
-                    {isAr ? "منتجات أصلية 100%" : "Authentic Guarantee"}
+                    {t("authentic")}
                   </div>
                 </div>
 
                 <p className="cc-totals-card__pay-note">
-                  {isAr
-                    ? "🔒 دفع آمن · فيزا · ماستركارد · مدى · تمارا · تابي"
-                    : "🔒 Visa · Mastercard · Mada · Tamara · Tabby"}
+                  {t("payMethods")}
                 </p>
               </div>
             </aside>
@@ -781,13 +730,9 @@ export default function Cart() {
             <div className="cc-cart-empty__icon" aria-hidden="true">
               🛍️
             </div>
-            <h1 className="cc-cart-empty__title">
-              {isAr ? "سلة التسوق فارغة" : "Your bag is empty"}
-            </h1>
+            <h1 className="cc-cart-empty__title">{t("emptyTitle")}</h1>
             <p className="cc-cart-empty__sub">
-              {isAr
-                ? "أضف بعض العطور لتبدأ رحلة التسوق"
-                : "Add some fragrances to get started"}
+              {t("emptySub")}
             </p>
             <Link
               href={`/${locale}/shop`}
@@ -798,7 +743,7 @@ export default function Cart() {
                 textDecoration: "none",
               }}
             >
-              {isAr ? "استكشف المنتجات" : "Explore Products"}
+              {t("exploreProducts")}
             </Link>
           </div>
         )}

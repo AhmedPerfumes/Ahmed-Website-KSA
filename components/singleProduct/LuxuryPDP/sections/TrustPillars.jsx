@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 /**
  * TrustPillars — Section 5
@@ -38,36 +38,38 @@ const TRUST_ICONS = {
 
 const TrustPillars = ({ shippingPrice }) => {
   const t = useTranslations("ProductDetails");
+  const locale = useLocale();
+  const isAr = locale === "ar";
 
   const pillars = [
     {
       id: "delivery",
       icon: TRUST_ICONS.delivery,
-      title: t("delivery.shipping"),
-      text: t("delivery.expectedDeliveryText"),
+      title: isAr ? "توصيل سريع ومجاني" : t("delivery.shipping"),
+      text: isAr ? "توصيل سريع وموثوق لجميع مناطق المملكة" : t("delivery.expectedDeliveryText"),
     },
     {
       id: "cod",
       icon: TRUST_ICONS.cod,
-      title: "Cash on Delivery",
-      text: "Pay when your order arrives at your door",
+      title: isAr ? "الدفع عند الاستلام" : "Cash on Delivery",
+      text: isAr ? "ادفع عند استلام طلبك على باب منزلك بكل راحة" : "Pay when your order arrives at your door",
     },
     {
       id: "authentic",
       icon: TRUST_ICONS.authentic,
-      title: "100% Authentic",
-      text: "Every product is genuine and quality-checked",
+      title: isAr ? "أصلي 100%" : "100% Authentic",
+      text: isAr ? "جميع العطور أصلية ومضمونة الجودة من المصنع مباشرة" : "Every product is genuine and quality-checked",
     },
     {
       id: "returns",
       icon: TRUST_ICONS.returns,
-      title: "Easy Returns",
-      text: t("delivery.paymentText"),
+      title: isAr ? "إرجاع سهل" : "Easy Returns",
+      text: isAr ? "إمكانية الاسترجاع والاستبدال خلال المدة المحددة بسهولة" : t("delivery.paymentText"),
     },
   ];
 
   return (
-    <section className="pdp-trust-pillars" aria-label="Trust signals">
+    <section className="pdp-trust-pillars" aria-label={isAr ? "مميزات التسوق معنا" : "Trust signals"}>
       <div className="pdp-container">
         <div className="pdp-trust-pillars__grid">
           {pillars.map((p) => (

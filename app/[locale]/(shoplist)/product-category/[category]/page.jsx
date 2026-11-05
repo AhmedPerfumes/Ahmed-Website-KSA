@@ -161,8 +161,9 @@ export async function generateMetadata({ params }) {
                 images: [
                     {
                         url: ogImage,
-                        width: 1200,
-                        height: 630,
+                        width: ogImage.includes("ahmed-logo") ? 500 : 1200,
+                        height: ogImage.includes("ahmed-logo") ? 500 : 630,
+                        type: ogImage.endsWith(".png") ? "image/png" : "image/jpeg",
                         alt: fullTitle,
                     },
                 ],

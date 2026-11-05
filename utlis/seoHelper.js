@@ -60,8 +60,9 @@ export function buildPageMetadata({
       images: [
         {
           url: ogImageUrl,
-          width: 1200,
-          height: 630,
+          width: ogImageUrl.includes("ahmed-logo") ? 500 : 1200,
+          height: ogImageUrl.includes("ahmed-logo") ? 500 : 630,
+          type: ogImageUrl.endsWith(".png") ? "image/png" : "image/jpeg",
           alt: title || "Ahmed Al Maghribi Perfumes",
         },
       ],
