@@ -43,6 +43,10 @@ export default function VideoHeroBanner({
     ctaHref  = "/shop",
 
     objectPosition = "center center",
+
+    /* ── Optional: make the whole banner a link (for videos with a CTA baked in) ── */
+    mediaHref  = "",
+    mediaLabel = "",
 }) {
     const locale = useLocale();
     const t      = useTranslations();
@@ -135,13 +139,13 @@ export default function VideoHeroBanner({
         return () => document.removeEventListener("visibilitychange", handleVisibility);
     }, [initiated]);
 
-    /* ── Swap source on breakpoint flip ── */
+    /* ── Swap source on breakpoint flip or language change ── */
     useEffect(() => {
         if (!initiated) return;
         setReady(false);
         startVideo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile]);
+    }, [mp4Src]);
 
     const hasText = eyebrow || title || subtitle;
     const href    = `/${locale}${ctaHref}`;
@@ -182,6 +186,14 @@ export default function VideoHeroBanner({
                 >
                     <source src={mp4Src} type="video/mp4" />
                 </video>
+
+                {mediaHref && (
+                    <Link
+                        href={`/${locale}${mediaHref}`}
+                        aria-label={mediaLabel || "Discover"}
+                        style={{ position: "absolute", inset: 0, zIndex: 3 }}
+                    />
+                )}
             </div>
 
             {/* ── Gradient overlay for text legibility ── */}
