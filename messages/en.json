@@ -1445,6 +1445,8 @@
     "mobileVerifiedShort": "Mobile number verified",
     "termsLine": "By placing your order you agree to our <terms>Terms & Conditions</terms> and <privacy>Privacy Policy</privacy>.",
     "serviceFee": "Service fee",
+    "codFee": "Cash on delivery fee",
+    "codFeeNote": "+{amount} fee",
     "orderSummary": "Order summary",
     "cardSub": "mada, Visa, Mastercard, Apple Pay",
     "placeOrderShort": "Place order",

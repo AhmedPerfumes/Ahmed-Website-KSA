@@ -127,21 +127,19 @@ export default function Checkout() {
   const tc = useTranslations('CheckoutPage');
 
   const shippingLoaded = Array.isArray(shippingServiceCharges) && shippingServiceCharges.length >= 2;
-  const grandTotal = shippingLoaded
-    ? (!freeShippingFlag
-      ? (parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2)
-      : (0 + totalPrice + parseFloat(shippingServiceCharges[1].price)).toFixed(2))
-    : totalPrice.toFixed(2);
-  const vatAmount = shippingLoaded
-    ? (!freeShippingFlag
-      ? ((parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + vatTax.percentage / 100)) + (totalPrice - totalPrice / (1 + vatTax.percentage / 100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage / 100))).toFixed(2)
-      : (0 + (totalPrice - totalPrice / (1 + vatTax.percentage / 100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage / 100))).toFixed(2))
-    : '0.00';
+  // Admin-managed charges (shipping_service_charges): [0] shipping · [1] service fee · [2] COD fee · [3] free-shipping threshold
+  const shippingFee = shippingLoaded && !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) || 0 : 0;
+  const serviceFee = shippingLoaded ? parseFloat(shippingServiceCharges[1].price) || 0 : 0;
+  const codFeeSetting = shippingLoaded ? parseFloat(shippingServiceCharges[2]?.price) || 0 : 0;
+  const codFee = selectedOption === 'cod' ? codFeeSetting : 0;
+  const vatRate = (parseFloat(vatTax?.percentage) || 0) / 100;
+  const grandTotalNum = totalPrice + shippingFee + serviceFee + codFee; // all prices are VAT-inclusive
+  const grandTotal = grandTotalNum.toFixed(2);
+  const vatAmount = shippingLoaded ? (grandTotalNum - grandTotalNum / (1 + vatRate)).toFixed(2) : '0.00';
   const shippingCostDisplay = shippingLoaded ? shippingServiceCharges[0].price : '...';
 
   // Never silently disable — Place Order validates and tells the customer what is missing
   const disablePlaceOrder = isLoading;
-  const serviceFee = shippingLoaded ? parseFloat(shippingServiceCharges[1].price) || 0 : 0;
 
   /* ------------------------------------------------------------------ */
   /*  EFFECTS                                                             */
@@ -703,8 +701,10 @@ export default function Checkout() {
 
     const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
     const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
-    const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1].price);
-    const servicePrice = shippingServiceCharges[1].price;
+    const finalPrice = grandTotalNum;
+    const codPrice = codFee;
+    const codPriceVat = codPrice / 100 * vatTax.percentage;
+    const servicePrice = serviceFee + codFee;
     const servicePriceVat = servicePrice / 100 * vatTax.percentage;
     let userJson = null;
     if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
@@ -717,7 +717,7 @@ export default function Checkout() {
         country: cleanFormData.shippingAddress.country || 'KSA',
       };
     }
-    const additionalFields = { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+    const additionalFields = { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
     const token = localStorage.getItem('token');
 
     try {
@@ -1053,6 +1053,12 @@ export default function Checkout() {
         <div className="cc-osr__row cc-osr__row--sub">
           <span>{tc('serviceFee')}</span>
           <span>{serviceFee.toFixed(2)}{currency.symbol}</span>
+        </div>
+      )}
+      {codFee > 0 && (
+        <div className="cc-osr__row cc-osr__row--sub">
+          <span>{tc('codFee')}</span>
+          <span>{codFee.toFixed(2)}{currency.symbol}</span>
         </div>
       )}
       {couponData && (
@@ -1477,7 +1483,7 @@ export default function Checkout() {
                           <div className="cc-payment-card__radio"></div>
                           <div className="cc-payment-card__content">
                             <span className="cc-payment-card__title">{tc('cod')}</span>
-                            <span className="cc-payment-card__subtitle">{tc('codSub')}</span>
+                            <span className="cc-payment-card__subtitle">{tc('codSub')}{codFeeSetting > 0 && <> · {tc('codFeeNote', { amount: `${codFeeSetting.toFixed(2)}${currency.symbol}` })}</>}</span>
                           </div>
                         </label>
                       </div>

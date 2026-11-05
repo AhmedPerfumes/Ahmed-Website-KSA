@@ -1555,6 +1555,8 @@
     "mobileVerifiedShort": "تم التحقق من رقم الجوال",
     "termsLine": "بإتمام الطلب، أنت توافق على <terms>الشروط والأحكام</terms> و<privacy>سياسة الخصوصية</privacy>.",
     "serviceFee": "رسوم الخدمة",
+    "codFee": "رسوم الدفع عند الاستلام",
+    "codFeeNote": "+{amount} رسوم",
     "orderSummary": "ملخص الطلب",
     "cardSub": "مدى، فيزا، ماستركارد، Apple Pay",
     "placeOrderShort": "إتمام الطلب",
