@@ -2601,32 +2601,6 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   }
 }
 
-// ── Gift toggle + recipient ──
-.cc-gift-toggle {
-  margin: 0.9rem 0 0;
-
-  .form-check-label {
-    font-size: 0.84rem;
-    font-weight: 500;
-    cursor: pointer;
-  }
-}
-
-.cc-recipient {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #e6dfd0;
-
-  &__title {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #888;
-    margin: 0 0 0.5rem;
-  }
-}
-
 // ── Payment list: one method per row ──
 .cc-payment-list {
   display: flex;

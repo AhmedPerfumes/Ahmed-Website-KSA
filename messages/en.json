@@ -1684,7 +1684,6 @@
       "cartNav": "Cart navigation"
     },
   "CheckoutPage": {
-    "giftShort": "Gift to another address",
     "contactTitle": "Contact",
     "deliveryTitle": "Delivery",
     "paymentTitle": "Payment",
@@ -1696,8 +1695,6 @@
     "buildingApt": "Building / apartment (optional)",
     "snaOptional": "Short National Address (optional)",
     "snaHint": "e.g. ABCD1234 — fills in your address automatically",
-    "giftToggle": "Sending a gift? Deliver to a different address",
-    "recipientTitle": "Recipient details",
     "otpWhy": "We'll text you a 4-digit code to confirm your order",
     "otpPrompt": "Enter the 4-digit code sent to {mobile}",
     "resendIn": "Resend code in {s}s",

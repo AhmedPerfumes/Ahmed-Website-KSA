@@ -55,7 +55,8 @@ export default function Checkout() {
   // Logged-in accounts registered with a single-word name have no last name — show name inputs for them
   const [needsName, setNeedsName] = useState(false);
   // Card (mada / Apple Pay) pre-selected — the most used method in KSA; one less tap
-  const [selectedOption, setSelectedOption] = useState("paytabs");
+  // No payment method pre-selected — the customer must choose one
+  const [selectedOption, setSelectedOption] = useState("");
   const [createAccount, setCreateAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -76,7 +77,6 @@ export default function Checkout() {
 
   // Collapsible panels inside sections
   const [showNote, setShowNote] = useState(false);
-  const [showShipping, setShowShipping] = useState(false);
   const [showCouponPanel, setShowCouponPanel] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(true);          // desktop: visible by default
   const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
@@ -491,15 +491,6 @@ export default function Checkout() {
     }
   };
 
-  const handleCheckboxChange = () => {
-    setFieldErrors(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => !k.startsWith('ship_'))));
-    setFormData(p => ({
-      ...p,
-      shippingAdd: !p.shippingAdd,
-      shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', country: 'KSA', area: '', building: '', building_name: '', province: '', short_national_address: '' }
-    }));
-    setShowShipping(v => !v);
-  };
 
   /* ── Inline address modal handlers ── */
   const openAddrModal = () => { setEditingAddrIdx(null); setAddrFormErrors({}); setShowAddrModal(true); };
@@ -750,13 +741,13 @@ export default function Checkout() {
     if (!isLoggedIn && guestStep < 3) { goNextStep(guestStep); return; }
     setError(null); setSuccess(null);
     if (!validateDetails()) return;
-    setIsLoading(true);
 
     if (!selectedOption || !selectedOption.trim()) {
-      setIsLoading(false);
       setError(tc('choosePayment'));
+      document.querySelector('.cc-payment-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    setIsLoading(true);
 
     try {
       if (!window.__placeOrderTracked && cartProducts?.length) {
@@ -802,14 +793,6 @@ export default function Checkout() {
     let userJson = null;
     if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
     const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
-    // Gift / different address: recipient email isn't asked for — use the customer's
-    if (shippingAdd) {
-      cleanFormData.shippingAddress = {
-        ...cleanFormData.shippingAddress,
-        email: cleanFormData.shippingAddress.email || cleanFormData.billingAddress.email,
-        country: cleanFormData.shippingAddress.country || 'KSA',
-      };
-    }
     const additionalFields = { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
     const token = localStorage.getItem('token');
 
@@ -943,15 +926,6 @@ export default function Checkout() {
         errs._address = 'noAddressTitle';
       } else if (billingRules.short_national_address(b.short_national_address)) {
         errs._address = 'addressIncompleteTitle';
-      }
-      if (formData.shippingAdd) {
-        const sa = formData.shippingAddress;
-        if (!sa.first_name?.trim()) errs.ship_first_name = 'required';
-        if (!sa.last_name?.trim()) errs.ship_last_name = 'required';
-        if (!/^\d{10}$/.test(sa.mobile || '')) errs.ship_mobile = 'invalidMobileDigits';
-        if (!sa.area?.trim()) errs.ship_area = 'cityRequired';
-        if (!sa.province?.trim()) errs.ship_province = 'provinceRequired';
-        if (!sa.building?.trim()) errs.ship_building = 'fullAddressRequired';
       }
     }
     return errs;
@@ -1097,8 +1071,6 @@ export default function Checkout() {
   const fieldErrorLabels = {
     first_name: tc('firstName'), last_name: tc('lastName'), email: tc('emailAddress'), mobile: tc('mobileNumber'),
     area: tc('city'), province: tc('region'), building: tc('districtStreet'),
-    ship_first_name: tc('firstName'), ship_last_name: tc('lastName'), ship_mobile: tc('mobileNumber'),
-    ship_area: tc('city'), ship_province: tc('region'), ship_building: tc('districtStreet'),
     short_national_address: tc('shortNationalAddress'), _otp: tc('mobileVerification'), _address: tc('deliveryAddress'),
   };
   const regionLabel = key => { const r = SAUDI_REGIONS.find(x => x.key === key); return r ? (locale === 'ar' ? r.ar : r.en) : key; };
@@ -1259,7 +1231,6 @@ export default function Checkout() {
   const deliverySummary = [
     [b.area, regionLabel(b.province)].filter(Boolean).join(locale === 'ar' ? '، ' : ', '),
     b.building,
-    formData.shippingAdd ? tc('giftShort') : null,
   ].filter(Boolean).join(' · ');
 
   /* ------------------------------------------------------------------ */
@@ -1490,26 +1461,6 @@ export default function Checkout() {
                           </div>
                         )}
 
-                        {/* Gift / different address */}
-                        <div className="form-check cc-gift-toggle">
-                          <input className="form-check-input" type="checkbox" id="ship_diff" checked={!!formData.shippingAdd} onChange={handleCheckboxChange} />
-                          <label className="form-check-label" htmlFor="ship_diff">{tc('giftToggle')}</label>
-                        </div>
-
-                        {formData.shippingAdd && (
-                          <div className="cc-recipient">
-                            <p className="cc-recipient__title">{tc('recipientTitle')}</p>
-                            <div className="row g-2">
-                              {textField({ id: 'ship_fn', name: 'shippingAddress.first_name', value: formData.shippingAddress.first_name, label: tc('firstName'), required: true, autoComplete: 'shipping given-name', errKey: 'ship_first_name' })}
-                              {textField({ id: 'ship_ln', name: 'shippingAddress.last_name', value: formData.shippingAddress.last_name, label: tc('lastName'), required: true, autoComplete: 'shipping family-name', errKey: 'ship_last_name' })}
-                              {textField({ id: 'ship_mob', name: 'shippingAddress.mobile', value: formData.shippingAddress.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'shipping tel-national', maxLength: 14, errKey: 'ship_mobile', hint: tc('egMobile'), dir: 'ltr' })}
-                              {textField({ id: 'ship_area', name: 'shippingAddress.area', value: formData.shippingAddress.area, label: tc('city'), required: true, autoComplete: 'shipping address-level2', errKey: 'ship_area', list: 'sa-city-list' })}
-                              {regionField({ id: 'ship_prov', name: 'shippingAddress.province', value: formData.shippingAddress.province, errKey: 'ship_province', prefix: 'shipping ' })}
-                              {textField({ id: 'ship_bldg', name: 'shippingAddress.building', value: formData.shippingAddress.building, label: tc('districtStreet'), required: true, autoComplete: 'shipping street-address', errKey: 'ship_building' })}
-                              {textField({ id: 'ship_bldg_name', name: 'shippingAddress.building_name', value: formData.shippingAddress.building_name, label: tc('buildingApt'), autoComplete: 'shipping address-line2' })}
-                            </div>
-                          </div>
-                        )}
                         {stepContinue(2)}
                       </div>
                     )}

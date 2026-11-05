@@ -114,6 +114,31 @@
     max-height: 38px;
     width: auto;
   }
+
+  // Logo sits in the flex row between the hamburger and the search/cart icons
+  // instead of being absolutely centred, so on narrow screens it shrinks
+  // rather than sliding under the icons (works the same in LTR and RTL).
+  .logo.header-mobile__logo {
+    position: static;
+    transform: none;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    margin: 0 8px;
+
+    a {
+      display: block;
+      max-width: 200px;
+      width: 100%;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
 }
 
 .header-mobile__container {
