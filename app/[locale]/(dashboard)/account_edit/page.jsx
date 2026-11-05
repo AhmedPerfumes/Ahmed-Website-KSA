@@ -1,28 +1,6 @@
-﻿import Footer14 from "@/components/footers/Footer14";
-import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
-import EditAccount from "@/components/otherPages/EditAccount";
-import React from "react";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Dashboard Account Edit || Uomo eCommerce React Nextjs Template",
-  description: "Uomo eCommerce React Nextjs Template",
-};
-export default function AccountEditPage() {
-  return (
-    <>
-      <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
-        <section className="my-account container">
-          <h2 className="page-title">Account Details</h2>
-          <div className="row">
-            <DashboardSidebar />
-            <EditAccount />
-          </div>
-        </section>
-      </main>
-
-      <div className="mb-5 pb-xl-5"></div>
-      <Footer14 />
-    </>
-  );
+// Replaced by /account_dashboard — this route only kept so old links keep working
+export default function Page({ params }) {
+  redirect(`/${params.locale}/account_dashboard`);
 }

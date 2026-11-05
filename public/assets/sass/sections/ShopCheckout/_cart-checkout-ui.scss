@@ -2820,3 +2820,121 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   padding-inline-start: 3.4rem;
   &__text { font-size: 0.74rem; color: #777; }
 }
+
+/* ── Thank-you pages: order lines (thumbnail · name × qty · was / now) ── */
+.ol-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  border-top: 1px solid #ece8e1;
+}
+
+.ol-item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid #ece8e1;
+}
+
+.ol-item__media {
+  position: relative;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  background: #f6f3ee;
+  border: 1px solid #ece8e1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+  }
+}
+
+.ol-item__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ol-item__qty {
+  position: absolute;
+  top: -7px;
+  inset-inline-end: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #222;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+.ol-item__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ol-item__name {
+  font-weight: 600;
+  color: #222;
+  overflow-wrap: anywhere;
+}
+
+.ol-item__meta {
+  font-size: 0.82rem;
+  color: #777;
+}
+
+.ol-item__gift {
+  color: #987e46;
+  font-weight: 600;
+}
+
+.ol-item__price {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.ol-item__was {
+  font-size: 0.82rem;
+  color: #999;
+}
+
+.ol-item__now {
+  font-weight: 700;
+  color: #222;
+
+  &.is-sale {
+    color: #b3261e;
+  }
+}
+
+.ol-item__chip {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #b3261e;
+  background: rgba(179, 38, 30, 0.08);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+}
+
+.checkout-totals tr.ol-discount td,
+.checkout-totals tr.ol-discount th {
+  color: #b3261e;
+}

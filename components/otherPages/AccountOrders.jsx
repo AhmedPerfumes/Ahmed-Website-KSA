@@ -3,14 +3,18 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { useMenu } from "@/context/MenuContext";
+import { useContextElement } from "@/context/Context";
+import { useLocale, useTranslations } from "next-intl";
+import he from "he";
 import styles from "./AccountOrders.module.css";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 // Status badge styling helper
-function getStatusBadge(statusObj) {
+function getStatusBadge(statusObj, t) {
   const val = (statusObj?.value || statusObj || "").toLowerCase();
-  const label = statusObj?.label || (val ? val.charAt(0).toUpperCase() + val.slice(1) : "Unknown");
+  const key = `st_${val || "unknown"}`;
+  const label = t && t.has(key) ? t(key) : statusObj?.label || (val ? val.charAt(0).toUpperCase() + val.slice(1) : "—");
 
   let badgeClass = styles.badgeCancelled;
   if (val === "processing") badgeClass = styles.badgeProcessing;
@@ -24,24 +28,17 @@ function getStatusBadge(statusObj) {
 }
 
 // Payment method helper
-function getPaymentMethodLabel(channel) {
-  const map = {
-    cod: "Cash on Delivery",
-    paytabs: "PayTabs",
-    tamara: "Tamara",
-    tabby: "Tabby",
-    card: "Credit / Debit Card",
-    bank_transfer: "Bank Transfer",
-  };
-  return map[channel] || channel || "Online Payment";
+function getPaymentMethodLabel(channel, t) {
+  const key = `pm_${String(channel || "online").toLowerCase()}`;
+  return t.has(key) ? t(key) : channel;
 }
 
 // Date formatter
-function formatDate(dateStr) {
+function formatDate(dateStr, locale) {
   if (!dateStr) return "—";
   try {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
+    return d.toLocaleDateString(locale === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-US", {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -54,6 +51,13 @@ function formatDate(dateStr) {
 export default function AccountOrders() {
   const { currency } = useMenu() || {};
   const currencySymbol = currency?.symbol || " SAR";
+  const { freeShippingThreshold } = useContextElement();
+  const locale = useLocale();
+  const t = useTranslations("Account");
+  const tAll = useTranslations();
+  // Backend product names are English; show the Arabic catalogue name when there is one
+  const productName = (name) => { const n = he.decode(String(name || "")); return locale === "ar" && tAll.has(n) ? tAll(n) : n; };
+  const money = (n) => `${Number(n || 0).toFixed(2)}${currencySymbol}`;
 
   // Customer ID from localStorage
   const [customerId, setCustomerId] = useState(null);
@@ -258,7 +262,7 @@ export default function AccountOrders() {
       const json = await res.json();
 
       if (json.success) {
-        setCancelSuccess(json.message || "Order cancelled successfully");
+        setCancelSuccess(locale === "ar" || !json.message ? t("cancelSuccess") : json.message);
         fetchOrders();
         setTimeout(() => {
           setShowCancelModal(false);
@@ -267,10 +271,10 @@ export default function AccountOrders() {
           if (showModal) setShowModal(false);
         }, 1400);
       } else {
-        setCancelError(json.message || "Failed to cancel order");
+        setCancelError(locale === "ar" || !json.message ? t("cancelFailed") : json.message);
       }
     } catch (err) {
-      setCancelError(err.message || "An error occurred while cancelling order");
+      setCancelError(t("cancelErrorGeneric"));
     } finally {
       setIsCancelling(false);
     }
@@ -282,9 +286,9 @@ export default function AccountOrders() {
     <div className={`col-lg-9 ${styles.container}`}>
       {/* ── HEADER ── */}
       <div className={styles.headerSection}>
-        <h3 className={styles.title}>My Purchases</h3>
+        <h3 className={styles.title}>{t("pagePurchases")}</h3>
         <p className={styles.subtitle}>
-          Track your purchases, check delivery status, and review past orders.
+          {t("ordersSubtitle")}
         </p>
       </div>
 
@@ -293,11 +297,11 @@ export default function AccountOrders() {
         {/* Status Filter Tabs */}
         <div className={styles.tabsContainer}>
           {[
-            { key: "all", label: "All Orders" },
-            { key: "processing", label: "Processing" },
-            { key: "shipped", label: "Shipped" },
-            { key: "completed", label: "Delivered" },
-            { key: "cancelled", label: "Cancelled" },
+            { key: "all", label: t("tabAll") },
+            { key: "processing", label: t("tabProcessing") },
+            { key: "shipped", label: t("tabShipped") },
+            { key: "completed", label: t("tabDelivered") },
+            { key: "cancelled", label: t("tabCancelled") },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -327,7 +331,7 @@ export default function AccountOrders() {
             <input
               type="text"
               className={styles.searchInput}
-              placeholder="Search by Order #..."
+              placeholder={t("searchOrder")}
               value={searchCode}
               onChange={(e) => {
                 setSearchCode(e.target.value);
@@ -341,11 +345,11 @@ export default function AccountOrders() {
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
           >
-            <option value="processing_first">Processing First</option>
-            <option value="date_desc">Newest Date</option>
-            <option value="date_asc">Oldest Date</option>
-            <option value="amount_desc">Amount: High to Low</option>
-            <option value="amount_asc">Amount: Low to High</option>
+            <option value="processing_first">{t("sortProcessing")}</option>
+            <option value="date_desc">{t("sortNewest")}</option>
+            <option value="date_asc">{t("sortOldest")}</option>
+            <option value="amount_desc">{t("sortAmountHigh")}</option>
+            <option value="amount_asc">{t("sortAmountLow")}</option>
           </select>
         </div>
       </div>
@@ -368,20 +372,20 @@ export default function AccountOrders() {
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <path d="M16 10a4 4 0 01-8 0"></path>
           </svg>
-          <h4 className={styles.emptyTitle}>No Orders Found</h4>
+          <h4 className={styles.emptyTitle}>{t("noOrders")}</h4>
           <p className={styles.emptyDesc}>
             {searchCode || statusTab !== "all"
-              ? "No purchases match your current search or filter criteria."
-              : "You haven't placed any purchases yet. Discover our exclusive perfume collection."}
+              ? t("noOrdersFiltered")
+              : t("noOrdersYet")}
           </p>
-          <Link href="/shop-8" className={styles.btnShop}>
-            Explore Perfumes
+          <Link href={`/${locale}/shop`} className={styles.btnShop}>
+            {t("explorePerfumes")}
           </Link>
         </div>
       ) : (
         <div className={styles.orderList}>
           {sortedOrders.map((order) => {
-            const statusInfo = getStatusBadge(order.status);
+            const statusInfo = getStatusBadge(order.status, t);
             const prods = orderSummaries[order.id] || order.products || [];
             const canCancel = ["processing", "pending"].includes(
               (order.status?.value || order.status || "").toLowerCase()
@@ -393,10 +397,10 @@ export default function AccountOrders() {
                 <div className={styles.cardHeader}>
                   <div className={styles.orderMeta}>
                     <span className={styles.orderNumber}>
-                      Order #{order.code || order.id}
+                      {t("orderNo", { code: String(order.code || order.id).replace(/^#/, "") })}
                     </span>
                     <span className={styles.orderDate}>
-                      Placed on {formatDate(order.created_at)}
+                      {t("placedOn", { date: formatDate(order.created_at, locale) })}
                     </span>
                   </div>
 
@@ -406,8 +410,7 @@ export default function AccountOrders() {
                       {statusInfo.label}
                     </span>
                     <span className={styles.orderAmount}>
-                      {Number(order.amount || 0).toFixed(2)}
-                      {currencySymbol}
+                      {money(order.amount)}
                     </span>
                   </div>
                 </div>
@@ -424,21 +427,20 @@ export default function AccountOrders() {
                                 ? `${API_BASE}storage/${item.product_image}`
                                 : "/no-img.png"
                             }
-                            alt={item.product_name || "Product"}
+                            alt={productName(item.product_name)}
                             className={styles.productThumb}
                             onError={(e) => {
                               e.currentTarget.src = "/no-img.png";
                             }}
                           />
                           <div className={styles.productInfo}>
-                            <div className={styles.productName} title={item.product_name}>
-                              {item.product_name}
+                            <div className={styles.productName} title={productName(item.product_name)}>
+                              <bdi>{productName(item.product_name)}</bdi>
                             </div>
                             <div className={styles.productMeta}>
-                              Qty: {item.qty || 1} × {Number(item.price || item.gross_amount || 0).toFixed(2)}
-                              {currencySymbol}
+                              {t("qtyPrice", { qty: item.qty || 1, price: money(item.price || item.gross_amount) })}
                               {item.is_gift === 1 && (
-                                <span className={styles.giftTag}>• Gift</span>
+                                <span className={styles.giftTag}>• {t("gift")}</span>
                               )}
                             </div>
                           </div>
@@ -447,13 +449,13 @@ export default function AccountOrders() {
 
                       {prods.length > 3 && (
                         <div className={styles.moreProductsBadge}>
-                          +{prods.length - 3} more items
+                          {t("moreItems", { count: prods.length - 3 })}
                         </div>
                       )}
                     </div>
                   ) : (
                     <div className="text-muted small py-1">
-                      {Number(order.amount || 0).toFixed(2)} {currencySymbol} order
+                      {t("orderOf", { amount: money(order.amount) })}
                     </div>
                   )}
                 </div>
@@ -465,7 +467,7 @@ export default function AccountOrders() {
                       <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                       <line x1="1" y1="10" x2="23" y2="10"></line>
                     </svg>
-                    <span>{getPaymentMethodLabel(order.payment_channel)}</span>
+                    <span>{getPaymentMethodLabel(order.payment_channel, t)}</span>
                   </div>
 
                   <div className={styles.cardActions}>
@@ -475,7 +477,7 @@ export default function AccountOrders() {
                         className={styles.btnCancel}
                         onClick={() => openCancelModal(order)}
                       >
-                        Cancel Order
+                        {t("cancelOrder")}
                       </button>
                     )}
 
@@ -484,7 +486,7 @@ export default function AccountOrders() {
                       className={styles.btnDetails}
                       onClick={() => handleViewDetails(order)}
                     >
-                      View Details
+                      {t("viewDetails")}
                     </button>
                   </div>
                 </div>
@@ -498,7 +500,7 @@ export default function AccountOrders() {
       {totalPages > 1 && (
         <div className={styles.paginationRow}>
           <div className={styles.pageInfo}>
-            Showing page {page} of {totalPages} ({totalFiltered} total purchases)
+            {t("pageInfo", { page, pages: totalPages, total: totalFiltered })}
           </div>
           <div className={styles.pageButtons}>
             <button
@@ -507,7 +509,7 @@ export default function AccountOrders() {
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              Previous
+              {t("previous")}
             </button>
             <button
               type="button"
@@ -515,7 +517,7 @@ export default function AccountOrders() {
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
-              Next
+              {t("next")}
             </button>
           </div>
         </div>
@@ -533,10 +535,10 @@ export default function AccountOrders() {
         <Modal.Header closeButton className={styles.modalHeaderCustom}>
           <div>
             <Modal.Title className={styles.modalTitleCustom}>
-              Order #{selectedOrder?.code || selectedOrder?.id}
+              {t("orderNo", { code: String(selectedOrder?.code || selectedOrder?.id || "").replace(/^#/, "") })}
             </Modal.Title>
             <div className="small text-muted mt-1">
-              Placed on {formatDate(selectedOrder?.created_at)}
+              {t("placedOn", { date: formatDate(selectedOrder?.created_at, locale) })}
             </div>
           </div>
         </Modal.Header>
@@ -551,10 +553,10 @@ export default function AccountOrders() {
               {/* Left Column: Delivery & Payment Details */}
               <div className="col-md-5">
                 <div className={styles.detailSection}>
-                  <div className={styles.detailLabel}>Status</div>
+                  <div className={styles.detailLabel}>{t("status")}</div>
                   <div className="d-flex align-items-center gap-2 mt-1">
                     {(() => {
-                      const st = getStatusBadge(selectedOrder?.status);
+                      const st = getStatusBadge(selectedOrder?.status, t);
                       return (
                         <span className={`${styles.badge} ${st.badgeClass}`}>
                           <span className={styles.statusDot} />
@@ -566,7 +568,7 @@ export default function AccountOrders() {
                 </div>
 
                 <div className={styles.detailSection}>
-                  <div className={styles.detailLabel}>Shipping Address</div>
+                  <div className={styles.detailLabel}>{t("shippingAddress")}</div>
                   <div className={styles.detailValue}>
                     {modalDetails.order_address?.[0]?.name && (
                       <div className="fw-semibold mb-1">
@@ -575,7 +577,7 @@ export default function AccountOrders() {
                     )}
                     {modalDetails.order_address?.[0]?.phone && (
                       <div className="small text-muted mb-1">
-                        📞 {modalDetails.order_address[0].phone}
+                        📞 <bdi dir="ltr">{modalDetails.order_address[0].phone}</bdi>
                       </div>
                     )}
                     <div className="small text-secondary">
@@ -585,27 +587,27 @@ export default function AccountOrders() {
                         modalDetails.order_address?.[0]?.state,
                       ]
                         .filter(Boolean)
-                        .join(", ") || "No address provided"}
+                        .join(locale === "ar" ? "، " : ", ") || t("noAddress")}
                     </div>
                   </div>
                 </div>
 
                 <div className={styles.detailSection}>
-                  <div className={styles.detailLabel}>Payment Method</div>
+                  <div className={styles.detailLabel}>{t("paymentMethod")}</div>
                   <div className={styles.detailValue}>
-                    {getPaymentMethodLabel(selectedOrder?.payment_channel)}
+                    {getPaymentMethodLabel(selectedOrder?.payment_channel, t)}
                   </div>
                 </div>
               </div>
 
               {/* Right Column: Ordered Items & Price Summary */}
               <div className="col-md-7">
-                <div className={styles.detailLabel}>Ordered Items</div>
+                <div className={styles.detailLabel}>{t("orderedItems")}</div>
                 <div
                   style={{
                     maxHeight: "260px",
                     overflowY: "auto",
-                    paddingRight: "4px",
+                    paddingInlineEnd: "4px",
                     marginBottom: "16px",
                   }}
                 >
@@ -617,26 +619,25 @@ export default function AccountOrders() {
                             ? `${API_BASE}storage/${prod.product_image}`
                             : "/no-img.png"
                         }
-                        alt={prod.product_name}
+                        alt={productName(prod.product_name)}
                         className={styles.productThumb}
                         onError={(e) => {
                           e.currentTarget.src = "/no-img.png";
                         }}
                       />
                       <div className="flex-grow-1 min-w-0">
-                        <div className="fw-semibold small text-truncate" title={prod.product_name}>
-                          {prod.product_name}
+                        <div className="fw-semibold small text-truncate" title={productName(prod.product_name)}>
+                          <bdi>{productName(prod.product_name)}</bdi>
                         </div>
                         <div className="small text-muted">
-                          Qty: {prod.qty}
+                          {t("qty", { qty: prod.qty })}
                           {prod.is_gift === 1 && (
-                            <span className={styles.giftTag}> • Free Gift</span>
+                            <span className={styles.giftTag}> • {t("freeGift")}</span>
                           )}
                         </div>
                       </div>
                       <div className="text-end fw-semibold small">
-                        {Number(prod.gross_amount || prod.price * prod.qty || 0).toFixed(2)}
-                        {currencySymbol}
+                        {money(prod.gross_amount || prod.price * prod.qty)}
                       </div>
                     </div>
                   ))}
@@ -645,52 +646,45 @@ export default function AccountOrders() {
                 {/* Price Breakdown */}
                 <div className="pt-2 border-top">
                   <div className={styles.priceBreakdownRow}>
-                    <span>Subtotal</span>
-                    <span>
-                      {Number(selectedOrder?.sub_total || 0).toFixed(2)}
-                      {currencySymbol}
-                    </span>
+                    <span>{t("subtotal")}</span>
+                    <span>{money(selectedOrder?.sub_total)}</span>
                   </div>
 
                   <div className={styles.priceBreakdownRow}>
-                    <span>Shipping Cost</span>
+                    <span>{t("shippingCost")}</span>
                     <span>
                       {selectedOrder?.shipping_cost && Number(selectedOrder.shipping_cost) > 0
-                        ? `${Number(selectedOrder.shipping_cost).toFixed(2)}${currencySymbol}`
-                        : Number(selectedOrder?.sub_total || 0) >= 400
-                        ? "Free Shipping"
-                        : `${(modalDetails.shipping_cost || 0).toFixed(2)}${currencySymbol}`}
+                        ? money(selectedOrder.shipping_cost)
+                        : Number(selectedOrder?.sub_total || 0) >= freeShippingThreshold
+                        ? t("freeShipping")
+                        : money(modalDetails.shipping_cost)}
                     </span>
                   </div>
 
                   {selectedOrder?.coupon_code && (
                     <div className={styles.priceBreakdownRow}>
                       <span className="text-success">
-                        Coupon ({selectedOrder.coupon_code})
+                        {t("coupon", { code: selectedOrder.coupon_code })}
                       </span>
-                      <span className="text-success fw-semibold">Applied</span>
+                      <span className="text-success fw-semibold">{t("applied")}</span>
                     </div>
                   )}
 
                   <div className={styles.grandTotalRow}>
                     <div>
-                      <div>Total</div>
+                      <div>{t("total")}</div>
                       <div className="small text-muted fw-normal" style={{ fontSize: "0.72rem" }}>
-                        Includes {Number(selectedOrder?.tax_amount || 0).toFixed(2)}
-                        {currencySymbol} VAT
+                        {t("inclVat", { amount: money(selectedOrder?.tax_amount) })}
                       </div>
                     </div>
-                    <div>
-                      {Number(selectedOrder?.amount || 0).toFixed(2)}
-                      {currencySymbol}
-                    </div>
+                    <div>{money(selectedOrder?.amount)}</div>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
             <div className="text-center text-muted py-4">
-              Unable to load order details.
+              {t("detailsFailed")}
             </div>
           )}
         </Modal.Body>
@@ -708,7 +702,7 @@ export default function AccountOrders() {
                 openCancelModal(selectedOrder);
               }}
             >
-              Cancel Order
+              {t("cancelOrder")}
             </Button>
           ) : (
             <div />
@@ -720,7 +714,7 @@ export default function AccountOrders() {
             className="rounded-pill px-4"
             onClick={() => setShowModal(false)}
           >
-            Close
+            {t("close")}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -735,7 +729,7 @@ export default function AccountOrders() {
       >
         <Modal.Header closeButton={!isCancelling} className={styles.modalHeaderCustom}>
           <Modal.Title className={styles.modalTitleCustom}>
-            Cancel Order #{cancellingOrder?.code || cancellingOrder?.id}
+            {t("cancelTitle", { code: String(cancellingOrder?.code || cancellingOrder?.id || "").replace(/^#/, "") })}
           </Modal.Title>
         </Modal.Header>
 
@@ -747,7 +741,7 @@ export default function AccountOrders() {
           ) : (
             <>
               <p className="text-muted small mb-3">
-                Are you sure you want to cancel this order? Once cancelled, this action cannot be undone.
+                {t("cancelConfirmText")}
               </p>
 
               {cancelError && (
@@ -758,7 +752,7 @@ export default function AccountOrders() {
 
               <Form.Group className="mb-3">
                 <Form.Label className="small fw-semibold text-muted text-uppercase">
-                  Reason for Cancellation
+                  {t("cancelReason")}
                 </Form.Label>
                 <Form.Select
                   value={cancelReason}
@@ -767,26 +761,24 @@ export default function AccountOrders() {
                   className="shadow-none border rounded-3"
                   style={{ fontSize: "0.88rem" }}
                 >
-                  <option value="Changed my mind">Changed my mind</option>
-                  <option value="Ordered wrong item / size">Ordered wrong item / size</option>
-                  <option value="Need to change shipping address / phone">
-                    Need to change shipping address / phone
-                  </option>
-                  <option value="Delivery time is too long">Delivery time is too long</option>
-                  <option value="Found a better price elsewhere">Found a better price elsewhere</option>
-                  <option value="Other">Other reason</option>
+                  <option value="Changed my mind">{t("reasonChanged")}</option>
+                  <option value="Ordered wrong item / size">{t("reasonWrongItem")}</option>
+                  <option value="Need to change shipping address / phone">{t("reasonAddress")}</option>
+                  <option value="Delivery time is too long">{t("reasonSlow")}</option>
+                  <option value="Found a better price elsewhere">{t("reasonPrice")}</option>
+                  <option value="Other">{t("reasonOther")}</option>
                 </Form.Select>
               </Form.Group>
 
               {cancelReason === "Other" && (
                 <Form.Group className="mb-3">
                   <Form.Label className="small fw-semibold text-muted text-uppercase">
-                    Please describe the reason
+                    {t("describeReason")}
                   </Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={2}
-                    placeholder="Enter details..."
+                    placeholder={t("enterDetails")}
                     value={cancelDescription}
                     onChange={(e) => setCancelDescription(e.target.value)}
                     disabled={isCancelling}
@@ -808,7 +800,7 @@ export default function AccountOrders() {
               onClick={() => setShowCancelModal(false)}
               disabled={isCancelling}
             >
-              Keep Order
+              {t("keepOrder")}
             </Button>
             <Button
               variant="danger"
@@ -820,10 +812,10 @@ export default function AccountOrders() {
               {isCancelling ? (
                 <>
                   <Spinner size="sm" animation="border" className="me-2" />
-                  Cancelling…
+                  {t("cancelling")}
                 </>
               ) : (
-                "Confirm Cancellation"
+                t("confirmCancel")
               )}
             </Button>
           </Modal.Footer>

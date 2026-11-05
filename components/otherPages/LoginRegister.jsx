@@ -3,11 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useUser } from "@/context/UserContext";
 
 export default function LoginRegister() {
     const locale = useLocale();
+    const t = useTranslations("Account");
+    // Backend messages are English-only — on Arabic pages show our own translated message
+    const srv = (msg, key) => (locale === "ar" || !msg ? t(key) : msg);
     const router = useRouter();
     const searchParams = useSearchParams();
     // Return to where the customer came from (e.g. checkout). Same-site paths only.
@@ -65,14 +68,14 @@ export default function LoginRegister() {
         event.preventDefault();
         setIsLoading(true);
         if (regMobile === "") {
-            setError("Mobile Number is Required");
+            setError(t("errMobileRequired"));
             setSuccess(null);
             setIsLoading(false);
             return;
         }
         const regex = /^\d{10}$/;
         if (!regex.test(regMobile)) {
-            setError("Invalid Mobile Number");
+            setError(t("errMobileInvalid"));
             setSuccess(null);
             setIsLoading(false);
             return;
@@ -97,15 +100,15 @@ export default function LoginRegister() {
             );
 
             if (!response.ok) {
-                throw new Error("Failed to submit the data. Please try again.");
+                throw new Error(t("submitFailed"));
             }
 
             const data = await response.json();
             if (data.message.split(" ")[0] !== "OTP") {
-                setError(data.message);
+                setError(srv(data.message, "errRegisterFailed"));
                 setSuccess(null);
             } else {
-                setSuccess(data.message);
+                setSuccess(srv(data.message, "otpSentTo"));
                 setError(null);
                 setCustomerId(data?.data?.id || null);
                 setRegisterStep(2); // move to OTP step
@@ -182,10 +185,10 @@ export default function LoginRegister() {
 
             const data = await response.json();
             if (!data.message?.toLowerCase().includes("customer")) {
-                setError(data.message || "Invalid OTP");
+                setError(srv(data.message, "errInvalidOtp"));
                 setSuccess(null);
             } else {
-                setSuccess("Account verified successfully.");
+                setSuccess(t("accountVerified"));
                 localStorage.setItem("token", data.access_token);
                 localStorage.setItem("user", btoa(JSON.stringify(data.data)));
                 // setTimeout(
@@ -206,14 +209,14 @@ export default function LoginRegister() {
         event.preventDefault();
         setIsLoading(true);
         if (mobile === "") {
-            setError("Mobile Number is Required");
+            setError(t("errMobileRequired"));
             setSuccess(null);
             setIsLoading(false);
             return;
         }
         const regex = /^\d{10}$/;
         if (!regex.test(mobile)) {
-            setError("Invalid Mobile Number");
+            setError(t("errMobileInvalid"));
             setSuccess(null);
             setIsLoading(false);
             return;
@@ -229,15 +232,15 @@ export default function LoginRegister() {
             );
 
             if (!response.ok) {
-                throw new Error("Failed to submit the data. Please try again.");
+                throw new Error(t("submitFailed"));
             }
 
             const data = await response.json();
             if (data.message.split(" ")[0] !== "Login") {
-                setError(data.message);
+                setError(srv(data.message, "errLoginFailed"));
                 setSuccess(null);
             } else {
-                setSuccess(data.message);
+                setSuccess(srv(data.message, "loginSuccess"));
                 setError(null);
                 localStorage.setItem("token", data.access_token);
                 localStorage.setItem("user", btoa(JSON.stringify(data.data)));
@@ -249,7 +252,7 @@ export default function LoginRegister() {
                 }
                 setIsLoggedIn(true);
                 // setTimeout(() => (window.location.href = "/"), 1000);
-                router.push(getRedirect() || "/");
+                router.push(getRedirect() || `/${locale}`);
             }
         } catch (error) {
             setError(error.message);
@@ -261,17 +264,17 @@ export default function LoginRegister() {
 
     return (
         <section className="login-register container">
-            <h2 className="d-none">Login & Register</h2>
+            <h2 className="d-none">{t("pageLogin")}</h2>
 
             <ul className="nav nav-tabs mb-5" role="tablist">
                 <li className="nav-items" role="presentation">
                     <button type="button" className={`border-0 bg-transparent nav-links nav-link_underscore ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>
-                        Login
+                        {t("login")}
                     </button>
                 </li>
                 <li className="nav-items" role="presentation">
                     <button type="button" className={`border-0 bg-transparent nav-links nav-link_underscore ${activeTab === "register" ? "active" : ""}`} onClick={() => setActiveTab("register")}>
-                        Register
+                        {t("register")}
                     </button>
                 </li>
             </ul>
@@ -284,31 +287,31 @@ export default function LoginRegister() {
 
                     <form onSubmit={onLogin} className="needs-validation">
                         <div className="form-floating mb-3">
-                            <input  name="mobile" type="number" min="0" className="form-control form-control_gray " placeholder="Mobile Number *" onChange={validateMobile} required />
-                            <label>Mobile Number (Eg. 0500000000)</label>
+                            <input  name="mobile" type="number" min="0" className="form-control form-control_gray " placeholder={t("mobileLabel")} onChange={validateMobile} required />
+                            <label>{t("mobileLabel")}</label>
                         </div>
 
                         <div className="form-floating mb-3">
                             <input name="password" type="password" className="form-control form-control_gray" placeholder="********" required />
-                            <label>Password*</label>
+                            <label>{t("passwordLabel")}</label>
                         </div>
 
                         <button className="btn btn-primary w-100 text-uppercase" type="submit" disabled={isLoading}>
-                            {isLoading ? "Loading..." : "Login"}
+                            {isLoading ? t("loadingBtn") : t("login")}
                         </button>
                         <div className="d-flex align-items-center mb-3 pb-2">
                             <div className="form-check mb-0">
                                 <input name="remember" className="form-check-input form-check-input_fill" type="checkbox" defaultValue="" />
-                                <label className="form-check-label text-secondary"> Remember me </label>
+                                <label className="form-check-label text-secondary"> {t("rememberMe")} </label>
                             </div>
-                            <Link href="/reset_password" className="btn-text ms-auto" > Lost password? </Link>
+                            <Link href={`/${locale}/reset_password`} className="btn-text ms-auto" > {t("lostPassword")} </Link>
                         </div>
 
                         <div className="customer-option mt-4 text-center">
-                            <span className="text-secondary"> No account yet? </span>{" "}
+                            <span className="text-secondary"> {t("noAccount")} </span>{" "}
                             <button type="button" className={`border-0 bg-transparent btn-text js-show-register ${activeTab === "register" ? "active" : ""}`} onClick={() => setActiveTab("register")} 
                             >
-                                Create Account
+                                {t("createAccount")}
                             </button>
                         </div>
                     </form>
@@ -322,18 +325,18 @@ export default function LoginRegister() {
                     {registerStep === 1 && (
                         <form onSubmit={onRegister} className="needs-validation" >
                             <div className="form-floating mb-3">
-                                <input name="name" type="text" className="form-control form-control_gray" placeholder="User Name" value={regName} onChange={(e) => setRegName(e.target.value)} required />
-                                <label>User Name</label>
+                                <input name="name" type="text" className="form-control form-control_gray" placeholder={t("fullName")} value={regName} onChange={(e) => setRegName(e.target.value)} required />
+                                <label>{t("fullName")}</label>
                             </div>
 
                             <div className="form-floating mb-3">
-                                <input name="email" type="email" className="form-control form-control_gray" placeholder="Email Address *" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} required />
-                                <label>Email address *</label>
+                                <input name="email" type="email" className="form-control form-control_gray" placeholder={t("emailLabel")} value={regEmail} onChange={(e) => setRegEmail(e.target.value)} required />
+                                <label>{t("emailLabel")}</label>
                             </div>
 
                             <div className="form-floating mb-3">
-                                <input name="mobile" type="number" className="form-control form-control_gray" placeholder="Mobile Number *" value={regMobile} onChange={(e) => setRegMobile(e.target.value) } required />
-                                <label>Mobile Number (Eg. 0500000000)*</label>
+                                <input name="mobile" type="number" className="form-control form-control_gray" placeholder={t("mobileLabel")} value={regMobile} onChange={(e) => setRegMobile(e.target.value) } required />
+                                <label>{t("mobileLabel")}</label>
                             </div>
 
                             <div className="form-floating mb-3">
@@ -348,14 +351,11 @@ export default function LoginRegister() {
                                     }
                                     required
                                 />
-                                <label>Password *</label>
+                                <label>{t("passwordLabel")}</label>
                             </div>
 
                             <p className="mb-3">
-                                Your personal data will be used to support your
-                                experience throughout this website, to manage
-                                access to your account, and for other purposes
-                                described in our privacy policy.
+                                {t("privacyText")}
                             </p>
 
                             <button
@@ -363,7 +363,7 @@ export default function LoginRegister() {
                                 type="submit"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Sending OTP..." : "Register"}
+                                {isLoading ? t("sendingOtp") : t("register")}
                             </button>
                         </form>
                     )}
@@ -375,12 +375,12 @@ export default function LoginRegister() {
                                     name="otp"
                                     type="text"
                                     className="form-control form-control_gray"
-                                    placeholder="Enter OTP"
+                                    placeholder={t("otpLabel")}
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value)}
                                     required
                                 />
-                                <label>Enter OTP *</label>
+                                <label>{t("otpLabel")}</label>
                             </div>
 
                             <div className="d-flex gap-2">
@@ -390,14 +390,14 @@ export default function LoginRegister() {
                                     onClick={() => setRegisterStep(1)}
                                     disabled={isLoading}
                                 >
-                                    Change Mobile
+                                    {t("changeMobile")}
                                 </button>
                                 <button
                                     type="submit"
                                     className="btn btn-primary w-50"
                                     disabled={isLoading || !otp.trim()}
                                 >
-                                    {isLoading ? "Verifying..." : "Verify OTP"}
+                                    {isLoading ? t("verifying") : t("verifyOtp")}
                                 </button>
                             </div>
                         </form>

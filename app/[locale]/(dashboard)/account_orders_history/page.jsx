@@ -1,31 +1,6 @@
-﻿import Footer14 from "@/components/footers/Footer14";
-import AccountOrdersHistory from "@/components/otherPages/AccountOrdersHistory";
-import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
-import React from "react";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-  description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.",
-  icons: {
-      icon: "/assets/images/ahmed-favicon.png",
-  },
-};
-export default function AccountOrderPage() {
-  return (
-    <>
-      <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
-        <section className="my-account container">
-          <h2 className="page-title">Orders</h2>
-          <div className="row">
-            <DashboardSidebar />
-            <AccountOrdersHistory />
-          </div>
-        </section>
-      </main>
-
-      <div className="mb-5 pb-xl-5"></div>
-      <Footer14 />
-    </>
-  );
+// Replaced by /account_orders — this route only kept so old links keep working
+export default function Page({ params }) {
+  redirect(`/${params.locale}/account_orders`);
 }

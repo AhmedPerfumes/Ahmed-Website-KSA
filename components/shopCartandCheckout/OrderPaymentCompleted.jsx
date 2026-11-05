@@ -6,10 +6,21 @@ import { useState, useEffect, useRef } from 'react';
 import { useMenu } from '@/context/MenuContext';
 import Pagination1 from "../common/Pagination1";
 import FeedbackForm from "../common/Feedback";
+import { useLocale, useTranslations } from "next-intl";
+import OrderLines, { normalizeOrderLines, orderLineTotals } from "./OrderLines";
 
 export default function OrderPaymentCompleted({ orderDetails: initialOrderDetails, initialOrderCode }) {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   const { setCartProducts } = useContextElement();
+  const locale = useLocale();
+  const t = useTranslations('OrderComplete');
+  const tAll = useTranslations();
+  const money = (n) => `${Number(n || 0).toFixed(2)}${currency?.symbol || ''}`;
+  // Product names come from the backend in English; use the Arabic catalogue name when we have one
+  const productName = (name) => { const n = he.decode(String(name || '')); return locale === 'ar' && tAll.has(n) ? tAll(n) : n; };
+  const payLabel = (m) => { const k = `pm_${String(m || '').toLowerCase()}`; return t.has(k) ? t(k) : m; };
+  const orderDate = () => new Date().toLocaleDateString(locale === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-US');
+  const vatMult = 1 + (parseFloat(initialOrderDetails?.vat_amount) || 15) / 100;
 
   // State to hold the live data and loading status
   const [orderData, setOrderData] = useState(initialOrderDetails);
@@ -147,11 +158,10 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       setCartProducts([]);
     }
   }, [orderData?.payment_status, orderData?.id, orderData?.order_id, currency?.code]);
-  console.log("orderData001",orderData);
   
 
   const subTotalPrice = (elm) => {
-    if (elm.is_gift) return <td>0.00{currency.symbol} (Free Gift)</td>;
+    if (elm.is_gift) return <td>0.00{currency.symbol} ({t('freeGift')})</td>;
     
     if(elm?.discount_percent) {
         return <td>{(((elm.price * 1.15) - ((elm.price * 1.15) / 100 * elm.discount_percent)) * elm.qty).toFixed(2)}{ currency.symbol }</td>;
@@ -165,6 +175,10 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
     }
   };
 
+  // Saved order lines: struck-through original price next to the price actually paid
+  const olLines = normalizeOrderLines(orderData?.products, vatMult - 1);
+  const olTotals = orderLineTotals(olLines);
+
   if (isMenuLoading) return <div><Pagination1 /></div>;
   if (isMenuError) return <div>{ isMenuError }</div>;
 
@@ -172,11 +186,11 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
   if (isVerifying) {
     return (
         <div className="text-center pt-5 pb-5">
-            <h2 className="page-title">VERIFYING PAYMENT...</h2>
+            <h2 className="page-title">{t('verifyingTitle')}</h2>
             <div className="spinner-border text-primary" role="status" style={{width: '3rem', height: '3rem'}}>
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('loading')}</span>
             </div>
-            <p className="mt-3">Please wait a moment while we confirm your transaction securely with PayTabs.</p>
+            <p className="mt-3">{t('verifyingText')}</p>
         </div>
     );
   }
@@ -184,19 +198,19 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
   const paymentStatusMessage = () => {
     if(orderData.payment_channel == 'tabby' || orderData.payment_channel == 'paytabs') {
       if(orderData.payment_description == 'EXPIRED' || orderData.payment_status == 'expired') {
-        return <h3>You aborted the payment. Please retry or choose another payment method.</h3>;
+        return <h3>{t('paymentAborted')}</h3>;
       } else if(orderData.payment_description == 'REJECTED' || orderData.payment_status == 'rejected' || orderData.payment_status == 'failed') {
-        return <h3>Sorry, your payment was rejected. Please use an alternative payment method for your order.</h3>;
+        return <h3>{t('paymentRejected')}</h3>;
       } else if (orderData.payment_status == 'pending') {
-        return <><h3>Payment Processing</h3><p>Your payment is taking a bit longer to verify. Don't worry, we'll email you a receipt once it clears!</p></>;
+        return <><h3>{t('processingTitle')}</h3><p>{t('processingText')}</p></>;
       } else {
-        return <><h3>Your order is completed!</h3><p>Thank you. Your order has been received.</p></>;
+        return <><h3>{t('heading')}</h3><p>{t('thanks')}</p></>;
       }
     } else {
       if(orderData.payment_status != 'failed') {
-        return <><h3>Your order is completed!</h3><p>Thank you. Your order has been received.</p></>;
+        return <><h3>{t('heading')}</h3><p>{t('thanks')}</p></>;
       } else {
-        return <h3>Your order has failed!</h3>;
+        return <h3>{t('orderFailed')}</h3>;
       }
     }
   }
@@ -209,7 +223,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
 
   return (
     <>
-    <h2 className="page-title">{isSuccess ? 'ORDER RECEIVED' : 'ORDER STATUS'}</h2>
+    <h2 className="page-title">{isSuccess ? t('pageTitle') : t('statusTitle')}</h2>
 
     {orderData.order_id ? <><div className="order-complete">
       <div className="order-complete__message">
@@ -236,66 +250,61 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
       {isSuccess ? <>
       <div className="order-info">
         <div className="order-info__item">
-          <label>Order Number</label>
+          <label>{t('orderNumber')}</label>
           <span>{ orderData.order_id }</span>
         </div>
         <div className="order-info__item">
-          <label>Date</label>
-          <span>{new Date().toLocaleDateString()}</span>
+          <label>{t('date')}</label>
+          <span>{orderDate()}</span>
         </div>
         <div className="order-info__item">
-          <label>Total</label>
-          <span>{orderData.total}{ currency.symbol } (includes { orderData.tax_amount }{ currency.symbol } VAT)</span>
+          <label>{t('total')}</label>
+          <span>{t('inclVat', { amount: money(orderData.total), vat: money(orderData.tax_amount) })}</span>
         </div>
         <div className="order-info__item">
-          <label>Payment Method</label>
-          <span>{ orderData.payment_method }</span>
+          <label>{t('paymentMethod')}</label>
+          <span>{ payLabel(orderData.payment_method || orderData.payment_channel) }</span>
         </div>
       </div>
       <div className="checkout__totals-wrapper">
         <div className="checkout__totals">
-          <h3>Order Details</h3>
-          <table className="checkout-cart-items">
-            <thead>
-              <tr>
-                <th>PRODUCT</th>
-                <th>SUBTOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderData?.products?.map((elm, i) => (
-                <tr key={i}>
-                  <td>
-                    {he.decode(elm.product_name)} x {elm.qty}
-                  </td>
-                  { subTotalPrice(elm) }
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <h3>{t('orderDetails')}</h3>
+          <OrderLines lines={olLines} money={money} t={t} productName={productName} />
           <table className="checkout-totals">
             <tbody>
               <tr>
-                <th>SUBTOTAL</th>
-                <td>{orderData.sub_total}{ currency.symbol }</td>
+                <th>{t('subtotal')}</th>
+                <td>{money(olTotals.discount > 0 ? olTotals.original : orderData.sub_total)}</td>
               </tr>
+              {olTotals.discount > 0 && (
+                <tr className="ol-discount">
+                  <th>{t('discount')}</th>
+                  <td><bdi dir="ltr">−{money(olTotals.discount)}</bdi></td>
+                </tr>
+              )}
               <tr>
-                <th>SHIPPING</th>
-                <td>{!(orderData.shipping_amount > 0) ? 'You Got Free Shipping' : `Shipping Cost: ${ (orderData.shipping_amount * 1.15).toFixed(2) }${ currency.symbol }`}</td>
+                <th>{t('shipping')}</th>
+                <td>{!(orderData.shipping_amount > 0) ? t('freeShipping') : money(orderData.shipping_amount * vatMult)}</td>
               </tr>
+              {parseFloat(orderData.service_amount) > 0 && (
+                <tr>
+                  <th>{t('serviceFee')}</th>
+                  <td>{money(orderData.service_amount * vatMult)}</td>
+                </tr>
+              )}
               <tr>
-                <th>TOTAL</th>
-                <td>{orderData.total}{ currency.symbol } (includes { orderData.tax_amount }{ currency.symbol } VAT)</td>
+                <th>{t('total')}</th>
+                <td>{t('inclVat', { amount: money(orderData.total), vat: money(orderData.tax_amount) })}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">
-          Continue Shopping
+        <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">
+          {t('continueShopping')}
         </a>
-      </div></> : <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>
+      </div></> : <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">{t('continueShopping')}</a>
       } 
-    </div></> :  <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
+    </div></> :  <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">{t('continueShopping')}</a> }
     </>
   );
 }

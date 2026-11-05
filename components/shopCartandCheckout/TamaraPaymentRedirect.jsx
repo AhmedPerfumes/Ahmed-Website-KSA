@@ -7,15 +7,26 @@ import { useState, useEffect, useRef } from 'react';
 import he from 'he';
 import Pagination1 from "../common/Pagination1";
 import FeedbackForm from "../common/Feedback";
+import { useLocale, useTranslations } from "next-intl";
+import OrderLines, { normalizeOrderLines, orderLineTotals } from "./OrderLines";
 
 export default function TamaraPaymentRedirect() {
   const { isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
   const { setCartProducts } = useContextElement();
+  const locale = useLocale();
+  const t = useTranslations('OrderComplete');
+  const tAll = useTranslations();
+  const money = (n) => `${Number(n || 0).toFixed(2)}${currency?.symbol || ''}`;
+  // Product names come from the backend in English; use the Arabic catalogue name when we have one
+  const productName = (name) => { const n = he.decode(String(name || '')); return locale === 'ar' && tAll.has(n) ? tAll(n) : n; };
+  const payLabel = (m) => { const k = `pm_${String(m || '').toLowerCase()}`; return t.has(k) ? t(k) : m; };
+  const orderDate = () => new Date().toLocaleDateString(locale === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-US');
   const [orderDetails, setOrderDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [apiError, setApiError] = useState(null);
   const hasTrackedRef = useRef(false);
+  const vatMult = 1 + (parseFloat(orderDetails?.vat_amount) || 15) / 100;
 
   useEffect(() => {
     const fetchOrderDetails = async (orderId, status) => {
@@ -33,7 +44,7 @@ export default function TamaraPaymentRedirect() {
         setPaymentStatus(status);
       } catch (err) {
         console.error("Failed to fetch order details:", err);
-        setApiError(err.message || "Something went wrong.");
+        setApiError(t('somethingWrong'));
         setPaymentStatus("failed");
       } finally {
         setIsLoading(false);
@@ -137,7 +148,7 @@ export default function TamaraPaymentRedirect() {
   }, [paymentStatus, orderDetails?.order_id, orderDetails?.id, currency?.code]);
 
   const subTotalPrice = (elm) => {
-    if (elm.is_gift) return <td>0.00{currency.symbol} (Free Gift)</td>;
+    if (elm.is_gift) return <td>0.00{currency.symbol} ({t('freeGift')})</td>;
 
     if (elm.discount_percent) {
       const discounted = (elm.price * (1 + elm.vat / 100)) * (1 - elm.discount_percent / 100) * elm.qty;
@@ -156,9 +167,13 @@ export default function TamaraPaymentRedirect() {
     return <td>{((elm.price * (1 + elm.vat / 100)) * elm.qty).toFixed(2)}{currency.symbol}</td>;
   };
 
+  // Saved order lines: struck-through original price next to the price actually paid
+  const olLines = normalizeOrderLines(orderDetails?.products, vatMult - 1);
+  const olTotals = orderLineTotals(olLines);
+
   if (isMenuLoading || isLoading) return <div><Pagination1 /></div>;
   if (isMenuError) return <div>{isMenuError}</div>;
-  if (apiError) return <div>Error: {apiError}</div>;
+  if (apiError) return <div className="text-center py-5">{apiError}</div>;
 
   return (
     <>
@@ -174,8 +189,8 @@ export default function TamaraPaymentRedirect() {
                 />
               </svg>
             )}
-            {paymentStatus === 'success' ? <h3>Your order is completed!</h3> : <h3>Your order failed!</h3>}
-            {paymentStatus === 'success' && <p>Thank you. Your order has been received.</p>}
+            {paymentStatus === 'success' ? <h3>{t('heading')}</h3> : <h3>{t('orderFailed')}</h3>}
+            {paymentStatus === 'success' && <p>{t('thanks')}</p>}
             <FeedbackForm orderId={orderDetails?.order_id || orderDetails?.id} customerName={orderDetails?.customer_name} />
           </div>
 
@@ -183,84 +198,75 @@ export default function TamaraPaymentRedirect() {
             <>
               <div className="order-info">
                 <div className="order-info__item">
-                  <label>Order Number</label>
+                  <label>{t('orderNumber')}</label>
                   <span>{orderDetails.order_id}</span>
                 </div>
                 <div className="order-info__item">
-                  <label>Date</label>
-                  <span>{new Date().toLocaleDateString()}</span>
+                  <label>{t('date')}</label>
+                  <span>{orderDate()}</span>
                 </div>
                 <div className="order-info__item">
-                  <label>Total</label>
-                  <span>{orderDetails.total}{currency.symbol} (includes {orderDetails.tax_amount}{currency.symbol} VAT)</span>
+                  <label>{t('total')}</label>
+                  <span>{t('inclVat', { amount: money(orderDetails.total), vat: money(orderDetails.tax_amount) })}</span>
                 </div>
                 <div className="order-info__item">
-                  <label>Payment Method</label>
-                  <span>Tamara</span>
+                  <label>{t('paymentMethod')}</label>
+                  <span>{t('pm_tamara')}</span>
                 </div>
               </div>
 
               <div className="checkout__totals-wrapper">
                 <div className="checkout__totals">
-                  <h3>Order Details</h3>
-                  <table className="checkout-cart-items">
-                    <thead>
-                      <tr>
-                        <th>PRODUCT</th>
-                        <th>SUBTOTAL</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orderDetails.products.map((elm, i) => (
-                        <tr key={i}>
-                          <td>{he.decode(elm.product_name)} x {elm.qty}</td>
-                          {subTotalPrice(elm)}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <h3>{t('orderDetails')}</h3>
+                  <OrderLines lines={olLines} money={money} t={t} productName={productName} />
                   <table className="checkout-totals">
                     <tbody>
                       <tr>
-                        <th>SUBTOTAL</th>
-                        <td>{orderDetails.sub_total}{ currency.symbol }</td>
+                        <th>{t('subtotal')}</th>
+                        <td>{money(olTotals.discount > 0 ? olTotals.original : orderDetails.sub_total)}</td>
                       </tr>
+                      {olTotals.discount > 0 && (
+                        <tr className="ol-discount">
+                          <th>{t('discount')}</th>
+                          <td><bdi dir="ltr">−{money(olTotals.discount)}</bdi></td>
+                        </tr>
+                      )}
                       <tr>
-                        <th>SHIPPING</th>
-                        <td>{orderDetails.shipping_amount <= 0 ? 'You Got Free Shipping' : `Shipping Cost: ${ (orderDetails.shipping_amount * (1 + orderDetails.vat_amount / 100)).toFixed(2) }${ currency.symbol }`}</td>
+                        <th>{t('shipping')}</th>
+                        <td>{!(orderDetails.shipping_amount > 0) ? t('freeShipping') : money(orderDetails.shipping_amount * vatMult)}</td>
                       </tr>
-                      <tr>
-                        
-                        <th>SERVICE FEE</th>
-                        <td>{ (orderDetails.service_amount * (1 + orderDetails.vat_amount / 100)).toFixed(2) }{ currency.symbol }</td>
-                      </tr>
+                      {parseFloat(orderDetails.service_amount) > 0 && (
+                        <tr>
+                          <th>{t('serviceFee')}</th>
+                          <td>{money(orderDetails.service_amount * vatMult)}</td>
+                        </tr>
+                      )}
 
                       { orderDetails.payment_method === "cod" && (
                         <tr>
-                            <th>COD CHARGES</th>
-                            <td>{ (orderDetails.cod_charge * (1 + orderDetails.vat_amount / 100)).toFixed(2) }{ currency.symbol }</td> 
+                            <th>{t('codFee')}</th>
+                            <td>{money(orderDetails.cod_charge * vatMult)}</td> 
                         </tr>
                       )}
                       
                       <tr>
-                        <th>TOTAL</th>
-                        <td>{orderDetails.total}{ currency.symbol } (includes { orderDetails.tax_amount }{ currency.symbol } VAT)
-                        </td>
+                        <th>{t('total')}</th>
+                        <td>{t('inclVat', { amount: money(orderDetails.total), vat: money(orderDetails.tax_amount) })}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <a href="/" className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>
+                <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">{t('continueShopping')}</a>
               </div>
             </>
           )}
 
           {paymentStatus !== 'success' && (
-            <a href="/" className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>
+            <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">{t('continueShopping')}</a>
           )}
         </div>
       ) : (
-        <a href="/" className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a>
+        <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">{t('continueShopping')}</a>
       )}
     </>
   );

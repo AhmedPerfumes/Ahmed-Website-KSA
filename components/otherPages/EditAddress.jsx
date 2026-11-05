@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Modal, Button, Form } from "react-bootstrap";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export default function EditAddress() {
     const locale = useLocale();
+    const t = useTranslations("Account");
     const [lookupLoading, setLookupLoading] = useState(false);
     const [lookupStatus, setLookupStatus] = useState(null);
     const lookupDebounceRef = useRef(null);
@@ -174,7 +175,7 @@ export default function EditAddress() {
         if (!isValidShortAddress(code)) {
             setLookupStatus({
                 success: false,
-                message: locale === "ar" ? "رمز غير مكتمل (مثال: ABCD1234)" : "Enter 4 letters + 4 digits (e.g. ABCD1234)",
+                message: t("snaIncomplete"),
             });
             return;
         }
@@ -203,21 +204,19 @@ export default function EditAddress() {
                 });
                 setLookupStatus({
                     success: true,
-                    message: locale === "ar"
-                        ? `✓ تم التحقق: ${res.city}${res.district ? " - " + res.district : ""}`
-                        : `✓ Verified: ${res.city}${res.district ? " - " + res.district : ""}`,
+                    message: t("snaVerified", { place: `${res.city}${res.district ? " - " + res.district : ""}` }),
                 });
             } else {
                 setLookupStatus({
                     success: false,
-                    message: res.message || (locale === "ar" ? "لم يتم العثور على عنوان لهذا الرمز" : "Address not found for this code"),
+                    message: res.message || t("snaNotFound"),
                 });
             }
         } catch (e) {
             console.error(e);
             setLookupStatus({
                 success: false,
-                message: locale === "ar" ? "تعذر التحقق تلقائياً" : "Could not verify automatically",
+                message: t("snaFailed"),
             });
         } finally {
             setLookupLoading(false);
@@ -248,15 +247,13 @@ export default function EditAddress() {
 
         // ✅ Validation inside save
         const newErrors = {};
-        if (!form.area?.trim()) newErrors.area = "City is required";
+        if (!form.area?.trim()) newErrors.area = t("errCity");
         if (!form.building?.trim())
-            newErrors.building = "Full Address is required";
-        if (!form.province?.trim()) newErrors.province = "Province is required";
+            newErrors.building = t("errFullAddress");
+        if (!form.province?.trim()) newErrors.province = t("errProvince");
         // Short National Address is optional — validate format only when entered
         if (form.short_national_address?.trim() && !/^[A-Za-z]{4}[0-9]{4}$/.test(form.short_national_address.trim()))
-            newErrors.short_national_address = locale === "ar"
-                ? "يجب أن يتكون العنوان الوطني المختصر من 4 أحرف و4 أرقام (مثال: ABCD1234)."
-                : "Short National Address must be 4 letters followed by 4 numbers (e.g. ABCD1234).";
+            newErrors.short_national_address = t("errSna");
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors); // show inline errors
@@ -331,7 +328,7 @@ export default function EditAddress() {
                 if(res.error == 'Unauthorized' || res.message == 'Unauthorized') {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
-                    window.location.href = '/login_register';
+                    window.location.href = `/${locale}/login_register`;
                 }
             }
         } catch (e) {
@@ -343,13 +340,13 @@ export default function EditAddress() {
         <>
             <div className="col-lg-9">
                 <p className="sub-menu__title border-bottom mb-4">
-                    Your Default address will be used at checkout
+                    {t("addrDefaultNote")}
                 </p>
                 <div
                     className="d-flex gap-3 flex-column "
                     style={{ fontFamily: "inherit" }}
                 >
-                    {["Home Address", "Other Address"].map((label, idx) => (
+                    {[t("homeAddress"), t("otherAddress")].map((label, idx) => (
                         <div
                             key={label}
                             className={`p-3 d-flex justify-content-between align-items-start rounded border ${
@@ -364,13 +361,13 @@ export default function EditAddress() {
                                     {addresses[idx].name}
                                 </p>
                                 <p className="mb-0 text-dark small">
-                                    {addresses[idx].email} |{" "}
-                                    {addresses[idx].mobile}
+                                    <bdi dir="ltr">{addresses[idx].email}</bdi> |{" "}
+                                    <bdi dir="ltr">{addresses[idx].mobile}</bdi>
                                 </p>
                                 <p className="mb-0 text-dark small">
                                     {addresses[idx].area},{" "}
                                     {addresses[idx].building}
-                                    {addresses[idx].building_name ? `, ${locale === "ar" ? "مبنى " : "Building "}${addresses[idx].building_name}` : ""},{" "}
+                                    {addresses[idx].building_name ? `${locale === "ar" ? "،" : ","} ${t("building")} ${addresses[idx].building_name}` : ""},{" "}
                                     {addresses[idx].province}
                                 </p>
                                 {addresses[idx].short_national_address && (
@@ -382,7 +379,7 @@ export default function EditAddress() {
                             <div className="text-end">
                                 {addresses[idx].isDefault && (
                                     <span className="badge bg-secondary mb-2">
-                                        Default delivery address
+                                        {t("defaultBadge")}
                                     </span>
                                 )}
                                 <br />
@@ -394,7 +391,7 @@ export default function EditAddress() {
                                     }}
                                     className="fs-sm border-bottom"
                                 >
-                                    Edit
+                                    {t("edit")}
                                 </Link>
                             </div>
                         </div>
@@ -411,7 +408,7 @@ export default function EditAddress() {
             >
                 <Modal.Header closeButton className="border-0 pb-0">
                     <Modal.Title className="h6 fw-semibold">
-                        Edit {editingIndex === 0 ? "Home" : "Other"} Address
+                        {editingIndex === 0 ? t("editHomeAddress") : t("editOtherAddress")}
                     </Modal.Title>
                 </Modal.Header>
 
@@ -420,7 +417,7 @@ export default function EditAddress() {
                         {/* Short National Address with auto-verify */}
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                {locale === "ar" ? "العنوان الوطني المختصر (اختياري)" : "Short National Address (optional)"}
+                                {t("snaLabel")}
                             </Form.Label>
                             <div className="position-relative">
                                 <Form.Control
@@ -434,7 +431,7 @@ export default function EditAddress() {
                                 />
                                 {lookupLoading ? (
                                     <span style={{ position: "absolute", right: locale === "ar" ? "auto" : "10px", left: locale === "ar" ? "10px" : "auto", top: "50%", transform: "translateY(-50%)", fontSize: "0.72rem", color: "#b9a16b", fontWeight: 600 }}>
-                                        ⏳ {locale === "ar" ? "تحقق…" : "Checking…"}
+                                        ⏳ {t("checking")}
                                     </span>
                                 ) : (
                                     <Button
@@ -456,7 +453,7 @@ export default function EditAddress() {
                                             padding: "2px 6px",
                                         }}
                                     >
-                                        {locale === "ar" ? "تحقق وتعبئة" : "Verify & Fill"}
+                                        {t("verifyFill")}
                                     </Button>
                                 )}
                             </div>
@@ -467,7 +464,7 @@ export default function EditAddress() {
                             )}
                             {!lookupStatus && (
                                 <Form.Text className="text-muted" style={{ fontSize: "0.68rem" }}>
-                                    e.g. RCTB4359
+                                    {t("snaExample")}
                                 </Form.Text>
                             )}
                             <Form.Control.Feedback type="invalid">
@@ -477,7 +474,7 @@ export default function EditAddress() {
 
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                City
+                                {t("city")}
                             </Form.Label>
                             <Form.Control
                                 name="area"
@@ -493,7 +490,7 @@ export default function EditAddress() {
 
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Province
+                                {t("province")}
                             </Form.Label>
                             <Form.Control
                                 name="province"
@@ -509,7 +506,7 @@ export default function EditAddress() {
 
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                Full Address *
+                                {t("fullAddress")}
                             </Form.Label>
                             <Form.Control
                                 name="building"
@@ -525,13 +522,13 @@ export default function EditAddress() {
 
                         <Form.Group className="mb-3">
                             <Form.Label className="text-uppercase text-xs fw-medium text-secondary">
-                                {locale === "ar" ? "المبنى (اختياري)" : "Building (Optional)"}
+                                {t("buildingOptional")}
                             </Form.Label>
                             <Form.Control
                                 name="building_name"
                                 value={form.building_name || ""}
                                 onChange={handleChange}
-                                placeholder={locale === "ar" ? "رقم أو اسم المبنى" : "Building number or name"}
+                                placeholder={t("buildingPlaceholder")}
                                 className="rounded-2 px-2 py-1"
                             />
                         </Form.Group>
@@ -539,7 +536,7 @@ export default function EditAddress() {
                             <Form.Check
                                 type="checkbox"
                                 name="isDefault"
-                                label="Set as default"
+                                label={t("setDefault")}
                                 checked={form.isDefault}
                                 onChange={handleChange}
                             />
@@ -553,10 +550,10 @@ export default function EditAddress() {
                         size="sm"
                         onClick={() => setShow(false)}
                     >
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button variant="primary" size="sm" onClick={save}>
-                        Save
+                        {t("save")}
                     </Button>
                 </Modal.Footer>
             </Modal>

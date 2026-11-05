@@ -7,13 +7,35 @@ import he from 'he';
 import Link from "next/link";
 import Pagination1 from "../common/Pagination1";
 import FeedbackForm from "../common/Feedback";
+import { useLocale, useTranslations } from "next-intl";
+import OrderLines, { normalizeOrderLines, imagesByName, orderLineTotals } from "./OrderLines";
 
 export default function OrderCompleted() {
   const { cartProducts, totalPrice, freeShippingFlag, orderDetails, setCartProducts, setOrderDetails, couponDataContext,promotionsContext } = useContextElement();
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
+  const locale = useLocale();
+  const t = useTranslations('OrderComplete');
+  const tAll = useTranslations();
+  const money = (n) => `${Number(n || 0).toFixed(2)}${currency?.symbol || ''}`;
+  // Product names come from the backend in English; use the Arabic catalogue name when we have one
+  const productName = (name) => { const n = he.decode(String(name || '')); return locale === 'ar' && tAll.has(n) ? tAll(n) : n; };
   
   const [showDate, setShowDate] = useState(false);
   const [orderData, setorderData] = useState(null);
+  // The order as the backend saved it — real per-line prices, discounts and fees
+  const [savedOrder, setSavedOrder] = useState(null);
+  useEffect(() => {
+    if (!orderDetails?.order_id) return;
+    let cancelled = false;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}api/orderDetails`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_number: orderDetails.order_id }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (!cancelled && d?.order_id && Array.isArray(d.products)) setSavedOrder(d); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [orderDetails?.order_id]);
   const hasTrackedRef = useRef(false); // prevents purchase events firing more than once
 
   useEffect(() => {
@@ -127,7 +149,7 @@ export default function OrderCompleted() {
   const subTotalPrice = (elm) => {
     if (elm.is_gift) {
       console.log('FREE');
-      return <td>0.00{currency.symbol} (Free Gift)</td>;
+      return <td>0.00{currency.symbol} ({t('freeGift')})</td>;
     }
     const currentUTC = new Date(); // Current UTC time
     const currentGST = new Date(currentUTC.getTime() + (4 * 60 * 60 * 1000)); // Add 4 hours for GST
@@ -136,7 +158,7 @@ export default function OrderCompleted() {
   
      if (elm.is_gift) {
         console.log('FREE');
-        return <td>0.00{currency.symbol} (Free Gift)</td>;
+        return <td>0.00{currency.symbol} ({t('freeGift')})</td>;
       }
 
    if (couponDataContext && couponDataContext.code && couponDataContext.type === "customer") {
@@ -208,11 +230,25 @@ export default function OrderCompleted() {
     else {
         return <td>{(elm.price * elm.qty).toFixed(2)}{ currency.symbol }</td>;
     }
-    
-    
+
+
   };
- 
-  
+
+  // Breakdown from the order as saved (not today's admin charges). All amounts are VAT-inclusive
+  // except shipping_amount, which the backend stores net of VAT.
+  const vatRate = (parseFloat(vatTax?.percentage) || 0) / 100;
+  const orderTotal = parseFloat(orderDetails?.total) || 0;
+  const orderSubtotal = parseFloat(orderDetails?.sub_total) || 0;
+  const orderShipping = Math.round((parseFloat(orderDetails?.shipping_amount) || 0) * (1 + vatRate) * 100) / 100;
+  // Whatever remains is the COD fee (on COD orders) or the service fee
+  const orderExtraFee = Math.max(0, Math.round((orderTotal - orderSubtotal - orderShipping) * 100) / 100);
+  const isCodOrder = String(orderDetails?.payment_method || '').toLowerCase() === 'cod';
+  const orderVat = (orderTotal - orderTotal / (1 + vatRate)).toFixed(2);
+  // Lines: saved order (struck-through original + paid price), thumbnails from the storeOrder product records
+  const lines = savedOrder ? normalizeOrderLines(savedOrder.products, vatRate, imagesByName(orderDetails?.products)) : null;
+  const lineTotals = lines ? orderLineTotals(lines) : null;
+  const pmKey = `pm_${String(orderDetails?.payment_method || '').toLowerCase()}`;
+  const paymentLabel = t.has(pmKey) ? t(pmKey) : orderDetails?.payment_method;
 
   return (
     <>
@@ -231,100 +267,94 @@ export default function OrderCompleted() {
             fill="white"
           />
         </svg>
-        <h3>Your order is completed!</h3>
-        <p>Thank you. Your order has been received.</p>
+        <h3>{t('heading')}</h3>
+        <p>{t('thanks')}</p>
       </div>
        <FeedbackForm orderId={orderDetails.id} customerName={orderDetails.customer_name}/>
       <div className="order-info">
         <div className="order-info__item">
-          <label>Order Number</label>
+          <label>{t('orderNumber')}</label>
           <span>{ orderDetails.order_id }</span>
         </div>
         <div className="order-info__item">
-          <label>Date</label>
-          {showDate && <span>{new Date().toLocaleDateString()}</span>} 
+          <label>{t('date')}</label>
+          {showDate && <span>{new Date().toLocaleDateString(locale === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-US')}</span>} 
         </div>
         <div className="order-info__item">
-          <label>Total</label>
+          <label>{t('total')}</label>
 
-          <span>{parseFloat(orderDetails.total).toFixed(2)}{ currency.symbol } (includes { orderDetails.shipping_amount > 0 ? (
-                (
-                  (parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + parseFloat(vatTax.percentage / 100))) +
-                  (parseFloat(orderDetails.sub_total) - parseFloat(orderDetails.sub_total) / (1 + parseFloat(vatTax.percentage / 100))) +
-                  (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                ).toFixed(2)) : (
-                (
-                  0 +
-                  (parseFloat(orderDetails.sub_total) - parseFloat(orderDetails.sub_total) / (1 + parseFloat(vatTax.percentage / 100))) +
-                  (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                ).toFixed(2)) }{ currency.symbol } VAT)
-          </span>
+          <span>{t('inclVat', { amount: money(orderTotal), vat: money(orderVat) })}</span>
         </div>
         <div className="order-info__item">
-          <label>Paymetn Method</label>
-          <span>{ orderDetails.payment_method }</span>
+          <label>{t('paymentMethod')}</label>
+          <span>{ paymentLabel }</span>
         </div>
       </div>
       <div className="checkout__totals-wrapper">
         <div className="checkout__totals">
-          <h3>Order Details</h3>
+          <h3>{t('orderDetails')}</h3>
+          {lines ? (
+            <OrderLines lines={lines} money={money} t={t} productName={productName} />
+          ) : (
           <table className="checkout-cart-items">
             <thead>
               <tr>
-                <th>PRODUCT</th>
-                <th>SUBTOTAL</th>
+                <th>{t('product')}</th>
+                <th>{t('subtotal')}</th>
               </tr>
             </thead>
             <tbody>
               {orderDetails?.products?.map((elm, i) => (
                 <tr key={i}>
                   <td>
-                    {he.decode(elm.name)} x {elm.qty}
+                    <bdi>{productName(elm.name)}</bdi> × {elm.qty}
                   </td>
                   { subTotalPrice(elm) }
                 </tr>
               ))}
             </tbody>
           </table>
+          )}
           <table className="checkout-totals">
             <tbody>
               <tr>
-                <th>SUBTOTAL</th>
-                <td>{parseFloat(orderDetails.sub_total).toFixed(2)}{ currency.symbol }</td>
+                <th>{t('subtotal')}</th>
+                <td>{money(lineTotals?.discount > 0 ? lineTotals.original : orderDetails.sub_total)}</td>
               </tr>
+              {lineTotals?.discount > 0 && (
+                <tr className="ol-discount">
+                  <th>{t('discount')}</th>
+                  <td><bdi dir="ltr">−{money(lineTotals.discount)}</bdi></td>
+                </tr>
+              )}
               <tr>
-                <th>SHIPPING</th>
-                <td>{!(orderDetails.shipping_amount > 0) ? 'You Got Free Shipping' : `Shipping Cost: ${ shippingServiceCharges[0].price }${ currency.symbol }`}</td>
+                <th>{t('shipping')}</th>
+                <td>{!(orderShipping > 0) ? t('freeShipping') : money(orderShipping)}</td>
               </tr>
+              {orderExtraFee > 0 && (
+                <tr>
+                  <th>{isCodOrder ? t('codFee') : t('serviceFee')}</th>
+                  <td>{money(orderExtraFee)}</td>
+                </tr>
+              )}
               {/* <tr>
                 <th>SERVICE FEE</th>
                 <td>{ shippingServiceCharges[1].price }{ currency.symbol }</td>
               </tr> */}
               <tr>
-                <th>TOTAL</th>
-                <td>{parseFloat(orderDetails.total).toFixed(2)}{ currency.symbol } (includes { orderDetails.shipping_amount > 0 ? (
-                    (
-                      (parseFloat(shippingServiceCharges[0].price) - parseFloat(shippingServiceCharges[0].price) / (1 + parseFloat(vatTax.percentage / 100))) +
-                      (parseFloat(orderDetails.sub_total) - parseFloat(orderDetails.sub_total) / (1 + parseFloat(vatTax.percentage / 100))) +
-                      (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                    ).toFixed(2)) : (
-                    (
-                      0 +
-                      (parseFloat(orderDetails.sub_total) - parseFloat(orderDetails.sub_total) / (1 + parseFloat(vatTax.percentage / 100))) +
-                      (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + parseFloat(vatTax.percentage / 100)))
-                    ).toFixed(2)) }{ currency.symbol } VAT)
-                </td>
+                <th>{t('total')}</th>
+                <td>{t('inclVat', { amount: money(orderTotal), vat: money(orderVat) })}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <a href='/'
+        <a href={`/${locale}`}
           className="btn btn-primary w-100 text-uppercase mb-3"
         >
-          Continue Shopping
+          {t('continueShopping')}
         </a>
       </div>      
-    </div></> :  <a href='/' className="btn btn-primary w-100 text-uppercase mb-3">Continue Shopping</a> }
+    </div></> :  <a href={`/${locale}`} className="btn btn-primary w-100 text-uppercase mb-3">{t('continueShopping')}</a> }
     </>
   );
 }

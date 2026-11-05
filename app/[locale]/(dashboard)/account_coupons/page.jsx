@@ -2,6 +2,7 @@
 import AccountCoupons from "@/components/otherPages/AccountCoupons";
 import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 export const metadata = {
   title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
@@ -12,12 +13,13 @@ export const metadata = {
 };
 
 export default function AccountCouponsPage() {
+  const t = useTranslations("Account");
   return (
     <>
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="my-account container">
-          <h2 className="page-title">Your Coupons</h2>
+          <h2 className="page-title">{t("pageCoupons")}</h2>
           <div className="row">
             <DashboardSidebar />
             <AccountCoupons />

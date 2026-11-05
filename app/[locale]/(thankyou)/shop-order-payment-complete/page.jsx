@@ -1,6 +1,7 @@
 import Footer14 from "@/components/footers/Footer14";
 import OrderPaymentCompleted from "@/components/shopCartandCheckout/OrderPaymentCompleted";
 import React from "react";
+import { getTranslations } from "next-intl/server";
 import { headers } from 'next/headers';
 
 export const metadata = {
@@ -58,9 +59,10 @@ const ShopOrderPaymentComplete = async ({ searchParams  }) => {
     );
   } catch (error) {
     console.error(error);
+    const t = await getTranslations("OrderComplete");
     return <>
         <main className="page-wrapper">
-          <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">No Data Found</h2>
+          <h2 className="h4 text-center text-uppercase mb-4 pb-xl-2 mb-xl-4">{t("noData")}</h2>
         </main>
         <Footer14 /></>;
   }
