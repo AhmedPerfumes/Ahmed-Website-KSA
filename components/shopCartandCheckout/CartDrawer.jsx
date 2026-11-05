@@ -259,8 +259,17 @@ export default function CartDrawer() {
                               <span className="is-free">{t("free")}</span>
                             ) : (
                               <>
-                                {price.discounted && <s>{(price.base * elm.quantity).toFixed(2)}</s>}
-                                <span className={price.discounted ? "is-sale" : ""}>{(price.unit * elm.quantity).toFixed(2)} {sym}</span>
+                                {(price.discounted || Number(elm.bogo_free_qty || 0) > 0) && (
+                                  <s>{(price.base * elm.quantity).toFixed(2)}</s>
+                                )}
+                                <span className={price.discounted || Number(elm.bogo_free_qty || 0) > 0 ? "is-sale" : ""}>
+                                  {(price.unit * Math.max(0, elm.quantity - Number(elm.bogo_free_qty || 0))).toFixed(2)} {sym}
+                                </span>
+                                {Number(elm.bogo_free_qty || 0) > 0 && (
+                                  <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '11px' }}>
+                                    🎁 {elm.bogo_free_qty} {isAr ? 'مجاني' : 'FREE'}
+                                  </span>
+                                )}
                               </>
                             )}
                           </div>

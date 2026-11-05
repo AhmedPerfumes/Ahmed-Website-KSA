@@ -117,7 +117,7 @@ export default function Checkout() {
   /*  CONTEXT & HOOKS                                                     */
   /* ------------------------------------------------------------------ */
   const { shippingServiceCharges, vatTax, isLoading: isMenuLoading, error: isMenuError, currency } = useMenu();
-  const { cartProducts, totalPrice, freeShippingFlag, setOrderDetails, setCouponDataContext, setCartProducts } = useContextElement();
+  const { cartProducts, totalPrice, freeShippingFlag, setOrderDetails, setCouponDataContext, setCartProducts, removeGiftFromCart, promotionsContext } = useContextElement();
   const router = useRouter();
   const locale = useLocale();
   const { isLoggedIn } = useUser();
@@ -144,7 +144,42 @@ export default function Checkout() {
   /* ------------------------------------------------------------------ */
   /*  EFFECTS                                                             */
   /* ------------------------------------------------------------------ */
-  useEffect(() => { setCouponDataContext(null); }, []);
+  const removeGiftFromCartRef = useRef(removeGiftFromCart);
+  useEffect(() => {
+    removeGiftFromCartRef.current = removeGiftFromCart;
+  });
+
+  // Clean up FOC gifts when leaving checkout — runs ONLY on unmount (empty deps [])
+  useEffect(() => {
+    return () => {
+      removeGiftFromCartRef.current?.();
+    };
+  }, []);
+
+  const hasCleaned = useRef(false);
+  useEffect(() => {
+    if (hasCleaned.current) return;
+    // Check if any regular (non-gift, non-free) products are in BOGO
+    const hasBogoRegularItems = cartProducts.some((item) =>
+      !item.is_gift &&
+      promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === item.product_id))
+    );
+
+    if (!hasBogoRegularItems) {
+      // Only remove coupon properties from products that have no BOGO and no discount
+      const cleanedCart = cartProducts.map((item) => {
+        const hasDiscount = item.discount != null;
+        if (!hasDiscount) {
+          const { is_coupon, value, ...rest } = item;
+          return rest;
+        }
+        return item;
+      });
+      setCartProducts(cleanedCart);
+      setCouponDataContext(null);
+      hasCleaned.current = true; // prevent future runs
+    }
+  }, [cartProducts, promotionsContext, setCartProducts, setCouponDataContext]);
 
   // First-party AhmedTracker: begin_checkout on checkout load
   useEffect(() => {
@@ -622,7 +657,10 @@ export default function Checkout() {
     const user = isLoggedIn ? JSON.parse(atob(localStorage.getItem('user'))) : null;
     if (!couponCode.trim()) { setCouponError(tc('couponRequired')); return; }
     if (!isOTPVerified && !isLoggedIn) { setCouponError(tc('verifyMobileFirst')); return; }
-    const eligibleItems = cartProducts.filter(i => !i.discount && !i.is_gift);
+    const eligibleItems = cartProducts.filter(i => {
+      const isBogoProduct = promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === i.product_id));
+      return !i.discount && !isBogoProduct && !i.is_gift && !i.collection_name;
+    });
     if (!eligibleItems.length) { setCouponError(tc('couponNotApplicable')); setCouponCode(''); return; }
     const validCoupon = coupons.find(c => c.code.toLowerCase() === couponCode.toLowerCase());
     const payload = { company: 'KSA', salesType: 'EComm', couponRegistrationId: validCoupon ? validCoupon.couponRegistrationId : 0, couponCode: validCoupon ? '' : couponCode.trim(), mobileNo: user?.phone || formData.billingAddress.mobile, email: user?.email || formData.billingAddress.email };
@@ -635,22 +673,77 @@ export default function Checkout() {
     }
     const couponToApply = validCoupon || apiCoupon;
     if (!couponToApply) { setCouponError(tc('couponInvalid')); setCouponCode(''); return; }
-    setCartProducts(cartProducts.map(item => ({ ...item, ...((!item.discount && !item.is_gift) ? { is_coupon: true, value: couponToApply.value, coupon_type: couponToApply.coupon_type } : {}) })));
+    const updatedCartProducts = cartProducts.map(item => {
+      const isBogoProduct = promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === item.product_id));
+      const isEligible = !item.discount && !isBogoProduct && !item.is_gift;
+      return { ...item, ...(isEligible ? { is_coupon: true, value: couponToApply.value, coupon_type: couponToApply.coupon_type } : {}) };
+    });
+    setCartProducts(updatedCartProducts);
     setCouponError(null); setCouponData(couponToApply); setCouponDataContext(couponToApply);
     setCouponSuccess(tc('couponApplied', { code: couponToApply.code, title: couponToApply.title || '' }));
   };
 
-  const mapProductsFromFormData = products => products.map(item => ({
-    product_id: item.product_id, product_name: item.product_name, quantity: item.quantity,
-    category_name: item.category_name, subcategory_name: item.subcategory_name,
-    coupon: item.coupon, discount: item.discount,
-    ...('is_coupon' in item && { is_coupon: item.is_coupon }),
-    ...('is_gift' in item && { is_gift: item.is_gift }),
-    ...('coupon_type' in item && { coupon_type: item.coupon_type }),
-    ...('value' in item && { value: item.value }),
-    ...('campaign' in item && { campaign: item.campaign }),
-    ...('type' in item && { type: item.type }),
-  }));
+  const mapProductsFromFormData = (products) => {
+    const mapped = [];
+    products.forEach((item) => {
+      if (item.bogo_free_qty && item.bogo_free_qty > 0) {
+        const paidQty = (item.quantity || 0) - item.bogo_free_qty;
+
+        // Paid portion
+        if (paidQty > 0) {
+          mapped.push({
+            product_id: item.product_id,
+            product_name: item.product_name,
+            quantity: paidQty,
+            category_name: item.category_name,
+            subcategory_name: item.subcategory_name,
+            collection_name: item.collection_name || null,
+            coupon: item.coupon,
+            discount: null,
+            _original_discount: item._original_discount || null,
+            ...('is_coupon' in item && { is_coupon: item.is_coupon }),
+            ...('coupon_type' in item && { coupon_type: item.coupon_type }),
+            ...('value' in item && { value: item.value }),
+          });
+        }
+
+        // BOGO free portion
+        mapped.push({
+          product_id: item.product_id,
+          product_name: item.product_name,
+          quantity: item.bogo_free_qty,
+          category_name: item.category_name,
+          subcategory_name: item.subcategory_name,
+          collection_name: item.collection_name || null,
+          coupon: [],
+          discount: null,
+          is_gift: true,
+          type: 'bogo',
+          campaign: item.bogo_campaign,
+        });
+      } else {
+        // Regular product (no BOGO)
+        mapped.push({
+          product_id: item.product_id,
+          product_name: item.product_name,
+          quantity: item.quantity,
+          category_name: item.category_name,
+          subcategory_name: item.subcategory_name,
+          collection_name: item.collection_name || null,
+          coupon: item.coupon,
+          discount: item.discount,
+          ...('_original_discount' in item && { _original_discount: item._original_discount }),
+          ...('is_coupon' in item && { is_coupon: item.is_coupon }),
+          ...('is_gift' in item && { is_gift: item.is_gift }),
+          ...('coupon_type' in item && { coupon_type: item.coupon_type }),
+          ...('value' in item && { value: item.value }),
+          ...('campaign' in item && { campaign: item.campaign }),
+          ...('type' in item && { type: item.type }),
+        });
+      }
+    });
+    return mapped;
+  };
 
   async function onOrder(event) {
     event.preventDefault();
@@ -734,7 +827,25 @@ export default function Checkout() {
       const data = await response.json();
 
       if (data.message?.split(' ')[0] === 'Order') {
-        setSuccess(tc('orderPlaced')); setError(null); setOrderDetails(data);
+        setSuccess(tc('orderPlaced')); setError(null);
+
+        // Sanitize data.products using cartProducts to accurately preserve is_gift for each line item
+        const sanitizedProducts = data.products?.map((item, idx) => {
+          const originalCartItem = cartProducts[idx] || cartProducts.find((cp) => cp.product_id === item.product_id);
+          return {
+            ...item,
+            is_gift: originalCartItem ? Boolean(originalCartItem.is_gift) : Boolean(item.is_gift),
+            type: originalCartItem?.type || item.type,
+          };
+        });
+
+        const orderCampaign = data.campaign || cartProducts?.map((cp) => cp.campaign || cp.bogo_campaign).find(Boolean) || null;
+
+        setOrderDetails({
+          ...data,
+          campaign: orderCampaign,
+          products: sanitizedProducts || data.products,
+        });
         setFormData({ shippingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', building_name: '', province: '' }, billingAddress: { first_name: '', last_name: '', mobile: '', email: '', area: '', building: '', building_name: '', province: '', short_national_address: '' }, shippingAdd: false });
         setTimeout(() => router.push(`/${locale}/shop-order-complete`), 1000);
       } else if (data.message === 'Redirecting to Payfort...') {
@@ -746,7 +857,7 @@ export default function Checkout() {
       else if (data.message === 'Redirecting to Paytabs...') { setSuccess(tc('redirectingPayment')); setError(null); router.push(data.redirect_url); }
       else if (data.message === 'Redirecting to Tamara...') { setSuccess(tc('redirectingPayment')); setError(null); router.push(data.redirect_url); }
       else {
-        const errField = ['qtyMessage', 'discountMessage', 'couponMessage', 'duplicateOrderMessage', 'error', 'payment_method'].find(k => data[k]);
+        const errField = ['qtyMessage', 'discountMessage', 'couponMessage', 'bogoMessage', 'duplicateOrderMessage', 'error', 'payment_method'].find(k => data[k]);
         if (errField) {
           const msg = Array.isArray(data[errField]) ? data[errField][0] : data[errField];
           setError(msg);
@@ -919,8 +1030,16 @@ export default function Checkout() {
   const itemSubtotal = (elm) => {
     const nowGST = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
     const now = nowGST.toISOString().slice(0, 19).replace('T', ' ');
+    const bogoFreeQty = Number(elm.bogo_free_qty || 0);
+    const paidQty = Math.max(0, (elm.quantity || 0) - bogoFreeQty);
     let p = parseFloat(elm.price);
     if (elm.is_gift) return `0.00${currency.symbol}`;
+
+    // BOGO: charge only paid quantity
+    if (bogoFreeQty > 0) {
+      return `${(p * paidQty).toFixed(2)}${currency.symbol}`;
+    }
+
     if (elm?.discount && new Date(now) >= new Date(elm.discount.start_date) && new Date(now) <= new Date(elm.discount.end_date)) {
       if (elm.discount.discount_type === 'percent') p = p - p / 100 * elm.discount.value;
       else p = elm.discount.final_price || p;
@@ -936,6 +1055,7 @@ export default function Checkout() {
 
   // Whether an item has an active price reduction (for strikethrough display)
   const itemIsDiscounted = (elm) => {
+    if (elm.bogo_free_qty && elm.bogo_free_qty > 0) return true;
     const nowGST = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
     const now = nowGST.toISOString().slice(0, 19).replace('T', ' ');
     if (elm?.discount && new Date(now) >= new Date(elm.discount.start_date) && new Date(now) <= new Date(elm.discount.end_date)) return true;
@@ -1075,19 +1195,34 @@ export default function Checkout() {
     </>
   );
 
-  const summaryItems = cartProducts.map((elm, i) => (
-    <div key={i} className="cc-sum-item">
-      <span className="cc-sum-item__thumb">
-        <img src={productImage(elm)} alt="" loading="lazy" />
-        <span className="cc-sum-item__qty">{elm.quantity}</span>
-      </span>
-      <span className="cc-sum-item__name">{locale === 'ar' && elm.product_name_ar?.trim() ? elm.product_name_ar : he.decode(elm.product_name || '')}</span>
-      <span className="cc-sum-item__price">
-        {itemIsDiscounted(elm) && <span className="cc-price-old">{itemOriginalSubtotal(elm)}</span>}
-        <span>{itemSubtotal(elm)}</span>
-      </span>
-    </div>
-  ));
+  const summaryItems = cartProducts.map((elm, i) => {
+    const bogoFreeQty = Number(elm.bogo_free_qty || 0);
+    return (
+      <div key={i} className="cc-sum-item">
+        <span className="cc-sum-item__thumb">
+          <img src={productImage(elm)} alt="" loading="lazy" />
+          <span className="cc-sum-item__qty">{elm.quantity}</span>
+        </span>
+        <span className="cc-sum-item__name">
+          {locale === 'ar' && elm.product_name_ar?.trim() ? elm.product_name_ar : he.decode(elm.product_name || '')}
+          {bogoFreeQty > 0 && (
+            <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '12px' }}>
+              🎁 {bogoFreeQty} {locale === 'ar' ? 'مجاني' : 'FREE'}
+            </span>
+          )}
+          {elm.is_gift && (
+            <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '12px' }}>
+              🎁 {locale === 'ar' ? 'هدية مجانية' : 'Free Gift'}
+            </span>
+          )}
+        </span>
+        <span className="cc-sum-item__price">
+          {itemIsDiscounted(elm) && <span className="cc-price-old">{itemOriginalSubtotal(elm)}</span>}
+          <span>{itemSubtotal(elm)}</span>
+        </span>
+      </div>
+    );
+  });
 
   const isGuestFlow = !isLoggedIn;
   const stepOpen = n => !isGuestFlow || guestStep === n;
@@ -1182,84 +1317,84 @@ export default function Checkout() {
                   <section id="cc-step-1" className={stepClass(1)}>
                     {stepHeader(1, tc('contactTitle'), contactSummary)}
                     {stepOpen(1) && (
-                    <div className="cc-acc-body">
-                      {isLoggedIn ? (
-                        <div className="row g-2">
-                          {(needsName || fieldErrors.first_name || fieldErrors.last_name) && (
-                            <>
-                              {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
-                              {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
-                            </>
-                          )}
-                          {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: tc('egMobile'), dir: 'ltr' })}
-                          {textField({ id: 'bill_email', name: 'billingAddress.email', value: b.email, label: tc('emailAddress'), required: true, type: 'email', inputMode: 'email', autoComplete: 'email', errKey: 'email', dir: 'ltr' })}
-                        </div>
-                      ) : (
-                        <>
-                          <p className="cc-step__note">
-                            {tc.rich('haveAccount', {
-                              login: (chunks) => <Link href={`/${locale}/login_register?redirect=${encodeURIComponent(`/${locale}/shop-checkout`)}`} className="cc-guest-notice__login-link">{chunks}</Link>,
-                            })}
-                          </p>
+                      <div className="cc-acc-body">
+                        {isLoggedIn ? (
                           <div className="row g-2">
-                            {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: isOTPVerified ? null : tc('otpWhy'), dir: 'ltr' })}
-
-                            {/* Inline OTP — sent automatically, verified automatically on the 4th digit */}
-                            {/^\d{10}$/.test(b.mobile) && (
-                              <div className="col-12">
-                                {isOTPVerified ? (
-                                  <div className="cc-otp cc-otp--ok">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
-                                    {tc('mobileVerifiedShort')}
-                                  </div>
-                                ) : (
-                                  <div className={`cc-otp${fieldErrors._otp ? ' cc-field-error' : ''}`}>
-                                    {isOTPButton ? (
-                                      <button type="button" className="cc-otp__send" disabled={isSendOTPLoading} onClick={sendOTP}>
-                                        {isSendOTPLoading ? tc('sendingOtp') : tc('sendOtp')}
-                                      </button>
-                                    ) : (
-                                      <>
-                                        <label htmlFor="otp_input" className="cc-otp__prompt">{tc('otpPrompt', { mobile: b.mobile })}</label>
-                                        <div className="cc-otp__row">
-                                          <input
-                                            type="text"
-                                            inputMode="numeric"
-                                            autoComplete="one-time-code"
-                                            pattern="[0-9]*"
-                                            maxLength={4}
-                                            className="form-control cc-otp__input"
-                                            id="otp_input"
-                                            name="otp"
-                                            value={formData.otp}
-                                            onChange={handleChange}
-                                            dir="ltr"
-                                            autoFocus
-                                          />
-                                          <button type="button" className="cc-otp__verify" disabled={isSendOTPLoading || (formData.otp || '').length < 4} onClick={verifyOTP}>
-                                            {isSendOTPLoading ? tc('verifying') : tc('verify')}
-                                          </button>
-                                        </div>
-                                        <button type="button" className="cc-otp__resend" disabled={otpCooldown > 0 || isSendOTPLoading} onClick={sendOTP}>
-                                          {otpCooldown > 0 ? tc('resendIn', { s: otpCooldown }) : tc('resend')}
-                                        </button>
-                                      </>
-                                    )}
-                                    {OTPError && <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.75rem' }}>{OTPError}</div>}
-                                    {fieldErrors._otp && !OTPError && <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.75rem' }}>{tc(fieldErrors._otp)}</div>}
-                                  </div>
-                                )}
-                              </div>
+                            {(needsName || fieldErrors.first_name || fieldErrors.last_name) && (
+                              <>
+                                {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
+                                {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
+                              </>
                             )}
-
-                            {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
-                            {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
+                            {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: tc('egMobile'), dir: 'ltr' })}
                             {textField({ id: 'bill_email', name: 'billingAddress.email', value: b.email, label: tc('emailAddress'), required: true, type: 'email', inputMode: 'email', autoComplete: 'email', errKey: 'email', dir: 'ltr' })}
                           </div>
-                        </>
-                      )}
-                      {stepContinue(1)}
-                    </div>
+                        ) : (
+                          <>
+                            <p className="cc-step__note">
+                              {tc.rich('haveAccount', {
+                                login: (chunks) => <Link href={`/${locale}/login_register?redirect=${encodeURIComponent(`/${locale}/shop-checkout`)}`} className="cc-guest-notice__login-link">{chunks}</Link>,
+                              })}
+                            </p>
+                            <div className="row g-2">
+                              {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: isOTPVerified ? null : tc('otpWhy'), dir: 'ltr' })}
+
+                              {/* Inline OTP — sent automatically, verified automatically on the 4th digit */}
+                              {/^\d{10}$/.test(b.mobile) && (
+                                <div className="col-12">
+                                  {isOTPVerified ? (
+                                    <div className="cc-otp cc-otp--ok">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+                                      {tc('mobileVerifiedShort')}
+                                    </div>
+                                  ) : (
+                                    <div className={`cc-otp${fieldErrors._otp ? ' cc-field-error' : ''}`}>
+                                      {isOTPButton ? (
+                                        <button type="button" className="cc-otp__send" disabled={isSendOTPLoading} onClick={sendOTP}>
+                                          {isSendOTPLoading ? tc('sendingOtp') : tc('sendOtp')}
+                                        </button>
+                                      ) : (
+                                        <>
+                                          <label htmlFor="otp_input" className="cc-otp__prompt">{tc('otpPrompt', { mobile: b.mobile })}</label>
+                                          <div className="cc-otp__row">
+                                            <input
+                                              type="text"
+                                              inputMode="numeric"
+                                              autoComplete="one-time-code"
+                                              pattern="[0-9]*"
+                                              maxLength={4}
+                                              className="form-control cc-otp__input"
+                                              id="otp_input"
+                                              name="otp"
+                                              value={formData.otp}
+                                              onChange={handleChange}
+                                              dir="ltr"
+                                              autoFocus
+                                            />
+                                            <button type="button" className="cc-otp__verify" disabled={isSendOTPLoading || (formData.otp || '').length < 4} onClick={verifyOTP}>
+                                              {isSendOTPLoading ? tc('verifying') : tc('verify')}
+                                            </button>
+                                          </div>
+                                          <button type="button" className="cc-otp__resend" disabled={otpCooldown > 0 || isSendOTPLoading} onClick={sendOTP}>
+                                            {otpCooldown > 0 ? tc('resendIn', { s: otpCooldown }) : tc('resend')}
+                                          </button>
+                                        </>
+                                      )}
+                                      {OTPError && <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.75rem' }}>{OTPError}</div>}
+                                      {fieldErrors._otp && !OTPError && <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.75rem' }}>{tc(fieldErrors._otp)}</div>}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
+                              {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
+                              {textField({ id: 'bill_email', name: 'billingAddress.email', value: b.email, label: tc('emailAddress'), required: true, type: 'email', inputMode: 'email', autoComplete: 'email', errKey: 'email', dir: 'ltr' })}
+                            </div>
+                          </>
+                        )}
+                        {stepContinue(1)}
+                      </div>
                     )}
                   </section>
 
@@ -1267,116 +1402,116 @@ export default function Checkout() {
                   <section id="cc-step-2" className={stepClass(2)}>
                     {stepHeader(2, tc('deliveryTitle'), deliverySummary)}
                     {stepOpen(2) && (
-                    <div className="cc-acc-body">
-                      <p className="cc-step__note">{tc('deliveringKsa')}</p>
+                      <div className="cc-acc-body">
+                        <p className="cc-step__note">{tc('deliveringKsa')}</p>
 
-                      {isLoggedIn ? (
-                        <div className={`cc-address-card${fieldErrors._address ? ' cc-field-error' : ''}`} style={fieldErrors._address ? { borderColor: '#d32f2f' } : undefined}>
-                          <div className="cc-address-card__header">
-                            <div className="cc-address-card__badge">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-                              </svg>
-                              {tc('defaultAddress')}
-                            </div>
-                            <button type="button" className="cc-address-card__edit-btn" onClick={hasAddress ? openAddrModal : openAddFirstAddr} aria-label={tc('changeAddressAria')}>
-                              {hasAddress ? tc('changeAddress') : tc('addAddress')}
-                            </button>
-                          </div>
-                          <div className="cc-address-card__body">
-                            {hasAddress ? (
-                              <>
-                                <p className="cc-address-card__name">{b.first_name} {b.last_name}</p>
-                                {b.building && <p className="cc-address-card__line">{b.building}</p>}
-                                {b.building_name && <p className="cc-address-card__line">{b.building_name}</p>}
-                                {b.area && <p className="cc-address-card__line">{[b.area, regionLabel(b.province)].filter(Boolean).join(', ')}</p>}
-                                {b.short_national_address && <p className="cc-address-card__line cc-address-card__line--sna">{b.short_national_address}</p>}
-                              </>
-                            ) : (
-                              <>
-                                <p className="cc-address-card__name">{tc('noAddressTitle')}</p>
-                                <p className="cc-address-card__line">{tc('noAddressText')}</p>
-                              </>
-                            )}
-                            {fieldErrors._address && (
-                              <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.78rem' }}>
-                                {tc(fieldErrors._address === 'addressIncompleteTitle' ? 'addressIncompleteText' : 'noAddressText')}
+                        {isLoggedIn ? (
+                          <div className={`cc-address-card${fieldErrors._address ? ' cc-field-error' : ''}`} style={fieldErrors._address ? { borderColor: '#d32f2f' } : undefined}>
+                            <div className="cc-address-card__header">
+                              <div className="cc-address-card__badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+                                </svg>
+                                {tc('defaultAddress')}
                               </div>
-                            )}
-                            {!hasAddress && (
-                              <button type="button" className="cc-acc-continue" onClick={openAddFirstAddr} style={{ height: '2.6rem', fontSize: '0.8rem', marginTop: '0.75rem' }}>
-                                + {tc('addAddress')}
+                              <button type="button" className="cc-address-card__edit-btn" onClick={hasAddress ? openAddrModal : openAddFirstAddr} aria-label={tc('changeAddressAria')}>
+                                {hasAddress ? tc('changeAddress') : tc('addAddress')}
                               </button>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row g-2">
-                          {/* Optional shortcut: National Address fills the rest automatically */}
-                          <div className="col-12">
-                            <div className="form-floating position-relative">
-                              <input
-                                type="text"
-                                className={`form-control${fieldErrors.short_national_address ? ' border-danger' : ''}`}
-                                id="bill_sna"
-                                placeholder={tc('snaOptional')}
-                                name="billingAddress.short_national_address"
-                                value={b.short_national_address || ''}
-                                onChange={handleChange}
-                                maxLength="8"
-                                autoComplete="off"
-                                dir="ltr"
-                                style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                              />
-                              <label htmlFor="bill_sna">{tc('snaOptional')}</label>
-                              {lookupLoading.billing ? (
-                                <span className="cc-sna-btn cc-sna-btn--busy">{locale === 'ar' ? 'جارٍ التحقق…' : 'Checking…'}</span>
+                            </div>
+                            <div className="cc-address-card__body">
+                              {hasAddress ? (
+                                <>
+                                  <p className="cc-address-card__name">{b.first_name} {b.last_name}</p>
+                                  {b.building && <p className="cc-address-card__line">{b.building}</p>}
+                                  {b.building_name && <p className="cc-address-card__line">{b.building_name}</p>}
+                                  {b.area && <p className="cc-address-card__line">{[b.area, regionLabel(b.province)].filter(Boolean).join(', ')}</p>}
+                                  {b.short_national_address && <p className="cc-address-card__line cc-address-card__line--sna">{b.short_national_address}</p>}
+                                </>
                               ) : (
-                                <button
-                                  type="button"
-                                  className={`cc-sna-btn${b.short_national_address?.length === 8 ? ' is-ready' : ''}`}
-                                  onClick={() => handleLookup('billing', b.short_national_address)}
-                                  disabled={!b.short_national_address || b.short_national_address.length < 8}
-                                >
-                                  {locale === 'ar' ? 'تحقق' : 'Verify'}
+                                <>
+                                  <p className="cc-address-card__name">{tc('noAddressTitle')}</p>
+                                  <p className="cc-address-card__line">{tc('noAddressText')}</p>
+                                </>
+                              )}
+                              {fieldErrors._address && (
+                                <div className="cc-alert cc-alert--error py-1 mt-2" style={{ fontSize: '0.78rem' }}>
+                                  {tc(fieldErrors._address === 'addressIncompleteTitle' ? 'addressIncompleteText' : 'noAddressText')}
+                                </div>
+                              )}
+                              {!hasAddress && (
+                                <button type="button" className="cc-acc-continue" onClick={openAddFirstAddr} style={{ height: '2.6rem', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+                                  + {tc('addAddress')}
                                 </button>
                               )}
                             </div>
-                            {lookupStatus.billing
-                              ? <div className="cc-hint" style={{ color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>{lookupStatus.billing.message}</div>
-                              : <p className="cc-hint">{tc('snaHint')}</p>}
-                            {fieldError('short_national_address')}
                           </div>
-
-                          {textField({ id: 'bill_city', name: 'billingAddress.area', value: b.area, label: tc('city'), required: true, autoComplete: 'address-level2', errKey: 'area', list: 'sa-city-list' })}
-                          {regionField({ id: 'bill_prov', name: 'billingAddress.province', value: b.province, errKey: 'province' })}
-                          {textField({ id: 'bill_addr', name: 'billingAddress.building', value: b.building, label: tc('districtStreet'), required: true, autoComplete: 'street-address', errKey: 'building' })}
-                          {textField({ id: 'bill_bldg_name', name: 'billingAddress.building_name', value: b.building_name, label: tc('buildingApt'), autoComplete: 'address-line2' })}
-                        </div>
-                      )}
-
-                      {/* Gift / different address */}
-                      <div className="form-check cc-gift-toggle">
-                        <input className="form-check-input" type="checkbox" id="ship_diff" checked={!!formData.shippingAdd} onChange={handleCheckboxChange} />
-                        <label className="form-check-label" htmlFor="ship_diff">{tc('giftToggle')}</label>
-                      </div>
-
-                      {formData.shippingAdd && (
-                        <div className="cc-recipient">
-                          <p className="cc-recipient__title">{tc('recipientTitle')}</p>
+                        ) : (
                           <div className="row g-2">
-                            {textField({ id: 'ship_fn', name: 'shippingAddress.first_name', value: formData.shippingAddress.first_name, label: tc('firstName'), required: true, autoComplete: 'shipping given-name', errKey: 'ship_first_name' })}
-                            {textField({ id: 'ship_ln', name: 'shippingAddress.last_name', value: formData.shippingAddress.last_name, label: tc('lastName'), required: true, autoComplete: 'shipping family-name', errKey: 'ship_last_name' })}
-                            {textField({ id: 'ship_mob', name: 'shippingAddress.mobile', value: formData.shippingAddress.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'shipping tel-national', maxLength: 14, errKey: 'ship_mobile', hint: tc('egMobile'), dir: 'ltr' })}
-                            {textField({ id: 'ship_area', name: 'shippingAddress.area', value: formData.shippingAddress.area, label: tc('city'), required: true, autoComplete: 'shipping address-level2', errKey: 'ship_area', list: 'sa-city-list' })}
-                            {regionField({ id: 'ship_prov', name: 'shippingAddress.province', value: formData.shippingAddress.province, errKey: 'ship_province', prefix: 'shipping ' })}
-                            {textField({ id: 'ship_bldg', name: 'shippingAddress.building', value: formData.shippingAddress.building, label: tc('districtStreet'), required: true, autoComplete: 'shipping street-address', errKey: 'ship_building' })}
-                            {textField({ id: 'ship_bldg_name', name: 'shippingAddress.building_name', value: formData.shippingAddress.building_name, label: tc('buildingApt'), autoComplete: 'shipping address-line2' })}
+                            {/* Optional shortcut: National Address fills the rest automatically */}
+                            <div className="col-12">
+                              <div className="form-floating position-relative">
+                                <input
+                                  type="text"
+                                  className={`form-control${fieldErrors.short_national_address ? ' border-danger' : ''}`}
+                                  id="bill_sna"
+                                  placeholder={tc('snaOptional')}
+                                  name="billingAddress.short_national_address"
+                                  value={b.short_national_address || ''}
+                                  onChange={handleChange}
+                                  maxLength="8"
+                                  autoComplete="off"
+                                  dir="ltr"
+                                  style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                                />
+                                <label htmlFor="bill_sna">{tc('snaOptional')}</label>
+                                {lookupLoading.billing ? (
+                                  <span className="cc-sna-btn cc-sna-btn--busy">{locale === 'ar' ? 'جارٍ التحقق…' : 'Checking…'}</span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className={`cc-sna-btn${b.short_national_address?.length === 8 ? ' is-ready' : ''}`}
+                                    onClick={() => handleLookup('billing', b.short_national_address)}
+                                    disabled={!b.short_national_address || b.short_national_address.length < 8}
+                                  >
+                                    {locale === 'ar' ? 'تحقق' : 'Verify'}
+                                  </button>
+                                )}
+                              </div>
+                              {lookupStatus.billing
+                                ? <div className="cc-hint" style={{ color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>{lookupStatus.billing.message}</div>
+                                : <p className="cc-hint">{tc('snaHint')}</p>}
+                              {fieldError('short_national_address')}
+                            </div>
+
+                            {textField({ id: 'bill_city', name: 'billingAddress.area', value: b.area, label: tc('city'), required: true, autoComplete: 'address-level2', errKey: 'area', list: 'sa-city-list' })}
+                            {regionField({ id: 'bill_prov', name: 'billingAddress.province', value: b.province, errKey: 'province' })}
+                            {textField({ id: 'bill_addr', name: 'billingAddress.building', value: b.building, label: tc('districtStreet'), required: true, autoComplete: 'street-address', errKey: 'building' })}
+                            {textField({ id: 'bill_bldg_name', name: 'billingAddress.building_name', value: b.building_name, label: tc('buildingApt'), autoComplete: 'address-line2' })}
                           </div>
+                        )}
+
+                        {/* Gift / different address */}
+                        <div className="form-check cc-gift-toggle">
+                          <input className="form-check-input" type="checkbox" id="ship_diff" checked={!!formData.shippingAdd} onChange={handleCheckboxChange} />
+                          <label className="form-check-label" htmlFor="ship_diff">{tc('giftToggle')}</label>
                         </div>
-                      )}
-                      {stepContinue(2)}
-                    </div>
+
+                        {formData.shippingAdd && (
+                          <div className="cc-recipient">
+                            <p className="cc-recipient__title">{tc('recipientTitle')}</p>
+                            <div className="row g-2">
+                              {textField({ id: 'ship_fn', name: 'shippingAddress.first_name', value: formData.shippingAddress.first_name, label: tc('firstName'), required: true, autoComplete: 'shipping given-name', errKey: 'ship_first_name' })}
+                              {textField({ id: 'ship_ln', name: 'shippingAddress.last_name', value: formData.shippingAddress.last_name, label: tc('lastName'), required: true, autoComplete: 'shipping family-name', errKey: 'ship_last_name' })}
+                              {textField({ id: 'ship_mob', name: 'shippingAddress.mobile', value: formData.shippingAddress.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'shipping tel-national', maxLength: 14, errKey: 'ship_mobile', hint: tc('egMobile'), dir: 'ltr' })}
+                              {textField({ id: 'ship_area', name: 'shippingAddress.area', value: formData.shippingAddress.area, label: tc('city'), required: true, autoComplete: 'shipping address-level2', errKey: 'ship_area', list: 'sa-city-list' })}
+                              {regionField({ id: 'ship_prov', name: 'shippingAddress.province', value: formData.shippingAddress.province, errKey: 'ship_province', prefix: 'shipping ' })}
+                              {textField({ id: 'ship_bldg', name: 'shippingAddress.building', value: formData.shippingAddress.building, label: tc('districtStreet'), required: true, autoComplete: 'shipping street-address', errKey: 'ship_building' })}
+                              {textField({ id: 'ship_bldg_name', name: 'shippingAddress.building_name', value: formData.shippingAddress.building_name, label: tc('buildingApt'), autoComplete: 'shipping address-line2' })}
+                            </div>
+                          </div>
+                        )}
+                        {stepContinue(2)}
+                      </div>
                     )}
                   </section>
 
@@ -1392,117 +1527,117 @@ export default function Checkout() {
                       </div>
                     )}
                     {stepOpen(3) && (
-                    <div className="cc-acc-body">
-                      {/* Mobile-only promo code (desktop has it in the right column) */}
-                      <div className="d-xl-none" style={{ marginBottom: '0.75rem' }}>
-                        {couponData ? (
-                          <div className="cc-coupon-card" style={{ padding: '0.65rem 0.75rem' }}>
-                            <div className="cc-coupon-applied">
-                              <div className="cc-coupon-applied__text">
-                                <span className="cc-coupon-applied__code">{couponData.code}</span>
-                                <span className="cc-coupon-applied__desc">{couponData.title}</span>
+                      <div className="cc-acc-body">
+                        {/* Mobile-only promo code (desktop has it in the right column) */}
+                        <div className="d-xl-none" style={{ marginBottom: '0.75rem' }}>
+                          {couponData ? (
+                            <div className="cc-coupon-card" style={{ padding: '0.65rem 0.75rem' }}>
+                              <div className="cc-coupon-applied">
+                                <div className="cc-coupon-applied__text">
+                                  <span className="cc-coupon-applied__code">{couponData.code}</span>
+                                  <span className="cc-coupon-applied__desc">{couponData.title}</span>
+                                </div>
+                                <button type="button" className="cc-coupon-applied__remove" onClick={removeCoupon} title={tc('removeCoupon')}>&times;</button>
                               </div>
-                              <button type="button" className="cc-coupon-applied__remove" onClick={removeCoupon} title={tc('removeCoupon')}>&times;</button>
+                              {couponError && <div className="cc-coupon-msg cc-coupon-msg--err">{couponError}</div>}
+                              {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok">{couponSuccess}</div>}
                             </div>
-                            {couponError && <div className="cc-coupon-msg cc-coupon-msg--err">{couponError}</div>}
-                            {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok">{couponSuccess}</div>}
-                          </div>
-                        ) : (
-                          <div className="cc-promo-mobile">
-                            <button type="button" className="cc-promo-mobile__toggle" onClick={() => setShowCouponPanel(v => !v)} aria-expanded={showCouponPanel}>
-                              <span className="cc-promo-mobile__toggle-label">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
-                                {tc('havePromo')}
-                              </span>
-                              <svg className={`cc-promo-mobile__chevron${showCouponPanel ? ' open' : ''}`} width="12" height="12" viewBox="0 0 10 6" fill="none">
-                                <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                              </svg>
-                            </button>
-                            {showCouponPanel && (
-                              <div className="cc-promo-mobile__body">
-                                <div className="cc-coupon-label-row" style={{ marginBottom: '0.5rem' }}>
-                                  <span style={{ fontSize: '0.72rem', color: '#888' }}>{tc('enterCodeBelow')}</span>
-                                  <button type="button" className="cc-coupon-view-offers" onClick={() => setShowCouponModal(true)}>{tc('viewOffers')}</button>
+                          ) : (
+                            <div className="cc-promo-mobile">
+                              <button type="button" className="cc-promo-mobile__toggle" onClick={() => setShowCouponPanel(v => !v)} aria-expanded={showCouponPanel}>
+                                <span className="cc-promo-mobile__toggle-label">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                                  {tc('havePromo')}
+                                </span>
+                                <svg className={`cc-promo-mobile__chevron${showCouponPanel ? ' open' : ''}`} width="12" height="12" viewBox="0 0 10 6" fill="none">
+                                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                </svg>
+                              </button>
+                              {showCouponPanel && (
+                                <div className="cc-promo-mobile__body">
+                                  <div className="cc-coupon-label-row" style={{ marginBottom: '0.5rem' }}>
+                                    <span style={{ fontSize: '0.72rem', color: '#888' }}>{tc('enterCodeBelow')}</span>
+                                    <button type="button" className="cc-coupon-view-offers" onClick={() => setShowCouponModal(true)}>{tc('viewOffers')}</button>
+                                  </div>
+                                  <div className="cc-coupon-input-wrap">
+                                    <input className="cc-coupon-input" type="text" placeholder={tc('promoPlaceholder')} value={couponCode} onChange={handleCouponChange} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(e); } }} autoFocus />
+                                    <button type="button" className="cc-coupon-apply-btn" onClick={applyCoupon}>{tc('apply')}</button>
+                                  </div>
+                                  {couponError && <div className="cc-coupon-msg cc-coupon-msg--err" style={{ marginTop: '0.4rem' }}>{couponError}</div>}
+                                  {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok" style={{ marginTop: '0.4rem' }}>{couponSuccess}</div>}
                                 </div>
-                                <div className="cc-coupon-input-wrap">
-                                  <input className="cc-coupon-input" type="text" placeholder={tc('promoPlaceholder')} value={couponCode} onChange={handleCouponChange} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(e); } }} autoFocus />
-                                  <button type="button" className="cc-coupon-apply-btn" onClick={applyCoupon}>{tc('apply')}</button>
-                                </div>
-                                {couponError && <div className="cc-coupon-msg cc-coupon-msg--err" style={{ marginTop: '0.4rem' }}>{couponError}</div>}
-                                {couponSuccess && <div className="cc-coupon-msg cc-coupon-msg--ok" style={{ marginTop: '0.4rem' }}>{couponSuccess}</div>}
-                              </div>
-                            )}
-                          </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {error && !selectedOption && error === tc('choosePayment') && (
+                          <div className="text-danger small fw-semibold mb-2" role="alert">{tc('choosePayment')}</div>
                         )}
-                      </div>
 
-                      {error && !selectedOption && error === tc('choosePayment') && (
-                        <div className="text-danger small fw-semibold mb-2" role="alert">{tc('choosePayment')}</div>
-                      )}
-
-                      {/* Ordered by KSA preference: card (mada / Apple Pay) → Tabby → Tamara → Cash on delivery */}
-                      <div className="cc-payment-list" role="radiogroup" aria-label={tc('selectPayment')}>
-                        <label className={`cc-payment-card ${selectedOption === 'paytabs' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_pt">
-                          <input type="radio" id="pay_pt" name="checkout_payment_method" value="paytabs" checked={selectedOption === 'paytabs'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('cardPayment')}</span>
-                            <span className="cc-payment-card__subtitle">{tc('cardSub')}</span>
-                          </div>
-                          <div className="cc-payment-card__logos">
-                            <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="mada" width={36} height={14} style={{ objectFit: 'contain' }} />
-                            <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={36} height={14} style={{ objectFit: 'contain' }} />
-                          </div>
-                        </label>
-
-                        <label className={`cc-payment-card ${selectedOption === 'tabby' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tbb">
-                          <input type="radio" id="pay_tbb" name="checkout_payment_method" value="tabby" checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('tabbyPayIn4')}</span>
-                            {selectedOption === 'tabby' && <div id="tabbyCard" style={{ marginTop: '0.5rem' }}></div>}
-                          </div>
-                          <div className="cc-payment-card__logos">
-                            <Image src="/assets/images/paymentGateway/Tabby.png" width={50} height={20} alt="Tabby" style={{ objectFit: 'contain' }} />
-                          </div>
-                        </label>
-
-                        <label className={`cc-payment-card ${selectedOption === 'tamara' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tmr">
-                          <input type="radio" id="pay_tmr" name="checkout_payment_method" value="tamara" checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('tamara')}</span>
-                            <div className="cc-payment-card__widget">
-                              <TamaraWidget inlineType='4' inlineVariant='text' locale={locale} />
+                        {/* Ordered by KSA preference: card (mada / Apple Pay) → Tabby → Tamara → Cash on delivery */}
+                        <div className="cc-payment-list" role="radiogroup" aria-label={tc('selectPayment')}>
+                          <label className={`cc-payment-card ${selectedOption === 'paytabs' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_pt">
+                            <input type="radio" id="pay_pt" name="checkout_payment_method" value="paytabs" checked={selectedOption === 'paytabs'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('cardPayment')}</span>
+                              <span className="cc-payment-card__subtitle">{tc('cardSub')}</span>
                             </div>
-                          </div>
-                        </label>
+                            <div className="cc-payment-card__logos">
+                              <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="mada" width={36} height={14} style={{ objectFit: 'contain' }} />
+                              <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={36} height={14} style={{ objectFit: 'contain' }} />
+                            </div>
+                          </label>
 
-                        <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
-                          <input type="radio" id="pay_cod" name="checkout_payment_method" value="cod" checked={selectedOption === 'cod'} onChange={handleRadioChange} />
-                          <div className="cc-payment-card__radio"></div>
-                          <div className="cc-payment-card__content">
-                            <span className="cc-payment-card__title">{tc('cod')}</span>
-                            <span className="cc-payment-card__subtitle">{tc('codSub')}{codFeeSetting > 0 && <> · {tc('codFeeNote', { amount: `${codFeeSetting.toFixed(2)}${currency.symbol}` })}</>}</span>
-                          </div>
-                        </label>
+                          <label className={`cc-payment-card ${selectedOption === 'tabby' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tbb">
+                            <input type="radio" id="pay_tbb" name="checkout_payment_method" value="tabby" checked={selectedOption === 'tabby'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('tabbyPayIn4')}</span>
+                              {selectedOption === 'tabby' && <div id="tabbyCard" style={{ marginTop: '0.5rem' }}></div>}
+                            </div>
+                            <div className="cc-payment-card__logos">
+                              <Image src="/assets/images/paymentGateway/Tabby.png" width={50} height={20} alt="Tabby" style={{ objectFit: 'contain' }} />
+                            </div>
+                          </label>
+
+                          <label className={`cc-payment-card ${selectedOption === 'tamara' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_tmr">
+                            <input type="radio" id="pay_tmr" name="checkout_payment_method" value="tamara" checked={selectedOption === 'tamara'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('tamara')}</span>
+                              <div className="cc-payment-card__widget">
+                                <TamaraWidget inlineType='4' inlineVariant='text' locale={locale} />
+                              </div>
+                            </div>
+                          </label>
+
+                          <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
+                            <input type="radio" id="pay_cod" name="checkout_payment_method" value="cod" checked={selectedOption === 'cod'} onChange={handleRadioChange} />
+                            <div className="cc-payment-card__radio"></div>
+                            <div className="cc-payment-card__content">
+                              <span className="cc-payment-card__title">{tc('cod')}</span>
+                              <span className="cc-payment-card__subtitle">{tc('codSub')}{codFeeSetting > 0 && <> · {tc('codFeeNote', { amount: `${codFeeSetting.toFixed(2)}${currency.symbol}` })}</>}</span>
+                            </div>
+                          </label>
+                        </div>
+
+                        {/* Alerts */}
+                        {error && error !== tc('choosePayment') && <div className="cc-alert cc-alert--error" role="alert">{error}</div>}
+                        {success && <div className="cc-alert cc-alert--success" role="status">{success}</div>}
+
+                        {/* Place Order */}
+                        <button className="cc-btn-gold cc-place-order" type="submit" disabled={disablePlaceOrder}>
+                          {isLoading ? <span>{tc('processing')}</span> : <>{tc('placeOrder', { amount: `${grandTotal}${currency.symbol}` })}</>}
+                        </button>
+                        <p className="cc-terms-line">
+                          {tc.rich('termsLine', {
+                            terms: (chunks) => <Link href={`/${locale}/terms`} target="_blank">{chunks}</Link>,
+                            privacy: (chunks) => <Link href={`/${locale}/privacy`} target="_blank">{chunks}</Link>,
+                          })}
+                        </p>
                       </div>
-
-                      {/* Alerts */}
-                      {error && error !== tc('choosePayment') && <div className="cc-alert cc-alert--error" role="alert">{error}</div>}
-                      {success && <div className="cc-alert cc-alert--success" role="status">{success}</div>}
-
-                      {/* Place Order */}
-                      <button className="cc-btn-gold cc-place-order" type="submit" disabled={disablePlaceOrder}>
-                        {isLoading ? <span>{tc('processing')}</span> : <>{tc('placeOrder', { amount: `${grandTotal}${currency.symbol}` })}</>}
-                      </button>
-                      <p className="cc-terms-line">
-                        {tc.rich('termsLine', {
-                          terms: (chunks) => <Link href={`/${locale}/terms`} target="_blank">{chunks}</Link>,
-                          privacy: (chunks) => <Link href={`/${locale}/privacy`} target="_blank">{chunks}</Link>,
-                        })}
-                      </p>
-                    </div>
                     )}
                   </section>
                 </div>{/* end .cc-acc */}
@@ -1573,15 +1708,15 @@ export default function Checkout() {
 
             {/* Mobile: sticky Place Order bar — the main action is always in reach */}
             {(!isGuestFlow || guestStep === 3) && (
-            <div className="cc-sticky-cta d-xl-none">
-              <div className="cc-sticky-cta__total">
-                <span>{tc('total')}</span>
-                <strong>{grandTotal}{currency.symbol}</strong>
+              <div className="cc-sticky-cta d-xl-none">
+                <div className="cc-sticky-cta__total">
+                  <span>{tc('total')}</span>
+                  <strong>{grandTotal}{currency.symbol}</strong>
+                </div>
+                <button className="cc-btn-gold" type="submit" disabled={disablePlaceOrder}>
+                  {isLoading ? tc('processing') : tc('placeOrderShort')}
+                </button>
               </div>
-              <button className="cc-btn-gold" type="submit" disabled={disablePlaceOrder}>
-                {isLoading ? tc('processing') : tc('placeOrderShort')}
-              </button>
-            </div>
             )}
 
             {/* ── COUPON MODAL ── */}

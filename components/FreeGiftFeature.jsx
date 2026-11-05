@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Navigation, Pagination } from "swiper/modules";
@@ -150,7 +151,7 @@ const swiperOptions = {
 //           discount: null,
 //           coupon: []
 //         },
-      
+
 //         {
 //           product_id: 50,
 //           product_name: 'Musk Ahmed',
@@ -169,7 +170,7 @@ const swiperOptions = {
 //           discount: null,
 //           coupon: []
 //         },
-    
+
 //         {
 //           product_id: 35,
 //           product_name: 'Zuraique',
@@ -221,14 +222,14 @@ const FreeGiftFeature = ({ couponData }) => {
   // Filter out "Collections" products
   const nonCollectionProducts = cartProducts.filter(
     (item) =>
-    // item.category_name?.toLowerCase() !== "collections" &&
-    // item.category_name?.toLowerCase() !== 'online exclusive' &&
-    item.discount === null &&
-    !item.is_gift &&
-    // && item.coupon.length == 0
-    !promotionsContext.some((promo) =>
-      promo.buy_products.some((buyItem) => buyItem.product_id === item.product_id)
-    )
+      // item.category_name?.toLowerCase() !== "collections" &&
+      // item.category_name?.toLowerCase() !== 'online exclusive' &&
+      item.discount === null &&
+      !item.is_gift &&
+      // && item.coupon.length == 0
+      !promotionsContext.some((promo) =>
+        promo.buy_products.some((buyItem) => buyItem.product_id === item.product_id)
+      )
   );
 
   const currentUTC = new Date();
@@ -239,26 +240,26 @@ const FreeGiftFeature = ({ couponData }) => {
   const nonCollectionTotalPrice = nonCollectionProducts.reduce(
     (acc, item) => {
       // console.log('hasCleaned', couponData?.code, new Date(current_date_time), new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date));
-      if(couponData?.code && new Date(current_date_time) >= new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(item.coupon[couponData?.code.toLowerCase()]?.end_date) && item.coupon[couponData?.code.toLowerCase().toLowerCase()].code == couponData?.code.toLowerCase()) {
+      if (couponData?.code && new Date(current_date_time) >= new Date(item.coupon[couponData?.code.toLowerCase()]?.start_date) && new Date(current_date_time) <= new Date(item.coupon[couponData?.code.toLowerCase()]?.end_date) && item.coupon[couponData?.code.toLowerCase().toLowerCase()].code == couponData?.code.toLowerCase()) {
         return acc + (parseFloat(item.price - (item.price / 100 * item.coupon[couponData?.code.toLowerCase().toLowerCase()]?.value)) * item.quantity);
       } else if (
-      isLoggedIn &&
-      couponData &&
-      couponData.type === "customer" &&
-      (!couponData.start_date ||
-        !couponData.end_date ||
-        (new Date(current_date_time) >= new Date(couponData.start_date) &&
-          new Date(current_date_time) <= new Date(couponData.end_date)))
-      // &&
-      // !elm.sale_price &&
-      // !elm.discount &&
-      // !promotionsContext.some((promo) =>
-      //   promo.buy_products.some((item) => item.product_id === elm.product_id)
-      // )
-    ) {
-      let itemPrice = item.price - (item.price / 100) * couponData.value;
+        isLoggedIn &&
+        couponData &&
+        couponData.type === "customer" &&
+        (!couponData.start_date ||
+          !couponData.end_date ||
+          (new Date(current_date_time) >= new Date(couponData.start_date) &&
+            new Date(current_date_time) <= new Date(couponData.end_date)))
+        // &&
+        // !elm.sale_price &&
+        // !elm.discount &&
+        // !promotionsContext.some((promo) =>
+        //   promo.buy_products.some((item) => item.product_id === elm.product_id)
+        // )
+      ) {
+        let itemPrice = item.price - (item.price / 100) * couponData.value;
         return acc + (parseFloat(itemPrice) * item.quantity);
-    } else {
+      } else {
         return acc + (parseFloat(item.price) * item.quantity);
       }
     },
@@ -338,7 +339,7 @@ const FreeGiftFeature = ({ couponData }) => {
       // Determine the campaign for the threshold
       const thresholdCampaign = activeThreshold.gifts[0]?.campaign || '';
       // Check if there’s a gift in the cart for this threshold's campaign
-      const giftInCart = cartProducts.find((item) => { return item.type == 'foc' && item.is_gift});
+      const giftInCart = cartProducts.find((item) => { return item.type == 'foc' && item.is_gift });
       // console.log('123456789', giftInCart);
       if (activeThreshold.gifts.length === 1) {
         // Single gift: auto-add if not already in cart
@@ -381,7 +382,7 @@ const FreeGiftFeature = ({ couponData }) => {
       (threshold) => nonCollectionTotalPrice < threshold.min
     );
     if (nextThreshold) {
-      return <span className='t-subtitle' style={{ color:'#198754',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>{locale === 'ar'
+      return <span className='t-subtitle' style={{ color: '#198754', fontSize: '18px', lineHeight: '1.5rem', textAlign: 'center' }}>{locale === 'ar'
         ? `أضف ${(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} ريال للحصول على هدية مجانية!`
         : `Spend ${(nextThreshold.min - nonCollectionTotalPrice).toFixed(2)} SAR more to unlock a free gift!`}</span>;
     }
@@ -399,7 +400,7 @@ const FreeGiftFeature = ({ couponData }) => {
           {activeThreshold.gifts.length === 1 ? (
             // Render single gift card
             <h4 className="font-bold mb-4">
-              <span className='t-subtitle' style={{ color:'#198754',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>
+              <span className='t-subtitle' style={{ color: '#198754', fontSize: '18px', lineHeight: '1.5rem', textAlign: 'center' }}>
                 {thresholds.length > 0 && activeThreshold.name} :- You've Earned a Free Gift!
               </span>
             </h4>
@@ -407,7 +408,7 @@ const FreeGiftFeature = ({ couponData }) => {
             // Render Swiper for multiple gifts
             <>
               <h4 className="font-bold mb-4">
-                <span className='t-subtitle' style={{ color:'#198754',fontSize: '18px', lineHeight: '1.5rem',textAlign: 'center' }}>
+                <span className='t-subtitle' style={{ color: '#198754', fontSize: '18px', lineHeight: '1.5rem', textAlign: 'center' }}>
                   {thresholds.length > 0 && activeThreshold.name} :- You've Earned a Free Gift – Choose 1 Perfume From Below!
                 </span>
               </h4>
@@ -432,11 +433,10 @@ const FreeGiftFeature = ({ couponData }) => {
                           // console.log('Button clicked for:', product.product_id);
                           handleGiftSelect(product);
                         }}
-                        className={`pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside ${
-                          selectedGift === product.product_id
+                        className={`pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside ${selectedGift === product.product_id
                             ? 'bg-blue-500'
                             : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                        }`}
+                          }`}
                         disabled={selectedGift === product.product_id}
                         aria-label={`Select ${he.decode(product.product_name)} as free gift`}
                         key={product.product_id}

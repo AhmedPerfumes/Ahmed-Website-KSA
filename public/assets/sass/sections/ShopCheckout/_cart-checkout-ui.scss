@@ -1885,8 +1885,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 // ============================================================
 .cc-checkout-layout {
   .form-floating {
+
     // Base label — always visible, no clipping
-    > label {
+    >label {
       overflow: visible;
       white-space: nowrap;
       text-overflow: unset;
@@ -1899,8 +1900,8 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     }
 
     // FLOATED state: input has a value OR is focused
-    > .form-control:focus ~ label,
-    > .form-control:not(:placeholder-shown) ~ label {
+    >.form-control:focus~label,
+    >.form-control:not(:placeholder-shown)~label {
       transform: scale(1) translateY(-1.1rem) translateX(0);
       font-size: 0.65rem;
       opacity: 0.75;
@@ -1910,7 +1911,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     }
 
     // On focus specifically: use brand gold
-    > .form-control:focus ~ label {
+    >.form-control:focus~label {
       color: $gold-dark;
       opacity: 1;
     }
@@ -1921,14 +1922,14 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 .row.g-2 {
   .col-6 {
     .form-floating {
-      > label {
+      >label {
         font-size: 0.72rem;
         overflow: visible;
         max-width: none;
       }
 
-      > .form-control:focus ~ label,
-      > .form-control:not(:placeholder-shown) ~ label {
+      >.form-control:focus~label,
+      >.form-control:not(:placeholder-shown)~label {
         font-size: 0.62rem;
         transform: scale(1) translateY(-1.1rem) translateX(0);
         color: #888;
@@ -1957,14 +1958,18 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     margin: 0 0 0.5rem;
     font-size: 0.8rem;
 
-    strong { color: #8b6914; }
+    strong {
+      color: #8b6914;
+    }
 
     &--done {
       color: #2e7d32;
       margin-bottom: 0;
       font-weight: 600;
 
-      strong { color: #2e7d32; }
+      strong {
+        color: #2e7d32;
+      }
     }
   }
 
@@ -1992,7 +1997,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     color: #5a3e00;
     margin-top: 0.4rem;
 
-    svg { flex-shrink: 0; stroke: #8b6914; }
+    svg {
+      flex-shrink: 0;
+      stroke: #8b6914;
+    }
   }
 }
 
@@ -2008,7 +2016,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     letter-spacing: 0.03em;
     transition: color 0.15s ease;
 
-    &:hover { color: #5a4a1a; text-decoration: underline; }
+    &:hover {
+      color: #5a4a1a;
+      text-decoration: underline;
+    }
   }
 }
 
@@ -2023,7 +2034,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   margin-bottom: 0.2rem;
   transition: color 0.15s ease;
 
-  &:hover { color: #8b6914; text-decoration: underline; }
+  &:hover {
+    color: #8b6914;
+    text-decoration: underline;
+  }
 }
 
 // ④ Promo code field
@@ -2058,9 +2072,17 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     outline: none;
     transition: border-color 0.15s ease;
 
-    &:focus { border-color: #d4a84b; }
-    &--ok   { border-color: #2e7d32 !important; }
-    &--err  { border-color: #c62828 !important; }
+    &:focus {
+      border-color: #d4a84b;
+    }
+
+    &--ok {
+      border-color: #2e7d32 !important;
+    }
+
+    &--err {
+      border-color: #c62828 !important;
+    }
   }
 
   &__apply {
@@ -2079,8 +2101,14 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     white-space: nowrap;
     flex-shrink: 0;
 
-    &:hover:not(:disabled) { background: #8b6914; }
-    &:disabled { opacity: 0.4; cursor: default; }
+    &:hover:not(:disabled) {
+      background: #8b6914;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
   }
 
   &__msg {
@@ -2088,8 +2116,13 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     font-weight: 600;
     margin: 0.3rem 0 0;
 
-    &--ok  { color: #2e7d32; }
-    &--err { color: #c62828; }
+    &--ok {
+      color: #2e7d32;
+    }
+
+    &--err {
+      color: #c62828;
+    }
   }
 }
 
@@ -2116,7 +2149,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     border-radius: 6px;
     padding: 0.45rem 0.6rem;
 
-    svg { flex-shrink: 0; stroke: #8b6914; }
+    svg {
+      flex-shrink: 0;
+      stroke: #8b6914;
+    }
   }
 }
 
@@ -2159,13 +2195,18 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     margin: 0 0 0.4rem;
     font-size: 0.78rem;
 
-    strong { color: #8b6914; }
+    strong {
+      color: #8b6914;
+    }
 
     &--done {
       color: #2e7d32;
       margin-bottom: 0;
       font-weight: 600;
-      strong { color: #2e7d32; }
+
+      strong {
+        color: #2e7d32;
+      }
     }
   }
 
@@ -2191,7 +2232,10 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     font-size: 0.68rem;
     color: #5a3e00;
 
-    svg { flex-shrink: 0; stroke: #8b6914; }
+    svg {
+      flex-shrink: 0;
+      stroke: #8b6914;
+    }
   }
 }
 
@@ -2228,7 +2272,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     align-items: center;
     gap: 0.5rem;
 
-    svg { color: $gold-dark; }
+    svg {
+      color: $gold-dark;
+    }
   }
 
   &__chevron {
@@ -2236,7 +2282,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     flex-shrink: 0;
     transition: transform 0.2s ease;
 
-    &.open { transform: rotate(180deg); }
+    &.open {
+      transform: rotate(180deg);
+    }
   }
 
   &__body {
@@ -2285,7 +2333,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
       text-decoration: none;
       transition: color 0.15s;
 
-      &:hover { color: #8b6914; }
+      &:hover {
+        color: #8b6914;
+      }
     }
 
     // Current page — bold, darker
@@ -2314,12 +2364,18 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     transition: color 0.15s, gap 0.15s;
     white-space: nowrap;
 
-    svg { flex-shrink: 0; transition: transform 0.15s; }
+    svg {
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
 
     &:hover {
       color: darken($gold-dark, 10%);
       gap: 0.5rem;
-      svg { transform: translateX(-3px); }
+
+      svg {
+        transform: translateX(-3px);
+      }
     }
   }
 
@@ -2331,8 +2387,13 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     padding-bottom: 0.65rem;
     margin-bottom: 0.85rem;
 
-    &__breadcrumb { font-size: 0.68rem; }
-    &__continue   { font-size: 0.74rem; }
+    &__breadcrumb {
+      font-size: 0.68rem;
+    }
+
+    &__continue {
+      font-size: 0.74rem;
+    }
   }
 }
 
@@ -2384,6 +2445,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     }
   }
 }
+
 // ============================================================
 // ONE-PAGE CHECKOUT (Contact → Delivery → Payment)
 // Salla-style flow, Shopify-style single page. Keep at end of file.
@@ -2425,6 +2487,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   input[dir="ltr"] {
     text-align: start;
   }
+
   [dir="rtl"] & input[dir="ltr"] {
     text-align: right;
   }
@@ -2640,19 +2703,23 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 
   &__qty {
     position: absolute;
-    top: -6px;
-    inset-inline-end: -6px;
-    min-width: 1.15rem;
-    height: 1.15rem;
+    top: -7px;
+    inset-inline-end: -7px;
+    min-width: 1.25rem;
+    height: 1.25rem;
     padding: 0 4px;
     border-radius: 999px;
-    background: #6b6b6b;
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1.5px solid #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    z-index: 2;
   }
 
   &__name {
@@ -2678,6 +2745,13 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
       text-decoration: line-through;
     }
   }
+}
+
+// Guard: prevent [class*="order"] span global override from darkening the thumbnail qty badge
+[class*="order"] .cc-sum-item__thumb .cc-sum-item__qty,
+.cc-sum-item__thumb span.cc-sum-item__qty {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
 // ── Mobile summary bar (top of page) ──
@@ -2766,6 +2840,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 }
 
 @media (max-width: 1199.98px) {
+
   // Room for the sticky bar; the site's bottom nav is hidden on checkout
   .cc-onepage {
     padding-bottom: 5.5rem;
@@ -2783,8 +2858,13 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   font-size: 0.875rem;
   color: #777;
   padding-inline-start: 0.75rem;
-  &.has-value { color: #1a1a1a; font-size: 1rem; }
+
+  &.has-value {
+    color: #1a1a1a;
+    font-size: 1rem;
+  }
 }
+
 .cc-onepage .cc-select {
   background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23999%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e") !important;
   background-repeat: no-repeat !important;
@@ -2793,14 +2873,29 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   padding-inline-end: 2.25rem;
   appearance: none;
 }
-[dir="rtl"] .cc-onepage .cc-select { background-position: left 0.85rem center !important; }
+
+[dir="rtl"] .cc-onepage .cc-select {
+  background-position: left 0.85rem center !important;
+}
 
 // Guest steps: folded / locked states + payment preview
 .cc-onepage {
-  .cc-step { scroll-margin-top: 5rem; }
-  .cc-step.is-locked { opacity: 0.6; }
-  .cc-step.is-completed .cc-step__header { padding-bottom: 0.85rem; }
-  .cc-step__continue { margin-top: 1rem; }
+  .cc-step {
+    scroll-margin-top: 5rem;
+  }
+
+  .cc-step.is-locked {
+    opacity: 0.6;
+  }
+
+  .cc-step.is-completed .cc-step__header {
+    padding-bottom: 0.85rem;
+  }
+
+  .cc-step__continue {
+    margin-top: 1rem;
+  }
+
   .cc-acc-summary-line {
     display: block;
     font-size: 0.76rem;
@@ -2811,6 +2906,7 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     text-overflow: ellipsis;
   }
 }
+
 .cc-pay-preview {
   display: flex;
   align-items: center;
@@ -2818,7 +2914,11 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
   gap: 0.6rem;
   padding: 0 1rem 0.9rem;
   padding-inline-start: 3.4rem;
-  &__text { font-size: 0.74rem; color: #777; }
+
+  &__text {
+    font-size: 0.74rem;
+    color: #777;
+  }
 }
 
 /* ── Thank-you pages: order lines (thumbnail · name × qty · was / now) ── */
