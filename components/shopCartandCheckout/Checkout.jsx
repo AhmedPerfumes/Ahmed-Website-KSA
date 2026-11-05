@@ -13,6 +13,7 @@ import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import BogoFeature from "@/components/BogoFeature";
+import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 
 // Section 1 billing field rules — shared by Continue and live re-validation on change
@@ -586,6 +587,31 @@ export default function Checkout() {
     ...('type' in item && { type: item.type }),
   }));
 
+  // storeOrder request body — shared by Place Order and the Apple Pay widget
+  function buildOrderPayload(paymentMethod) {
+    const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
+    const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
+    const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1].price);
+    const servicePrice = shippingServiceCharges[1].price;
+    const servicePriceVat = servicePrice / 100 * vatTax.percentage;
+    let userJson = null;
+    if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
+    const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
+    return { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: paymentMethod, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+  }
+
+  // Synchronous pre-checks for Apple Pay (must run inside the click gesture).
+  // Returns an error message, or null when the sheet may open.
+  function validateBeforePay() {
+    if (!cartProducts?.length || !shippingLoaded) return tc('applePayFailed');
+    if (!doneSection1) return tc('addressIncompleteTitle');
+    if ((!isLoggedIn && !isOTPVerified) || (isLoggedIn && formData.shippingAdd && !isOTPVerified)) return tc('verifyMobileFirst');
+    if (!/^[A-Za-z]{4}[0-9]{4}$/.test(formData.billingAddress.short_national_address?.trim() || '')) return tc('snaRequired');
+    const terms = document.getElementById('terms_chk');
+    if (terms && !terms.checked) { terms.focus(); return tc('applePayAcceptTerms'); }
+    return null;
+  }
+
   async function onOrder(event) {
     event.preventDefault();
     setIsLoading(true); setError(null); setSuccess(null);
@@ -629,15 +655,7 @@ export default function Checkout() {
       return;
     }
 
-    const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
-    const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
-    const finalPrice = !freeShippingFlag ? parseFloat(shippingServiceCharges[0].price) + totalPrice + parseFloat(shippingServiceCharges[1].price) : 0 + totalPrice + parseFloat(shippingServiceCharges[1].price);
-    const servicePrice = shippingServiceCharges[1].price;
-    const servicePriceVat = servicePrice / 100 * vatTax.percentage;
-    let userJson = null;
-    if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
-    const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
-    const additionalFields = { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+    const additionalFields = buildOrderPayload(selectedOption);
     const token = localStorage.getItem('token');
 
     try {
@@ -1636,6 +1654,17 @@ export default function Checkout() {
 
                       {/* Tamara widget */}
                       <TamaraWidget amount={grandTotal} inlineType='2' inlineVariant='outlined' locale={locale} />
+
+                      {/* Apple Pay (direct) — rendered only when the backend marks the customer eligible */}
+                      <ApplePayWidget
+                        locale={locale}
+                        amount={grandTotal}
+                        disabled={isLoading}
+                        isLoggedIn={isLoggedIn}
+                        validateBeforePay={validateBeforePay}
+                        buildOrderPayload={buildOrderPayload}
+                        onProcessingChange={setIsLoading}
+                      />
 
                       {/* Payment methods — compact 2-column grid */}
                       <p className="cc-pay-label">{tc('selectPayment')}</p>
