@@ -13,6 +13,7 @@ import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import BogoFeature from "@/components/BogoFeature";
+import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 import { SAUDI_CITIES, SAUDI_REGIONS, regionForCity } from "@/data/saudiCities";
 
@@ -736,6 +737,42 @@ export default function Checkout() {
     return mapped;
   };
 
+  // storeOrder request body — shared by Place Order and the Apple Pay widget
+  function buildOrderPayload(paymentMethod) {
+    // COD fee applies only to cash on delivery, never to Apple Pay / card
+    const methodCodFee = paymentMethod === 'cod' ? codFeeSetting : 0;
+    const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
+    const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
+    const finalPrice = totalPrice + shippingFee + serviceFee + methodCodFee;
+    const codPrice = methodCodFee;
+    const codPriceVat = codPrice / 100 * vatTax.percentage;
+    const servicePrice = serviceFee + methodCodFee;
+    const servicePriceVat = servicePrice / 100 * vatTax.percentage;
+    let userJson = null;
+    if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
+    const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
+    // Gift / different address: recipient email isn't asked for — use the customer's
+    if (shippingAdd) {
+      cleanFormData.shippingAddress = {
+        ...cleanFormData.shippingAddress,
+        email: cleanFormData.shippingAddress.email || cleanFormData.billingAddress.email,
+        country: cleanFormData.shippingAddress.country || 'KSA',
+      };
+    }
+    return { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: paymentMethod, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+  }
+
+  // Synchronous pre-checks for Apple Pay (must run inside the click gesture).
+  // Returns an error message, or null when the sheet may open.
+  function validateBeforePay() {
+    if (!cartProducts?.length || !shippingLoaded) return tc('applePayFailed');
+    if (!validateDetails()) return tc('addressIncompleteTitle');
+    // Short National Address is optional — block only a malformed value
+    const sna = formData.billingAddress.short_national_address?.trim();
+    if (sna && !/^[A-Za-z]{4}[0-9]{4}$/.test(sna)) return tc('snaRequired');
+    return null;
+  }
+
   async function onOrder(event) {
     event.preventDefault();
     if (!isLoggedIn && guestStep < 3) { goNextStep(guestStep); return; }
@@ -783,6 +820,7 @@ export default function Checkout() {
       return;
     }
 
+<<<<<<< HEAD
     const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
     const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
     const finalPrice = grandTotalNum;
@@ -794,6 +832,9 @@ export default function Checkout() {
     if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
     const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
     const additionalFields = { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+=======
+    const additionalFields = buildOrderPayload(selectedOption);
+>>>>>>> c3f2952124e6d8987bd84134d03d916e4b162447
     const token = localStorage.getItem('token');
 
     try {
@@ -1563,6 +1604,17 @@ export default function Checkout() {
                               </div>
                             </div>
                           </label>
+
+                          {/* Apple Pay (direct) — rendered only when the backend marks the customer eligible */}
+                          <ApplePayWidget
+                            locale={locale}
+                            amount={(grandTotalNum - codFee).toFixed(2)}
+                            disabled={isLoading}
+                            isLoggedIn={isLoggedIn}
+                            validateBeforePay={validateBeforePay}
+                            buildOrderPayload={buildOrderPayload}
+                            onProcessingChange={setIsLoading}
+                          />
 
                           <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
                             <input type="radio" id="pay_cod" name="checkout_payment_method" value="cod" checked={selectedOption === 'cod'} onChange={handleRadioChange} />

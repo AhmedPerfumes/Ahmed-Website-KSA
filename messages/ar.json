@@ -1945,7 +1945,17 @@
       "otpSent": "تم إرسال رمز التحقق إلى رقم جوالك.",
       "otpRequired": "رمز التحقق مطلوب",
       "invalidOtp": "رمز التحقق غير صحيح",
-      "otpVerifyFailed": "تعذر التحقق. يرجى المحاولة مرة أخرى."
+      "otpVerifyFailed": "تعذر التحقق. يرجى المحاولة مرة أخرى.",
+      "applePayTitle": "الدفع السريع",
+      "applePaySub": "ادفع فورًا باستخدام Apple Pay",
+      "applePayOr": "أو اختر طريقة دفع أخرى",
+      "applePayAcceptTerms": "يرجى الموافقة على الشروط والأحكام للمتابعة.",
+      "applePayFailed": "تعذر إتمام الدفع عبر Apple Pay. يرجى المحاولة مرة أخرى أو اختيار طريقة دفع أخرى.",
+      "applePayDeclined": "تم رفض عملية الدفع. يرجى تجربة بطاقة أو طريقة دفع أخرى.",
+      "applePayUnavailable": "Apple Pay غير متاح حاليًا. يرجى اختيار طريقة دفع أخرى.",
+      "applePayCancelled": "تم إلغاء Apple Pay. يمكنك المحاولة مرة أخرى أو اختيار طريقة دفع أخرى.",
+      "applePaySuccess": "تم الدفع بنجاح. جارٍ التحويل…",
+      "applePayVerifying": "جارٍ التحقق من عملية الدفع…"
     },
   "YouMayAlsoLike": {
       "dialogLabel": "منتجات قد تعجبك",

@@ -1835,7 +1835,17 @@
       "otpSent": "OTP sent to your mobile number.",
       "otpRequired": "OTP is Required",
       "invalidOtp": "Invalid OTP",
-      "otpVerifyFailed": "Failed to verify. Please try again."
+      "otpVerifyFailed": "Failed to verify. Please try again.",
+      "applePayTitle": "Express checkout",
+      "applePaySub": "Pay instantly with Apple Pay",
+      "applePayOr": "or choose another payment method",
+      "applePayAcceptTerms": "Please accept the terms and conditions to continue.",
+      "applePayFailed": "Apple Pay payment could not be completed. Please try again or choose another payment method.",
+      "applePayDeclined": "Your payment was declined. Please try another card or payment method.",
+      "applePayUnavailable": "Apple Pay is not available right now. Please choose another payment method.",
+      "applePayCancelled": "Apple Pay was cancelled. You can try again or choose another payment method.",
+      "applePaySuccess": "Payment successful. Redirecting…",
+      "applePayVerifying": "Verifying your payment…"
     },
   "YouMayAlsoLike": {
       "dialogLabel": "You may also like these products",
