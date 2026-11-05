@@ -671,7 +671,7 @@ export default function YouMayAlsoLike() {
     // Derive URL slugs from the product's own category/subcategory
     const catSlug    = slugify(elm.category_name || "");
     const subcatSlug = slugify(elm.subcategory?.subcategory_name || elm.subcategory_name || "");
-    const href   = `/${locale}/shop/${catSlug || "perfumes"}/${subcatSlug || "all"}/${slug}`;
+    const href   = `/${locale}/shop/${catSlug || "perfumes"}/${subcatSlug || catSlug || "perfumes"}/${slug}`;
     const inCart = isAddedToCartProducts(elm.product_id);
     const badge  = getDiscountBadge(elm);
     const subcatEn = elm.subcategory?.subcategory_name || "";

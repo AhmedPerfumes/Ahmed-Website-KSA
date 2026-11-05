@@ -31,7 +31,10 @@ export default function Footer14() {
     categoriesSubCategories,
     isLoading: isMenuLoading,
     error,
+    shippingServiceCharges,
   } = useMenu();
+  // Free-delivery threshold set in admin (same source as cart / checkout)
+  const freeShippingThreshold = Number(shippingServiceCharges?.[3]?.price) || 300;
 
   if (isMenuLoading) {
     return <div></div>;
@@ -62,7 +65,7 @@ export default function Footer14() {
                   Swift Complimentary Shipping
                 </h3>
                 <p className="service-promotion__content text-secondary mb-0 text-white">
-                  Free delivery on orders over SAR 300
+                  Free delivery on orders over SAR {freeShippingThreshold}
                 </p>
               </div>
             </div>

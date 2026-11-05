@@ -101,7 +101,9 @@ export default function BestSellers() {
         const cat = cleanStr(category || "").toLowerCase();
         if (cat.includes("gift")) return "gift-sets";
         if (cat.includes("hair")) return "hair-mist";
-        return "extrait-de-parfum";
+        if (cat.includes("extrait")) return "extrait-de-parfum";
+        // No subcategory (e.g. Online Exclusive) → the category slug doubles as the subcategory
+        return cat.split(" ").join("-") || "extrait-de-parfum";
     }, [cleanStr]);
 
     const productUrl = useCallback(elm => {

@@ -64,7 +64,8 @@ export function productImageUrl(p) {
 /** Product page URL — same slug rules as the [...product] route (and the old cart page). */
 export function productHref(p, locale) {
   const cat = String(p?.category_name || p?.category?.category_name || "").toLowerCase().trim().replace(/\s+/g, "-");
-  const sub = String(p?.subcategory_name || p?.subcategory?.subcategory_name || "").toLowerCase().trim().replace(/\s+/g, "-");
+  // No subcategory (e.g. Online Exclusive) → the category slug doubles as the subcategory
+  const sub = String(p?.subcategory_name || p?.subcategory?.subcategory_name || "").toLowerCase().trim().replace(/\s+/g, "-") || cat;
   const raw = String(p?.product_name || p?.name || "").replace(/&amp;/g, "&");
   const name = raw.replace(/[^a-zA-Z0-9؀-ۿ\s-]/g, "").trim().split(/\s+/).join("-").toLowerCase();
   if (!cat || !sub || !name) return null;

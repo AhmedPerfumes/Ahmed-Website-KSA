@@ -30,7 +30,7 @@ async function fetchRelated(anchor) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       category: (anchor.category_name || "").toUpperCase(),
-      subCategory: (anchor.subcategory_name || anchor.subcategory?.subcategory_name || "").toUpperCase(),
+      subCategory: (anchor.subcategory_name || anchor.subcategory?.subcategory_name || anchor.category_name || "").toUpperCase(),
       product: (anchor.product_name || "").toUpperCase(),
     }),
   })
@@ -126,7 +126,7 @@ export default function CartUpsell({ anchor, isOpen, compact = false }) {
       _silent: true,
       quantity: 1,
       category_name: p.category_name || "",
-      subcategory_name: p.subcategory_name || p.subcategory?.subcategory_name || "",
+      subcategory_name: p.subcategory_name || p.subcategory?.subcategory_name || p.category_name || "",
     });
     setJustAdded(p.product_id);
     setTimeout(() => setJustAdded(null), 1600);

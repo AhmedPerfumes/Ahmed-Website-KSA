@@ -146,9 +146,11 @@ useEffect(() => {
       } else if (removeSpecialCharactersAndAmp(category) == "hair-mist") {
         console.log("hair-mist");
         return subcat = "hair-mist";
-      } else {
-        console.log("extrait-de-parfum");
+      } else if (removeSpecialCharactersAndAmp(category) == "extrait-de-parfum") {
         return subcat = "extrait-de-parfum";
+      } else {
+        // No subcategory (e.g. Online Exclusive) → the category slug doubles as the subcategory
+        return subcat = removeSpecialCharactersAndAmp(category).split(" ").join("-").toLowerCase() || "extrait-de-parfum";
       }
     }
   }

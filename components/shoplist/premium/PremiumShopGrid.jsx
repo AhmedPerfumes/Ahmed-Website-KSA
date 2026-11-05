@@ -52,7 +52,8 @@ function getSubcatSlug(elm) {
   const cat = slugify(elm.category_name || "");
   if (cat === "gift-sets") return "gift-sets";
   if (cat === "hair-mist") return "hair-mist";
-  return "extrait-de-parfum";
+  // No subcategory (e.g. Online Exclusive) → the category slug doubles as the subcategory
+  return cat || "extrait-de-parfum";
 }
 
 /* ─── Skeleton card ─────────────────────────────────────────── */
