@@ -184,9 +184,8 @@ export default function SpecialOffers() {
                             <Image
                                 src={promoImage}
                                 alt={currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers"}
-                                width={1440}
-                                height={480}
-                                sizes="(max-width: 768px) 100vw, 1440px"
+                                fill
+                                sizes="(max-width: 768px) 95vw, 100vw"
                                 className="so-banner__img"
                                 priority={false}
                                 loading="lazy"
