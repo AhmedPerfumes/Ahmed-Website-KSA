@@ -35,6 +35,29 @@
 .auric-landing-page .hero-section h1,
 .auric-landing-page .hero-section h2 {
   font-family: 'Wonderful Melanesia', Georgia, 'Times New Roman', serif !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.auric-landing-page .hero-section h2 span:not(.auric-gold-text),
+.auric-landing-page .hero-section .auric-hero-title-part1,
+.hero-section .auric-hero-title-part1 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.auric-landing-page .hero-section .lead,
+.auric-landing-page .hero-section p.lead,
+.auric-landing-page .hero-section .auric-hero-story-text,
+.auric-landing-page .hero-section .auric-hero-founder-text,
+.auric-landing-page .hero-section .hero-message p,
+.auric-landing-page .hero-section .hero-message span:not(.auric-gold-text),
+.hero-section .auric-hero-story-text,
+.hero-section .auric-hero-founder-text {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 .auric-landing-page .auric-gold-text,

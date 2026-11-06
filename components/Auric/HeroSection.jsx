@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import "./HeroSection.css";
 
 function BottleComparisonSlider({
   beforeImg = "/assets/images/oud-roses.png",
@@ -370,6 +371,21 @@ function HeroSection({ data = {}, onBookNow, shopUrl }) {
 
   return (
     <section className="hero-section text-white">
+      {/* Ensure pure white typography overrides any external or inherited styles */}
+      <style>{`
+        .hero-section h2,
+        .hero-section h2 span:not(.auric-gold-text),
+        .hero-section .auric-hero-title-part1,
+        .hero-section .auric-hero-story-text,
+        .hero-section .auric-hero-founder-text,
+        .hero-section .hero-message p.lead,
+        .hero-section .hero-message p,
+        .hero-section .hero-message span:not(.auric-gold-text) {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          opacity: 1 !important;
+        }
+      `}</style>
       <div className="overlay"></div>
 
       <div className="container position-relative z-1">
@@ -423,7 +439,16 @@ function HeroSection({ data = {}, onBookNow, shopUrl }) {
               >
                 {data?.storyTitlePart1 && data?.storyTitlePart2 ? (
                   <>
-                    <span style={{ display: "block", color: "#ffffff", fontFamily: isArabic ? "inherit" : "'Wonderful Melanesia', Georgia, serif", fontSize: "clamp(2rem, 3vw, 3.3rem)" }}>
+                    <span
+                      className="auric-hero-title-part1"
+                      style={{
+                        display: "block",
+                        color: "#ffffff",
+                        opacity: 1,
+                        fontFamily: isArabic ? "inherit" : "'Wonderful Melanesia', Georgia, serif",
+                        fontSize: "clamp(2rem, 3vw, 3.3rem)",
+                      }}
+                    >
                       {data.storyTitlePart1}
                     </span>
                     <span
@@ -470,12 +495,13 @@ function HeroSection({ data = {}, onBookNow, shopUrl }) {
 
               {/* Story Narrative Paragraph: Pure crisp white, editorial cadence */}
               <p
-                className="lead mb-4"
+                className="lead mb-4 auric-hero-story-text"
                 style={{
                   fontFamily: isArabic ? "inherit" : "Georgia, 'Times New Roman', serif",
                   fontSize: "clamp(0.98rem, 1.15vw, 1.08rem)",
                   lineHeight: "1.9",
                   color: "#ffffff",
+                  opacity: 1,
                   fontWeight: 300,
                   letterSpacing: isArabic ? "normal" : "0.02em",
                   maxWidth: "540px",
@@ -511,11 +537,13 @@ function HeroSection({ data = {}, onBookNow, shopUrl }) {
                   aria-hidden="true"
                 />
                 <p
+                  className="auric-hero-founder-text"
                   style={{
                     margin: 0,
                     fontFamily: isArabic ? "inherit" : "Georgia, 'Times New Roman', serif",
                     fontSize: "clamp(0.88rem, 1.0vw, 0.95rem)",
                     color: "#ffffff",
+                    opacity: 1,
                     letterSpacing: isArabic ? "normal" : "0.04em",
                     fontWeight: 400,
                     fontStyle: isArabic ? "normal" : "italic",

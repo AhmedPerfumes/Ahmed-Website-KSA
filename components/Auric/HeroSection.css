@@ -45,10 +45,27 @@
   letter-spacing: 0.03em; 
   font-weight: 400;
   line-height: 1.22;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
 }
 
-.hero-section .lead { 
-  color: rgba(255, 255, 255, 0.82); 
+.hero-section h2 span:not(.auric-gold-text),
+.hero-section .auric-hero-title-part1 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.hero-section .lead,
+.hero-section p.lead,
+.hero-section .auric-hero-story-text,
+.hero-section .auric-hero-founder-text,
+.hero-section .hero-message p,
+.hero-section .hero-message span:not(.auric-gold-text) { 
+  color: #ffffff !important; 
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
   font-size: 1.1rem; 
   line-height: 1.85; 
   font-weight: 300;
