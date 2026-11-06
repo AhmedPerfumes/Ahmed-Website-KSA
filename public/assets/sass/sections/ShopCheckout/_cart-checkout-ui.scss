@@ -2837,6 +2837,20 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
     margin: 0;
     height: 2.9rem;
   }
+
+  // Apple Pay selected: the "Buy with Apple Pay" button takes the Place order slot
+  &__apple {
+    flex: 1;
+    min-width: 0;
+
+    .cc-applepay {
+      margin: 0;
+
+      apple-pay-button {
+        --apple-pay-button-height: 46px;
+      }
+    }
+  }
 }
 
 @media (max-width: 1199.98px) {
@@ -3040,36 +3054,16 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 }
 
 // ============================================================
-// APPLE PAY (DIRECT) WIDGET
+// APPLE PAY (DIRECT) — "Buy with Apple Pay" button shown in place of
+// Place Order while the Apple Pay payment option is selected
 // ============================================================
 .cc-applepay {
   position: relative;
-  border: 1.5px solid $gold-border;
-  border-radius: 4px;
-  background: $gold-bg;
-  padding: 0.75rem 0.9rem 0.6rem;
-  margin-bottom: 1rem;
-
-  &__head {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0.55rem;
-  }
-
-  &__title {
-    font-weight: 600;
-    font-size: 0.88rem;
-    color: #222;
-  }
-
-  &__subtitle {
-    font-size: 0.74rem;
-    color: #777;
-  }
+  margin-bottom: 0.75rem;
 
   apple-pay-button {
     --apple-pay-button-width: 100%;
-    --apple-pay-button-height: 48px;
+    --apple-pay-button-height: 52px;
     --apple-pay-button-border-radius: 4px;
     --apple-pay-button-padding: 0;
     --apple-pay-button-box-sizing: border-box;
@@ -3100,26 +3094,9 @@ $gold-gradient-hover: linear-gradient(135deg, darken($gold-light, 6%) 0%, darken
 
   &__msg {
     margin-top: 0.5rem;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
 
     &--error { color: #c0392b; font-weight: 600; }
     &--info { color: #555; }
-  }
-
-  &__divider {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.65rem;
-    font-size: 0.72rem;
-    color: #999;
-
-    &::before,
-    &::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #e3e3e3;
-    }
   }
 }

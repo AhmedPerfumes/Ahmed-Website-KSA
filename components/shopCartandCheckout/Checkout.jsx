@@ -57,6 +57,14 @@ export default function Checkout() {
   const [needsName, setNeedsName] = useState(false);
   // Card (mada / Apple Pay) pre-selected — the most used method in KSA; one less tap
   const [selectedOption, setSelectedOption] = useState("paytabs");
+  // Direct Apple Pay: is the option offered (server-eligible + device supports it), and the slot for its button
+  const [applePayAvailable, setApplePayAvailable] = useState(false);
+  const [applePaySlot, setApplePaySlot] = useState(null);
+  const [applePayStickySlot, setApplePayStickySlot] = useState(null);
+  useEffect(() => {
+    // Apple Pay became unavailable (e.g. logout) while selected → fall back to the card option
+    if (!applePayAvailable && selectedOption === 'applepay') setSelectedOption('paytabs');
+  }, [applePayAvailable, selectedOption]);
   const [createAccount, setCreateAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -784,6 +792,8 @@ export default function Checkout() {
 
   async function onOrder(event) {
     event.preventDefault();
+    // Apple Pay is submitted by its own button (Apple Pay sheet), never through this handler
+    if (selectedOption === 'applepay') return;
     if (!isLoggedIn && guestStep < 3) { goNextStep(guestStep); return; }
     setError(null); setSuccess(null);
     if (!validateDetails()) return;
@@ -1596,6 +1606,23 @@ export default function Checkout() {
 
                         {/* Ordered by KSA preference: card (mada / Apple Pay) → Tabby → Tamara → Cash on delivery */}
                         <div className="cc-payment-list" role="radiogroup" aria-label={tc('selectPayment')}>
+                          {/* Apple Pay (direct) — first option; rendered only when the backend marks the customer eligible.
+                              While selected, its "Buy with Apple Pay" button is portalled into the slot below. */}
+                          <ApplePayWidget
+                            locale={locale}
+                            amount={grandTotal}
+                            disabled={isLoading}
+                            isLoggedIn={isLoggedIn}
+                            selected={selectedOption === 'applepay'}
+                            onSelect={handleRadioChange}
+                            onAvailableChange={setApplePayAvailable}
+                            buttonContainer={applePaySlot}
+                            stickyContainer={applePayStickySlot}
+                            validateBeforePay={validateBeforePay}
+                            buildOrderPayload={buildOrderPayload}
+                            onProcessingChange={setIsLoading}
+                          />
+
                           <label className={`cc-payment-card ${selectedOption === 'paytabs' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_pt">
                             <input type="radio" id="pay_pt" name="checkout_payment_method" value="paytabs" checked={selectedOption === 'paytabs'} onChange={handleRadioChange} />
                             <div className="cc-payment-card__radio"></div>
@@ -1632,17 +1659,6 @@ export default function Checkout() {
                             </div>
                           </label>
 
-                          {/* Apple Pay (direct) — rendered only when the backend marks the customer eligible */}
-                          <ApplePayWidget
-                            locale={locale}
-                            amount={(grandTotalNum - codFee).toFixed(2)}
-                            disabled={isLoading}
-                            isLoggedIn={isLoggedIn}
-                            validateBeforePay={validateBeforePay}
-                            buildOrderPayload={buildOrderPayload}
-                            onProcessingChange={setIsLoading}
-                          />
-
                           <label className={`cc-payment-card ${selectedOption === 'cod' ? 'cc-payment-card--selected' : ''}`} htmlFor="pay_cod">
                             <input type="radio" id="pay_cod" name="checkout_payment_method" value="cod" checked={selectedOption === 'cod'} onChange={handleRadioChange} />
                             <div className="cc-payment-card__radio"></div>
@@ -1658,9 +1674,13 @@ export default function Checkout() {
                         {success && <div className="cc-alert cc-alert--success" role="status">{success}</div>}
 
                         {/* Place Order */}
-                        <button className="cc-btn-gold cc-place-order" type="submit" disabled={disablePlaceOrder}>
-                          {isLoading ? <span>{tc('processing')}</span> : <>{tc('placeOrder', { amount: `${grandTotal}${currency.symbol}` })}</>}
-                        </button>
+                        {selectedOption === 'applepay' && applePayAvailable ? (
+                          <div ref={setApplePaySlot} className="cc-applepay-slot" />
+                        ) : (
+                          <button className="cc-btn-gold cc-place-order" type="submit" disabled={disablePlaceOrder}>
+                            {isLoading ? <span>{tc('processing')}</span> : <>{tc('placeOrder', { amount: `${grandTotal}${currency.symbol}` })}</>}
+                          </button>
+                        )}
                         <p className="cc-terms-line">
                           {tc.rich('termsLine', {
                             terms: (chunks) => <Link href={`/${locale}/terms`} target="_blank">{chunks}</Link>,
@@ -1743,9 +1763,13 @@ export default function Checkout() {
                   <span>{tc('total')}</span>
                   <strong>{grandTotal}{currency.symbol}</strong>
                 </div>
-                <button className="cc-btn-gold" type="submit" disabled={disablePlaceOrder}>
-                  {isLoading ? tc('processing') : tc('placeOrderShort')}
-                </button>
+                {selectedOption === 'applepay' && applePayAvailable ? (
+                  <div ref={setApplePayStickySlot} className="cc-sticky-cta__apple" />
+                ) : (
+                  <button className="cc-btn-gold" type="submit" disabled={disablePlaceOrder}>
+                    {isLoading ? tc('processing') : tc('placeOrderShort')}
+                  </button>
+                )}
               </div>
             )}
 

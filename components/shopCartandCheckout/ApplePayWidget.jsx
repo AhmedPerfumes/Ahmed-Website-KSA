@@ -15,6 +15,8 @@
  */
 
 import Script from "next/script";
+import Image from "next/image";
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -40,7 +42,15 @@ const pickVersion = () => [14, 12, 10, 6, 5, 3].find(v => {
   try { return window.ApplePaySession.supportsVersion(v); } catch { return false; }
 });
 
-export default function ApplePayWidget({ locale, amount, disabled, isLoggedIn, validateBeforePay, buildOrderPayload, onProcessingChange }) {
+/**
+ * Props (besides the order helpers):
+ *  - selected / onSelect:  state of the "Apple Pay" payment radio (owned by Checkout)
+ *  - onAvailableChange:    tells Checkout whether Apple Pay can be offered at all
+ *  - buttonContainer:      DOM node (where "Place order" normally sits) that receives the
+ *                          Apple Pay button while the radio is selected
+ *  - stickyContainer:      same, for the mobile sticky bar's Place order slot
+ */
+export default function ApplePayWidget({ locale, amount, disabled, isLoggedIn, selected, onSelect, onAvailableChange, buttonContainer, stickyContainer, validateBeforePay, buildOrderPayload, onProcessingChange }) {
   const tc = useTranslations("CheckoutPage");
   const router = useRouter();
 
@@ -49,7 +59,6 @@ export default function ApplePayWidget({ locale, amount, disabled, isLoggedIn, v
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState(null); // { type: 'error'|'info', text }
 
-  const buttonRef = useRef(null);
   const busyRef = useRef(false);   // hard guard against double clicks / double submits
   const clickRef = useRef(null);   // latest click handler (custom element listener)
 
@@ -195,42 +204,58 @@ export default function ApplePayWidget({ locale, amount, disabled, isLoggedIn, v
     try { session.begin(); } catch { fail(); }
   };
 
-  /* ---------- 4. Bind click on the <apple-pay-button> custom element ---------- */
+  /* ---------- 4. Visibility + button markup ---------- */
   const visible = !!config && canPay;
-  useEffect(() => {
-    const el = buttonRef.current;
-    if (!el) return;
-    const onClick = () => clickRef.current?.();
-    el.addEventListener("click", onClick);
-    return () => el.removeEventListener("click", onClick);
-  }, [visible]);
+  const showButton = visible && selected;
+
+  // Let Checkout know whether the Apple Pay option exists (radio + button swap)
+  useEffect(() => { onAvailableChange?.(visible); }, [visible]);
 
   if (!config) return null;
+
+  // The button can be shown in two places (inline + mobile sticky bar). The click is handled on a
+  // wrapper (the custom element's click bubbles up), so each instance needs no listener of its own.
+  const renderButton = (variant) => (
+    <div
+      className={`cc-applepay cc-applepay--${variant} ${processing ? "cc-applepay--busy" : ""} ${disabled && !processing ? "cc-applepay--disabled" : ""}`}
+      aria-busy={processing}
+    >
+      <div onClick={() => clickRef.current?.()}>
+        <apple-pay-button
+          buttonstyle="black"
+          type="buy"
+          locale={locale === "ar" ? "ar-SA" : "en-US"}
+        ></apple-pay-button>
+      </div>
+      {processing && <div className="cc-applepay__overlay"><span>{tc("processing")}</span></div>}
+      {variant === "inline" && message && (
+        <div className={`cc-applepay__msg cc-applepay__msg--${message.type}`} role={message.type === "error" ? "alert" : "status"}>
+          {message.text}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <>
       <Script src={SDK_SRC} strategy="afterInteractive" crossOrigin="anonymous" onReady={checkDevice} />
+      {/* Payment option (radio) — same look as the other payment cards */}
       {visible && (
-        <div className={`cc-applepay ${processing ? "cc-applepay--busy" : ""} ${disabled && !processing ? "cc-applepay--disabled" : ""}`} aria-busy={processing}>
-          <div className="cc-applepay__head">
-            <span className="cc-applepay__title">{tc("applePayTitle")}</span>
-            <span className="cc-applepay__subtitle">{tc("applePaySub")}</span>
+        <label className={`cc-payment-card ${selected ? "cc-payment-card--selected" : ""}`} htmlFor="pay_ap">
+          <input type="radio" id="pay_ap" name="checkout_payment_method" value="applepay" checked={!!selected} onChange={onSelect} />
+          <div className="cc-payment-card__radio"></div>
+          <div className="cc-payment-card__content">
+            <span className="cc-payment-card__title">Apple Pay</span>
+            <span className="cc-payment-card__subtitle">{tc("applePaySub")}</span>
           </div>
-          <apple-pay-button
-            ref={buttonRef}
-            buttonstyle="black"
-            type="buy"
-            locale={locale === "ar" ? "ar-SA" : "en-US"}
-          ></apple-pay-button>
-          {processing && <div className="cc-applepay__overlay"><span>{tc("processing")}</span></div>}
-          {message && (
-            <div className={`cc-applepay__msg cc-applepay__msg--${message.type}`} role={message.type === "error" ? "alert" : "status"}>
-              {message.text}
-            </div>
-          )}
-          <div className="cc-applepay__divider"><span>{tc("applePayOr")}</span></div>
-        </div>
+          <div className="cc-payment-card__logos">
+            <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={36} height={14} style={{ objectFit: "contain" }} />
+          </div>
+        </label>
       )}
+      {/* "Buy with Apple Pay" button replaces Place order while the radio is selected */}
+      {showButton && buttonContainer && createPortal(renderButton("inline"), buttonContainer)}
+      {showButton && stickyContainer && createPortal(renderButton("sticky"), stickyContainer)}
     </>
   );
 }
