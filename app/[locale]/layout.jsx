@@ -35,6 +35,7 @@ import { Toaster } from 'react-hot-toast';
 import { ShopFilterProvider } from "@/context/ShopFilterContext";
 import DeferredCSS from "@/components/common/DeferredCSS";
 import ExitIntentPopup from "@/components/common/ExitIntentPopup";
+import IntlProviderClient from "./IntlProviderClient";
 const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 export async function generateMetadata({ params: { locale } }) {
   const isAr = locale === "ar";
@@ -431,7 +432,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     style={{ display: "none", visibility: "hidden" }}
                 />
             </noscript>
-                <NextIntlClientProvider messages={messages}>
+               <IntlProviderClient locale={locale} messages={messages}>
                     <Svgs />
                     <DeferredCSS />
                             <MenuProvider>
@@ -448,7 +449,8 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                                     <LoginFormPopup />
                                     <SizeGuide />
                                     <Delivery />
-                                    <CartDrawer />
+                                    <CartDrawer />
+
                                     <NewsLetter />
                                     <SiteMap />
                                     <CustomerLogin />
@@ -464,7 +466,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
                     <div className="page-overlay" id="pageOverlay"></div>
                     <SmoothScroll />
                     <ScrollTop />
-                </NextIntlClientProvider>
+                </IntlProviderClient>
             </body>
         </html>
     );
