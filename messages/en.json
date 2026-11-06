@@ -1,4 +1,7 @@
 {
+  "NationalAddressHelp": {
+    "text": "Don't know your national address? Get it easily <link>via WhatsApp (click here)</link>"
+  },
   "Account": {
     "pageMyAccount": "My account",
     "pagePurchases": "My purchases",
@@ -1695,7 +1698,6 @@
     "districtStreet": "District & street",
     "buildingApt": "Building / apartment (optional)",
     "snaOptional": "Short National Address *",
-    "snaHint": "e.g. ABCD1234 — fills in your address automatically",
     "otpWhy": "We'll text you a 4-digit code to confirm your order",
     "otpPrompt": "Enter the 4-digit code sent to {mobile}",
     "resendIn": "Resend code in {s}s",

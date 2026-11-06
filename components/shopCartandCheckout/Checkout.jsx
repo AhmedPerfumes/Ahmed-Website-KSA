@@ -12,6 +12,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
+import NationalAddressWhatsApp from '@/components/common/NationalAddressWhatsApp';
 import BogoFeature from "@/components/BogoFeature";
 import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
@@ -1527,10 +1528,11 @@ export default function Checkout() {
                                   </button>
                                 )}
                               </div>
-                              {lookupStatus.billing
-                                ? <div className="cc-hint" style={{ color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>{lookupStatus.billing.message}</div>
-                                : <p className="cc-hint">{tc('snaHint')}</p>}
+                              {lookupStatus.billing && (
+                                <div className="cc-hint" style={{ color: lookupStatus.billing.success ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>{lookupStatus.billing.message}</div>
+                              )}
                               {fieldError('short_national_address')}
+                              <NationalAddressWhatsApp />
                             </div>
 
                             {textField({ id: 'bill_city', name: 'billingAddress.area', value: b.area, label: tc('city'), required: true, autoComplete: 'address-level2', errKey: 'area', list: 'sa-city-list' })}
@@ -2011,6 +2013,7 @@ export default function Checkout() {
                           <p style={{ margin: '2px 0 0', fontSize: '0.65rem', color: '#aaa', lineHeight: 1.3 }}>{tc('egSna')}</p>
                         )}
                         {addrFormErrors.short_national_address && <p style={{ margin: '3px 0 0', fontSize: '0.75rem', color: '#e53935' }}>{tc(addrFormErrors.short_national_address)}</p>}
+                        <NationalAddressWhatsApp style={{ fontSize: '0.75rem' }} />
                       </div>
 
                       {[

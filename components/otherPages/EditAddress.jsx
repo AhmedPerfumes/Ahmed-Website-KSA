@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useLocale, useTranslations } from "next-intl";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
+import NationalAddressWhatsApp from "@/components/common/NationalAddressWhatsApp";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -472,6 +473,7 @@ export default function EditAddress() {
                             <Form.Control.Feedback type="invalid">
                                 {errors.short_national_address}
                             </Form.Control.Feedback>
+                            <NationalAddressWhatsApp style={{ fontSize: "0.75rem" }} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
