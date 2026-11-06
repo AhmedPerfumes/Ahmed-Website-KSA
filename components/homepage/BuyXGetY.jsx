@@ -135,6 +135,12 @@ export default function BuyXGetY() {
     const currentPromo = promotions[activePromoIndex] || null;
     const currentProducts = currentPromo?.products ?? [];
 
+    const promoImage = currentPromo?.image
+        ? (currentPromo.image.startsWith("http")
+            ? currentPromo.image
+            : `${process.env.NEXT_PUBLIC_API_URL}storage/${currentPromo.image}`)
+        : null;
+
     /* ── Skeleton ── */
     if (isMenuLoading || loading) {
         return (
@@ -167,14 +173,52 @@ export default function BuyXGetY() {
         <section className="bxy-section" aria-label="Buy X Get Y Offers" id="buy-x-get-y">
             <div className="bxy-inner">
 
+                {/* ── Dynamic Promotion Banner ── */}
+                {promoImage && (
+                    <div className="bxy-banner">
+                        <Link
+                            href={`/${locale}/sale`}
+                            tabIndex={-1}
+                            className="bxy-banner__link"
+                            aria-label={
+                                locale === "ar" && currentPromo?.name_ar
+                                    ? currentPromo.name_ar
+                                    : (currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers"))
+                            }
+                        >
+                            <Image
+                                src={promoImage}
+                                alt={
+                                    locale === "ar" && currentPromo?.name_ar
+                                        ? `${currentPromo.name_ar} — Ahmed Al Maghribi Perfumes`
+                                        : (currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers")
+                                }
+                                fill
+                                sizes="(max-width: 768px) 95vw, 100vw"
+                                className="bxy-banner__img"
+                                priority={false}
+                                loading="lazy"
+                                unoptimized
+                            />
+                            <span className="bxy-banner__scrim" />
+                        </Link>
+                    </div>
+                )}
+
                 {/* ── Centered heading ── */}
                 <div className="bxy-head">
                     <span className="bxy-eyebrow">{t("Exclusive Offers")}</span>
                     <h2 className="bxy-title">
-                        {currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers")}
+                        {locale === "ar" && currentPromo?.name_ar
+                            ? currentPromo.name_ar
+                            : (currentPromo?.name ? he.decode(currentPromo.name) : t("Special Offers"))}
                     </h2>
-                    {currentPromo?.description && (
-                        <p className="bxy-desc">{he.decode(currentPromo.description)}</p>
+                    {((locale === "ar" && currentPromo?.description_ar) || currentPromo?.description) && (
+                        <p className="bxy-desc">
+                            {locale === "ar" && currentPromo?.description_ar
+                                ? currentPromo.description_ar
+                                : he.decode(currentPromo.description)}
+                        </p>
                     )}
 
                     {/* ── Promotion Tabs (when multiple promotions active) ── */}
@@ -190,7 +234,9 @@ export default function BuyXGetY() {
                                         className={`bxy-tab${activePromoIndex === idx ? " bxy-tab--active" : ""}`}
                                         onClick={() => setActivePromoIndex(idx)}
                                     >
-                                        {promo.name ? he.decode(promo.name) : `${t("Offer")} ${idx + 1}`}
+                                        {locale === "ar" && promo.name_ar
+                                            ? promo.name_ar
+                                            : (promo.name ? he.decode(promo.name) : `${t("Offer")} ${idx + 1}`)}
                                     </button>
                                 ))}
                             </div>
@@ -203,6 +249,7 @@ export default function BuyXGetY() {
                     <Swiper
                         modules={[Navigation, Scrollbar]}
                         onSwiper={setSwiper}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
                         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
                         scrollbar={{ draggable: true, el: ".bxy-scrollbar" }}
                         spaceBetween={20}
