@@ -740,26 +740,60 @@ export default function Checkout() {
   // storeOrder request body — shared by Place Order and the Apple Pay widget
   function buildOrderPayload(paymentMethod) {
     // COD fee applies only to cash on delivery, never to Apple Pay / card
-    const methodCodFee = paymentMethod === 'cod' ? codFeeSetting : 0;
-    const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
-    const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
+    const method = paymentMethod || selectedOption || 'cod';
+    const methodCodFee = method === 'cod' ? codFeeSetting : 0;
+    const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges?.[0]?.price || 0);
+    const shippingPriceVat = shippingPrice / 100 * (vatTax?.percentage || 15);
     const finalPrice = totalPrice + shippingFee + serviceFee + methodCodFee;
     const codPrice = methodCodFee;
-    const codPriceVat = codPrice / 100 * vatTax.percentage;
+    const codPriceVat = codPrice / 100 * (vatTax?.percentage || 15);
     const servicePrice = serviceFee + methodCodFee;
-    const servicePriceVat = servicePrice / 100 * vatTax.percentage;
+    const servicePriceVat = servicePrice / 100 * (vatTax?.percentage || 15);
+
     let userJson = null;
-    if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
+    if (isLoggedIn && typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('user');
+        if (raw) userJson = JSON.parse(atob(raw));
+      } catch (e) {
+        console.error('Failed to parse user session in buildOrderPayload', e);
+      }
+    }
+
     const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
+
     // Gift / different address: recipient email isn't asked for — use the customer's
     if (shippingAdd) {
       cleanFormData.shippingAddress = {
         ...cleanFormData.shippingAddress,
-        email: cleanFormData.shippingAddress.email || cleanFormData.billingAddress.email,
-        country: cleanFormData.shippingAddress.country || 'KSA',
+        email: cleanFormData.shippingAddress?.email || cleanFormData.billingAddress?.email,
+        country: cleanFormData.shippingAddress?.country || 'KSA',
       };
     }
-    return { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: paymentMethod, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
+
+    // Primary collection tracking matching UAE implementation
+    const primaryCollection = cartProducts.find((p) => p.collection_name)?.collection_name || null;
+
+    return {
+      ...cleanFormData,
+      ...(primaryCollection ? { collection_name: primaryCollection } : {}),
+      ...(note?.trim() ? { note: note.trim(), order_notes: note.trim() } : {}),
+      products: mapProductsFromFormData(cartProducts),
+      payment_method: method,
+      shippingPrice,
+      shippingPriceVat,
+      servicePrice,
+      servicePriceVat,
+      codPrice,
+      codPriceVat,
+      vatTax: vatTax?.percentage || 15,
+      totalPrice,
+      finalPrice,
+      customer_id: isLoggedIn && userJson ? userJson.id : null,
+      locale,
+      couponCode,
+      couponData,
+    };
   }
 
   // Synchronous pre-checks for Apple Pay (must run inside the click gesture).
@@ -820,22 +854,8 @@ export default function Checkout() {
       return;
     }
 
-<<<<<<< HEAD
-    const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
-    const shippingPriceVat = shippingPrice / 100 * vatTax.percentage;
-    const finalPrice = grandTotalNum;
-    const codPrice = codFee;
-    const codPriceVat = codPrice / 100 * vatTax.percentage;
-    const servicePrice = serviceFee + codFee;
-    const servicePriceVat = servicePrice / 100 * vatTax.percentage;
-    let userJson = null;
-    if (isLoggedIn) { userJson = JSON.parse(atob(localStorage.getItem('user'))); }
-    const { shippingAdd, note, password, otp, ...cleanFormData } = formData;
-    const additionalFields = { ...cleanFormData, products: mapProductsFromFormData(cartProducts), payment_method: selectedOption, shippingPrice, shippingPriceVat, servicePrice, servicePriceVat, codPrice, codPriceVat, vatTax: vatTax.percentage, totalPrice, finalPrice, customer_id: userJson ? userJson.id : null, locale, couponCode, couponData };
-=======
     const additionalFields = buildOrderPayload(selectedOption);
->>>>>>> c3f2952124e6d8987bd84134d03d916e4b162447
-    const token = localStorage.getItem('token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/storeOrder`, {
