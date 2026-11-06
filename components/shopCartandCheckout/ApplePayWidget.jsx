@@ -42,6 +42,20 @@ const pickVersion = () => [14, 12, 10, 6, 5, 3].find(v => {
   try { return window.ApplePaySession.supportsVersion(v); } catch { return false; }
 });
 
+// Apple's <apple-pay-button> custom element with a native click listener. The handler is read from
+// clickRef at tap time, so it always sees the latest props/state.
+function ApplePayButtonEl({ clickRef, locale }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onClick = () => clickRef.current?.();
+    el.addEventListener("click", onClick);
+    return () => el.removeEventListener("click", onClick);
+  }, [clickRef]);
+  return <apple-pay-button ref={ref} buttonstyle="black" type="buy" locale={locale}></apple-pay-button>;
+}
+
 /**
  * Props (besides the order helpers):
  *  - selected / onSelect:  state of the "Apple Pay" payment radio (owned by Checkout)
@@ -102,7 +116,12 @@ export default function ApplePayWidget({ locale, amount, disabled, isLoggedIn, s
     setMessage(null);
 
     const precheckError = validateBeforePay?.();
-    if (precheckError) { setMessage({ type: "error", text: precheckError }); return; }
+    if (precheckError) {
+      setMessage({ type: "error", text: precheckError });
+      // The sticky bar has no message area — bring the inline message into view so the tap never looks dead
+      setTimeout(() => document.querySelector(".cc-applepay--inline")?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+      return;
+    }
 
     const version = pickVersion();
     const total = Number(amount).toFixed(2);
@@ -213,20 +232,14 @@ export default function ApplePayWidget({ locale, amount, disabled, isLoggedIn, s
 
   if (!config) return null;
 
-  // The button can be shown in two places (inline + mobile sticky bar). The click is handled on a
-  // wrapper (the custom element's click bubbles up), so each instance needs no listener of its own.
+  // The button can be shown in two places (inline + mobile sticky bar); each instance binds its own
+  // native click listener (see ApplePayButtonEl) so the Apple Pay session starts inside the tap.
   const renderButton = (variant) => (
     <div
       className={`cc-applepay cc-applepay--${variant} ${processing ? "cc-applepay--busy" : ""} ${disabled && !processing ? "cc-applepay--disabled" : ""}`}
       aria-busy={processing}
     >
-      <div onClick={() => clickRef.current?.()}>
-        <apple-pay-button
-          buttonstyle="black"
-          type="buy"
-          locale={locale === "ar" ? "ar-SA" : "en-US"}
-        ></apple-pay-button>
-      </div>
+      <ApplePayButtonEl clickRef={clickRef} locale={locale === "ar" ? "ar-SA" : "en-US"} />
       {processing && <div className="cc-applepay__overlay"><span>{tc("processing")}</span></div>}
       {variant === "inline" && message && (
         <div className={`cc-applepay__msg cc-applepay__msg--${message.type}`} role={message.type === "error" ? "alert" : "status"}>
