@@ -366,7 +366,7 @@ function BottleComparisonSlider({
 }
 
 function HeroSection({ data = {}, onBookNow, shopUrl }) {
-  const defaultShopUrl = shopUrl || "/en/shop/perfumes/occidental-fragrance/oud-roses-auric";
+  const defaultShopUrl = shopUrl || "/en/shop/perfumes/oriental-fragrance/oud-roses-auric";
   const isArabic = Boolean(data?.isArabic);
 
   return (
