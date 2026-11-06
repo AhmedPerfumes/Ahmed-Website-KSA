@@ -251,8 +251,10 @@ export default function EditAddress() {
         if (!form.building?.trim())
             newErrors.building = t("errFullAddress");
         if (!form.province?.trim()) newErrors.province = t("errProvince");
-        // Short National Address is optional — validate format only when entered
-        if (form.short_national_address?.trim() && !/^[A-Za-z]{4}[0-9]{4}$/.test(form.short_national_address.trim()))
+        // Short National Address is compulsory
+        if (!form.short_national_address?.trim())
+            newErrors.short_national_address = t("errSnaRequired");
+        else if (!/^[A-Za-z]{4}[0-9]{4}$/.test(form.short_national_address.trim()))
             newErrors.short_national_address = t("errSna");
 
         if (Object.keys(newErrors).length > 0) {

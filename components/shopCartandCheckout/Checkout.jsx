@@ -26,8 +26,12 @@ const billingRules = {
   area: required,
   province: required,
   mobile: v => /^\d{10}$/.test(v || '') ? null : 'invalidMobileDigits',
-  // Optional — empty is fine; if entered it must be 4 letters + 4 numbers
-  short_national_address: v => !(v || '').trim() || /^[A-Za-z]{4}[0-9]{4}$/.test((v || '').trim()) ? null : 'snaFormat',
+  // Compulsory — must be 4 letters + 4 numbers (e.g. ABCD1234)
+  short_national_address: v => {
+    const val = (v || '').trim();
+    if (!val) return 'required';
+    return /^[A-Za-z]{4}[0-9]{4}$/.test(val) ? null : 'snaFormat';
+  },
 };
 
 // Android Arabic keyboards emit Arabic-Indic digits and autofill may add +966/spaces —
@@ -554,8 +558,12 @@ export default function Checkout() {
     if (!addrForm.area?.trim()) errs.area = 'cityRequired';
     if (!addrForm.building?.trim()) errs.building = 'fullAddressRequired';
     if (!addrForm.province?.trim()) errs.province = 'provinceRequired';
-    // Short National Address is optional; validate format only when entered
-    if (addrForm.short_national_address?.trim() && !/^[A-Za-z]{4}[0-9]{4}$/.test(addrForm.short_national_address.trim())) errs.short_national_address = 'snaMust';
+    // Short National Address is compulsory
+    if (!addrForm.short_national_address?.trim()) {
+      errs.short_national_address = 'snaRequiredShort';
+    } else if (!/^[A-Za-z]{4}[0-9]{4}$/.test(addrForm.short_national_address.trim())) {
+      errs.short_national_address = 'snaMust';
+    }
     if (Object.keys(errs).length) { setAddrFormErrors(errs); return; }
     setAddrFormErrors({});
     setAddrSaving(true);
@@ -801,9 +809,9 @@ export default function Checkout() {
   function validateBeforePay() {
     if (!cartProducts?.length || !shippingLoaded) return tc('applePayFailed');
     if (!validateDetails()) return tc('addressIncompleteTitle');
-    // Short National Address is optional — block only a malformed value
+    // Short National Address is compulsory
     const sna = formData.billingAddress.short_national_address?.trim();
-    if (sna && !/^[A-Za-z]{4}[0-9]{4}$/.test(sna)) return tc('snaRequired');
+    if (!sna || !/^[A-Za-z]{4}[0-9]{4}$/.test(sna)) return tc('snaRequired');
     return null;
   }
 
@@ -846,9 +854,9 @@ export default function Checkout() {
       }
     } catch (e) { }
 
-    // Short National Address is optional — block only a malformed value
+    // Short National Address is compulsory
     const short_national_address = formData.billingAddress.short_national_address?.trim();
-    if (short_national_address && !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
+    if (!short_national_address || !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
       setIsLoading(false);
       setError(tc('snaRequired'));
       return;
@@ -1479,23 +1487,24 @@ export default function Checkout() {
                           </div>
                         ) : (
                           <div className="row g-2">
-                            {/* Optional shortcut: National Address fills the rest automatically */}
+                            {/* Short National Address is compulsory */}
                             <div className="col-12">
                               <div className="form-floating position-relative">
                                 <input
                                   type="text"
                                   className={`form-control${fieldErrors.short_national_address ? ' border-danger' : ''}`}
                                   id="bill_sna"
-                                  placeholder={tc('snaOptional')}
+                                  placeholder={`${tc('shortNationalAddress')} *`}
                                   name="billingAddress.short_national_address"
                                   value={b.short_national_address || ''}
                                   onChange={handleChange}
                                   maxLength="8"
                                   autoComplete="off"
                                   dir="ltr"
+                                  required
                                   style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
                                 />
-                                <label htmlFor="bill_sna">{tc('snaOptional')}</label>
+                                <label htmlFor="bill_sna">{tc('shortNationalAddress')} *</label>
                                 {lookupLoading.billing ? (
                                   <span className="cc-sna-btn cc-sna-btn--busy">{locale === 'ar' ? 'جارٍ التحقق…' : 'Checking…'}</span>
                                 ) : (
@@ -1920,7 +1929,7 @@ export default function Checkout() {
                       {/* Short National Address with auto-verify */}
                       <div>
                         <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>
-                          {locale === 'ar' ? 'العنوان الوطني المختصر (اختياري)' : 'Short National Address (optional)'}
+                          {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
                         </label>
                         <div style={{ position: 'relative' }}>
                           <input
