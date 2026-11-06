@@ -221,7 +221,7 @@ const LuxuryPDP = ({ product, category, subcategory }) => {
               // Refetch reviews after submission
               setReviewsLoading(true);
               fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}api/reviews/${product.product_id}`
+                `${process.env.NEXT_PUBLIC_API_URL}api/products/${product.product_id}/reviews`
               )
                 .then((r) => r.json())
                 .then((data) => { if (Array.isArray(data)) setReviews(data); })

@@ -135,7 +135,7 @@ const ReviewSummary = ({ averageRating, reviewCount, distribution, onWriteClick,
 // ====================================================================
 //  COMPONENT: ReviewList
 // ====================================================================
-const ReviewList = ({ reviews, loading, t }) => {
+const ReviewList = ({ reviews, loading, t, locale }) => {
     const hasMounted = useHasMounted();
 
     if (loading) return (
@@ -167,32 +167,55 @@ const ReviewList = ({ reviews, loading, t }) => {
 
     return (
         <div className={`custom-scroll ${styles.reviewList} ${styles.customScroll} ${styles.pxResponsiveList}`}>
-            {reviews.map((review) => (
-                <div key={review.id} className={`row py-4 border-top ${styles.borderDarkSubtle}`}>
-                    <div className="col-md-3 mb-3 mb-md-0">
-                        <h6 className={`font-weight-bold mb-1 ${styles.reviewerName}`}>{review.customer_name}</h6>
-                        <div className={styles.verifiedBadge}>
-                            <span className={styles.checkmarkCircle}>✓</span> Verified Buyer
-                        </div>
-                    </div>
-                    <div className="col-md-9">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                            <div className="d-flex align-items-center" style={{ gap: '8px' }}>
-                                <StarRating rating={review.star} size="0.9rem" />
-                                <span className={`font-weight-bold small text-uppercase ${styles.reviewLabel}`}>
-                                    {review.star === 5 ? 'Excellent' : review.star >= 4 ? 'Very Good' : review.star >= 3 ? 'Good' : 'Review'}
+            {reviews.map((review) => {
+                const countryCode = (review.country || 'SA').toUpperCase();
+                const isUAE = countryCode === 'AE';
+                const flagCode = isUAE ? 'ae' : 'sa';
+                const countryLabel = isUAE
+                    ? (locale === 'ar' ? 'الإمارات' : 'UAE')
+                    : (locale === 'ar' ? 'السعودية' : 'KSA');
+                const countryFull = isUAE ? 'United Arab Emirates' : 'Saudi Arabia';
+
+                return (
+                    <div key={review.id} className={`row py-3 border-top ${styles.borderDarkSubtle}`}>
+                        <div className={`col-md-3 mb-2 mb-md-0 ${styles.reviewerCol}`}>
+                            <h6 className={styles.reviewerName}>{review.customer_name}</h6>
+                            <div className={styles.reviewerMeta}>
+                                <img
+                                    src={`https://flagcdn.com/16x12/${flagCode}.png`}
+                                    srcSet={`https://flagcdn.com/32x24/${flagCode}.png 2x`}
+                                    width="14"
+                                    height="10"
+                                    alt={countryFull}
+                                    className={styles.countryFlag}
+                                    loading="lazy"
+                                />
+                                <span className={styles.countryCode}>{countryLabel}</span>
+                                <span className={styles.metaDot}>·</span>
+                                <span className={styles.verifiedText}>
+                                    <span className={styles.checkIcon}>✓</span> {locale === 'ar' ? 'مشتري معتمد' : 'Verified Buyer'}
                                 </span>
                             </div>
-                            <small style={{ color: '#999', fontFamily: "inherit", fontSize: '0.75rem' }}>
-                                {hasMounted ? new Date(review.created_at).toLocaleDateString() : ''}
-                            </small>
                         </div>
-                        <p style={{ lineHeight: '1.75', opacity: 0.85, fontFamily: "inherit", fontSize: '0.88rem', color: '#333', margin: 0 }}>
-                            {review.comment}
-                        </p>
+                        <div className="col-md-9">
+                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div className="d-flex align-items-center" style={{ gap: '8px' }}>
+                                    <StarRating rating={review.star} size="0.9rem" />
+                                    <span className={`font-weight-bold small text-uppercase ${styles.reviewLabel}`}>
+                                        {review.star === 5 ? 'Excellent' : review.star >= 4 ? 'Very Good' : review.star >= 3 ? 'Good' : 'Review'}
+                                    </span>
+                                </div>
+                                <small style={{ color: '#999', fontFamily: "inherit", fontSize: '0.75rem' }}>
+                                    {hasMounted ? new Date(review.created_at).toLocaleDateString() : ''}
+                                </small>
+                            </div>
+                            <p style={{ lineHeight: '1.7', opacity: 0.88, fontFamily: "inherit", fontSize: '0.88rem', color: '#333', margin: 0 }}>
+                                {review.comment}
+                            </p>
+                        </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 };
@@ -433,6 +456,18 @@ const CustomerReviews = ({ product, reviews, loading, onReviewSubmitted }) => {
     }, [product, locale]);
 
     const [showModal, setShowModal] = useState(false);
+    const [selectedCountry, setSelectedCountry] = useState('ALL');
+
+    const ksaCount = useMemo(() => (reviews || []).filter(r => (r.country || 'SA').toUpperCase() === 'SA').length, [reviews]);
+    const uaeCount = useMemo(() => (reviews || []).filter(r => (r.country || '').toUpperCase() === 'AE').length, [reviews]);
+    const hasMultipleCountries = ksaCount > 0 && uaeCount > 0;
+
+    const displayedReviews = useMemo(() => {
+        if (!reviews) return [];
+        if (selectedCountry === 'SA') return reviews.filter(r => (r.country || 'SA').toUpperCase() === 'SA');
+        if (selectedCountry === 'AE') return reviews.filter(r => (r.country || '').toUpperCase() === 'AE');
+        return reviews;
+    }, [reviews, selectedCountry]);
 
     const stats = useMemo(() => {
         const total = reviews?.length || 0;
@@ -454,7 +489,60 @@ const CustomerReviews = ({ product, reviews, loading, onReviewSubmitted }) => {
                     t={t}
                     loading={loading}
                 />
-                <ReviewList reviews={reviews} loading={loading} t={t} />
+
+                {/* Country Filter Tabs (Minimalist Luxury) */}
+                {hasMultipleCountries && (
+                    <div className={styles.filterTabsRow} role="tablist" aria-label="Filter reviews by country">
+                        <button
+                            type="button"
+                            className={`${styles.filterTab} ${selectedCountry === 'ALL' ? styles.filterTabActive : ''}`}
+                            onClick={() => setSelectedCountry('ALL')}
+                        >
+                            <span>{locale === 'ar' ? 'جميع التقييمات' : 'All Reviews'}</span>
+                            <span className={styles.filterTabCount}>({reviews.length})</span>
+                        </button>
+                        {ksaCount > 0 && (
+                            <button
+                                type="button"
+                                className={`${styles.filterTab} ${selectedCountry === 'SA' ? styles.filterTabActive : ''}`}
+                                onClick={() => setSelectedCountry('SA')}
+                            >
+                                <img
+                                    src="https://flagcdn.com/16x12/sa.png"
+                                    srcSet="https://flagcdn.com/32x24/sa.png 2x"
+                                    width="14"
+                                    height="10"
+                                    alt=""
+                                    className={styles.countryFlag}
+                                    loading="lazy"
+                                />
+                                <span>{locale === 'ar' ? 'السعودية' : 'Saudi Arabia'}</span>
+                                <span className={styles.filterTabCount}>({ksaCount})</span>
+                            </button>
+                        )}
+                        {uaeCount > 0 && (
+                            <button
+                                type="button"
+                                className={`${styles.filterTab} ${selectedCountry === 'AE' ? styles.filterTabActive : ''}`}
+                                onClick={() => setSelectedCountry('AE')}
+                            >
+                                <img
+                                    src="https://flagcdn.com/16x12/ae.png"
+                                    srcSet="https://flagcdn.com/32x24/ae.png 2x"
+                                    width="14"
+                                    height="10"
+                                    alt=""
+                                    className={styles.countryFlag}
+                                    loading="lazy"
+                                />
+                                <span>{locale === 'ar' ? 'الإمارات' : 'UAE'}</span>
+                                <span className={styles.filterTabCount}>({uaeCount})</span>
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                <ReviewList reviews={displayedReviews} loading={loading} t={t} locale={locale} />
             </div>
 
             <ReviewFormModal

@@ -147,8 +147,13 @@
 }
 
 @keyframes backdropFadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modalContentDark {
@@ -169,8 +174,15 @@
 }
 
 @keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(24px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 /* Gold accent bar at top */
@@ -412,11 +424,11 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
-.toggleCheckbox:checked + .toggleSwitch {
+.toggleCheckbox:checked+.toggleSwitch {
     background-color: #C7944B;
 }
 
-.toggleCheckbox:checked + .toggleSwitch::after {
+.toggleCheckbox:checked+.toggleSwitch::after {
     transform: translateX(18px);
 }
 
@@ -432,7 +444,7 @@
     font-family: var(--font-family-base, sans-serif);
 }
 
-.toggleCheckbox:checked ~ .toggleLabelText {
+.toggleCheckbox:checked~.toggleLabelText {
     color: #1a1a1a;
 }
 
@@ -621,8 +633,15 @@
 }
 
 @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* ── Form row spacing ── */
@@ -641,4 +660,134 @@
 
 .formGroup {
     margin-bottom: 1rem;
+}
+
+/* ── Country Filter Tabs (Minimalist Luxury) ── */
+.filterTabsRow {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 1.25rem;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0;
+    overflow-x: auto;
+}
+
+.filterTab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 2px;
+    color: #888;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: -1px;
+    white-space: nowrap;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    font-family: var(--font-family-base, sans-serif);
+}
+
+.filterTab:hover {
+    color: #1a1a1a;
+}
+
+.filterTabActive {
+    color: #1a1a1a !important;
+    font-weight: 600;
+    border-bottom-color: #1a1a1a;
+}
+
+.filterTabCount {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.filterTabActive .filterTabCount {
+    color: #666;
+}
+
+/* ── Minimal Reviewer Block ── */
+.reviewerCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewerName {
+    color: #1a1a1a;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 3px;
+    font-family: var(--font-family-base, sans-serif);
+}
+
+.reviewerMeta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: #777;
+    line-height: 1;
+    font-family: var(--font-family-base, sans-serif);
+}
+
+@media (max-width: 767px) {
+    .reviewerCol {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0.35rem !important;
+    }
+
+    .reviewerName {
+        margin-bottom: 0 !important;
+        font-size: 0.82rem;
+    }
+
+    .reviewerMeta {
+        flex-shrink: 0;
+        margin-top: 0 !important;
+    }
+}
+
+.countryFlag {
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 1px;
+    object-fit: cover;
+}
+
+.countryCode {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #555;
+    text-transform: uppercase;
+}
+
+.metaDot {
+    color: #bbb;
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+.verifiedText {
+    color: #666;
+    font-size: 0.72rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.checkIcon {
+    color: #2A7A52;
+    font-size: 0.7rem;
+    font-weight: 700;
 }
