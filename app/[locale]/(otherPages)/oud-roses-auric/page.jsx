@@ -217,7 +217,7 @@ export default function AuricPage({ params }) {
   const currentLocale = locale || "en";
   const isArabic = currentLocale === "ar";
   const data = isArabic ? AURIC_CONFIG_AR : AURIC_CONFIG_EN;
-  const shopUrl = `/${currentLocale}/shop/perfumes/occidental-fragrance/oud-roses-auric`;
+  const shopUrl = `/${currentLocale}/shop/perfumes/oriental-fragrance/oud-roses-auric`;
 
   const jsonLd = {
     "@context": "https://schema.org",

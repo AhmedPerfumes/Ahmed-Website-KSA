@@ -527,19 +527,39 @@ p {
 }
 
 /* ── 12. ACCOUNT / INNER PAGES typography ────────────────────────── */
-/* Order pages, account dashboard, address forms */
+/* Order pages, account dashboard, address forms (excludes Bootstrap flex order classes & hero sections) */
 
-[class*="order"] h2,
+.order-complete,
+.order-info,
+.order-details,
+.order-tracking,
+[class*="order_"],
+[class*="order-complete"],
+[class*="order-info"],
+[class*="order-detail"],
+[class*="order-track"],
 [class*="account"] h2,
 [class*="dashboard"] h2 {
   font-family: "SAR Symbol", var(--font-heading) !important;
   color: #1a1a1a !important;
 }
 
-[class*="order"] p,
-[class*="order"] span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]),
+.order-complete,
+.order-info,
+.order-details,
+.order-tracking,
+[class*="order_"],
+[class*="order-complete"],
+[class*="order-info"],
+[class*="order-detail"],
+[class*="order-track"],
 [class*="account"] p,
-[class*="account"] label {
+[class*="account"] label,
+.order-complete span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]),
+.order-info span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]),
+.order-details span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]),
+[class*="order-complete"] span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]),
+[class*="order-detail"] span:not(.cc-sum-item__qty):not([class*="__qty"]):not([class*="badge"]) {
   font-family: var(--font-family-base) !important;
   color: #1a1a1a !important;
 }

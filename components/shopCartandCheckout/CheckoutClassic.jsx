@@ -24,8 +24,12 @@ const billingRules = {
   area: required,
   province: required,
   mobile: v => /^\d{10}$/.test(v || '') ? null : 'invalidMobileDigits',
-  // Optional — empty is fine; if entered it must be 4 letters + 4 numbers
-  short_national_address: v => !(v || '').trim() || /^[A-Za-z]{4}[0-9]{4}$/.test((v || '').trim()) ? null : 'snaFormat',
+  // Compulsory — must be 4 letters + 4 numbers (e.g. ABCD1234)
+  short_national_address: v => {
+    const val = (v || '').trim();
+    if (!val) return 'required';
+    return /^[A-Za-z]{4}[0-9]{4}$/.test(val) ? null : 'snaFormat';
+  },
 };
 
 // Android Arabic keyboards emit Arabic-Indic digits and autofill may add +966/spaces —
@@ -462,8 +466,12 @@ export default function CheckoutClassic() {
     if (!addrForm.area?.trim()) errs.area = 'cityRequired';
     if (!addrForm.building?.trim()) errs.building = 'fullAddressRequired';
     if (!addrForm.province?.trim()) errs.province = 'provinceRequired';
-    // Short National Address is optional; validate format only when entered
-    if (addrForm.short_national_address?.trim() && !/^[A-Za-z]{4}[0-9]{4}$/.test(addrForm.short_national_address.trim())) errs.short_national_address = 'snaMust';
+    // Short National Address is compulsory
+    if (!addrForm.short_national_address?.trim()) {
+      errs.short_national_address = 'snaMust';
+    } else if (!/^[A-Za-z]{4}[0-9]{4}$/.test(addrForm.short_national_address.trim())) {
+      errs.short_national_address = 'snaMust';
+    }
     if (Object.keys(errs).length) { setAddrFormErrors(errs); return; }
     setAddrFormErrors({});
     setAddrSaving(true);
@@ -623,12 +631,21 @@ export default function CheckoutClassic() {
       }
     } catch (e) { }
 
-    // Short National Address is optional — block only a malformed value
+    // Short National Address is compulsory
     const short_national_address = formData.billingAddress.short_national_address?.trim();
-    if (short_national_address && !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
+    if (!short_national_address || !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
       setIsLoading(false);
       setError(tc('snaRequired'));
       return;
+    }
+
+    if (formData.shippingAdd) {
+      const ship_sna = formData.shippingAddress.short_national_address?.trim();
+      if (!ship_sna || !/^[A-Za-z]{4}[0-9]{4}$/.test(ship_sna)) {
+        setIsLoading(false);
+        setError(tc('snaRequired'));
+        return;
+      }
     }
 
     const shippingPrice = freeShippingFlag ? 0.00 : parseFloat(shippingServiceCharges[0].price);
@@ -748,11 +765,11 @@ export default function CheckoutClassic() {
       if (!isOTPVerified) {
         errs._otp = 'verifyMobileBeforeContinue';
       }
-    } else if (!b.area?.trim() || !b.province?.trim() || !b.building?.trim()) {
-      // New accounts may have no saved address yet — the card would otherwise render empty
-      errs._address = 'noAddressTitle';
+    } else if (!b.area?.trim() || !b.province?.trim() || !b.building?.trim() || !b.short_national_address?.trim()) {
+      // New accounts or accounts missing required address fields
+      errs._address = 'addressIncompleteTitle';
     } else if (billingRules.short_national_address(b.short_national_address)) {
-      // Short National Address is optional, but a saved one must be well-formed
+      // Short National Address is compulsory and must be well-formed
       errs._address = 'addressIncompleteTitle';
     }
     if (Object.keys(errs).length) { setFieldErrors(errs); return; }
@@ -1031,10 +1048,11 @@ export default function CheckoutClassic() {
                                     onChange={handleChange}
                                     maxLength="8"
                                     pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                    required
                                     style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
                                   />
                                   <label htmlFor="ship_sna" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
-                                    {locale === 'ar' ? 'العنوان الوطني المختصر (اختياري)' : 'Short National Address (optional)'}
+                                    {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
                                   </label>
                                   {lookupLoading.shipping ? (
                                     <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
@@ -1182,9 +1200,10 @@ export default function CheckoutClassic() {
                                   onChange={handleChange}
                                   maxLength="8"
                                   pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                  required
                                   style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
                                 />
-                                <label htmlFor="bill_sna">{locale === 'ar' ? 'العنوان الوطني المختصر (اختياري)' : 'Short National Address (optional)'}</label>
+                                <label htmlFor="bill_sna">{locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}</label>
                                 {lookupLoading.billing ? (
                                   <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
                                     ⏳ {locale === 'ar' ? 'تحقق…' : 'Checking…'}
@@ -1390,10 +1409,11 @@ export default function CheckoutClassic() {
                                       onChange={handleChange}
                                       maxLength="8"
                                       pattern="^[A-Za-z]{4}[0-9]{4}$"
+                                      required
                                       style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
                                     />
                                     <label htmlFor="ship_sna2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
-                                      {locale === 'ar' ? 'العنوان الوطني المختصر (اختياري)' : 'Short National Address (optional)'}
+                                      {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
                                     </label>
                                     {lookupLoading.shipping ? (
                                       <span style={{ position: 'absolute', right: locale === 'ar' ? 'auto' : '10px', left: locale === 'ar' ? '10px' : 'auto', top: '50%', transform: 'translateY(-50%)', fontSize: '0.72rem', color: '#b9a16b', fontWeight: 600 }}>
@@ -2018,7 +2038,7 @@ export default function CheckoutClassic() {
                       {/* Short National Address with auto-verify */}
                       <div>
                         <label style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '4px' }}>
-                          {locale === 'ar' ? 'العنوان الوطني المختصر (اختياري)' : 'Short National Address (optional)'}
+                          {locale === 'ar' ? 'العنوان الوطني المختصر *' : 'Short National Address *'}
                         </label>
                         <div style={{ position: 'relative' }}>
                           <input
