@@ -62,8 +62,8 @@ const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
             <BestSellers />
             {/* <CollectionShowcase /> */}
             {/* <OffersBanner /> */}
-            <SpecialOffers />
-            <BuyXGetY />
+            {/* <SpecialOffers /> */}
+            {/* <BuyXGetY /> */}
             <NewArrivals />
             <OnlineExclusiveBanner />
             <OnlineExclusive />
