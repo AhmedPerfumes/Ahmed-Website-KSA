@@ -256,6 +256,12 @@ export default function SpecialOffers() {
                                     ? Math.round(Number(elm.discount.value))
                                     : Math.round(((base - sale) / base) * 100))
                                 : 0;
+                            const hasBogo = !hasDisc && (elm?.buy_x_get_y || elm?.is_bogo);
+                            const bogoText = hasBogo
+                                ? (locale === "ar"
+                                    ? (elm?.buy_x_get_y?.badge_text_ar || elm?.bogo_deal_ar)
+                                    : (elm?.buy_x_get_y?.badge_text || elm?.bogo_deal))
+                                : "";
                             // Arabic name — mirrors PremiumProductCard logic exactly
                             const prodName = locale === 'ar'
                                 ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
@@ -284,10 +290,24 @@ export default function SpecialOffers() {
                                                 )}
                                             </Link>
 
-                                            {/* Discount badge */}
-                                            {hasDisc && pctOff > 0 && (
-                                                <span className="so-card__badge">-{pctOff}%</span>
-                                            )}
+                                            {/* Badges */}
+                                            <div className="so-card__badges">
+                                                {elm?.label_name && (
+                                                    <span className="so-card__badge" style={{ background: elm.label_color }}>
+                                                        {elm.label_name}
+                                                    </span>
+                                                )}
+                                                {hasDisc && (
+                                                    <span className="so-card__badge">
+                                                        {pctOff > 0 ? `-${pctOff}%` : (locale === "ar" ? "تخفيض" : "Sale")}
+                                                    </span>
+                                                )}
+                                                {hasBogo && (
+                                                    <span className="so-card__badge so-card__badge--bogo">
+                                                        {bogoText}
+                                                    </span>
+                                                )}
+                                            </div>
 
                                             {/* Wishlist */}
                                             <button

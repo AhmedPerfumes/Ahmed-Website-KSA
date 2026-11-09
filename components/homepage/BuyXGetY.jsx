@@ -1,4 +1,4 @@
-        "use client";
+"use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -14,7 +14,7 @@ import "./BuyXGetY.css";
 
 export default function BuyXGetY() {
     const locale = useLocale();
-    const t      = useTranslations();
+    const t = useTranslations();
     const { currency, isLoading: isMenuLoading } = useMenu();
     const { addProductToCart, toggleWishlist, isAddedtoWishlist, cartProducts, setCartProducts } = useContextElement();
 
@@ -42,10 +42,10 @@ export default function BuyXGetY() {
         );
     };
 
-    const [promotions, setPromotions]               = useState([]);
-    const [activePromoIndex, setActivePromoIndex]   = useState(0);
-    const [loading, setLoading]                     = useState(true);
-    const [swiper, setSwiper]                       = useState(null);
+    const [promotions, setPromotions] = useState([]);
+    const [activePromoIndex, setActivePromoIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [swiper, setSwiper] = useState(null);
 
     const prevRef = useRef(null);
     const nextRef = useRef(null);
@@ -92,14 +92,14 @@ export default function BuyXGetY() {
         if (swiper && !swiper.destroyed) {
             try {
                 swiper.slideTo(0, 300);
-            } catch {}
+            } catch { }
         }
     }, [activePromoIndex, swiper]);
 
     /* ── Helpers ── */
     const cleanStr = useCallback((str) =>
         (str || "").replace(/&amp;/g, "").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim()
-    , []);
+        , []);
 
     const getSubcatSlug = useCallback((category, subcategory) => {
         if (subcategory?.subcategory_name)
@@ -114,7 +114,7 @@ export default function BuyXGetY() {
 
     const productUrl = useCallback((elm) =>
         `/${locale}/shop/${cleanStr(elm.category_name).split(" ").join("-").toLowerCase()}/${getSubcatSlug(elm.category_name, elm.subcategory)}/${cleanStr(elm.product_name).split(" ").join("-").toLowerCase()}`
-    , [locale, cleanStr, getSubcatSlug]);
+        , [locale, cleanStr, getSubcatSlug]);
 
     const fmt = useCallback((v) => `${Number(v).toFixed(2)}${currency?.symbol || ""}`, [currency]);
 
@@ -181,7 +181,7 @@ export default function BuyXGetY() {
                 {promoImage && (
                     <div className="bxy-banner">
                         <Link
-                            href={`/${locale}/sale`}
+                            href={`/${locale}/shop`}
                             tabIndex={-1}
                             className="bxy-banner__link"
                             aria-label={
@@ -260,26 +260,43 @@ export default function BuyXGetY() {
                         spaceBetween={20}
                         slidesPerView={1.4}
                         breakpoints={{
-                            480:  { slidesPerView: 1.8, spaceBetween: 20 },
-                            640:  { slidesPerView: 2.2, spaceBetween: 22 },
-                            768:  { slidesPerView: 2.8, spaceBetween: 24 },
+                            480: { slidesPerView: 1.8, spaceBetween: 20 },
+                            640: { slidesPerView: 2.2, spaceBetween: 22 },
+                            768: { slidesPerView: 2.8, spaceBetween: 24 },
                             1024: { slidesPerView: 3.5, spaceBetween: 26 },
-                            1280: { slidesPerView: 4,   spaceBetween: 28 },
+                            1280: { slidesPerView: 4, spaceBetween: 28 },
                             1440: { slidesPerView: 4.5, spaceBetween: 28 },
                         }}
                     >
                         {currentProducts.map((elm) => {
-                            const imgSrc   = getImage(elm);
-                            const url      = productUrl(elm);
-                            const inWish   = isAddedtoWishlist(elm.product_id);
-                            const base     = Number(elm.price);
+                            const imgSrc = getImage(elm);
+                            const url = productUrl(elm);
+                            const inWish = isAddedtoWishlist(elm.product_id);
+                            const base = Number(elm.price);
+                            const hasDisc = elm?.discount && (Number(elm.discount.value) > 0 || Number(elm.discount.final_price) > 0);
+                            let pctOff = 0;
+                            if (hasDisc) {
+                                if (elm.discount.discount_type === "percent" && Number(elm.discount.value) > 0) {
+                                    pctOff = Math.round(Number(elm.discount.value));
+                                } else if (elm.discount.final_price && base > 0) {
+                                    pctOff = Math.round(((base - Number(elm.discount.final_price)) / base) * 100);
+                                } else if (elm.discount.discount_type === "amount" && base > 0 && Number(elm.discount.value) > 0) {
+                                    pctOff = Math.round((Number(elm.discount.value) / base) * 100);
+                                }
+                            }
+                            const hasBogo = !hasDisc && (elm?.buy_x_get_y || elm?.is_bogo || currentPromo?.badge_text);
+                            const bogoText = hasBogo
+                                ? (locale === "ar"
+                                    ? (elm?.buy_x_get_y?.badge_text_ar || elm?.bogo_deal_ar || currentPromo?.badge_text_ar || currentPromo?.badge_text)
+                                    : (elm?.buy_x_get_y?.badge_text || elm?.bogo_deal || currentPromo?.badge_text || currentPromo?.badge_text_ar))
+                                : "";
                             // Arabic name — mirrors PremiumProductCard logic exactly
                             const prodName = locale === 'ar'
                                 ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
                                 : he.decode(elm?.product_name || '');
                             const catLabel = locale === 'ar'
                                 ? (elm.subcategory?.subcategory_name_ar || elm.category_name_ar
-                                   || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
+                                    || t(elm.subcategory?.subcategory_name || elm.category_name || ''))
                                 : (elm.subcategory?.subcategory_name || elm.category_name);
 
                             return (
@@ -301,6 +318,25 @@ export default function BuyXGetY() {
                                                 )}
                                             </Link>
 
+                                            {/* Badges */}
+                                            <div className="bxy-card__badges">
+                                                {elm?.label_name && (
+                                                    <span className="bxy-card__badge" style={{ background: elm.label_color }}>
+                                                        {elm.label_name}
+                                                    </span>
+                                                )}
+                                                {hasDisc && (
+                                                    <span className="bxy-card__badge">
+                                                        {pctOff > 0 ? `-${pctOff}%` : (locale === "ar" ? "تخفيض" : "Sale")}
+                                                    </span>
+                                                )}
+                                                {hasBogo && (
+                                                    <span className="bxy-card__badge bxy-card__badge--bogo">
+                                                        {bogoText}
+                                                    </span>
+                                                )}
+                                            </div>
+
                                             {/* Wishlist */}
                                             <button
                                                 type="button"
@@ -309,7 +345,7 @@ export default function BuyXGetY() {
                                                 aria-label={t("Add to Wishlist")}
                                             >
                                                 <svg viewBox="0 0 24 24">
-                                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                                                 </svg>
                                             </button>
                                         </div>
@@ -330,8 +366,8 @@ export default function BuyXGetY() {
 
                                             {elm.product_qty > 0 ? (() => {
                                                 const cartItem = cartProducts.find(p => p.product_id === elm.product_id);
-                                                const cartQty  = cartItem?.quantity || 0;
-                                                const maxQty   = elm.maximum_order_quantity || elm.product_qty || 99;
+                                                const cartQty = cartItem?.quantity || 0;
+                                                const maxQty = elm.maximum_order_quantity || elm.product_qty || 99;
                                                 return cartQty > 0 ? (
                                                     <div className="bxy-card__stepper">
                                                         <button type="button" className="bxy-card__step-btn" aria-label="Decrease" onClick={() => {
@@ -367,10 +403,10 @@ export default function BuyXGetY() {
                 {/* ── Nav arrows centered below ── */}
                 <div className="bxy-nav">
                     <button type="button" ref={prevRef} className="bxy-arrow" aria-label="Previous">
-                        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
                     </button>
                     <button type="button" ref={nextRef} className="bxy-arrow" aria-label="Next">
-                        <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
                     </button>
                 </div>
 

@@ -412,6 +412,26 @@
   stroke: var(--so-gold);
 }
 
+/* Badges Container */
+.so-card__badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.so-card__badges .so-card__badge {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+}
+
 /* Badge */
 .so-card__badge {
   position: absolute;
@@ -427,6 +447,12 @@
   background: var(--so-gold);
   color: #fff;
   border-radius: 2px;
+  white-space: nowrap;
+}
+
+.so-card__badge--bogo {
+  background: #1b4d3e;
+  letter-spacing: 0.06em;
 }
 
 /* â”€â”€ Card inoo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -649,7 +675,17 @@
   }
 }
 
-/* â”€â”€ RTL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── RTL ─────────────────────────────────────────────────────── */
+[dir="rtl"] .so-card__badges {
+  left: auto;
+  right: 10px;
+  align-items: flex-end;
+}
+
+[dir="rtl"] .so-card__badges .so-card__badge {
+  position: static;
+}
+
 [dir="rtl"] .so-card__badge {
   left: auto;
   right: 10px;

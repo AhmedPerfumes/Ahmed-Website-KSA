@@ -472,6 +472,26 @@
   stroke: var(--bxy-gold);
 }
 
+/* Badges Container */
+.bxy-card__badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.bxy-card__badges .bxy-card__badge {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+}
+
 /* Deal Badge */
 .bxy-card__badge {
   position: absolute;
@@ -487,6 +507,12 @@
   background: var(--bxy-gold);
   color: #fff;
   border-radius: 2px;
+  white-space: nowrap;
+}
+
+.bxy-card__badge--bogo {
+  background: #1b4d3e;
+  letter-spacing: 0.06em;
 }
 
 /* ── Card Info ──────────────────────────────────────────────── */
@@ -739,6 +765,16 @@
 }
 
 /* ── RTL ────────────────────────────────────────────────────── */
+[dir="rtl"] .bxy-card__badges {
+  left: auto;
+  right: 10px;
+  align-items: flex-end;
+}
+
+[dir="rtl"] .bxy-card__badges .bxy-card__badge {
+  position: static;
+}
+
 [dir="rtl"] .bxy-card__badge {
   left: auto;
   right: 10px;

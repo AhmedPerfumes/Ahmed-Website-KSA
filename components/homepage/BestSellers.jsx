@@ -117,10 +117,11 @@ export default function BestSellers() {
 
     const renderPrice = useCallback(elm => {
         const base = Number(elm.price);
-        if (elm?.discount?.value) {
+        if (elm?.discount?.value || elm?.discount?.final_price) {
             let sale;
-            if (elm.discount.discount_type === "percent") sale = base - (base * Number(elm.discount.value)) / 100;
-            if (elm.discount.discount_type === "amount")  sale = base - Number(elm.discount.value);
+            if (elm.discount.final_price) sale = Number(elm.discount.final_price);
+            else if (elm.discount.discount_type === "percent") sale = base - (base * Number(elm.discount.value)) / 100;
+            else if (elm.discount.discount_type === "amount")  sale = base - Number(elm.discount.value);
             if (sale !== undefined && sale < base) return (
                 <>
                     <span className="bs-card__price-old">{fmt(base)}</span>
@@ -219,6 +220,24 @@ export default function BestSellers() {
                             const url    = productUrl(elm);
                             const inCart = isAddedToCartProducts(elm.product_id);
                             const inWish = isAddedtoWishlist(elm.product_id);
+                            const base = Number(elm.price);
+                            const hasDisc = elm?.discount && (Number(elm.discount.value) > 0 || Number(elm.discount.final_price) > 0);
+                            let pctOff = 0;
+                            if (hasDisc) {
+                                if (elm.discount.discount_type === "percent" && Number(elm.discount.value) > 0) {
+                                    pctOff = Math.round(Number(elm.discount.value));
+                                } else if (elm.discount.final_price && base > 0) {
+                                    pctOff = Math.round(((base - Number(elm.discount.final_price)) / base) * 100);
+                                } else if (elm.discount.discount_type === "amount" && base > 0 && Number(elm.discount.value) > 0) {
+                                    pctOff = Math.round((Number(elm.discount.value) / base) * 100);
+                                }
+                            }
+                            const hasBogo = !hasDisc && elm?.buy_x_get_y;
+                            const bogoText = hasBogo
+                                ? (locale === "ar"
+                                    ? (elm.buy_x_get_y.badge_text_ar || elm.buy_x_get_y.badge_text)
+                                    : (elm.buy_x_get_y.badge_text || elm.buy_x_get_y.badge_text_ar))
+                                : "";
                             // Arabic name — mirrors PremiumProductCard logic exactly
                             const prodName = locale === 'ar'
                                 ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ''))
@@ -247,15 +266,24 @@ export default function BestSellers() {
                                                 )}
                                             </Link>
 
-                                            {/* Badge */}
-                                            {elm?.label_name && (
-                                                <span className="bs-card__badge" style={{ background: elm.label_color }}>
-                                                    {elm.label_name}
-                                                </span>
-                                            )}
-                                            {!elm?.label_name && elm?.discount?.discount_type === "percent" && elm.discount.value && (
-                                                <span className="bs-card__badge">-{elm.discount.value}%</span>
-                                            )}
+                                            {/* Badges */}
+                                            <div className="bs-card__badges">
+                                                {elm?.label_name && (
+                                                    <span className="bs-card__badge" style={{ background: elm.label_color }}>
+                                                        {elm.label_name}
+                                                    </span>
+                                                )}
+                                                {hasDisc && (
+                                                    <span className="bs-card__badge">
+                                                        {pctOff > 0 ? `-${pctOff}%` : (locale === "ar" ? "تخفيض" : "Sale")}
+                                                    </span>
+                                                )}
+                                                {hasBogo && (
+                                                    <span className="bs-card__badge bs-card__badge--bogo">
+                                                        {bogoText}
+                                                    </span>
+                                                )}
+                                            </div>
 
                                             {/* Wishlist */}
                                             <button

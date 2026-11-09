@@ -427,6 +427,26 @@
   stroke: var(--bs-gold);
 }
 
+/* Badges Container */
+.bs-card__badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.bs-card__badges .bs-card__badge {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+}
+
 /* Badge */
 .bs-card__badge {
   position: absolute;
@@ -442,6 +462,12 @@
   background: var(--bs-gold);
   color: #fff;
   border-radius: 2px;
+  white-space: nowrap;
+}
+
+.bs-card__badge--bogo {
+  background: #1b4d3e;
+  letter-spacing: 0.06em;
 }
 
 /* ─── Card info ───────────────────────────────────────────────── */
@@ -686,6 +712,16 @@
 }
 
 /* ─── RTL ─────────────────────────────────────────────────────── */
+[dir="rtl"] .bs-card__badges {
+  left: auto;
+  right: 10px;
+  align-items: flex-end;
+}
+
+[dir="rtl"] .bs-card__badges .bs-card__badge {
+  position: static;
+}
+
 [dir="rtl"] .bs-card__badge {
   left: auto;
   right: 10px;
