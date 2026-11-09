@@ -91,36 +91,32 @@ const nextConfig = {
       },
       {
         // ── Next.js Image Optimizer (/_next/image) ────────────────────────
-        // Caches optimised/resized versions of dynamic product images coming
-        // from adminksa.ahmedalmaghribi.com/public/storage.
-        // s-maxage=604800 → Cloudflare keeps it 7 days at the edge.
-        // stale-while-revalidate → serves stale while fetching fresh copy.
+        // Next.js generates its own Cache-Control for /_next/image and
+        // overrides the Cache-Control key above. So we use the Cloudflare-
+        // specific header which Cloudflare reads independently — this cannot
+        // be overridden by Next.js and forces 7-day edge caching even with
+        // query parameters (?url=...&w=...&q=...).
         source: '/_next/image',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400',
           },
+          {
+            // Cloudflare-specific header — takes priority over Cache-Control
+            // at the edge. Fixes DYNAMIC / MISS status for /_next/image.
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'public, max-age=604800',
+          },
         ],
       },
-      // {
-      //   source: '/_next/image',
-      //   headers: [
-      //     {
-      //       key: 'Cache-Control',
-      //       // s-maxage tells Cloudflare specifically to cache for 7 days
-      //       // even with query parameters
-      //       value: 'public, s-maxage=604800, max-age=86400, stale-while-revalidate=86400',
-      //     },
-      //     {
-      //       // Cloudflare also respects Cloudflare-CDN-Cache-Control header
-      //       // This is a Cloudflare-specific header that overrides Cache-Control
-      //       // for the edge only — strongest signal you can send without Cache Rules
-      //       key: 'Cloudflare-CDN-Cache-Control',
-      //       value: 'public, max-age=604800',
-      //     },
-      //   ],
-      // },
+      // Preconnect to admin image CDN for faster first-image load on EWD quiz
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Link', value: '<https://adminksa.ahmedalmaghribi.com>; rel=preconnect; crossorigin' },
+        ],
+      },
     ];
   },
 
@@ -130,6 +126,7 @@ const nextConfig = {
         source: '/:locale(en|ar)/maplibre/:path*',
         destination: '/maplibre/:path*',
       },
+
     ];
   },
   // basePath: '/ksa'
