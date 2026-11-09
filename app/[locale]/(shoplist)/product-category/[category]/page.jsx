@@ -124,7 +124,7 @@ export async function generateMetadata({ params }) {
                 ? meta.seo_description_ar
                 : meta.seo_description;
 
-        const fullTitle = seoTitle ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+        const fullTitle = seoTitle ? `${seoTitle}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
         const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
