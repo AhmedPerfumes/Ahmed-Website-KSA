@@ -1,4 +1,4 @@
-"use client";
+        "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -135,10 +135,14 @@ export default function BuyXGetY() {
     const currentPromo = promotions[activePromoIndex] || null;
     const currentProducts = currentPromo?.products ?? [];
 
-    const promoImage = currentPromo?.image
-        ? (currentPromo.image.startsWith("http")
-            ? currentPromo.image
-            : `${process.env.NEXT_PUBLIC_API_URL}storage/${currentPromo.image}`)
+    const activeImage = (locale === 'ar' && currentPromo?.image_ar)
+        ? currentPromo.image_ar
+        : currentPromo?.image;
+
+    const promoImage = activeImage
+        ? (activeImage.startsWith("http")
+            ? activeImage
+            : `${process.env.NEXT_PUBLIC_API_URL}storage/${activeImage}`)
         : null;
 
     /* ── Skeleton ── */
@@ -193,8 +197,9 @@ export default function BuyXGetY() {
                                         ? `${currentPromo.name_ar} — Ahmed Al Maghribi Perfumes`
                                         : (currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers")
                                 }
-                                fill
-                                sizes="(max-width: 768px) 95vw, 100vw"
+                                width={1440}
+                                height={480}
+                                sizes="(max-width: 768px) 100vw, 1440px"
                                 className="bxy-banner__img"
                                 priority={false}
                                 loading="lazy"
