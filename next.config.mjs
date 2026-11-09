@@ -46,6 +46,84 @@ const nextConfig = {
     ],
   },
   productionBrowserSourceMaps: false,
+
+  // ── Cloudflare CDN Cache-Control Headers ───────────────────────────────────
+  // These headers tell Cloudflare how long to cache each asset type at the edge.
+  // Without these, Cloudflare may not cache assets at all.
+  async headers() {
+    return [
+      {
+        // ── Static public assets (images, fonts, SVGs, GIFs) ──────────────
+        // Safe to cache 1 year — if you change a file, rename it or bust the
+        // cache manually in Cloudflare dashboard (Caching → Purge Everything).
+        source: '/assets/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // ── Videos ────────────────────────────────────────────────────────
+        // Overrides the broader /assets rule above with a shorter TTL.
+        // 30 days (not immutable) — allows re-serving if you replace a video
+        // file with the same name without a full cache purge.
+        source: '/assets/videos/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=2592000, s-maxage=2592000',
+          },
+        ],
+      },
+      {
+        // ── Next.js built JS/CSS chunks ───────────────────────────────────
+        // Hashed filenames (e.g. main-abc123.js) are always unique per build,
+        // so caching forever is completely safe — a new deploy = new hash.
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // ── Next.js Image Optimizer (/_next/image) ────────────────────────
+        // Caches optimised/resized versions of dynamic product images coming
+        // from adminksa.ahmedalmaghribi.com/public/storage.
+        // s-maxage=604800 → Cloudflare keeps it 7 days at the edge.
+        // stale-while-revalidate → serves stale while fetching fresh copy.
+        source: '/_next/image',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // {
+      //   source: '/_next/image',
+      //   headers: [
+      //     {
+      //       key: 'Cache-Control',
+      //       // s-maxage tells Cloudflare specifically to cache for 7 days
+      //       // even with query parameters
+      //       value: 'public, s-maxage=604800, max-age=86400, stale-while-revalidate=86400',
+      //     },
+      //     {
+      //       // Cloudflare also respects Cloudflare-CDN-Cache-Control header
+      //       // This is a Cloudflare-specific header that overrides Cache-Control
+      //       // for the edge only — strongest signal you can send without Cache Rules
+      //       key: 'Cloudflare-CDN-Cache-Control',
+      //       value: 'public, max-age=604800',
+      //     },
+      //   ],
+      // },
+    ];
+  },
+
   async rewrites() {
     return [
       {
