@@ -140,10 +140,14 @@ export default function SpecialOffers() {
 
     const currentProducts = allDiscountProducts.slice(0, 12);
 
-    const promoImage = currentPromo?.image
-        ? (currentPromo.image.startsWith("http")
-            ? currentPromo.image
-            : `${process.env.NEXT_PUBLIC_API_URL}storage/${currentPromo.image}`)
+    const activeImage = (locale === 'ar' && currentPromo?.image_ar)
+        ? currentPromo.image_ar
+        : currentPromo?.image;
+
+    const promoImage = activeImage
+        ? (activeImage.startsWith("http")
+            ? activeImage
+            : `${process.env.NEXT_PUBLIC_API_URL}storage/${activeImage}`)
         : null;
 
     /* ── Skeleton ─────────────────────────────────────────────── */

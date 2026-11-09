@@ -67,7 +67,6 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto 36px;
-  aspect-ratio: 21 / 7;
   overflow: hidden;
   border-radius: 4px;
   background: var(--bxy-card-bg);
@@ -75,32 +74,29 @@
 
 @media (max-width: 767px) {
   .bxy-banner {
-    aspect-ratio: 16 / 9;
     margin-bottom: 24px;
   }
 }
 
 @media (max-width: 480px) {
   .bxy-banner {
-    aspect-ratio: 4 / 3;
     margin-bottom: 20px;
   }
 }
 
 .bxy-banner__link {
   display: block;
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: 100%;
+  line-height: 0;
   z-index: 1;
 }
 
 .bxy-banner__img {
-  position: absolute !important;
-  inset: 0;
   width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-  object-position: center;
+  height: auto !important;
+  display: block;
+  object-fit: contain;
   transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
 }

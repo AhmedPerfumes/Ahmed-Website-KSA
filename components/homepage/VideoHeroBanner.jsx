@@ -28,39 +28,39 @@ const MOBILE_BP = 768; // px
 
 export default function VideoHeroBanner({
     /* ── Desktop video ── */
-    desktopMp4Src  = "/assets/videos/banner-video.mp4",
-    desktopPoster  = "/assets/videos/banner-poster.jpg",
+    desktopMp4Src = "/assets/videos/banner-video.mp4",
+    desktopPoster = "/assets/videos/banner-poster.jpg",
 
     /* ── Mobile video (< 768px) ── */
-    mobileMp4Src   = "/assets/videos/banner-video-mobile.mp4",
-    mobilePoster   = "/assets/videos/banner-poster-mobile.jpg",
+    mobileMp4Src = "/assets/videos/banner-video-mobile.mp4",
+    mobilePoster = "/assets/videos/banner-poster-mobile.jpg",
 
     /* ── Optional overlay text ── */
-    eyebrow  = "",
-    title    = "",
+    eyebrow = "",
+    title = "",
     subtitle = "",
     ctaLabel = "Discover More",
-    ctaHref  = "/shop",
+    ctaHref = "/shop",
 
     objectPosition = "center center",
 
     /* ── Optional: make the whole banner a link (for videos with a CTA baked in) ── */
-    mediaHref  = "",
+    mediaHref = "",
     mediaLabel = "",
 }) {
     const locale = useLocale();
-    const t      = useTranslations();
+    const t = useTranslations();
 
-    const videoRef      = useRef(null);
-    const sectionRef    = useRef(null);
-    const playObsRef    = useRef(null); // continuous play/pause observer
-    const [ready,     setReady]     = useState(false);
-    const [isMobile,  setIsMobile]  = useState(false);
+    const videoRef = useRef(null);
+    const sectionRef = useRef(null);
+    const playObsRef = useRef(null); // continuous play/pause observer
+    const [ready, setReady] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [initiated, setInitiated] = useState(false);
 
     /* ── Resolve current sources based on breakpoint ── */
     const mp4Src = isMobile ? mobileMp4Src : desktopMp4Src;
-    const poster  = isMobile ? mobilePoster  : desktopPoster;
+    const poster = isMobile ? mobilePoster : desktopPoster;
 
     /* ── Breakpoint detection ── */
     useEffect(() => {
@@ -78,7 +78,7 @@ export default function VideoHeroBanner({
         const tryPlay = () => {
             video.play()
                 .then(() => setReady(true))
-                .catch(() => {});
+                .catch(() => { });
         };
         if (video.readyState >= 3) tryPlay();
         else video.addEventListener("canplay", tryPlay, { once: true });
@@ -112,7 +112,7 @@ export default function VideoHeroBanner({
             const video = videoRef.current;
             if (!video || !initiated) return;
             if (entry.isIntersecting) {
-                video.play().catch(() => {});
+                video.play().catch(() => { });
             } else {
                 video.pause();
             }
@@ -132,7 +132,7 @@ export default function VideoHeroBanner({
                 video.pause();
             } else if (playObsRef.current) {
                 // Only resume if still in viewport
-                video.play().catch(() => {});
+                video.play().catch(() => { });
             }
         };
         document.addEventListener("visibilitychange", handleVisibility);
@@ -144,11 +144,11 @@ export default function VideoHeroBanner({
         if (!initiated) return;
         setReady(false);
         startVideo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mp4Src]);
 
     const hasText = eyebrow || title || subtitle;
-    const href    = `/${locale}${ctaHref}`;
+    const href = `/${locale}${ctaHref}`;
 
     return (
         <section
@@ -203,10 +203,10 @@ export default function VideoHeroBanner({
             {hasText && (
                 <div className="vhb__content">
                     <div className="vhb__text">
-                        {eyebrow  && <span className="vhb__eyebrow">{t(eyebrow)}</span>}
-                        {title    && <h1   className="vhb__title">{t(title)}</h1>}
-                        {subtitle && <p    className="vhb__subtitle">{t(subtitle)}</p>}
-                        {ctaHref  && (
+                        {eyebrow && <span className="vhb__eyebrow">{t(eyebrow)}</span>}
+                        {title && <h1 className="vhb__title">{t(title)}</h1>}
+                        {subtitle && <p className="vhb__subtitle">{t(subtitle)}</p>}
+                        {ctaHref && (
                             <Link href={href} className="vhb__cta">
                                 {t(ctaLabel)}
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
