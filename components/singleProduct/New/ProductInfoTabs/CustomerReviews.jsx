@@ -15,7 +15,7 @@ const useHasMounted = () => {
 
 // Progressive star colors: lightest gold → deep amber (position 1 → 5)
 const STAR_COLORS = ['#E5C07A', '#D4A84B', '#C9903A', '#B87730', '#8B5E10'];
-const STAR_EMPTY  = '#D9D2CA';
+const STAR_EMPTY = '#D9D2CA';
 
 const StarRating = ({ rating, size = '1rem' }) => (
     <div className={styles.starRatingContainer}>
@@ -35,15 +35,52 @@ const StarRating = ({ rating, size = '1rem' }) => (
 // ====================================================================
 //  HELPER: StarPicker (interactive, premium)
 // ====================================================================
-const RATING_LABELS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+const StarPicker = ({ value, onChange, error, t: tProp, locale: localeProp }) => {
+    const tHook = useTranslations('Reviews');
+    const localeHook = useLocale();
+    const t = tProp || tHook;
+    const locale = localeProp || localeHook;
 
-const StarPicker = ({ value, onChange, error }) => {
     const [hover, setHover] = useState(0);
     const active = hover || value;
 
+    const getRatingLabel = (score) => {
+        if (locale === 'ar') {
+            switch (score) {
+                case 1: return 'ضعيف';
+                case 2: return 'مقبول';
+                case 3: return 'جيد';
+                case 4: return 'جيد جداً';
+                case 5: return 'ممتاز';
+                default: return 'اضغط على نجمة للتقييم';
+            }
+        }
+        try {
+            switch (score) {
+                case 1: return t('ratingLabels.poor');
+                case 2: return t('ratingLabels.fair');
+                case 3: return t('ratingLabels.good');
+                case 4: return t('ratingLabels.veryGood');
+                case 5: return t('ratingLabels.excellent');
+                default: return t('ratingLabels.tapToRate');
+            }
+        } catch (e) {
+            switch (score) {
+                case 1: return 'Poor';
+                case 2: return 'Fair';
+                case 3: return 'Good';
+                case 4: return 'Very Good';
+                case 5: return 'Excellent';
+                default: return 'Tap a star to rate';
+            }
+        }
+    };
+
     return (
         <div className={styles.starPickerWrapper}>
-            <span className={styles.starPickerLabel}>Your Rating</span>
+            <span className={styles.starPickerLabel}>
+                {locale === 'ar' ? 'تقييمك' : (t ? t('yourRatingLabel') : 'Your Rating')}
+            </span>
             <div className={styles.starPickerRow} role="group" aria-label="Select star rating">
                 {[1, 2, 3, 4, 5].map((s) => (
                     <button
@@ -64,7 +101,7 @@ const StarPicker = ({ value, onChange, error }) => {
                 ))}
             </div>
             <span className={styles.starRatingHint}>
-                {active > 0 ? RATING_LABELS[active] : 'Tap a star to rate'}
+                {getRatingLabel(active)}
             </span>
             {error && <span className={styles.starErrorText}>{error}</span>}
         </div>
@@ -223,7 +260,13 @@ const ReviewList = ({ reviews, loading, t, locale }) => {
 // ====================================================================
 //  COMPONENT: ReviewFormModal — Fully Revamped
 // ====================================================================
-const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => {
+const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t: tProp, locale: localeProp }) => {
+    const tHook = useTranslations('Reviews');
+    const localeHook = useLocale();
+    const t = tProp || tHook;
+    const locale = localeProp || localeHook;
+    const isAr = locale === 'ar';
+
     const [formData, setFormData] = useState({ rating: 0, name: '', email: '', phone: '', comment: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -246,7 +289,7 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
     const handleAnonToggle = (e) => {
         setIsAnonymous(e.target.checked);
         if (e.target.checked) {
-            setFormData(prev => ({ ...prev, name: 'Anonymous' }));
+            setFormData(prev => ({ ...prev, name: isAr ? 'مجهول' : 'Anonymous' }));
         } else {
             const userStr = localStorage.getItem('user');
             let originalName = '';
@@ -257,15 +300,15 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
 
     const validate = () => {
         const newErrors = {};
-        if (formData.rating === 0) newErrors.rating = t('selectRatingAlert');
-        if (!formData.name.trim()) newErrors.customer_name = ['Name is required'];
+        if (formData.rating === 0) newErrors.rating = isAr ? 'يرجى تحديد تقييم بالنجوم.' : (t ? t('selectRatingAlert') : 'Please select a star rating.');
+        if (!formData.name.trim()) newErrors.customer_name = [isAr ? 'الاسم مطلوب' : (t ? t('nameRequired') : 'Name is required')];
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!formData.email.trim()) newErrors.customer_email = ['Email is required'];
-        else if (!emailRegex.test(formData.email)) newErrors.customer_email = ['Please enter a valid email address'];
+        if (!formData.email.trim()) newErrors.customer_email = [isAr ? 'البريد الإلكتروني مطلوب' : (t ? t('emailRequired') : 'Email is required')];
+        else if (!emailRegex.test(formData.email)) newErrors.customer_email = [isAr ? 'يرجى إدخال بريد إلكتروني صالح' : (t ? t('emailInvalid') : 'Please enter a valid email address')];
         const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
-        if (!formData.phone.trim()) newErrors.customer_phone = ['Mobile number is required for the coupon'];
-        else if (formData.phone.length < 8 || !phoneRegex.test(formData.phone)) newErrors.customer_phone = ['Please enter a valid mobile number'];
-        if (!formData.comment.trim()) newErrors.comment = ['Please write your review'];
+        if (!formData.phone.trim()) newErrors.customer_phone = [isAr ? 'رقم الجوال مطلوب للحصول على الكوبون' : (t ? t('phoneRequired') : 'Mobile number is required for the coupon')];
+        else if (formData.phone.length < 8 || !phoneRegex.test(formData.phone)) newErrors.customer_phone = [isAr ? 'يرجى إدخال رقم جوال صالح' : (t ? t('phoneInvalid') : 'Please enter a valid mobile number')];
+        if (!formData.comment.trim()) newErrors.comment = [isAr ? 'يرجى كتابة مراجعتك' : (t ? t('reviewRequired') : 'Please write your review')];
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -299,10 +342,10 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                     setErrors({});
                 }, 2200);
             } else {
-                setErrors(result.errors || { form: result.message || 'Something went wrong.' });
+                setErrors(result.errors || { form: result.message || (isAr ? 'حدث خطأ ما.' : (t ? t('genericError') : 'Something went wrong.')) });
             }
         } catch (err) {
-            setErrors({ form: 'Network error. Please try again later.' });
+            setErrors({ form: isAr ? 'حدث خطأ في الشبكة. الرجاء معاودة المحاولة.' : (t ? t('networkError') : 'Network error. Please try again later.') });
         } finally {
             setIsSubmitting(false);
         }
@@ -320,23 +363,33 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
 
     return (
         <div className={styles.modalBackdropCustom} onClick={handleBackdropClick}>
-            <div className={styles.modalContentDark}>
+            <div className={styles.modalContentDark} dir={isAr ? 'rtl' : 'ltr'}>
                 <button type="button" onClick={onClose} className={styles.closeButton} aria-label="Close">×</button>
 
                 <div className={styles.modalBodyScrollable}>
 
                     {/* Header */}
-                    <p className={styles.modalTitle}>{t('writeReviewTitle')}</p>
-                    <p className={styles.modalSubtitle}>Your honest opinion helps others choose confidently.</p>
+                    <p className={styles.modalTitle}>{isAr ? 'اكتب مراجعة' : t('writeReviewTitle')}</p>
+                    <p className={styles.modalSubtitle}>
+                        {isAr ? 'رأيك الصادق يساعد الآخرين على الاختيار بثقة.' : t('modalSubtitle')}
+                    </p>
 
                     {success ? (
                         <div className={styles.successScreen}>
                             <div className={styles.successIcon}>✓</div>
                             <h4 style={{ color: '#1a1a1a', fontFamily: "inherit", fontWeight: 700, marginBottom: '0.5rem' }}>
-                                {t('successMessage')}
+                                {isAr ? 'شكرًا لك! تم إرسال مراجعتك للموافقة عليها.' : t('successMessage')}
                             </h4>
                             <p style={{ color: '#888', fontFamily: "inherit", fontSize: '0.85rem' }}>
-                                Your <strong style={{ color: '#C7944B' }}>exclusive reward</strong> will be sent to your email upon approval.
+                                {isAr ? (
+                                    <>
+                                        سيتم إرسال <strong style={{ color: '#C7944B' }}>مكافأتك الحصرية</strong> إلى بريدك الإلكتروني فور الموافقة.
+                                    </>
+                                ) : (
+                                    <>
+                                        Your <strong style={{ color: '#C7944B' }}>{t('exclusiveReward')}</strong> will be sent to your email upon approval.
+                                    </>
+                                )}
                             </p>
                         </div>
                     ) : (
@@ -344,12 +397,36 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
 
                             {/* Guidelines */}
                             <div className={styles.rulesBox}>
-                                <h6>Guidelines & Rewards</h6>
+                                <h6>{isAr ? 'الإرشادات والمكافآت' : t('guidelinesTitle')}</h6>
                                 <ul>
-                                    <li>Reviews must be <strong>relevant</strong> to this product — focus on the scent, longevity, and <strong>your experience.</strong></li>
-                                    <li><strong>Log in</strong> to your account to autofill your details and ensure they match your profile.</li>
-                                    <li>Upon admin approval, you will unlock a <strong>special surprise</strong> sent to your email.</li>
-                                    <li><span className={styles.textGold}>Important:</span> The surprise is linked to your <strong>Mobile Number</strong> and sent via <strong>Email.</strong></li>
+                                    <li>
+                                        {isAr ? (
+                                            <>يجب أن تكون التقييمات <strong>ذات صلة</strong> بهذا المنتج — ركّز على الرائحة، الثبات، <strong>وتجربتك الشخصية.</strong></>
+                                        ) : (
+                                            <>Reviews must be <strong>relevant</strong> to this product — focus on the scent, longevity, and <strong>your experience.</strong></>
+                                        )}
+                                    </li>
+                                    <li>
+                                        {isAr ? (
+                                            <><strong>سجّل الدخول</strong> إلى حسابك لملء بياناتك تلقائيًا والتأكد من مطابقتها لملفك الشخصي.</>
+                                        ) : (
+                                            <><strong>Log in</strong> to your account to autofill your details and ensure they match your profile.</>
+                                        )}
+                                    </li>
+                                    <li>
+                                        {isAr ? (
+                                            <>عند موافقة الإدارة، ستحصل على <strong>مفاجأة خاصة</strong> تُرسل إلى بريدك الإلكتروني.</>
+                                        ) : (
+                                            <>Upon admin approval, you will unlock a <strong>special surprise</strong> sent to your email.</>
+                                        )}
+                                    </li>
+                                    <li>
+                                        {isAr ? (
+                                            <><span className={styles.textGold}>مهم:</span> المفاجأة مرتبطة <strong>برقم هاتفك</strong> وتُرسل عبر <strong>البريد الإلكتروني.</strong></>
+                                        ) : (
+                                            <><span className={styles.textGold}>Important:</span> The surprise is linked to your <strong>Mobile Number</strong> and sent via <strong>Email.</strong></>
+                                        )}
+                                    </li>
                                 </ul>
                             </div>
 
@@ -361,12 +438,14 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                                     setErrors(prev => ({ ...prev, rating: null }));
                                 }}
                                 error={errors.rating}
+                                t={t}
+                                locale={locale}
                             />
 
                             {/* Name + Phone */}
                             <div className={styles.formRow}>
                                 <div>
-                                    <label className={styles.formLabel}>{t('yourNameLabel')}</label>
+                                    <label className={styles.formLabel}>{isAr ? 'اسمك' : t('yourNameLabel')}</label>
                                     <input
                                         type="text"
                                         className={`${styles.formControlDark} ${errors.customer_name ? styles.isInvalid : ''}`}
@@ -379,18 +458,22 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.65rem', gap: '8px' }}>
                                         <input type="checkbox" id="anonSwitch" className={styles.toggleCheckbox} onChange={handleAnonToggle} checked={isAnonymous} />
                                         <label htmlFor="anonSwitch" className={styles.toggleSwitch} />
-                                        <label htmlFor="anonSwitch" className={styles.toggleLabelText}>Post Anonymously</label>
+                                        <label htmlFor="anonSwitch" className={styles.toggleLabelText}>
+                                            {isAr ? 'نشر بدون ذكر الاسم' : t('postAnonymously')}
+                                        </label>
                                     </div>
                                 </div>
                                 <div>
                                     <label className={styles.formLabel}>
-                                        Mobile Number&nbsp;
-                                        <span className={styles.formLabelGold}>· Required for coupon</span>
+                                        {isAr ? 'رقم الجوال' : t('mobileNumberLabel')}&nbsp;
+                                        <span className={styles.formLabelGold}>
+                                            {isAr ? '· مطلوب للحصول على الكوبون' : t('requiredForCoupon')}
+                                        </span>
                                     </label>
                                     <input
                                         type="tel"
                                         className={`${styles.formControlDark} ${errors.customer_phone ? styles.isInvalid : ''}`}
-                                        placeholder="050 123 4567"
+                                        placeholder={isAr ? '050 123 4567' : t('mobilePlaceholder')}
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     />
@@ -401,8 +484,10 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                             {/* Email */}
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>
-                                    {t('yourEmailLabel')}&nbsp;
-                                    <span className={styles.formLabelGold}>· Required for coupon</span>
+                                    {isAr ? 'بريدك الإلكتروني' : t('yourEmailLabel')}&nbsp;
+                                    <span className={styles.formLabelGold}>
+                                        {isAr ? '· مطلوب للحصول على الكوبون' : t('requiredForCoupon')}
+                                    </span>
                                 </label>
                                 <input
                                     type="email"
@@ -415,11 +500,11 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
 
                             {/* Review text */}
                             <div className={styles.formGroup}>
-                                <label className={styles.formLabel}>{t('yourReviewLabel')}</label>
+                                <label className={styles.formLabel}>{isAr ? 'مراجعتك' : t('yourReviewLabel')}</label>
                                 <textarea
                                     className={`${styles.formControlDark} ${errors.comment ? styles.isInvalid : ''}`}
                                     rows="4"
-                                    placeholder="Describe the scent, longevity, sillage..."
+                                    placeholder={isAr ? 'صف الرائحة، الثبات، الفوحان...' : t('reviewTextareaPlaceholder')}
                                     value={formData.comment}
                                     onChange={e => setFormData({ ...formData, comment: e.target.value })}
                                 />
@@ -433,7 +518,7 @@ const ReviewFormModal = ({ show, onClose, productId, onReviewSubmitted, t }) => 
                             )}
 
                             <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
-                                {isSubmitting ? t('submitting') : t('submit')}
+                                {isSubmitting ? (isAr ? 'جار الإرسال...' : t('submitting')) : (isAr ? 'إرسال المراجعة' : t('submit'))}
                             </button>
                         </form>
                     )}
@@ -551,6 +636,7 @@ const CustomerReviews = ({ product, reviews, loading, onReviewSubmitted }) => {
                 productId={product?.product_id}
                 onReviewSubmitted={onReviewSubmitted}
                 t={t}
+                locale={locale}
             />
         </section>
     );
