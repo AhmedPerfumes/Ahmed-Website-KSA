@@ -38,6 +38,8 @@ export default function NoteSection({ data = {} }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const trackRef = useRef(null);
+  const isProgrammaticScroll = useRef(false);
+  const programmaticTimer = useRef(null);
 
   const defaultNoteImgs = {
     top: "/assets/images/auric/top.jpeg",
@@ -78,27 +80,55 @@ export default function NoteSection({ data = {} }) {
     },
   ];
 
+  // Direction-agnostic: works for LTR and RTL (where scrollLeft is 0 or negative).
+  const getCenterOffset = (track, card) => {
+    const t = track.getBoundingClientRect();
+    const c = card.getBoundingClientRect();
+    return c.left + c.width / 2 - (t.left + t.width / 2);
+  };
+
   const scrollToCard = (index) => {
     setActiveIndex(index);
-    if (!trackRef.current) return;
-    const cards = trackRef.current.children;
-    if (cards[index]) {
-      cards[index].scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    }
+    const track = trackRef.current;
+    const card = track?.children[index];
+    if (!track || !card) return;
+    isProgrammaticScroll.current = true;
+    clearTimeout(programmaticTimer.current);
+    // Fallback in case no further scroll event fires
+    programmaticTimer.current = setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 700);
+    track.scrollTo({
+      left: track.scrollLeft + getCenterOffset(track, card),
+      behavior: "smooth",
+    });
   };
 
   const handleTrackScroll = (e) => {
-    const el = e.currentTarget;
-    if (!el) return;
-    const cardWidth = el.scrollWidth / cardsData.length;
-    const newIdx = Math.round(el.scrollLeft / cardWidth);
-    if (newIdx !== activeIndex && newIdx >= 0 && newIdx < cardsData.length) {
-      setActiveIndex(newIdx);
+    const track = e.currentTarget;
+    if (!track) return;
+
+    if (isProgrammaticScroll.current) {
+      // Ignore intermediate positions while a tab/dot-triggered scroll animates;
+      // release the lock shortly after scrolling settles.
+      clearTimeout(programmaticTimer.current);
+      programmaticTimer.current = setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 120);
+      return;
     }
+
+    // Active card = the one whose center is closest to the track's center.
+    let closest = 0;
+    let minDist = Infinity;
+    Array.from(track.children).forEach((card, i) => {
+      const dist = Math.abs(getCenterOffset(track, card));
+      if (dist < minDist) {
+        minDist = dist;
+        closest = i;
+      }
+    });
+    if (closest !== activeIndex) setActiveIndex(closest);
   };
 
   return (
@@ -244,7 +274,7 @@ export default function NoteSection({ data = {} }) {
         </div>
 
         {/* Mobile Pagination Indicators (< 992px) */}
-        <div className="auric-notes-dots" aria-hidden="true">
+        <div className="auric-notes-dots">
           {cardsData.map((item, idx) => (
             <button
               key={item.tier}
