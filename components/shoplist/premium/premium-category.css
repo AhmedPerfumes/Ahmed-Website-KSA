@@ -696,6 +696,12 @@
   unicode-bidi: isolate;
 }
 
+.pc-badge--bogo {
+  background: #1b4d3e;
+  color: var(--pc-white);
+  letter-spacing: 0.06em;
+}
+
 .pc-badge--oos {
   background: #a93226;
   color: #ffffff;

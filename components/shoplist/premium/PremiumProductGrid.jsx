@@ -47,18 +47,43 @@ function slugify(str) {
 /** Flatten subCategories + direct products into one flat array.
  *  Filters out dummy/invalid products (no name, price=0).
  */
+function normalizeProduct(p, subcat = null) {
+  const productName = p.product_name || p.name || "";
+  const productId = p.product_id ?? p.id;
+  const productQty = p.product_qty ?? p.quantity ?? 0;
+  return {
+    ...p,
+    product_id: productId,
+    product_name: productName,
+    product_qty: productQty,
+    _subcat: subcat,
+  };
+}
+
 function flatten(subCategories, products) {
   let items = [];
-  if (products && products.length > 0) {
-    items = products.map((p) => ({ ...p, _subcat: null }));
-  } else if (subCategories && subCategories.length > 0) {
-    items = subCategories.flatMap((sc) =>
-      (sc.products || []).map((p) => ({
-        ...p,
-        _subcat: slugify(sc.name || ""),
-      }))
-    );
+  const rawSubcats = Array.isArray(subCategories)
+    ? subCategories
+    : (subCategories ? Object.values(subCategories) : []);
+  const rawProducts = Array.isArray(products)
+    ? products
+    : (products ? Object.values(products) : []);
+
+  const hasSubcatProducts = rawSubcats.length > 0 && rawSubcats.some((sc) => {
+    const scProds = Array.isArray(sc.products) ? sc.products : (sc.products ? Object.values(sc.products) : []);
+    return scProds.length > 0;
+  });
+
+  if (hasSubcatProducts) {
+    items = rawSubcats.flatMap((sc) => {
+      const scProds = Array.isArray(sc.products) ? sc.products : (sc.products ? Object.values(sc.products) : []);
+      const subcatSlug = slugify(sc.name || "");
+      return scProds.map((p) => normalizeProduct(p, subcatSlug));
+    });
+  } else if (rawProducts.length > 0) {
+    items = rawProducts.map((p) => normalizeProduct(p, null));
   }
+
   // Remove products with no name or price === 0 (advertisement/dummy slots)
   return items.filter(
     (p) => p.product_name && p.product_name.trim() !== "" && parseFloat(p.price) > 0
@@ -68,10 +93,10 @@ function flatten(subCategories, products) {
 function doSort(items, opt) {
   switch (opt) {
     case "popularity": return [...items].sort((a, b) => (b.sales || 0) - (a.sales || 0));
-    case "date":       return [...items].sort((a, b) => b.product_id - a.product_id);
-    case "price":      return [...items].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    case "date": return [...items].sort((a, b) => b.product_id - a.product_id);
+    case "price": return [...items].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     case "price-desc": return [...items].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-    default:           return items;
+    default: return items;
   }
 }
 
@@ -116,11 +141,11 @@ function SkeletonCard() {
 /* ─── Main Component ─────────────────────────────────────────── */
 
 export default function PremiumProductGrid({ subCategories, products, categoryLabel, categoryLabelAr, breadcrumbItems }) {
-  const pathname     = usePathname();
-  const locale       = useLocale();
+  const pathname = usePathname();
+  const locale = useLocale();
   const pathCategory = pathname.split("/")[3] || "";
-  const pathSubcat   = pathname.split("/")[4] || null;
-  const t            = useTranslations();
+  const pathSubcat = pathname.split("/")[4] || null;
+  const t = useTranslations();
 
   /* Pick the correct heading for the active locale */
   const displayLabel = (locale === "ar" && categoryLabelAr) ? categoryLabelAr : categoryLabel;
@@ -128,8 +153,7 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
   /* Flatten + initial sort */
   const initialFlat = useMemo(
     () => doSort(flatten(subCategories, products), "popularity"),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [subCategories, products]
   );
 
   /* Price bounds from data */
@@ -143,13 +167,18 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
   );
 
   /* State */
-  const [allProducts,    setAllProducts]    = useState(initialFlat);
-  const [sortOpt,        setSortOpt]        = useState("popularity");
-  const [drawerOpen,     setDrawerOpen]     = useState(false);
-  const [wantInStock,    setWantInStock]    = useState(true);
+  const [allProducts, setAllProducts] = useState(initialFlat);
+
+  /* Keep allProducts in sync when products / subCategories change */
+  useEffect(() => {
+    setAllProducts(initialFlat);
+  }, [initialFlat]);
+  const [sortOpt, setSortOpt] = useState("popularity");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [wantInStock, setWantInStock] = useState(true);
   const [wantOutOfStock, setWantOutOfStock] = useState(true);
-  const [pMin,           setPMin]           = useState(0);
-  const [pMax,           setPMax]           = useState(99999);
+  const [pMin, setPMin] = useState(0);
+  const [pMax, setPMax] = useState(99999);
 
   /* Sync price range once bounds are known */
   useEffect(() => { setPMin(priceMin0); setPMax(priceMax0); }, [priceMin0, priceMax0]);
@@ -194,14 +223,14 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
   }, []);
 
   /* Derived counts for filter labels */
-  const inStockCount  = useMemo(() => allProducts.filter((p) => p.product_qty > 0).length, [allProducts]);
-  const oosCount      = useMemo(() => allProducts.filter((p) => p.product_qty <= 0).length, [allProducts]);
+  const inStockCount = useMemo(() => allProducts.filter((p) => p.product_qty > 0).length, [allProducts]);
+  const oosCount = useMemo(() => allProducts.filter((p) => p.product_qty <= 0).length, [allProducts]);
 
   /* Filtered list */
   const displayed = useMemo(() => {
     return allProducts.filter((p) => {
       const inStock = p.product_qty > 0;
-      if (!wantInStock && inStock)    return false;
+      if (!wantInStock && inStock) return false;
       if (!wantOutOfStock && !inStock) return false;
       const price = parseFloat(p.price) || 0;
       if (price < pMin || price > pMax) return false;
@@ -220,7 +249,7 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
   /* Subcat for URL */
   function getSubcat(p) {
     if (pathSubcat) return pathSubcat;
-    if (p._subcat)  return p._subcat;
+    if (p._subcat) return p._subcat;
     return pathCategory;
   }
 
@@ -228,7 +257,7 @@ export default function PremiumProductGrid({ subCategories, products, categoryLa
   function handleRangeMin(e) { setPMin(Math.min(Number(e.target.value), pMax - 1)); }
   function handleRangeMax(e) { setPMax(Math.max(Number(e.target.value), pMin + 1)); }
 
-  const fillLeft  = priceMax0 > priceMin0 ? ((pMin - priceMin0) / (priceMax0 - priceMin0)) * 100 : 0;
+  const fillLeft = priceMax0 > priceMin0 ? ((pMin - priceMin0) / (priceMax0 - priceMin0)) * 100 : 0;
   const fillRight = priceMax0 > priceMin0 ? ((pMax - priceMin0) / (priceMax0 - priceMin0)) * 100 : 100;
 
   /* Keyboard close + body lock */

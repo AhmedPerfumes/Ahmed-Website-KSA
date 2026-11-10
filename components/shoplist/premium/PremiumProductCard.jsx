@@ -114,6 +114,9 @@ export default function PremiumProductCard({
   /* Display price */
   const displayPrice = (() => {
     if (!activeDiscount) return null;
+    if (activeDiscount.final_price) {
+      return Number(activeDiscount.final_price).toFixed(2);
+    }
     if (activeDiscount.discount_type === "percent") {
       return (elm.price - (elm.price / 100) * activeDiscount.value).toFixed(2);
     }
@@ -146,9 +149,26 @@ export default function PremiumProductCard({
       ? (elm?.product_name_ar?.trim() || he.decode(elm?.product_name || ""))
       : he.decode(elm?.product_name || "");
 
-  const isPercentDiscount = activeDiscount?.discount_type === "percent";
-  const salePercent = isPercentDiscount ? Math.round(activeDiscount.value) : null;
-  const isAmountDiscount = activeDiscount?.discount_type === "amount" || (activeDiscount && !isPercentDiscount);
+  const base = Number(elm.price);
+  const hasDisc = !!activeDiscount;
+  let salePercent = null;
+  if (hasDisc) {
+    if (activeDiscount.discount_type === "percent" && Number(activeDiscount.value) > 0) {
+      salePercent = Math.round(Number(activeDiscount.value));
+    } else if (activeDiscount.final_price && base > 0) {
+      salePercent = Math.round(((base - Number(activeDiscount.final_price)) / base) * 100);
+    } else if (activeDiscount.discount_type === "amount" && base > 0 && Number(activeDiscount.value) > 0) {
+      salePercent = Math.round((Number(activeDiscount.value) / base) * 100);
+    }
+  }
+
+  const activeBogo = isDiscountActive(elm.buy_x_get_y) ? elm.buy_x_get_y : (elm.is_bogo ? elm : null);
+  const hasBogo = !hasDisc && !!activeBogo;
+  const bogoText = hasBogo
+    ? (locale === "ar"
+        ? (activeBogo.badge_text_ar || activeBogo.bogo_deal_ar || "اشتري 1 واحصل على 1 مجاناً")
+        : (activeBogo.badge_text || activeBogo.bogo_deal || "BUY 1 GET 1 FREE"))
+    : "";
 
   /* ─── Add to Cart ────────────────────────────────────────── */
 
@@ -240,12 +260,16 @@ export default function PremiumProductCard({
                 {elm.label_name}
               </span>
             )}
-            {isPercentDiscount && salePercent && !isOOS && (
-              <span className="pc-badge pc-badge--sale">{salePercent}% OFF</span>
-            )}
-            {isAmountDiscount && !isOOS && (
+            {hasDisc && !isOOS && (
               <span className="pc-badge pc-badge--sale">
-                {locale === "ar" ? "تخفيض" : "Sale"}
+                {salePercent && salePercent > 0
+                  ? `${salePercent}% OFF`
+                  : (locale === "ar" ? "تخفيض" : "Sale")}
+              </span>
+            )}
+            {hasBogo && !isOOS && (
+              <span className="pc-badge pc-badge--bogo">
+                {bogoText}
               </span>
             )}
             {isOOS && (
