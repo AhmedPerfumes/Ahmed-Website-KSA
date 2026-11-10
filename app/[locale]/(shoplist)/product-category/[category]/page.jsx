@@ -40,7 +40,7 @@ async function getCategorySubCategory(categoryName) {
   // });
   const origin = getRequestOrigin();
   const slug = categoryName.toLowerCase();
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, { 
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/products`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -73,114 +73,114 @@ async function getProductCategorySEO(categoryName) {
   // });
   const origin = getRequestOrigin();
   const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}api/productCategorySEO`,
-      {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              'origin': origin,
-          },
-          body: JSON.stringify({
-              category: categoryName.split("-").join(" ").toUpperCase(),
-              // subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
-              // product: product.split("-").join(" ").toUpperCase(),
-          }),
-          next: {
-            tags: ["categorySEO"],
-            revalidate: 604800 // 7 days
-          },
-      }
+    `${process.env.NEXT_PUBLIC_API_URL}api/productCategorySEO`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'origin': origin,
+      },
+      body: JSON.stringify({
+        category: categoryName.split("-").join(" ").toUpperCase(),
+        // subCategory: subCategoryName.split("-").join(" ").toUpperCase(),
+        // product: product.split("-").join(" ").toUpperCase(),
+      }),
+      next: {
+        tags: ["categorySEO"],
+        revalidate: 604800 // 7 days
+      },
+    }
   );
-  
+
   if (!response.ok) {
-      const errorMessage = await response.text(); // Get the error message from the server
-      console.error("SEO API Error:", errorMessage);
-      throw new Error(`SEO API Error: ${errorMessage}`);
+    const errorMessage = await response.text(); // Get the error message from the server
+    console.error("SEO API Error:", errorMessage);
+    throw new Error(`SEO API Error: ${errorMessage}`);
   }
   return response.json();
 }
 
 export async function generateMetadata({ params }) {
-    const resolvedParams = await params;
-    const category = resolvedParams?.category;
-    const locale = resolvedParams?.locale || "en";
+  const resolvedParams = await params;
+  const category = resolvedParams?.category;
+  const locale = resolvedParams?.locale || "en";
 
-    const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
+  const baseUrl = process.env.NEXT_PUBLIC_DEFAULT_ORIGIN || "https://ksa.ahmedalmaghribi.com";
 
-    const canonicalUrl = `${baseUrl}/${locale}/product-category/${category}`;
+  const canonicalUrl = `${baseUrl}/${locale}/product-category/${category}`;
 
-    try {
-        const data = await getProductCategorySEO(category);
-        const meta = typeof data?.meta_value === "string" ? (JSON.parse(data.meta_value)[0] || {}) : (Array.isArray(data?.meta_value) ? (data.meta_value[0] || {}) : (data?.meta_value || {}));
+  try {
+    const data = await getProductCategorySEO(category);
+    const meta = typeof data?.meta_value === "string" ? (JSON.parse(data.meta_value)[0] || {}) : (Array.isArray(data?.meta_value) ? (data.meta_value[0] || {}) : (data?.meta_value || {}));
 
-        // Select Arabic SEO fields only if locale is ar and values exist
-        const seoTitle =
-            locale === "ar" && meta.seo_title_ar
-                ? meta.seo_title_ar
-                : meta.seo_title;
+    // Select Arabic SEO fields only if locale is ar and values exist
+    const seoTitle =
+      locale === "ar" && meta.seo_title_ar
+        ? meta.seo_title_ar
+        : meta.seo_title;
 
-        const seoDescription =
-            locale === "ar" && meta.seo_description_ar
-                ? meta.seo_description_ar
-                : meta.seo_description;
+    const seoDescription =
+      locale === "ar" && meta.seo_description_ar
+        ? meta.seo_description_ar
+        : meta.seo_description;
 
-        const fullTitle = seoTitle ? `${seoTitle}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
-        const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
+    const fullTitle = seoTitle ? `${seoTitle}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+    const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
-        const normalizedApiUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
-        const ogImage = meta.seo_image
-            ? `${normalizedApiUrl}storage/${meta.seo_image}`
-            : `${baseUrl}/assets/images/about/ahmed-logo.png`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
+    const normalizedApiUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
+    const ogImage = meta.seo_image
+      ? `${normalizedApiUrl}storage/${meta.seo_image}`
+      : `${baseUrl}/assets/images/about/ahmed-logo.png`;
 
-        return {
-            metadataBase: new URL(baseUrl),
-            title: fullTitle,
-            description: cleanDesc,
-            icons: {
-                icon: "/assets/images/ahmed-favicon.png",
-                shortcut: "/assets/images/ahmed-favicon.png",
-                apple: "/assets/images/ahmed-favicon.png",
-            },
-            alternates: {
-                canonical: canonicalUrl,
-                languages: {
-                  "ar-SA": `${baseUrl}/ar/product-category/${category}`,
-                  en: `${baseUrl}/en/product-category/${category}`,
-                  "x-default": `${baseUrl}/ar/product-category/${category}`,
-                },
-            },
-            openGraph: {
-                type: "website",
-                locale: locale === "ar" ? "ar_SA" : "en_US",
-                url: canonicalUrl,
-                siteName: "Ahmed Al Maghribi Perfumes",
-                title: fullTitle,
-                description: cleanDesc,
-                images: [
-                    {
-                        url: ogImage,
-                        width: ogImage.includes("ahmed-logo") ? 500 : 1200,
-                        height: ogImage.includes("ahmed-logo") ? 500 : 630,
-                        type: ogImage.endsWith(".png") ? "image/png" : "image/jpeg",
-                        alt: fullTitle,
-                    },
-                ],
-            },
-            twitter: {
-                card: "summary_large_image",
-                title: fullTitle,
-                description: cleanDesc,
-                images: [ogImage],
-            },
-        };
-    } catch (error) {
-        console.error("Error generating metadata:", error);
-        return {
-            title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-            description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
-        };
-    }
+    return {
+      metadataBase: new URL(baseUrl),
+      title: fullTitle,
+      description: cleanDesc,
+      icons: {
+        icon: "/assets/images/ahmed-favicon.png",
+        shortcut: "/assets/images/ahmed-favicon.png",
+        apple: "/assets/images/ahmed-favicon.png",
+      },
+      alternates: {
+        canonical: canonicalUrl,
+        languages: {
+          "ar-SA": `${baseUrl}/ar/product-category/${category}`,
+          en: `${baseUrl}/en/product-category/${category}`,
+          "x-default": `${baseUrl}/ar/product-category/${category}`,
+        },
+      },
+      openGraph: {
+        type: "website",
+        locale: locale === "ar" ? "ar_SA" : "en_US",
+        url: canonicalUrl,
+        siteName: "Ahmed Al Maghribi Perfumes",
+        title: fullTitle,
+        description: cleanDesc,
+        images: [
+          {
+            url: ogImage,
+            width: ogImage.includes("ahmed-logo") ? 500 : 1200,
+            height: ogImage.includes("ahmed-logo") ? 500 : 630,
+            type: ogImage.endsWith(".png") ? "image/png" : "image/jpeg",
+            alt: fullTitle,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: fullTitle,
+        description: cleanDesc,
+        images: [ogImage],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+      description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
+    };
+  }
 }
 const ShopPage8 = async ({ params }) => {
   const { category, locale } = params;
