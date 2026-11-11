@@ -562,7 +562,7 @@ export default function Header14() {
             try {
                 // Your new Laravel GET endpoint
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${searchKeyWord}`
+                    `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${encodeURIComponent(searchKeyWord)}&locale=${locale}`
                 );
                 const result = await response.json();
                 if (result.success) {
@@ -632,11 +632,11 @@ export default function Header14() {
         const cleanedKeyword = removeSpecialCharactersAndAmp(searchKeyWord)
             .split(" ")
             .join("-");
-        window.location.href = `/${locale}/shop?q=${cleanedKeyword}`;
+        window.location.href = `/${locale}/shop?q=${encodeURIComponent(cleanedKeyword)}`;
     };
     function removeSpecialCharactersAndAmp(str) {
         let cleanedStr = str.replace(/&amp;/g, "");
-        cleanedStr = cleanedStr.replace(/[^\w\s-]/g, "");
+        cleanedStr = cleanedStr.replace(/[^\p{L}\p{N}\s-]/gu, "");
         return cleanedStr.replace(/\s+/g, " ").trim();
     }
 

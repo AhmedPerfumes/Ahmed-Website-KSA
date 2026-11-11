@@ -893,7 +893,7 @@ export default function Header14() {
             setIsSearching(true);
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${encodeURIComponent(searchKeyWord)}`
+                    `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${encodeURIComponent(searchKeyWord)}&locale=${locale}`
                 );
                 const result = await response.json();
                 if (result.success) {
@@ -946,12 +946,13 @@ export default function Header14() {
         const cleanedKeyword = removeSpecialCharactersAndAmp(searchKeyWord)
             .split(" ")
             .join("-");
-        window.location.href = `/${locale}/shop?q=${cleanedKeyword}`;
+        window.location.href = `/${locale}/shop?q=${encodeURIComponent(cleanedKeyword)}`;
     };
 
     function removeSpecialCharactersAndAmp(str) {
         let cleanedStr = str.replace(/&amp;/g, "");
-        cleanedStr = cleanedStr.replace(/[^\w\s-]/g, "");
+        // Unicode-aware: keeps Arabic letters (ASCII-only \w would strip them)
+        cleanedStr = cleanedStr.replace(/[^\p{L}\p{N}\s-]/gu, "");
         return cleanedStr.replace(/\s+/g, " ").trim();
     }
 
@@ -1186,7 +1187,7 @@ export default function Header14() {
                                         </ul>
                                         <div className="search-results__footer">
                                             <Link
-                                                href={`/${locale}/shop?q=${searchKeyWord}`}
+                                                href={`/${locale}/shop?q=${encodeURIComponent(removeSpecialCharactersAndAmp(searchKeyWord).split(" ").join("-"))}`}
                                                 className="view-all-btn"
                                                 onClick={() => setIsPopupOpen(false)}
                                             >
@@ -1198,7 +1199,7 @@ export default function Header14() {
 
                                 {/* No Results Found */}
                                 {!isSearching &&
-                                    searchKeyWord.length > 2 &&
+                                    searchKeyWord.trim().length >= 2 &&
                                     searchSuggestions.length === 0 && (
                                         <div className="p-4 text-center text-muted fs-14">
                                             {t("No products found for")} "{searchKeyWord}"

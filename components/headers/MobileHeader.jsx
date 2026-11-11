@@ -37,7 +37,7 @@ export default function MobileHeader() {
       setIsSearching(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${searchKeyWord}`
+          `${process.env.NEXT_PUBLIC_API_URL}api/search-suggestions?keyword=${encodeURIComponent(searchKeyWord)}&locale=${locale}`
         );
         const result = await response.json();
         if (result.success) {
@@ -58,18 +58,16 @@ export default function MobileHeader() {
   function removeSpecialCharactersAndAmp(str) {
     return str
       .replace(/&amp;/g, "")
-      .replace(/[^\w\s-]/g, "")
+      .replace(/[^\p{L}\p{N}\s-]/gu, "")
       .replace(/\s+/g, " ")
       .trim();
   }
 
   const onSearch = (event) => {
     event.preventDefault();
-    window.location.href = `/${locale}/shop?q=${removeSpecialCharactersAndAmp(
-      searchKeyWord
-    )
-      .split(" ")
-      .join("-")}`;
+    window.location.href = `/${locale}/shop?q=${encodeURIComponent(
+      removeSpecialCharactersAndAmp(searchKeyWord).split(" ").join("-")
+    )}`;
   };
 
   return (
@@ -345,7 +343,7 @@ export default function MobileHeader() {
 
             {!isSearching && searchSuggestions.length > 0 && (
               <Link
-                href={`/${locale}/shop?q=${searchKeyWord}`}
+                href={`/${locale}/shop?q=${encodeURIComponent(removeSpecialCharactersAndAmp(searchKeyWord).split(" ").join("-"))}`}
                 className="d-block text-center p-3 fs-13 fw-bold text-uppercase border-top bg-light text-dark text-decoration-none"
                 onClick={() => {
                   setSearchKeyWord("");
