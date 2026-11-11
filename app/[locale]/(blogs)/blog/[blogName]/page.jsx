@@ -172,7 +172,8 @@ export async function generateMetadata({ params }) {
 
 
 const BlogDetailsPage = async({ params }) => {
-  const { blogName } = params;
+  const resolvedParams = await params;
+  const { blogName, locale } = resolvedParams || {};
   // console.log(blogName);
   try {
     const data = await getBlog(blogName);
@@ -181,7 +182,7 @@ const BlogDetailsPage = async({ params }) => {
       <>
         <main className="page-wrapper">
           <div className="mb-4 pb-4"></div>
-          <BlogDetails blog={data} />
+          <BlogDetails blog={data} locale={locale} />
         </main>
         <Footer14 />
       </>
