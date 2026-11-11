@@ -53,7 +53,7 @@ export async function generateMetadata({ params: { locale } }) {
 
     title: {
       default: defaultTitle,
-      template: isAr ? "%s | عطور أحمد المغربي" : "%s | Ahmed Al Maghribi Perfumes",
+    //   template: isAr ? "%s | عطور أحمد المغربي" : "%s | Ahmed Al Maghribi Perfumes",
     },
 
     description: defaultDesc,
