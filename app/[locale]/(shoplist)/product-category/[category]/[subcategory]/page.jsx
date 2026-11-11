@@ -105,7 +105,7 @@ export async function generateMetadata({ params }) {
         : meta.seo_description;
 
     const fullTitle = seoTitle
-      ? `${seoTitle} | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes`
+      ? `${seoTitle}`
       : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
     const cleanDesc = seoDescription
       ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim()
