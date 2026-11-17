@@ -96,7 +96,8 @@ export default function EditAddress() {
                     const stored = localStorage.getItem("address");
                     if (stored) {
                         try {
-                            const def = JSON.parse(atob(stored));
+                            let def;
+                            try { def = JSON.parse(decodeURIComponent(escape(atob(stored)))); } catch { def = JSON.parse(atob(stored)); }
                             parsed.forEach((a) => {
                                 a.isDefault = a.id === def.id;
                                 if (a.id === def.id && !a.building_name && def.area) {
@@ -281,7 +282,7 @@ export default function EditAddress() {
             if (defaultAddr) {
                 localStorage.setItem(
                     "address",
-                    btoa(
+                    btoa(unescape(encodeURIComponent(
                         JSON.stringify({
                             id: defaultAddr.id,
                             name: defaultAddr.name,
@@ -296,6 +297,7 @@ export default function EditAddress() {
                             customer_id: customerId,
                             is_default: 1,
                         })
+                    ))
                     )
                 );
             }

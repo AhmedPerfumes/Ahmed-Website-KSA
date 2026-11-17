@@ -178,7 +178,8 @@ export default function CheckoutClassic() {
     }
     const addrStr = localStorage.getItem('address');
     if (addrStr) {
-      const a = JSON.parse(atob(addrStr));
+      let a;
+      try { a = JSON.parse(decodeURIComponent(escape(atob(addrStr)))); } catch { a = JSON.parse(atob(addrStr)); }
       area = a.city || ''; building = a.address || ''; building_name = a.area || a.building_name || ''; province = a.state || ''; short_national_address = a.short_national_address || '';
     }
     // Only pre-fill — do NOT setDoneSection1 or setActiveSection
@@ -439,12 +440,12 @@ export default function CheckoutClassic() {
     const chosen = addrList[idx];
     const updated = addrList.map((a, i) => ({ ...a, isDefault: i === idx }));
     setAddrList(updated);
-    localStorage.setItem('address', btoa(JSON.stringify({
+    localStorage.setItem('address', btoa(unescape(encodeURIComponent(JSON.stringify({
       id: chosen.id, name: chosen.name, email: chosen.email, phone: chosen.mobile,
       state: chosen.province, city: chosen.area, address: chosen.building,
       area: chosen.building_name || '', building_name: chosen.building_name || '',
       short_national_address: chosen.short_national_address, is_default: 1,
-    })));
+    })))));
     // Re-hydrate formData so the address card shows the selected address
     const parts = (chosen.name || '').split(' ');
     setFormData(p => ({
@@ -484,12 +485,12 @@ export default function CheckoutClassic() {
     // Update localStorage if this is now default
     const defaultAddr = updated.find(a => a.isDefault);
     if (defaultAddr) {
-      localStorage.setItem('address', btoa(JSON.stringify({
+      localStorage.setItem('address', btoa(unescape(encodeURIComponent(JSON.stringify({
         id: defaultAddr.id, name: defaultAddr.name, email: defaultAddr.email, phone: defaultAddr.mobile,
         state: defaultAddr.province, city: defaultAddr.area, address: defaultAddr.building,
         area: defaultAddr.building_name || '', building_name: defaultAddr.building_name || '',
         short_national_address: defaultAddr.short_national_address, is_default: 1,
-      })));
+      })))));
     }
 
     // ALWAYS re-hydrate checkout formData from the just-edited address
@@ -537,9 +538,9 @@ export default function CheckoutClassic() {
           localStorage.removeItem('token'); localStorage.removeItem('user');
         }
       }
-    } catch { }
-
-    setAddrSaving(false);
+    } catch { } finally {
+      setAddrSaving(false);
+    }
     setEditingAddrIdx(null); // back to list view in modal
   };
 
