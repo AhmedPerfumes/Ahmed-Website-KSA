@@ -14,6 +14,7 @@ import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import NationalAddressWhatsApp from '@/components/common/NationalAddressWhatsApp';
 import BogoFeature from "@/components/BogoFeature";
+import BogoProgress from "@/components/BogoProgress";
 import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 import { SAUDI_CITIES, SAUDI_REGIONS, regionForCity } from "@/data/saudiCities";
@@ -1321,6 +1322,7 @@ export default function Checkout() {
       {cartProducts.length ? (
         <>
           <FreeGiftFeature couponData={couponData} />
+          <BogoProgress />
           <BogoFeature />
           <form onSubmit={onOrder} noValidate>
             <datalist id="sa-city-list">

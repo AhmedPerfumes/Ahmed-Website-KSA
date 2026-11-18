@@ -16,6 +16,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import he from "he";
 import { useLocale, useTranslations } from "next-intl";
+import BogoProgress from "@/components/BogoProgress";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "../../context/MenuContext";
 import { openCart } from "@/utlis/openCart";
@@ -211,6 +212,10 @@ export default function CartDrawer() {
               <div className="cd2-ship__track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
                 <div className={`cd2-ship__fill${remaining <= 0 ? " is-done" : ""}`} style={{ width: `${progress}%` }} />
               </div>
+            </div>
+
+            <div style={{ padding: "0 16px" }}>
+              <BogoProgress compact />
             </div>
 
             {/* ── Scrollable body: items + upsell ── */}

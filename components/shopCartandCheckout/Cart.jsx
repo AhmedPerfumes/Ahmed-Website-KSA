@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
+import BogoProgress from "@/components/BogoProgress";
 import { useMenu } from "../../context/MenuContext";
 import Pagination1 from "../common/Pagination1";
 import TamaraWidget from "../TamaraWidget";
@@ -300,6 +301,7 @@ export default function Cart() {
           <>
             {/* ── Items column ─────────────────────────────────────── */}
             <div className="cart-table__wrapper">
+              <BogoProgress />
               {/* SEO: semantic article list for cart items */}
               <article
                 className="cc-cart-items-list"
