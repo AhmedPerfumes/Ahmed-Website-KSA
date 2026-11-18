@@ -14,7 +14,7 @@ import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import NationalAddressWhatsApp from '@/components/common/NationalAddressWhatsApp';
 import BogoFeature from "@/components/BogoFeature";
-import BogoProgress from "@/components/BogoProgress";
+import BogoProgress, { loadPromotions, getBogoShortfalls } from "@/components/BogoProgress";
 import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 import { SAUDI_CITIES, SAUDI_REGIONS, regionForCity } from "@/data/saudiCities";
@@ -798,6 +798,8 @@ export default function Checkout() {
       ...(note?.trim() ? { note: note.trim(), order_notes: note.trim() } : {}),
       products: mapProductsFromFormData(cartProducts),
       payment_method: method,
+      // 1 only when the customer chose "Place order anyway" in the Buy X Get Y pop-up
+      customer_consent: bogoConsentRef.current ? 1 : 0,
       shippingPrice,
       shippingPriceVat,
       servicePrice,
@@ -825,19 +827,38 @@ export default function Checkout() {
     return null;
   }
 
+  const [bogoWarn, setBogoWarn] = useState(null);
+  const bogoConfirmedRef = useRef(false);
+  const bogoConsentRef = useRef(false);
+
   async function onOrder(event) {
     event.preventDefault();
+    console.log('[onOrder v2] start', { selectedOption, isLoggedIn, guestStep });
     // Apple Pay is submitted by its own button (Apple Pay sheet), never through this handler
-    if (selectedOption === 'applepay') return;
-    if (!isLoggedIn && guestStep < 3) { goNextStep(guestStep); return; }
+    if (selectedOption === 'applepay') { console.log('[onOrder v2] exit: applepay'); return; }
+    if (!isLoggedIn && guestStep < 3) { console.log('[onOrder v2] exit: guestStep<3, moving to next step'); goNextStep(guestStep); return; }
     setError(null); setSuccess(null);
-    if (!validateDetails()) return;
+    if (!validateDetails()) { console.log('[onOrder v2] exit: validation failed'); return; }
 
     if (!selectedOption || !selectedOption.trim()) {
+      console.log('[onOrder v2] exit: no payment method');
       setError(tc('choosePayment'));
       document.querySelector('.cc-payment-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+
+    // Buy X Get Y: warn if the customer hasn't reached the required quantity
+    if (!bogoConfirmedRef.current) {
+      const promosForCheck = await loadPromotions();
+      const shortfalls = getBogoShortfalls(promosForCheck, cartProducts);
+      console.log('[BOGO check]', { promos: promosForCheck, cart: cartProducts.map(i => ({ id: i.product_id, qty: i.quantity, gift: i.is_gift })), shortfalls });
+      if (shortfalls.length) {
+        setBogoWarn(shortfalls[0]);
+        return;
+      }
+    }
+    console.log('[onOrder v2] proceeding to storeOrder', { consent: bogoConsentRef.current });
+    bogoConfirmedRef.current = false;
     setIsLoading(true);
 
     try {
@@ -869,14 +890,17 @@ export default function Checkout() {
     // Short National Address is compulsory
     const short_national_address = formData.billingAddress.short_national_address?.trim();
     if (!short_national_address || !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
+      console.log('[onOrder v2] exit: short national address invalid');
       setIsLoading(false);
+      bogoConsentRef.current = false;
       setError(tc('snaRequired'));
       return;
     }
 
     const additionalFields = buildOrderPayload(selectedOption);
+    bogoConsentRef.current = false;
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
+console.log(additionalFields,"adddd");
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/storeOrder`, {
         method: 'POST', body: JSON.stringify(additionalFields),
@@ -1321,6 +1345,41 @@ export default function Checkout() {
     <>
       {cartProducts.length ? (
         <>
+          {bogoWarn && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              onClick={() => setBogoWarn(null)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 420, width: '100%', textAlign: 'center' }}
+              >
+                <h4 style={{ margin: '0 0 8px', fontSize: 18 }}>
+                  {locale === 'ar' ? 'هل أنت متأكد من إتمام الطلب؟' : 'Are you sure you want to place the order?'}
+                </h4>
+                <p style={{ margin: '0 0 18px', fontSize: 14, color: '#444' }}>
+                  {locale === 'ar'
+                    ? `أضف ${bogoWarn.need} ${bogoWarn.need > 1 ? 'منتجات' : 'منتج'} إضافية لتحصل على ${bogoWarn.getQty} مجاناً${(bogoWarn.promo.name_ar || bogoWarn.promo.name) ? ` (${bogoWarn.promo.name_ar?.trim() || bogoWarn.promo.name})` : ''}.`
+                    : `Add ${bogoWarn.need} more item${bogoWarn.need > 1 ? 's' : ''} to get ${bogoWarn.getQty} FREE${bogoWarn.promo.name ? ` — ${bogoWarn.promo.name}` : ''}.`}
+                </p>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <Link href={`/${locale}/shop`} className="cc-btn-gold" style={{ textDecoration: 'none', display: 'block', padding: '12px 16px' }}>
+                    {locale === 'ar' ? 'أضف منتجات أخرى' : 'Add more products'}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => { bogoConfirmedRef.current = true; bogoConsentRef.current = true; setBogoWarn(null); onOrder({ preventDefault() {} }); }}
+                    style={{ background: 'none', border: '1px solid #ccc', borderRadius: 6, padding: '12px 16px', cursor: 'pointer' }}
+                  >
+                    {locale === 'ar' ? 'إتمام الطلب على أي حال' : 'Place order anyway'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <FreeGiftFeature couponData={couponData} />
           <BogoProgress />
           <BogoFeature />

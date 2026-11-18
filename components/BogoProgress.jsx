@@ -5,7 +5,7 @@ import { useContextElement } from "@/context/Context";
 
 // Module-level cache so cart, drawer and checkout share one request.
 let promoPromise = null;
-const loadPromotions = () => {
+export const loadPromotions = () => {
   if (!promoPromise) {
     promoPromise = fetch(`${process.env.NEXT_PUBLIC_API_URL}api/bogoProducts`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -17,6 +17,23 @@ const loadPromotions = () => {
   }
   return promoPromise;
 };
+
+/**
+ * Campaigns where the cart holds a qualifying item but fewer than the
+ * required buy quantity (offer not yet reached). Used at checkout.
+ */
+export const getBogoShortfalls = (promos, cartProducts) =>
+  (promos || [])
+    .map((promo) => {
+      const buyQty = Number(promo.buy_quantity);
+      const getQty = Number(promo.get_quantity) || 1;
+      const total = (cartProducts || [])
+        .filter((i) => !i.is_gift && promo.buy_products.some((b) => String(b.product_id) === String(i.product_id)))
+        .reduce((s, i) => s + (Number(i.quantity) || 0), 0);
+      if (total <= 0 || total >= buyQty) return null;
+      return { promo, buyQty, getQty, need: buyQty - total };
+    })
+    .filter(Boolean);
 
 /**
  * Progress bar(s) for Buy X Get Y campaigns, so the customer knows
