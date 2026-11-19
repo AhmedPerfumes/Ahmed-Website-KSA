@@ -14,7 +14,7 @@ import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import NationalAddressWhatsApp from '@/components/common/NationalAddressWhatsApp';
 import BogoFeature from "@/components/BogoFeature";
-import BogoProgress from "@/components/BogoProgress";
+import BogoProgress, { loadPromotions, getBogoShortfalls } from "@/components/BogoProgress";
 import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 import { SAUDI_CITIES, SAUDI_REGIONS, regionForCity } from "@/data/saudiCities";
@@ -799,7 +799,7 @@ export default function Checkout() {
       products: mapProductsFromFormData(cartProducts),
       payment_method: method,
       // 1 only when the customer chose "Continue without free item" in the Buy X Get Y pop-up
-      customer_consent: (typeof window !== 'undefined' && sessionStorage.getItem('bogo_consent') === '1') ? 1 : 0,
+      customer_consent: (bogoConsentRef.current || (typeof window !== 'undefined' && sessionStorage.getItem('bogo_consent') === '1')) ? 1 : 0,
       shippingPrice,
       shippingPriceVat,
       servicePrice,
@@ -827,6 +827,10 @@ export default function Checkout() {
     return null;
   }
 
+  const [bogoWarn, setBogoWarn] = useState(null);
+  const bogoConfirmedRef = useRef(false);
+  const bogoConsentRef = useRef(false);
+
   async function onOrder(event) {
     event.preventDefault();
     console.log('[onOrder v2] start', { selectedOption, isLoggedIn, guestStep });
@@ -843,6 +847,16 @@ export default function Checkout() {
       return;
     }
 
+    // Buy X Get Y: warn if the customer hasn't reached the required quantity
+    if (!bogoConfirmedRef.current) {
+      const promosForCheck = await loadPromotions();
+      const shortfalls = getBogoShortfalls(promosForCheck, cartProducts);
+      if (shortfalls.length) {
+        setBogoWarn(shortfalls[0]);
+        return;
+      }
+    }
+    bogoConfirmedRef.current = false;
     setIsLoading(true);
 
     try {
@@ -881,6 +895,7 @@ export default function Checkout() {
     }
 
     const additionalFields = buildOrderPayload(selectedOption);
+    bogoConsentRef.current = false;
     try { sessionStorage.removeItem('bogo_consent'); } catch { /* ignore */ }
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     console.log(additionalFields, "adddd");
@@ -1435,6 +1450,87 @@ export default function Checkout() {
           {/* Buy X Get Y progress — directly above the upsell strip */}
           <FreeGiftFeature couponData={couponData} />
           <BogoProgress compact className="cd2-bogo" />
+          {bogoWarn && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              onClick={() => setBogoWarn(null)}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(15, 15, 15, 0.55)',
+                backdropFilter: 'blur(3px)',
+                zIndex: 10000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 16,
+              }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                style={{
+                  position: 'relative',
+                  background: '#fff',
+                  borderRadius: 14,
+                  borderTop: '3px solid #c62828',
+                  padding: '28px 24px 20px',
+                  maxWidth: 400,
+                  width: '100%',
+                  textAlign: 'center',
+                  boxShadow: '0 20px 48px rgba(0, 0, 0, 0.18)',
+                }}
+              >
+                <h4 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, lineHeight: 1.3, color: '#c62828' }}>
+                  {locale === 'ar'
+                    ? (bogoWarn.getQty > 1 ? 'أنت تفوّت منتجاتك المجانية' : 'أنت تفوّت منتجك المجاني')
+                    : (bogoWarn.getQty > 1 ? 'You are missing your free items' : 'You are missing your free item')}
+                </h4>
+                <p style={{ margin: '0 0 22px', fontSize: 14, lineHeight: 1.55, color: '#525252' }}>
+                  {locale === 'ar' ? (
+                    <>
+                      أضف <strong style={{ color: '#111' }}>{bogoWarn.need}</strong> {bogoWarn.need > 1 ? 'منتجات' : 'منتج'} إضافية لتحصل على{' '}
+                      <strong style={{ color: '#c62828' }}>{bogoWarn.getQty} مجاناً</strong>
+                      {(bogoWarn.promo.name_ar || bogoWarn.promo.name) ? ` (${bogoWarn.promo.name_ar?.trim() || bogoWarn.promo.name})` : ''}.
+                    </>
+                  ) : (
+                    <>
+                      Add <strong style={{ color: '#111' }}>{bogoWarn.need} more item{bogoWarn.need > 1 ? 's' : ''}</strong> to unlock{' '}
+                      <strong style={{ color: '#c62828' }}>{bogoWarn.getQty} FREE</strong>
+                      {bogoWarn.promo.name ? ` — ${bogoWarn.promo.name}` : ''}.
+                    </>
+                  )}
+                </p>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <Link
+                    href={`/${locale}/sale`}
+                    className="cc-btn-gold"
+                    style={{ textDecoration: 'none', display: 'block', padding: '13px 18px', borderRadius: 8, fontWeight: 600 }}
+                  >
+                    {locale === 'ar'
+                      ? (bogoWarn.getQty > 1 ? 'احصل على منتجاتك المجانية' : 'احصل على منتجك المجاني')
+                      : (bogoWarn.getQty > 1 ? 'Claim my free items' : 'Claim my free item')}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => { bogoConfirmedRef.current = true; bogoConsentRef.current = true; setBogoWarn(null); onOrder({ preventDefault() { } }); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: '8px 12px',
+                      fontSize: 13,
+                      color: '#737373',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {locale === 'ar' ? 'متابعة بدون العرض المجاني' : 'Continue without free item'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <BogoFeature hideAppliedBanner />
           <form onSubmit={onOrder} noValidate>
             <datalist id="sa-city-list">
