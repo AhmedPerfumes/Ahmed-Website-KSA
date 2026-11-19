@@ -13,10 +13,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import he from "he";
 import { useLocale, useTranslations } from "next-intl";
-import BogoProgress from "@/components/BogoProgress";
+import BogoProgress, { loadPromotions, getBogoShortfalls } from "@/components/BogoProgress";
 import { useContextElement } from "@/context/Context";
 import { useMenu } from "../../context/MenuContext";
 import { openCart } from "@/utlis/openCart";
@@ -32,8 +32,10 @@ export default function CartDrawer() {
   const t = useTranslations("CartDrawer");
   const { cartProducts, setCartProducts, totalPrice, couponDataContext, freeShippingThreshold, promotionsContext } = useContextElement();
   const pathname = usePathname();
+  const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [bogoWarn, setBogoWarn] = useState(null);
   const [itemErrors, setItemErrors] = useState({});   // product_id → message
   const [justAddedId, setJustAddedId] = useState(null);
   const [anchor, setAnchor] = useState(null);         // product the upsell is based on
@@ -167,12 +169,25 @@ export default function CartDrawer() {
   const itemCount = cartProducts.filter((p) => !p.is_gift).reduce((n, p) => n + Number(p.quantity || 0), 0);
   const remaining = Math.max(freeShippingThreshold - totalPrice, 0);
   const progress = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
-  const goCheckout = () => {
+  const proceedToCheckout = () => {
     try {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: "cart_checkout_click", value: totalPrice, items_count: itemCount });
     } catch { /* ignore */ }
     closeCart();
+    router.push(`/${locale}/shop-checkout`);
+  };
+
+  const goCheckout = async (e) => {
+    e.preventDefault();
+    const promos = await loadPromotions();
+    const shortfalls = getBogoShortfalls(promos, cartProducts);
+    if (shortfalls.length) {
+      setBogoWarn(shortfalls[0]);
+      return;
+    }
+    try { sessionStorage.removeItem("bogo_consent"); } catch { /* ignore */ }
+    proceedToCheckout();
   };
 
   return (
@@ -225,12 +240,39 @@ export default function CartDrawer() {
                   const href = productHref(elm, locale);
                   const size = Array.isArray(elm.tags) ? elm.tags.filter((x) => typeof x === "string").join(" · ") : "";
                   const limit = limitFor(elm);
+                  const hasFreeOffer = Number(elm.bogo_free_qty || 0) > 0 || Boolean(elm.is_gift);
                   const Wrap = href ? Link : "span";
                   const linkProps = href ? { href, onClick: closeCart } : {};
                   return (
                     <li key={`${elm.product_id}-${elm.is_gift ? "g" : "p"}`} data-pid={elm.is_gift ? undefined : elm.product_id} className={`cd2-item${justAddedId === elm.product_id && !elm.is_gift ? " is-new" : ""}`}>
-                      <Wrap {...linkProps} className="cd2-item__img">
+                      <Wrap {...linkProps} className="cd2-item__img" style={{ position: "relative" }}>
                         {img ? <Image src={img} alt={name} width={84} height={104} style={{ objectFit: "cover" }} /> : <span className="cd2-item__ph" />}
+                        {hasFreeOffer && (
+                          <span
+                            style={{
+                              position: "absolute",
+                              top: 9,
+                              ...(isAr
+                                ? { right: -20, transform: "rotate(45deg)" }
+                                : { left: -20, transform: "rotate(-45deg)" }),
+                              width: 68,
+                              padding: "2px 0",
+                              background: "#c62828",
+                              color: "#fff",
+                              fontSize: 9,
+                              fontWeight: 700,
+                              lineHeight: 1.2,
+                              letterSpacing: isAr ? 0 : "0.1em",
+                              textAlign: "center",
+                              textTransform: "uppercase",
+                              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.22)",
+                              pointerEvents: "none",
+                              zIndex: 1,
+                            }}
+                          >
+                            {isAr ? "مجاني" : "FREE"}
+                          </span>
+                        )}
                       </Wrap>
 
                       <div className="cd2-item__info">
@@ -322,6 +364,100 @@ export default function CartDrawer() {
       </div>
 
       <div id="cartDrawerOverlay" onClick={closeCart} className="page-overlay" />
+
+      {bogoWarn && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setBogoWarn(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 15, 15, 0.55)",
+            backdropFilter: "blur(3px)",
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            dir={isAr ? "rtl" : "ltr"}
+            style={{
+              position: "relative",
+              background: "#fff",
+              borderRadius: 14,
+              borderTop: "3px solid #c62828",
+              padding: "28px 24px 20px",
+              maxWidth: 400,
+              width: "100%",
+              textAlign: "center",
+              boxShadow: "0 20px 48px rgba(0, 0, 0, 0.18)",
+            }}
+          >
+            <h4 style={{ margin: "0 0 8px", fontSize: 19, fontWeight: 700, lineHeight: 1.3, color: "#c62828" }}>
+              {isAr
+                ? (bogoWarn.getQty > 1 ? "أنت تفوّت منتجاتك المجانية" : "أنت تفوّت منتجك المجاني")
+                : (bogoWarn.getQty > 1 ? "You are missing your free items" : "You are missing your free item")}
+            </h4>
+            <p style={{ margin: "0 0 22px", fontSize: 14, lineHeight: 1.55, color: "#525252" }}>
+              {isAr ? (
+                <>
+                  أضف <strong style={{ color: "#111" }}>{bogoWarn.need}</strong> {bogoWarn.need > 1 ? "منتجات" : "منتج"} إضافية لتحصل على{" "}
+                  <strong style={{ color: "#c62828" }}>{bogoWarn.getQty} مجاناً</strong>
+                  {(bogoWarn.promo.name_ar || bogoWarn.promo.name) ? ` (${bogoWarn.promo.name_ar?.trim() || bogoWarn.promo.name})` : ""}.
+                </>
+              ) : (
+                <>
+                  Add <strong style={{ color: "#111" }}>{bogoWarn.need} more item{bogoWarn.need > 1 ? "s" : ""}</strong> to unlock{" "}
+                  <strong style={{ color: "#c62828" }}>{bogoWarn.getQty} FREE</strong>
+                  {bogoWarn.promo.name ? ` — ${bogoWarn.promo.name}` : ""}.
+                </>
+              )}
+            </p>
+            <div style={{ display: "grid", gap: 10 }}>
+              <Link
+                href={`/${locale}/sale`}
+                onClick={() => { setBogoWarn(null); closeCart(); }}
+                style={{
+                  textDecoration: "none",
+                  display: "block",
+                  padding: "13px 18px",
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  background: "#b8860b",
+                  color: "#fff",
+                }}
+              >
+                {isAr
+                  ? (bogoWarn.getQty > 1 ? "احصل على منتجاتك المجانية" : "احصل على منتجك المجاني")
+                  : (bogoWarn.getQty > 1 ? "Claim my free items" : "Claim my free item")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  try { sessionStorage.setItem("bogo_consent", "1"); } catch { /* ignore */ }
+                  setBogoWarn(null);
+                  proceedToCheckout();
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: "8px 12px",
+                  fontSize: 13,
+                  color: "#737373",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+              >
+                {isAr ? "متابعة بدون العرض المجاني" : "Continue without free item"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

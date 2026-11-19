@@ -14,7 +14,7 @@ import TamaraWidget from "@/components/TamaraWidget";
 import FreeGiftFeature from '@/components/FreeGiftFeature';
 import NationalAddressWhatsApp from '@/components/common/NationalAddressWhatsApp';
 import BogoFeature from "@/components/BogoFeature";
-import BogoProgress, { loadPromotions, getBogoShortfalls } from "@/components/BogoProgress";
+import BogoProgress from "@/components/BogoProgress";
 import ApplePayWidget from "@/components/shopCartandCheckout/ApplePayWidget";
 import { lookupShortAddress, isValidShortAddress } from "@/utlis/saudiAddress";
 import { SAUDI_CITIES, SAUDI_REGIONS, regionForCity } from "@/data/saudiCities";
@@ -798,8 +798,8 @@ export default function Checkout() {
       ...(note?.trim() ? { note: note.trim(), order_notes: note.trim() } : {}),
       products: mapProductsFromFormData(cartProducts),
       payment_method: method,
-      // 1 only when the customer chose "Place order anyway" in the Buy X Get Y pop-up
-      customer_consent: bogoConsentRef.current ? 1 : 0,
+      // 1 only when the customer chose "Continue without free item" in the Buy X Get Y pop-up
+      customer_consent: (typeof window !== 'undefined' && sessionStorage.getItem('bogo_consent') === '1') ? 1 : 0,
       shippingPrice,
       shippingPriceVat,
       servicePrice,
@@ -827,10 +827,6 @@ export default function Checkout() {
     return null;
   }
 
-  const [bogoWarn, setBogoWarn] = useState(null);
-  const bogoConfirmedRef = useRef(false);
-  const bogoConsentRef = useRef(false);
-
   async function onOrder(event) {
     event.preventDefault();
     console.log('[onOrder v2] start', { selectedOption, isLoggedIn, guestStep });
@@ -847,18 +843,6 @@ export default function Checkout() {
       return;
     }
 
-    // Buy X Get Y: warn if the customer hasn't reached the required quantity
-    if (!bogoConfirmedRef.current) {
-      const promosForCheck = await loadPromotions();
-      const shortfalls = getBogoShortfalls(promosForCheck, cartProducts);
-      console.log('[BOGO check]', { promos: promosForCheck, cart: cartProducts.map(i => ({ id: i.product_id, qty: i.quantity, gift: i.is_gift })), shortfalls });
-      if (shortfalls.length) {
-        setBogoWarn(shortfalls[0]);
-        return;
-      }
-    }
-    console.log('[onOrder v2] proceeding to storeOrder', { consent: bogoConsentRef.current });
-    bogoConfirmedRef.current = false;
     setIsLoading(true);
 
     try {
@@ -892,15 +876,14 @@ export default function Checkout() {
     if (!short_national_address || !/^[A-Za-z]{4}[0-9]{4}$/.test(short_national_address)) {
       console.log('[onOrder v2] exit: short national address invalid');
       setIsLoading(false);
-      bogoConsentRef.current = false;
       setError(tc('snaRequired'));
       return;
     }
 
     const additionalFields = buildOrderPayload(selectedOption);
-    bogoConsentRef.current = false;
+    try { sessionStorage.removeItem('bogo_consent'); } catch { /* ignore */ }
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-console.log(additionalFields,"adddd");
+    console.log(additionalFields, "adddd");
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/storeOrder`, {
         method: 'POST', body: JSON.stringify(additionalFields),
@@ -1274,28 +1257,132 @@ console.log(additionalFields,"adddd");
 
   const summaryItems = cartProducts.map((elm, i) => {
     const bogoFreeQty = Number(elm.bogo_free_qty || 0);
+    const totalQty = Number(elm.quantity || 0);
+    const paidQty = Math.max(0, totalQty - bogoFreeQty);
+    const isBogo = bogoFreeQty > 0;
+    const isAllFree = (isBogo && paidQty === 0) || Boolean(elm.is_gift);
+    const hasFreeOffer = isBogo || Boolean(elm.is_gift);
     return (
-      <div key={i} className="cc-sum-item">
-        <span className="cc-sum-item__thumb">
-          <img src={productImage(elm)} alt="" loading="lazy" />
-          <span className="cc-sum-item__qty">{elm.quantity}</span>
+      <div
+        key={i}
+        className="cc-sum-item"
+        style={hasFreeOffer ? {
+          background: '#fbf8f1',
+          border: '1px solid #ebe1cc',
+          borderInlineStart: '2.5px solid #a88339',
+          borderRadius: 6,
+          padding: '10px 12px',
+        } : undefined}
+      >
+        <span
+          className="cc-sum-item__thumb"
+          style={hasFreeOffer ? { boxShadow: '0 0 0 1px rgba(168, 131, 57, 0.35)' } : undefined}
+        >
+          <span
+            style={{
+              position: 'relative',
+              display: 'block',
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              borderRadius: 'inherit',
+            }}
+          >
+            <img src={productImage(elm)} alt="" loading="lazy" />
+            {hasFreeOffer && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 7,
+                  ...(locale === 'ar'
+                    ? { right: -18, transform: 'rotate(45deg)' }
+                    : { left: -18, transform: 'rotate(-45deg)' }),
+                  width: 56,
+                  padding: '1.5px 0',
+                  background: '#c62828',
+                  color: '#fff',
+                  fontSize: 8.5,
+                  fontWeight: 700,
+                  lineHeight: 1.2,
+                  letterSpacing: locale === 'ar' ? 0 : '0.1em',
+                  textAlign: 'center',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.22)',
+                  pointerEvents: 'none',
+                }}
+              >
+                {locale === 'ar' ? 'مجاني' : 'FREE'}
+              </span>
+            )}
+          </span>
+          <span
+            className="cc-sum-item__qty"
+            style={hasFreeOffer ? { background: '#1c1917', color: '#faf7f0' } : undefined}
+          >
+            {elm.quantity}
+          </span>
         </span>
         <span className="cc-sum-item__name">
           {locale === 'ar' && elm.product_name_ar?.trim() ? elm.product_name_ar : he.decode(elm.product_name || '')}
-          {bogoFreeQty > 0 && (
-            <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '12px' }}>
-              🎁 {bogoFreeQty} {locale === 'ar' ? 'مجاني' : 'FREE'}
+          {isBogo && (
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 5,
+                fontSize: 11,
+                lineHeight: 1.2,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              <span style={{ width: 12, height: 1, background: '#a88339', flexShrink: 0 }} />
+              {paidQty > 0 ? (
+                <>
+                  <span style={{ color: '#78716c', fontWeight: 500 }}>
+                    {locale === 'ar' ? `${paidQty} مدفوع` : `${paidQty} paid`}
+                  </span>
+                  <span style={{ color: '#d6d3d1' }}>/</span>
+                  <span style={{ color: '#7c5e22', fontWeight: 700, letterSpacing: locale === 'ar' ? 0 : '0.08em', textTransform: 'uppercase' }}>
+                    {locale === 'ar' ? `${bogoFreeQty} مجاني` : `${bogoFreeQty} FREE`}
+                  </span>
+                </>
+              ) : (
+                <span style={{ color: '#7c5e22', fontWeight: 700, letterSpacing: locale === 'ar' ? 0 : '0.12em', textTransform: 'uppercase' }}>
+                  {locale === 'ar' ? 'مجاناً' : 'COMPLIMENTARY'}
+                </span>
+              )}
             </span>
           )}
           {elm.is_gift && (
-            <span style={{ display: 'block', color: '#28a745', fontWeight: 'bold', fontSize: '12px' }}>
-              🎁 {locale === 'ar' ? 'هدية مجانية' : 'Free Gift'}
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 5,
+                fontSize: 10.5,
+                lineHeight: 1.2,
+                color: '#7c5e22',
+                fontWeight: 700,
+                letterSpacing: locale === 'ar' ? 0 : '0.12em',
+                textTransform: 'uppercase',
+              }}
+            >
+              <span style={{ width: 12, height: 1, background: '#a88339', flexShrink: 0 }} />
+              {locale === 'ar' ? 'هدية مجانية' : 'Complimentary Gift'}
             </span>
           )}
         </span>
-        <span className="cc-sum-item__price">
+        <span className="cc-sum-item__price" style={{ fontVariantNumeric: 'tabular-nums' }}>
           {itemIsDiscounted(elm) && <span className="cc-price-old">{itemOriginalSubtotal(elm)}</span>}
-          <span>{itemSubtotal(elm)}</span>
+          {isAllFree ? (
+            <span style={{ color: '#7c5e22', fontWeight: 700, fontSize: 11, letterSpacing: locale === 'ar' ? 0 : '0.12em', textTransform: 'uppercase' }}>
+              {locale === 'ar' ? 'مجاني' : 'FREE'}
+            </span>
+          ) : (
+            <span>{itemSubtotal(elm)}</span>
+          )}
         </span>
       </div>
     );
@@ -1345,44 +1432,10 @@ console.log(additionalFields,"adddd");
     <>
       {cartProducts.length ? (
         <>
-          {bogoWarn && (
-            <div
-              role="dialog"
-              aria-modal="true"
-              onClick={() => setBogoWarn(null)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 420, width: '100%', textAlign: 'center' }}
-              >
-                <h4 style={{ margin: '0 0 8px', fontSize: 18 }}>
-                  {locale === 'ar' ? 'هل أنت متأكد من إتمام الطلب؟' : 'Are you sure you want to place the order?'}
-                </h4>
-                <p style={{ margin: '0 0 18px', fontSize: 14, color: '#444' }}>
-                  {locale === 'ar'
-                    ? `أضف ${bogoWarn.need} ${bogoWarn.need > 1 ? 'منتجات' : 'منتج'} إضافية لتحصل على ${bogoWarn.getQty} مجاناً${(bogoWarn.promo.name_ar || bogoWarn.promo.name) ? ` (${bogoWarn.promo.name_ar?.trim() || bogoWarn.promo.name})` : ''}.`
-                    : `Add ${bogoWarn.need} more item${bogoWarn.need > 1 ? 's' : ''} to get ${bogoWarn.getQty} FREE${bogoWarn.promo.name ? ` — ${bogoWarn.promo.name}` : ''}.`}
-                </p>
-                <div style={{ display: 'grid', gap: 10 }}>
-                  <Link href={`/${locale}/shop`} className="cc-btn-gold" style={{ textDecoration: 'none', display: 'block', padding: '12px 16px' }}>
-                    {locale === 'ar' ? 'أضف منتجات أخرى' : 'Add more products'}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => { bogoConfirmedRef.current = true; bogoConsentRef.current = true; setBogoWarn(null); onOrder({ preventDefault() {} }); }}
-                    style={{ background: 'none', border: '1px solid #ccc', borderRadius: 6, padding: '12px 16px', cursor: 'pointer' }}
-                  >
-                    {locale === 'ar' ? 'إتمام الطلب على أي حال' : 'Place order anyway'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Buy X Get Y progress — directly above the upsell strip */}
           <FreeGiftFeature couponData={couponData} />
-          <BogoProgress />
-          <BogoFeature />
+          <BogoProgress compact className="cd2-bogo" />
+          <BogoFeature hideAppliedBanner />
           <form onSubmit={onOrder} noValidate>
             <datalist id="sa-city-list">
               {SAUDI_CITIES.map(c => <option key={c.en} value={locale === 'ar' ? c.ar : c.en} />)}

@@ -11,6 +11,7 @@ import {
 } from "@/utlis/shop";
 import ProductFilter from "../../shoplist/ProductFilter";
 import PremiumProductCard from "@/components/shoplist/premium/PremiumProductCard";
+import { loadPromotions } from "@/components/BogoProgress";
 import "@/components/shoplist/premium/premium-category.css";
 import "@/components/shoplist/premium/skeleton.css";
 
@@ -48,6 +49,7 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
   const locale = useLocale();
 
   const [loading, setLoading] = useState(true);
+  const [bogoPromos, setBogoPromos] = useState([]);
   const [selectedColView, setSelectedColView] = useState(3);
   const [page, setPage] = useState(1);
   const perPage = 12;
@@ -63,6 +65,25 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
   const gridRef = useRef(null);
 
   const availableViews = [2, 3, 4];
+
+  useEffect(() => {
+    let alive = true;
+    loadPromotions().then((promos) => {
+      if (alive) setBogoPromos(promos || []);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  const bogoByProductId = useMemo(() => {
+    const map = new Map();
+    for (const promo of bogoPromos) {
+      for (const bp of promo.buy_products || []) {
+        const id = String(bp.product_id);
+        if (!map.has(id)) map.set(id, promo);
+      }
+    }
+    return map;
+  }, [bogoPromos]);
 
   const uniqueLabels = useMemo(() => {
     const labels = rawProducts.map(p => p.category_name).filter(Boolean);
@@ -198,9 +219,11 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
       // 3. Price Filter
       if (p.price < low || p.price > high) return false;
 
-      // 4. Campaign/Promotional Filter
+      // 4. Campaign/Promotional Filter (discounts + active BOGO promotions)
       if (onlyDiscounted) {
-        if (!p.discount) return false;
+        const hasDiscount = Boolean(p.discount) || (Number(p.sale_price) > 0 && Number(p.sale_price) < Number(p.price));
+        const hasBogo = Boolean(p.buy_x_get_y || p.is_bogo || bogoByProductId.has(String(p.product_id)));
+        if (!hasDiscount && !hasBogo) return false;
       }
 
       // 5. Category/Label Filter
@@ -224,7 +247,7 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
     });
 
     return sortItems(filtered, sortOption);
-  }, [rawProducts, priceRange, sortOption, onlyDiscounted, searchTerm, stockAvailability, selectedLabels, selectedSubcategories, selectedTags]);
+  }, [rawProducts, priceRange, sortOption, onlyDiscounted, searchTerm, stockAvailability, selectedLabels, selectedSubcategories, selectedTags, bogoByProductId]);
 
   const totalPages = Math.ceil(filteredProducts.length / perPage);
   const currentProducts = filteredProducts.slice((page - 1) * perPage, page * perPage);
@@ -352,15 +375,29 @@ function DiscountGrid({ title, onlyDiscounted = false }) {
             <p className="text-secondary mb-0">{t("No products found") || "No products found."}</p>
           </div>
         ) : (
-          currentProducts.map((elm, i) => (
-            <PremiumProductCard
-              key={elm.product_id || i}
-              elm={elm}
-              category={elm.category_name || "perfumes"}
-              subcat={isSubcategoryFunc(elm.category_name, elm.subcategory)}
-              priority={i < 4}
-            />
-          ))
+          currentProducts.map((elm, i) => {
+            const bogoPromo = bogoByProductId.get(String(elm.product_id));
+            const enrichedElm = bogoPromo && !elm.buy_x_get_y
+              ? {
+                  ...elm,
+                  is_bogo: true,
+                  buy_x_get_y: {
+                    ...bogoPromo,
+                    badge_text: `BUY ${Number(bogoPromo.buy_quantity) || 1} GET ${Number(bogoPromo.get_quantity) || 1} FREE`,
+                    badge_text_ar: `اشتري ${Number(bogoPromo.buy_quantity) || 1} واحصل على ${Number(bogoPromo.get_quantity) || 1} مجاناً`,
+                  },
+                }
+              : elm;
+            return (
+              <PremiumProductCard
+                key={elm.product_id || i}
+                elm={enrichedElm}
+                category={elm.category_name || "perfumes"}
+                subcat={isSubcategoryFunc(elm.category_name, elm.subcategory)}
+                priority={i < 4}
+              />
+            );
+          })
         )}
       </div>
 

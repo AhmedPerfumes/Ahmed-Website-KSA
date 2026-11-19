@@ -4,6 +4,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useContextElement } from '@/context/Context';
 import { useMenu } from '@/context/MenuContext';
+import { loadPromotions } from '@/components/BogoProgress';
 import he from 'he';
 import "swiper/css";
 import "swiper/css/navigation";
@@ -40,7 +41,7 @@ const swiperOptions = {
   },
 };
 
-const BOGOFeature = () => {
+const BOGOFeature = ({ hideAppliedBanner = false } = {}) => {
   const { cartProducts, setCartProducts, setPromotionsContext } = useContextElement();
   const { currency } = useMenu();
   const sym = currency?.symbol || "SAR";
@@ -99,16 +100,14 @@ const BOGOFeature = () => {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ✅ Fetch BOGO promotion rules
+  // ✅ Fetch BOGO promotion rules (shared cache with BogoProgress)
   useEffect(() => {
+    let alive = true;
     const fetchBogoRules = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/bogoProducts`);
-        if (!response.ok) throw new Error('Failed to fetch bogoProducts');
-        const data = await response.json();
-        const validPromotions = (data.bogoProducts || []).filter(
-          (promo) => promo.campaign && promo.buy_products
-        ).map(promo => ({
+        const rawPromotions = await loadPromotions();
+        if (!alive) return;
+        const validPromotions = (rawPromotions || []).map(promo => ({
           ...promo,
           free_products: promo.free_products && promo.free_products.length > 0
             ? promo.free_products
@@ -117,13 +116,15 @@ const BOGOFeature = () => {
         setPromotions(validPromotions);
         setPromotionsContext(validPromotions);
       } catch (error) {
+        if (!alive) return;
         setPromotions([]);
         setPromotionsContext([]);
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
     fetchBogoRules();
+    return () => { alive = false; };
   }, [setPromotionsContext]);
 
   // ✅ Clean non-special products ONCE after promotions load
@@ -521,7 +522,7 @@ const BOGOFeature = () => {
               </Swiper>
             </div>
           );
-        } else if (freeProduct) {
+        } else if (freeProduct && !hideAppliedBanner) {
           // Auto-selected (cheapest) — show confirmation
           return (
             <div key={campaign} className="mb-6">
