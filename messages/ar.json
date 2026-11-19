@@ -2020,6 +2020,11 @@
     "closeDismissAria": "إغلاق وإيقاف عرض الاقتراحات في هذه الجلسة",
     "continueAria": "متابعة التسوق — الانتقال إلى صفحة المتجر"
   },
+  "BogoProgress": {
+    "buyXGetY": "اشترِ {buy} واحصل على {get} مجاناً",
+    "addMore": "أضف {need, plural, one {منتجاً واحداً إضافياً} two {منتجين إضافيين} few {# منتجات إضافية} many {# منتجاً إضافياً} other {# منتج إضافي}} لتحصل على {get} مجاناً",
+    "unlocked": "تم تفعيل عرض {name}! {get} مجاناً"
+  },
   "CartDrawer": {
     "cod": "الدفع عند الاستلام",
     "checkoutAmount": "إتمام الطلب · {amount}",

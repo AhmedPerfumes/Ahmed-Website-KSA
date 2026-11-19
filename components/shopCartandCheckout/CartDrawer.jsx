@@ -3,7 +3,7 @@
  * CartDrawer — the site's only cart (the /shop-cart page now opens this drawer).
  *
  *  Header → free-shipping bar → items (scroll) → pinned "Complete your collection" strip → footer
- *  (subtotal, BNPL line, single Checkout CTA, payment icons).
+ *  (subtotal, single Checkout CTA, payment icons).
  *
  *  Opens automatically when a NEW product line is added right after a `cart:added`
  *  event (PDP, listings, sticky ATC, bundles…) — quantity steppers elsewhere don't
@@ -167,7 +167,6 @@ export default function CartDrawer() {
   const itemCount = cartProducts.filter((p) => !p.is_gift).reduce((n, p) => n + Number(p.quantity || 0), 0);
   const remaining = Math.max(freeShippingThreshold - totalPrice, 0);
   const progress = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
-  const perPayment = (totalPrice / 4).toFixed(2);
   const goCheckout = () => {
     try {
       window.dataLayer = window.dataLayer || [];
@@ -202,20 +201,18 @@ export default function CartDrawer() {
 
         {cartProducts.length > 0 ? (
           <>
-            {/* ── Free-shipping bar ── */}
-            <div className="cd2-ship">
-              <p className="cd2-ship__text">
-                {remaining > 0
-                  ? t.rich("addMore", { amount: `${remaining.toFixed(2)} ${sym}`, b: (c) => <strong>{c}</strong> })
-                  : t.rich("qualifies", { b: (c) => <strong>{c}</strong> })}
-              </p>
-              <div className="cd2-ship__track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
-                <div className={`cd2-ship__fill${remaining <= 0 ? " is-done" : ""}`} style={{ width: `${progress}%` }} />
+            {/* ── Free-shipping progress ── */}
+            <div className="cd2-promos">
+              <div className="cd2-ship">
+                <p className="cd2-ship__text">
+                  {remaining > 0
+                    ? t.rich("addMore", { amount: `${remaining.toFixed(2)} ${sym}`, b: (c) => <strong>{c}</strong> })
+                    : t.rich("qualifies", { b: (c) => <strong>{c}</strong> })}
+                </p>
+                <div className="cd2-ship__track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
+                  <div className={`cd2-ship__fill${remaining <= 0 ? " is-done" : ""}`} style={{ width: `${progress}%` }} />
+                </div>
               </div>
-            </div>
-
-            <div style={{ padding: "0 16px" }}>
-              <BogoProgress compact />
             </div>
 
             {/* ── Scrollable body: items + upsell ── */}
@@ -287,6 +284,9 @@ export default function CartDrawer() {
               </ul>
             </div>
 
+            {/* Buy X Get Y progress — directly above the upsell strip */}
+            <BogoProgress compact className="cd2-bogo" />
+
             {/* Pinned above the footer so it never gets pushed out of view by a long bag */}
             <CartUpsell anchor={anchor} isOpen={isOpen} compact />
 
@@ -297,21 +297,10 @@ export default function CartDrawer() {
                 <strong>{totalPrice.toFixed(2)} {sym}</strong>
               </div>
               <p className="cd2-footer__note">{t("vatNote")}</p>
-              <p className="cd2-bnpl">
-                {t("bnplLine", { amount: `${perPayment} ${sym}` })}
-                <span className="cd2-bnpl__tag cd2-bnpl__tag--tabby">tabby</span>
-                <span className="cd2-bnpl__tag cd2-bnpl__tag--tamara">tamara</span>
-              </p>
               <Link href={`/${locale}/shop-checkout`} className="cd2-checkout" onClick={goCheckout}>
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
                 {t("checkoutAmount", { amount: `${totalPrice.toFixed(2)} ${sym}` })}
               </Link>
-              <div className="cd2-pay" aria-label={t("paymentNote")}>
-                <Image src="/assets/images/paytabs-svg/mada-logo.png" alt="mada" width={34} height={14} style={{ objectFit: "contain" }} />
-                <Image src="/assets/images/paytabs-svg/Apple_Pay_logo.png" alt="Apple Pay" width={34} height={14} style={{ objectFit: "contain" }} />
-                <Image src="/assets/images/paymentGateway/Tabby.png" alt="Tabby" width={38} height={15} style={{ objectFit: "contain" }} />
-                <span className="cd2-pay__text">Tamara · {t("cod")}</span>
-              </div>
             </div>
           </>
         ) : (

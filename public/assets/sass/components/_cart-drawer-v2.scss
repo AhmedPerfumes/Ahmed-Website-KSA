@@ -112,17 +112,18 @@
 
 /* ── Free-shipping bar ── */
 .cd2-ship {
-  padding: 0.75rem 1.25rem 0.85rem;
-  background: var(--cd2-gold-bg);
-  border-bottom: 1px solid var(--cd2-line);
-  flex-shrink: 0;
+  padding: 0.7rem 0.9rem 0.8rem;
+  background: #fff;
+  border: 1px solid var(--cd2-line);
+  border-radius: 10px;
 }
 
 .cd2-ship__text {
-  margin: 0 0 0.45rem;
+  margin: 0 0 0.5rem;
   font-size: 0.8rem;
+  line-height: 1.35;
   color: var(--cd2-mid);
-  text-align: center;
+  text-align: start;
 
   strong {
     color: var(--cd2-ink);
@@ -131,7 +132,7 @@
 }
 
 .cd2-ship__track {
-  height: 4px;
+  height: 6px;
   border-radius: 99px;
   background: #ece4d3;
   overflow: hidden;
@@ -565,30 +566,6 @@
   color: var(--cd2-muted);
 }
 
-.cd2-bnpl {
-  margin: 0.55rem 0 0;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  font-size: 0.76rem;
-  color: var(--cd2-mid);
-  font-family: "SAR Symbol", var(--font-inter, var(--font-dm-sans)), "Segoe UI", sans-serif;
-}
-
-.cd2-bnpl__tag {
-  font-size: 0.64rem;
-  font-weight: 700;
-  line-height: 1;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  color: #1a1a1a;
-  text-transform: lowercase;
-
-  &--tabby { background: #3eedbf; }
-  &--tamara { background: #f4e9f7; }
-}
-
 .cd2-checkout {
   margin-top: 0.75rem;
   width: 100%;
@@ -773,4 +750,308 @@
   .cd2-footer .cd2-footer__note {
     display: none;
   }
+}
+
+/* =============================================================
+   SIMPLE PREMIUM LAYER — hairlines, quiet type, no boxed cards
+   ============================================================= */
+.cd2 {
+  --cd2-gold: #9a7228;
+  --cd2-line: #ece8e1;
+  box-shadow: -20px 0 60px rgba(20, 16, 8, 0.12);
+}
+
+/* Header: small caps title, hairline underneath */
+.cd2-header {
+  padding: 1.15rem 1.5rem;
+}
+.cd2-header__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[dir="rtl"] .cd2-header__title { letter-spacing: 0; font-size: 1rem; }
+.cd2-header__count { font-size: 0.78rem; letter-spacing: 0.04em; }
+.cd2-close { color: var(--cd2-mid); &:hover { background: transparent; color: var(--cd2-ink); } }
+
+/* Offers: one quiet block, thin lines instead of cards */
+.cd2-promos {
+  flex-shrink: 0;
+  display: grid;
+  gap: 0.9rem;
+  padding: 0.95rem 1.5rem 1.05rem;
+  background: #fff;
+  border-bottom: 0;
+
+  .cd2-ship { padding: 0; border: 0; border-radius: 0; background: transparent; }
+  .cd2-ship__text {
+    margin: 0 0 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--cd2-mid);
+    strong { color: var(--cd2-ink); font-weight: 600; }
+  }
+  .cd2-ship__track { height: 2px; border-radius: 0; background: var(--cd2-line); }
+  .cd2-ship__fill { border-radius: 0; background: var(--cd2-gold); &.is-done { background: #2e7d32; } }
+
+  @media (max-width: 575.98px) { padding: 0.8rem 1.1rem 0.9rem; }
+}
+
+/* Items: airy rows, quiet controls */
+.cd2-item {
+  gap: 1.1rem;
+  padding: 1.25rem 1.5rem;
+  &:last-child { border-bottom: 0; }
+  @media (max-width: 575.98px) { padding: 1.1rem 1.1rem; gap: 0.9rem; }
+}
+.cd2-item__img {
+  width: 86px;
+  height: 108px;
+  border-radius: 2px;
+  background: #f6f3ee;
+}
+.cd2-item__name {
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.cd2-item__meta { font-size: 0.68rem; letter-spacing: 0.08em; margin-top: 0.3rem; }
+.cd2-item__remove { color: #b9b3a8; &:hover { background: transparent; color: var(--cd2-ink); } }
+
+.cd2-item__bottom { padding-top: 0.75rem; align-items: flex-end; }
+
+// quantity: hairline box, square
+.cd2-qty {
+  height: 32px;
+  border: 1px solid var(--cd2-line);
+  border-radius: 2px;
+}
+.cd2-qty__btn { width: 30px; height: 30px; color: var(--cd2-mid); &:hover:not(:disabled) { color: var(--cd2-ink); } }
+.cd2-qty__num { min-width: 26px; font-weight: 500; }
+
+.cd2-item__price {
+  font-size: 0.88rem;
+  font-weight: 500;
+  .is-sale { color: var(--cd2-ink); font-weight: 600; }
+  s { color: #a9a39a; }
+}
+.cd2-item__gift {
+  background: transparent;
+  padding: 0;
+  letter-spacing: 0.1em;
+}
+
+/* Upsell: lose the tinted slab */
+.cdu--compact {
+  background: #fff;
+  border-top: 1px solid var(--cd2-line);
+  .cdu__title { font-size: 0.68rem; letter-spacing: 0.16em; color: var(--cd2-mid); }
+  .cdu-card { border-radius: 2px; background: #fff; }
+  .cdu-card__img { border-radius: 2px; }
+  .cdu-card__add { border-radius: 2px; height: 28px; }
+}
+
+/* Footer: calm, one strong action */
+.cd2-footer {
+  padding: 1.1rem 1.5rem calc(1.1rem + env(safe-area-inset-bottom, 0px));
+  box-shadow: none;
+  border-top: 1px solid var(--cd2-line);
+  @media (max-width: 575.98px) { padding-inline: 1.1rem; }
+}
+.cd2-total {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cd2-mid);
+  strong { font-size: 1.15rem; letter-spacing: 0; color: var(--cd2-ink); font-weight: 600; text-transform: none; }
+}
+[dir="rtl"] .cd2-total { letter-spacing: 0; font-size: 0.9rem; }
+.cd2-footer__note { margin-top: 0.3rem; font-size: 0.7rem; }
+.cd2-checkout {
+  margin-top: 0.9rem;
+  height: 52px;
+  border-radius: 2px;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  &:hover { background: var(--cd2-gold); }
+}
+.cd2-pay {
+  margin-top: 0.85rem;
+  gap: 0.7rem;
+  opacity: 1;
+  img { filter: grayscale(1); opacity: 0.65; }
+}
+.cd2-pay__text { font-size: 0.68rem; letter-spacing: 0.04em; }
+
+/* ── Buy X Get Y: soft yellow while in progress → green when eligible ── */
+.cd2-bogo {
+  flex-shrink: 0;
+  margin: 0 !important;
+  padding: 0.75rem 1.5rem 0.25rem;
+  gap: 0.5rem !important;
+  background: #fff;
+  border-top: 1px solid var(--cd2-line);
+  @media (max-width: 575.98px) { padding: 0.65rem 1.1rem 0.25rem; }
+  &:empty { display: none; }
+}
+.cd2-bogo__card {
+  padding: 0.8rem 1rem 0.9rem !important;
+  border: 1px solid #f1e3b3 !important;
+  border-radius: 8px !important;
+  background: #fffaea !important;
+  transition: background 0.3s ease, border-color 0.3s ease;
+
+  p {
+    margin: 0 0 0.6rem !important;
+    font-size: 0.8rem !important;
+    line-height: 1.45;
+    font-weight: 700 !important;
+    color: #d32f2f !important;
+  }
+  [role="progressbar"] {
+    height: 7px !important;
+    border-radius: 99px !important;
+    background: #f3e7bd !important;
+  }
+  [role="progressbar"] > div {
+    border-radius: 99px !important;
+    background: linear-gradient(90deg, #f4c542, #e0a81c) !important;
+  }
+
+  &.is-unlocked {
+    border-color: #bfe3c8 !important;
+    background: #f1faf3 !important;
+    p { color: #1d5e33 !important; font-weight: 600 !important; }
+    [role="progressbar"] { background: #cfe9d6 !important; }
+    [role="progressbar"] > div { background: linear-gradient(90deg, #3fb36b, #2e9e4f) !important; }
+  }
+}
+
+/* ── Typography polish ── */
+.cd2 {
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "tnum" 1; // aligned numerals for prices & quantities
+}
+.cd2-header__title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; }
+.cd2-header__count { font-weight: 500; color: var(--cd2-muted); }
+.cd2-ship__text { font-size: 0.82rem; font-weight: 500; }
+.cd2-item__name { font-size: 0.9rem; font-weight: 600; line-height: 1.35; letter-spacing: 0; }
+.cd2-item__meta { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em; }
+.cd2-item__price { font-size: 0.92rem; font-weight: 600; letter-spacing: 0.01em; }
+.cd2-item__price s { font-size: 0.76rem; font-weight: 400; }
+.cd2-qty__num { font-size: 0.86rem; font-weight: 600; }
+.cdu__title { font-weight: 700; }
+.cdu-card__name { font-size: 0.8rem; font-weight: 600; }
+.cdu-card__price { font-size: 0.8rem; font-weight: 600; }
+.cd2-total { font-weight: 600; }
+.cd2-total strong { font-size: 1.25rem; font-weight: 700; }
+.cd2-footer__note { font-size: 0.72rem; line-height: 1.4; }
+.cd2-checkout { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.18em; }
+[dir="rtl"] .cd2-checkout, [dir="rtl"] .cd2-item__meta { letter-spacing: 0; }
+[dir="rtl"] .cd2-header__title { font-weight: 700; }
+
+/* ── Drawer fonts: Cormorant Garamond (display) + Jost (UI). Arabic → Brando Arabic ── */
+.cd2 {
+  --cd2-font-ui: var(--font-jost, "Jost"), "Helvetica Neue", Arial, sans-serif;
+  --cd2-font-display: var(--font-cormorant, "Cormorant Garamond"), Georgia, "Times New Roman", serif;
+  font-family: var(--cd2-font-ui);
+}
+[dir="rtl"] .cd2 {
+  --cd2-font-ui: var(--font-brando, "Brando Arabic"), "Noto Naskh Arabic", Tahoma, sans-serif;
+  --cd2-font-display: var(--font-brando, "Brando Arabic"), "Noto Naskh Arabic", Tahoma, sans-serif;
+}
+.cd2 button, .cd2 a, .cd2 input { font-family: inherit; }
+
+// Display serif — large / semibold only (Cormorant is thin when small)
+.cd2-header__title,
+.cd2-item__name,
+.cdu-card__name,
+.cd2-empty__title {
+  font-family: var(--cd2-font-display);
+}
+.cd2-header__title { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.14em; }
+.cd2-item__name { font-size: 1.05rem; font-weight: 600; line-height: 1.25; }
+.cdu-card__name { font-size: 0.95rem; font-weight: 700; line-height: 1.2; }
+.cd2-empty__title { font-size: 1.4rem; font-weight: 600; }
+.cd2-total strong { font-family: var(--cd2-font-display); font-size: 1.5rem; font-weight: 700; }
+
+// Prices keep the SAR-capable stack but lead with Jost
+.cd2-item__price, .cdu-card__price, .cd2-checkout {
+  font-family: "SAR Symbol", var(--cd2-font-ui), "Segoe UI", sans-serif;
+}
+.cd2-total strong { font-family: "SAR Symbol", var(--cd2-font-display), Georgia, serif; }
+
+[dir="rtl"] {
+  .cd2-header__title { font-size: 1.1rem; letter-spacing: 0; }
+  .cd2-item__name { font-size: 1rem; }
+  .cdu-card__name { font-size: 0.9rem; }
+  .cd2-total strong { font-family: "SAR Symbol", var(--cd2-font-ui), sans-serif; font-size: 1.3rem; }
+}
+
+/* ── Numbers: no old-style figures (they read like letters in Cormorant) ── */
+.cd2-header__title,
+.cd2-header__count,
+.cd2-item__name,
+.cdu-card__name,
+.cd2-empty__title {
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum" 1, "kern" 1;
+}
+
+// Cart count + any amount: set in Jost (clean lining digits)
+.cd2-header__count,
+.cd2-total strong,
+.cd2-qty__num,
+.cd2-item__price {
+  font-family: "SAR Symbol", var(--cd2-font-ui), "Segoe UI", sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.cd2-total strong { font-size: 1.3rem; font-weight: 600; }
+.cd2-header__count { font-size: 0.85rem; font-weight: 500; }
+
+[dir="rtl"] .cd2-total strong { font-size: 1.3rem; }
+
+/* ── Buy X Get Y: message only (no bar), slightly larger text ── */
+.cd2-bogo__card {
+  padding: 0.7rem 1rem !important;
+
+  [role="progressbar"] { display: none !important; }
+
+  p {
+    margin: 0 !important;
+    font-size: 0.92rem !important;
+    line-height: 1.45;
+  }
+}
+
+/* ── Arabic: Brando Arabic has only 300 / 600 / 700 — lift thin text to 600+ ── */
+[dir="rtl"] .cd2 {
+  font-weight: 600;
+
+  .cd2-header__count,
+  .cd2-ship__text,
+  .cd2-item__meta,
+  .cd2-item__price,
+  .cd2-qty__num,
+  .cd2-footer__note,
+  .cd2-empty__sub,
+  .cd2-pay__text,
+  .cdu-card__price,
+  .cdu-card__add {
+    font-weight: 600;
+  }
+
+  .cd2-header__title,
+  .cd2-item__name,
+  .cdu-card__name,
+  .cdu__title,
+  .cd2-total,
+  .cd2-checkout,
+  .cd2-bogo__card p {
+    font-weight: 700 !important;
+  }
+
+  .cd2-bogo__card p { font-size: 1rem !important; }
 }

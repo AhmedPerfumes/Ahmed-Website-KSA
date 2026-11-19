@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useContextElement } from "@/context/Context";
 
 // Module-level cache so cart, drawer and checkout share one request.
@@ -40,9 +40,10 @@ export const getBogoShortfalls = (promos, cartProducts) =>
  * how many more items to add to unlock the offer.
  * Only shows for campaigns where the cart already holds a qualifying item.
  */
-const BogoProgress = ({ compact = false }) => {
+const BogoProgress = ({ compact = false, className = "" }) => {
   const { cartProducts } = useContextElement();
   const isAr = useLocale() === "ar";
+  const t = useTranslations("BogoProgress");
   const [promos, setPromos] = useState([]);
 
   useEffect(() => {
@@ -74,19 +75,20 @@ const BogoProgress = ({ compact = false }) => {
   if (!rows.length) return null;
 
   return (
-    <div style={{ display: "grid", gap: 10, margin: compact ? "0 0 8px" : "0 0 16px" }}>
-      {rows.map(({ promo, getQty, need, unlocked, pct }) => {
-        const name = (isAr && promo.name_ar?.trim()) || promo.name || "";
+    <div className={className || undefined} style={{ display: "grid", gap: 10, margin: compact ? "0 0 8px" : "0 0 16px" }}>
+      {rows.map(({ promo, buyQty, getQty, need, unlocked, pct }) => {
+        // Arabic: use name_ar from the API; if a campaign has none, fall back to the
+        // translation file built from the rule quantities.
+        const name = isAr
+          ? promo.name_ar?.trim() || t("buyXGetY", { buy: buyQty, get: getQty })
+          : promo.name || "";
         const text = unlocked
-          ? isAr
-            ? `🎉 تم تفعيل عرض ${name}! ${getQty} مجاني`
-            : `🎉 ${name} offer unlocked! ${getQty} free`
-          : isAr
-            ? `أضف ${need} ${need > 1 ? "منتجات" : "منتج"} إضافية لتحصل على ${getQty} مجاناً${name ? ` (${name})` : ""}`
-            : `Add ${need} more item${need > 1 ? "s" : ""} to get ${getQty} FREE${name ? ` — ${name}` : ""}`;
+          ? `🎉 ${t("unlocked", { name, get: getQty })}`
+          : t("addMore", { need, get: getQty });
         return (
           <div
             key={promo.campaign}
+            className={className ? `${className}__card${unlocked ? " is-unlocked" : ""}` : undefined}
             style={{
               padding: compact ? "8px 12px" : "12px 16px",
               border: "1px solid #e8e0d0",

@@ -1910,6 +1910,11 @@
     "closeDismissAria": "Close and stop showing recommendations this session",
     "continueAria": "Continue shopping — go to the shop page"
   },
+  "BogoProgress": {
+    "buyXGetY": "Buy {buy} Get {get} Free",
+    "addMore": "Add {need} more {need, plural, one {item} other {items}} to get {get} FREE",
+    "unlocked": "{name} offer unlocked! {get} free"
+  },
   "CartDrawer": {
     "cod": "Cash on delivery",
     "checkoutAmount": "Checkout · {amount}",

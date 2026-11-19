@@ -23,7 +23,7 @@ import ProductAdditionalInformation from "@/components/asides/ProductAdditionalI
 import ProductReviews from "@/components/asides/ProductReviews";
 import MobileFooter1 from "@/components/footers/MobileFooter1";
 import localFont from "next/font/local";
-import { DM_Sans, Playfair_Display, Inter, Cormorant_Garamond, Bodoni_Moda } from "next/font/google";
+import { DM_Sans, Playfair_Display, Inter, Cormorant_Garamond, Bodoni_Moda, Jost } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -155,6 +155,15 @@ const cormorantGaramond = Cormorant_Garamond({
     variable: "--font-cormorant",
 });
 
+// Jost — clean geometric sans used by the cart drawer (UI text, prices, buttons).
+const jost = Jost({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    display: "swap",
+    preload: false,
+    variable: "--font-jost",
+});
+
 // Bodoni Moda — editorial serif, second fallback for --font-display.
 const bodoniModa = Bodoni_Moda({
     subsets: ["latin"],
@@ -207,7 +216,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
     // --font-wulkan   : Wulkan Display (editorial display)
     // --font-dm-sans  : DM Sans (body / UI)
     // --font-inter    : Inter (prices, labels)
-    const newFontVars = `${cormorantGaramond.variable} ${bodoniModa.variable}`;
+    const newFontVars = `${cormorantGaramond.variable} ${bodoniModa.variable} ${jost.variable}`;
     let fontClasses = `${englishFont.variable} ${playfairDisplay.variable} ${dmSans.variable} ${inter.variable} ${newFontVars}`;
     if (locale === "ar") {
         // Brando Arabic is the primary font; keep Inter for prices/numbers.
