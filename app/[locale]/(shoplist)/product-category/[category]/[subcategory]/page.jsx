@@ -198,7 +198,21 @@ const ShopPage8 = async ({ params }) => {
     };
     const categoryLabelAr = arabicCategoryLabels[category] || categoryLabel;
     // Use Arabic sub-category name from API if available, else fall back to slug
-    const subcategoryLabelAr = data.name_ar || subcategoryLabel;
+
+    const arabicSubcategoryLabels = {
+      "oriental-fragrance": "عطور شرقية",
+      "occidental-fragrance": "عطور غربية",
+      "dehn-al-oud": "دهن العود",
+      "concentrated-oil": "زيت مركز",
+      bakhoor: "بخور",
+      "oud-maattar": "عود معطر",
+      "air-freshener": "ملطف جو",
+      "body-gel": "جل الجسم",
+    };
+
+  const subcategoryLabelAr =
+    arabicSubcategoryLabels[subcategory] || subcategoryLabel;
+    // const subcategoryLabelAr = data.name_ar || subcategoryLabel;
 
     // JSON-LD: ItemList schema
     const baseUrl =

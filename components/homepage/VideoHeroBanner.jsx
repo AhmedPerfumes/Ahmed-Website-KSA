@@ -163,7 +163,13 @@ export default function VideoHeroBanner({
                 {/* Poster — shown instantly, priority LCP */}
                 <Image
                     src={poster}
-                    alt={title ? `${t(title)} — Ahmed Al Maghribi` : "Ahmed Al Maghribi — Luxury Perfumes Saudi Arabia"}
+                    alt={
+                        title
+                            ? `${t(title)} — Ahmed Al Maghribi`
+                            : locale === "ar"
+                            ? "أحمد المغربي — عطور فاخرة في المملكة العربية السعودية"
+                            : "Ahmed Al Maghribi — Luxury Perfumes Saudi Arabia"
+                    }
                     fill
                     sizes="100vw"
                     priority

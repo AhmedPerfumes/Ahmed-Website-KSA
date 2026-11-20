@@ -20,7 +20,11 @@ export function DakhoonBanner() {
                 <Link href={`/${locale}/shop/dakhoon`} className="dkbnr__link" tabIndex={-1}>
                     <Image
                         src="https://ae.ahmedalmaghribi.com/assets/images/home/demo8/avif/dakhoon-bnr.avif"
-                        alt="The Essence of Arabic Dakhoon — Ancient Aromas"
+                        alt={
+                        locale === "ar"
+                            ? "جوهر الدخون العربي — عبق الأصالة"
+                            : "The Essence of Arabic Dakhoon — Ancient Aromas"
+                        }
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
                         className="dkbnr__img"

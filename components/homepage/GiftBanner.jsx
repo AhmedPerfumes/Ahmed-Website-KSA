@@ -21,7 +21,11 @@ export default function GiftBanner() {
                 <Link href={`/${locale}/shop/gift-sets`} className="gbnr__link" tabIndex={-1}>
                     <Image
                         src="/assets/images/banners/giftset-bnr.jpg"
-                        alt="The Art of Gifting — luxury gift sets for every occasion"
+                        alt={
+                        locale === "ar"
+                            ? "فن الإهداء — مجموعات هدايا فاخرة لكل مناسبة"
+                            : "The Art of Gifting — luxury gift sets for every occasion"
+                        }
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
                         className="gbnr__img"

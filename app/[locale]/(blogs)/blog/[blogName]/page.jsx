@@ -72,7 +72,7 @@ async function getBlogSEO(blogName) {
               'origin': origin,
           },
           body: JSON.stringify({
-            blog: blogName.split("-").join(" ").toUpperCase(),
+            blog: blogName,
           }),
           next: {
             tags: ["blogSEO"],
@@ -103,17 +103,21 @@ export async function generateMetadata({ params }) {
 
       // Select Arabic SEO fields only if locale is ar and values exist
       const seoTitle =
-          locale === "ar" && meta.seo_title_ar
-              ? meta.seo_title_ar
-              : meta.seo_title;
+        locale === "ar"
+          ? (meta.seo_title_ar || "اشترِ أفضل العطور عبر الإنترنت | أحمد المغربي للعطور")
+          : meta.seo_title;
 
       const seoDescription =
-          locale === "ar" && meta.seo_description_ar
-              ? meta.seo_description_ar
-              : meta.seo_description;
+        locale === "ar"
+          ? (meta.seo_description_ar || "اشترِ أفضل العطور عبر الإنترنت من أحمد المغربي للعطور.")
+          : meta.seo_description;
 
-      const fullTitle = seoTitle ? `${seoTitle}` : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
-      const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
+      const fullTitle = seoTitle ? `${seoTitle}` : locale === "ar"
+        ? "اشترِ أفضل العطور عبر الإنترنت | أحمد المغربي للعطور"
+        : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+      const cleanDesc = seoDescription ? seoDescription.replace(/<\/?[^>]+(>|$)/g, "").trim() : locale === "ar"
+        ? "اشترِ أفضل العطور عبر الإنترنت من أحمد المغربي للعطور."
+        : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes.";
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://ksaadmin.ahmedalmaghribi.com/";
       const normalizedApiUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
@@ -164,9 +168,14 @@ export async function generateMetadata({ params }) {
   } catch (error) {
       console.error("Error generating metadata:", error);
       return {
-          title: "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
-          description: "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
-      };
+        title: locale === "ar"
+            ? "اشترِ أفضل العطور عبر الإنترنت | أحمد المغربي للعطور"
+            : "Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes",
+
+        description: locale === "ar"
+            ? "اشترِ أفضل العطور عبر الإنترنت من أحمد المغربي للعطور."
+            : "Buy Best Perfumes Online Ahmed Al Maghribi Perfumes."
+    };
   }
 }
 

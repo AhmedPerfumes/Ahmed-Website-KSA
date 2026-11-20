@@ -73,7 +73,7 @@ export default function NewArrivals() {
                 <Link href={url} className="na2-banner__link" tabIndex={-1}>
                     <Image
                         src={item.img}
-                        alt={`${name} — Ahmed Al Maghribi New Arrival Perfume`}
+                        alt={`${name}`}
                         fill
                         sizes="(max-width: 767px) 85vw, 33vw"
                         quality={100}

@@ -21,7 +21,11 @@ export default function OnlineExclusiveBanner() {
                 <Link href={`/${locale}/product-category/online-exclusive`} className="oebnr__link" tabIndex={-1}>
                     <Image
                         src="/assets/images/banners/online-exclusive.jpg"
-                        alt="Online Exclusive — only available at Ahmed Al Maghribi online"
+                        alt={
+                        locale === "ar"
+                            ? "حصري عبر الإنترنت — متوفر فقط على متجر أحمد المغربي للعطور الإلكتروني"
+                            : "Online Exclusive — only available at Ahmed Al Maghribi online"
+                        }
                         fill
                         sizes="(max-width: 768px) 95vw, 100vw"
                         className="oebnr__img"
