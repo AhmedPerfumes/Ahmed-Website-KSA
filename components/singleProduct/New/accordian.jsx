@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react";
 import "./accordian.css";
 import { useMenu } from "@/context/MenuContext";
+import { isFreeShippingPromoActive } from "@/utlis/shippingPromo";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { renderPrice } from "@/utlis/priceRenderer";
@@ -402,7 +403,9 @@ const ProductAccordion = ({ product, hideFragranceProfile = false }) => {
     const deliveryInfoData = [
         {
             head: t("delivery.shipping"),
-            text: t("delivery.shippingText", { price: Number(shippingServiceCharges?.[3]?.price) || 300 }),
+            text: isFreeShippingPromoActive()
+                ? t("delivery.shippingPromoText")
+                : t("delivery.shippingText", { price: Number(shippingServiceCharges?.[3]?.price) || 300 }),
             icon: "/assets/svg/package.svg",
         },
         {

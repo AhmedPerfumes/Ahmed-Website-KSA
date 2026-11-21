@@ -50,7 +50,7 @@ export default function SiteFooter() {
   const router = useRouter();
   const pathname = usePathname();
   const { categoriesSubCategories } = useMenu();
-  const { freeShippingThreshold } = useContextElement();
+  const { freeShippingThreshold, isFreeShippingPromo } = useContextElement();
   const [openCol, setOpenCol] = useState(null);
   const toggle = (id) => setOpenCol((c) => (c === id ? null : id));
 
@@ -87,7 +87,9 @@ export default function SiteFooter() {
             <svg width="40" height="40" viewBox="0 0 52 52" fill="none" aria-hidden="true"><use href="#icon_shipping" /></svg>
             <div>
               <p className="sf-trust__title">{t("trustShipTitle")}</p>
-              <p className="sf-trust__text">{t("trustShipText", { amount: num(freeShippingThreshold) })}</p>
+              <p className="sf-trust__text">
+                {isFreeShippingPromo ? t("trustShipPromoText") : t("trustShipText", { amount: num(freeShippingThreshold) })}
+              </p>
             </div>
           </div>
           <div className="sf-trust__item">

@@ -655,7 +655,8 @@ export default function AccountOrders() {
                     <span>
                       {selectedOrder?.shipping_cost && Number(selectedOrder.shipping_cost) > 0
                         ? money(selectedOrder.shipping_cost)
-                        : Number(selectedOrder?.sub_total || 0) >= freeShippingThreshold
+                        : Number(selectedOrder?.shipping_cost ?? modalDetails?.shipping_cost ?? 0) === 0 ||
+                          Number(selectedOrder?.sub_total || 0) >= freeShippingThreshold
                         ? t("freeShipping")
                         : money(modalDetails.shipping_cost)}
                     </span>

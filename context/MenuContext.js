@@ -1,5 +1,6 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { isFreeShippingPromoActive } from '@/utlis/shippingPromo';
 
 const MenuContext = createContext();
 
@@ -68,7 +69,12 @@ export function MenuProvider({ children }) {
 
           if(data && data.shipping_service_charges) {
             setError(null);
-            setshippingServiceCharges(data.shipping_service_charges);
+            const charges = Array.isArray(data.shipping_service_charges) && isFreeShippingPromoActive() && data.shipping_service_charges.length > 0
+              ? data.shipping_service_charges.map((charge, idx) =>
+                  idx === 0 ? { ...charge, price: 0 } : charge
+                )
+              : data.shipping_service_charges;
+            setshippingServiceCharges(charges);
           } else {
             setshippingServiceCharges(null);
             setError(data);

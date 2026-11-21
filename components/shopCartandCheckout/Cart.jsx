@@ -58,13 +58,14 @@ export default function Cart() {
     totalPrice,
     freeShippingFlag,
     freeShippingThreshold,
+    isFreeShippingPromo,
     setCouponDataContext,
     removeGiftFromCart,
   } = useContextElement();
 
   // Free-shipping progress
-  const progressPct = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
-  const remaining   = (freeShippingThreshold - totalPrice).toFixed(2);
+  const progressPct = isFreeShippingPromo ? 100 : Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+  const remaining   = isFreeShippingPromo ? "0.00" : (freeShippingThreshold - totalPrice).toFixed(2);
 
 
   useEffect(() => {
@@ -462,7 +463,7 @@ export default function Cart() {
 
                 {/* Free-shipping progress bar — always visible above Summary card */}
                 <div className="cc-cart-ship-bar" role="status" aria-live="polite">
-                  {totalPrice < freeShippingThreshold ? (
+                  {!freeShippingFlag && totalPrice < freeShippingThreshold ? (
                     <>
                       <p className="cc-cart-ship-bar__text">
                         {t.rich("addMoreForFreeShipping", {
@@ -664,7 +665,7 @@ export default function Cart() {
                       <circle cx="5.5" cy="18.5" r="2.5"/>
                       <circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
-                    {t("freeShipOver", { amount: freeShippingThreshold })}
+                    {isFreeShippingPromo ? t("freeShipAll") : t("freeShipOver", { amount: freeShippingThreshold })}
                   </div>
                   <div className="cc-trust-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">

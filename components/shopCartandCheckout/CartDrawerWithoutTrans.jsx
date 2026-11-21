@@ -10,7 +10,7 @@ import { useMenu } from '../../context/MenuContext';
 export default function CartDrawerWithoutTrans() {
   const { currency } = useMenu();
   const [error, setError] = useState(null);
-  const { cartProducts, setCartProducts, totalPrice, freeShippingThreshold } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, freeShippingThreshold, isFreeShippingPromo } = useContextElement();
   const pathname = usePathname();
 
   const closeCart = () => {
@@ -54,7 +54,7 @@ export default function CartDrawerWithoutTrans() {
 
   useEffect(() => { closeCart(); }, [pathname]);
 
-  const progressPercentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+  const progressPercentage = isFreeShippingPromo ? 100 : Math.min((totalPrice / freeShippingThreshold) * 100, 100);
 
   const getItemPrice = (elm) => {
     const currentUTC = new Date();
@@ -113,7 +113,7 @@ export default function CartDrawerWithoutTrans() {
 
         {/* Free Shipping Bar */}
         <div className="cd-shipping-bar">
-          {totalPrice < freeShippingThreshold ? (
+          {!isFreeShippingPromo && totalPrice < freeShippingThreshold ? (
             <>
               <p className="cd-shipping-bar__text">
                 Add <strong>{(freeShippingThreshold - totalPrice).toFixed(2)} {currency?.symbol}</strong> more for free shipping ✈

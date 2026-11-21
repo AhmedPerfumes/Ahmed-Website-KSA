@@ -1,5 +1,6 @@
 "use client";
 import { linePrice } from "@/utlis/cartPricing";
+import { isFreeShippingPromoActive } from "@/utlis/shippingPromo";
 
 import { allProducts } from "@/data/products";
 import React, { createContext, useContext, useReducer, useEffect, useState, useRef } from "react";
@@ -99,8 +100,9 @@ export default function Context({ children }) {
 
   const [wishList, setWishList] = useState([]);
   const [quickViewItem, setQuickViewItem] = useState(allProducts[0]);
+  const isFreeShippingPromo = isFreeShippingPromoActive();
   const [totalPrice, setTotalPrice] = useState(0);
-  const [freeShippingFlag, setFreeShippingFlag] = useState(false);
+  const [freeShippingFlag, setFreeShippingFlag] = useState(isFreeShippingPromo);
   const [orderDetails, setOrderDetails] = useState({});
   const [couponDataContext, setCouponDataContext] = useState(null);
 
@@ -177,7 +179,7 @@ export default function Context({ children }) {
 
     setTotalPrice(subtotal);
 
-    setFreeShippingFlag(Number(subtotal.toFixed(2)) >= freeShippingThreshold);
+    setFreeShippingFlag(isFreeShippingPromoActive() || Number(subtotal.toFixed(2)) >= freeShippingThreshold);
   }, [state.products, couponDataContext, freeShippingThreshold, promotionsContext]);
 
   const addProductToCart = (product) => {
@@ -376,6 +378,7 @@ export default function Context({ children }) {
     addProductToQuickView,
     freeShippingFlag,
     freeShippingThreshold,
+    isFreeShippingPromo,
     setOrderDetails,
     orderDetails,
     couponDataContext,

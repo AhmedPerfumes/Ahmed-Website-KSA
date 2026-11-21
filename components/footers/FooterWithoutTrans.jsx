@@ -12,6 +12,7 @@ import {
 } from "@/data/footer";
 
 import { useMenu } from "../../context/MenuContext";
+import { isFreeShippingPromoActive } from "@/utlis/shippingPromo";
 
 // import { useLocale, useTranslations } from "next-intl";
 // import { useRouter, usePathname } from "../../i18n/routing";
@@ -65,7 +66,9 @@ export default function Footer14() {
                   Swift Complimentary Shipping
                 </h3>
                 <p className="service-promotion__content text-secondary mb-0 text-white">
-                  Free delivery on orders over SAR {freeShippingThreshold}
+                  {isFreeShippingPromoActive()
+                    ? "Free delivery on all orders until Dec 5"
+                    : `Free delivery on orders over SAR ${freeShippingThreshold}`}
                 </p>
               </div>
             </div>

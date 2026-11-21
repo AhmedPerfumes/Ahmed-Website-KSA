@@ -15,6 +15,7 @@ import { IoLocationOutline } from "react-icons/io5";
 // import { useRouter } from 'next/navigation';
 import { useMenu } from "../../context/MenuContext";
 import { useUser } from "../../context/UserContext";
+import { isFreeShippingPromoActive } from "@/utlis/shippingPromo";
 // import { useLocale, useTranslations } from "next-intl";
 // import { useRouter, usePathname } from "../../i18n/routing";
 
@@ -144,7 +145,9 @@ export default function Header14() {
                   href="#"
                   className="animate animate_fade animate_btt animate_delay-5 lh-2rem text-white"
                 >
-                  {elm.description.replace("SAR 300", `SAR ${freeShippingThreshold}`).split(" ").slice(0, 13).join(" ")}
+                  {isFreeShippingPromoActive() && elm.description.includes("SAR 300")
+                    ? "Free Shipping on all orders until Dec 5"
+                    : elm.description.replace("SAR 300", `SAR ${freeShippingThreshold}`).split(" ").slice(0, 13).join(" ")}
                 </Link>
               </div>
             </SwiperSlide>

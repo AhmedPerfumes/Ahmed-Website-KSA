@@ -267,6 +267,7 @@
     "home": "Ahmed Al Maghribi — home",
     "trustShipTitle": "Free delivery",
     "trustShipText": "On orders over {amount} SAR across Saudi Arabia",
+    "trustShipPromoText": "Free delivery on all orders across Saudi Arabia until Dec 5",
     "trustPayTitle": "Secure payment",
     "trustPayText": "mada, Apple Pay, cards, Tabby & Tamara",
     "trustCodTitle": "Cash on delivery",
@@ -466,6 +467,7 @@
     "delivery": {
       "shipping": "Swift & Complimentary Shipping",
       "shippingText": "Free delivery on orders over {price} SAR across Saudi Arabia.",
+      "shippingPromoText": "Free delivery on all orders across Saudi Arabia until Dec 5.",
       "payment": "Secure Payment Solutions",
       "paymentText": "Your payments are safe with our secure online system.",
       "track": "Track Your Order",
@@ -1718,6 +1720,7 @@
     "assurances": "Shopping assurances",
     "securePayment": "Secure Payment",
     "freeShipOver": "Free Ship {amount}+ SAR",
+    "freeShipAll": "Free Shipping Until Dec 5",
     "vatIncluded": "VAT Included",
     "authentic": "Authentic Guarantee",
     "payMethods": "🔒 Visa · Mastercard · Mada · Tamara · Tabby",

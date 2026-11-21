@@ -30,7 +30,7 @@ export default function CartDrawer() {
   const locale = useLocale();
   const isAr = locale === "ar";
   const t = useTranslations("CartDrawer");
-  const { cartProducts, setCartProducts, totalPrice, couponDataContext, freeShippingThreshold, promotionsContext } = useContextElement();
+  const { cartProducts, setCartProducts, totalPrice, couponDataContext, freeShippingThreshold, isFreeShippingPromo, promotionsContext } = useContextElement();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -167,8 +167,8 @@ export default function CartDrawer() {
   /* ── derived ────────────────────────────────────────────────── */
   const sym = currency?.symbol ?? "";
   const itemCount = cartProducts.filter((p) => !p.is_gift).reduce((n, p) => n + Number(p.quantity || 0), 0);
-  const remaining = Math.max(freeShippingThreshold - totalPrice, 0);
-  const progress = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+  const remaining = isFreeShippingPromo ? 0 : Math.max(freeShippingThreshold - totalPrice, 0);
+  const progress = isFreeShippingPromo ? 100 : Math.min((totalPrice / freeShippingThreshold) * 100, 100);
   const proceedToCheckout = () => {
     try {
       window.dataLayer = window.dataLayer || [];

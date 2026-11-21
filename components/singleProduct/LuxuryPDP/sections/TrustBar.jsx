@@ -14,7 +14,7 @@ const TrustBar = ({ text, link, linkText }) => {
   const [dismissed, setDismissed] = useState(false);
   const locale = useLocale();
   const isAr = locale === "ar";
-  const { freeShippingThreshold } = useContextElement();
+  const { freeShippingThreshold, isFreeShippingPromo } = useContextElement();
 
   const handleDismiss = () => {
     setDismissed(true);
@@ -27,7 +27,16 @@ const TrustBar = ({ text, link, linkText }) => {
   return (
     <div className="pdp-trust-bar" role="status" aria-live="polite">
       <div className="pdp-trust-bar__text">
-        <span>{text || (isAr ? `شحن مجاني للطلبات الأكثر من ${freeShippingThreshold} ريال` : `Free delivery on orders above ${freeShippingThreshold} SAR`)}</span>
+        <span>
+          {text ||
+            (isFreeShippingPromo
+              ? isAr
+                ? "شحن مجاني لجميع الطلبات حتى 5 ديسمبر"
+                : "Free delivery on all orders until Dec 5"
+              : isAr
+              ? `شحن مجاني للطلبات الأكثر من ${freeShippingThreshold} ريال`
+              : `Free delivery on orders above ${freeShippingThreshold} SAR`)}
+        </span>
         {link && linkText && (
           <>
             <span className="pdp-trust-bar__sep" aria-hidden="true">·</span>
