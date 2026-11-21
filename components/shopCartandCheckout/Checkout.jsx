@@ -151,6 +151,9 @@ export default function Checkout() {
   const grandTotal = grandTotalNum.toFixed(2);
   const vatAmount = shippingLoaded ? (grandTotalNum - grandTotalNum / (1 + vatRate)).toFixed(2) : '0.00';
   const shippingCostDisplay = shippingLoaded ? shippingServiceCharges[0].price : '...';
+  const originalShippingPrice = shippingLoaded
+    ? parseFloat(shippingServiceCharges[0].original_price ?? shippingServiceCharges[0].price) || 0
+    : 0;
 
   // Never silently disable — Place Order validates and tells the customer what is missing
   const disablePlaceOrder = isLoading;
@@ -1242,7 +1245,20 @@ export default function Checkout() {
       </div>
       <div className="cc-osr__row cc-osr__row--sub">
         <span>{tc('shipping')}</span>
-        <span>{freeShippingFlag ? <span className="cc-osr__free">{tc('free')}</span> : `${shippingCostDisplay}${currency.symbol}`}</span>
+        <span>
+          {freeShippingFlag ? (
+            <>
+              {originalShippingPrice > 0 && (
+                <del className="cc-osr__ship-strike">
+                  {originalShippingPrice.toFixed(2)}{currency.symbol}
+                </del>
+              )}
+              <span className="cc-osr__free">{tc('free')}</span>
+            </>
+          ) : (
+            `${shippingCostDisplay}${currency.symbol}`
+          )}
+        </span>
       </div>
       {serviceFee > 0 && (
         <div className="cc-osr__row cc-osr__row--sub">

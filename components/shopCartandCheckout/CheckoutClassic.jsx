@@ -130,6 +130,9 @@ export default function CheckoutClassic() {
       : (0 + (totalPrice - totalPrice / (1 + vatTax.percentage / 100)) + (parseFloat(shippingServiceCharges[1].price) - parseFloat(shippingServiceCharges[1].price) / (1 + vatTax.percentage / 100))).toFixed(2))
     : '0.00';
   const shippingCostDisplay = shippingLoaded ? shippingServiceCharges[0].price : '...';
+  const originalShippingPrice = shippingLoaded
+    ? parseFloat(shippingServiceCharges[0].original_price ?? shippingServiceCharges[0].price) || 0
+    : 0;
 
   const disablePlaceOrder = isLoading
     || (!isLoggedIn && !isOTPVerified)
@@ -1645,7 +1648,20 @@ export default function CheckoutClassic() {
                           </div>
                           <div>
                             <span>{tc('shipping')}</span>
-                            <span>{freeShippingFlag ? `🎉 ${tc('free')}` : `${shippingCostDisplay}${currency.symbol}`}</span>
+                            <span>
+                              {freeShippingFlag ? (
+                                <>
+                                  {originalShippingPrice > 0 && (
+                                    <del className="cc-osr__ship-strike">
+                                      {originalShippingPrice.toFixed(2)}{currency.symbol}
+                                    </del>
+                                  )}
+                                  {`🎉 ${tc('free')}`}
+                                </>
+                              ) : (
+                                `${shippingCostDisplay}${currency.symbol}`
+                              )}
+                            </span>
                           </div>
                           <div className="total-row">
                             <span>{tc('totalVatIncl')}</span>
@@ -1791,7 +1807,20 @@ export default function CheckoutClassic() {
                       </div>
                       <div className="cc-osr__row cc-osr__row--sub">
                         <span>{tc('shipping')}</span>
-                        <span>{freeShippingFlag ? <span className="cc-osr__free">{tc('free')}</span> : `${shippingCostDisplay}${currency.symbol}`}</span>
+                        <span>
+                          {freeShippingFlag ? (
+                            <>
+                              {originalShippingPrice > 0 && (
+                                <del className="cc-osr__ship-strike">
+                                  {originalShippingPrice.toFixed(2)}{currency.symbol}
+                                </del>
+                              )}
+                              <span className="cc-osr__free">{tc('free')}</span>
+                            </>
+                          ) : (
+                            `${shippingCostDisplay}${currency.symbol}`
+                          )}
+                        </span>
                       </div>
                       {couponData && (
                         <div className="cc-osr__row cc-osr__row--sub cc-osr__row--discount">

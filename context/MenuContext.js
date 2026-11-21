@@ -71,7 +71,7 @@ export function MenuProvider({ children }) {
             setError(null);
             const charges = Array.isArray(data.shipping_service_charges) && isFreeShippingPromoActive() && data.shipping_service_charges.length > 0
               ? data.shipping_service_charges.map((charge, idx) =>
-                  idx === 0 ? { ...charge, price: 0 } : charge
+                  idx === 0 ? { ...charge, original_price: charge.price, price: 0 } : charge
                 )
               : data.shipping_service_charges;
             setshippingServiceCharges(charges);
