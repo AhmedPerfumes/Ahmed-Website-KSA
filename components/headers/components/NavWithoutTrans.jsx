@@ -120,7 +120,7 @@ export default function Nav({ categoriesSubCategories }) {
                       width={902}
                       height={990}
                       style={{ height: "fit-content" }}
-                      alt="New Horizons"
+                      alt={t(item.name)}
                     />
                   </Link>
                 </div>
@@ -136,7 +136,7 @@ export default function Nav({ categoriesSubCategories }) {
                       width={902}
                       height={990}
                       style={{ height: "fit-content" }}
-                      alt="New Horizons"
+                      alt={t(item.name)}
                     />
                   </Link>
                 </div>

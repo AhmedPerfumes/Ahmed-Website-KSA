@@ -13,6 +13,7 @@ const GIFT_SETS = [
     {
         id: 1,
         altText:  "Antee Gift Set",
+        altTextAr: "مجموعة هدايا أنتي",
         subText:  "Whispers of Elegance",
         videoSrc: "/assets/videos/giftsets/antee.mp4",
         thumb:    "/assets/videos/giftsets/thumbnails/antee.jpg",
@@ -21,6 +22,7 @@ const GIFT_SETS = [
     {
         id: 2,
         altText:  "The Dukhoon Collection",
+        altTextAr: "مجموعة الدخون",
         subText:  "Tradition Reimagined",
         videoSrc: "/assets/videos/giftsets/dakhoon-collection.mp4",
         thumb:    "/assets/videos/giftsets/thumbnails/dukhoon-collection.jpg",
@@ -29,6 +31,7 @@ const GIFT_SETS = [
     {
         id: 3,
         altText:  "Ihdaa Khaas Gift Set",
+        altTextAr: "مجموعة إهداء خاص",
         subText:  "Essence of Luxury",
         videoSrc: "/assets/videos/giftsets/ihdakhas.mp4",
         thumb:    "/assets/videos/giftsets/thumbnails/ihda-khas.jpg",
@@ -37,6 +40,7 @@ const GIFT_SETS = [
     {
         id: 4,
         altText:  "Oud & Roses Gift Set",
+        altTextAr: "مجموعة العود والورد",
         subText:  "Expression of Memories",
         videoSrc: "/assets/videos/giftsets/oud-and-roses-giftset.mp4",
         thumb:    "/assets/videos/giftsets/thumbnails/oud-roses-giftset.jpg",
@@ -45,6 +49,7 @@ const GIFT_SETS = [
     {
         id: 5,
         altText:  "Shauque Al Shuyookh Gift Set",
+        altTextAr: "مجموعة شوق الشيوخ",
         subText:  "A Legacy of Grace",
         videoSrc: "/assets/videos/giftsets/shaquealsheukh-giftset.mp4",
         thumb:    "/assets/videos/giftsets/thumbnails/shauque-al-shuyookh.jpg",
@@ -161,7 +166,11 @@ function VideoCard({ item, locale, t }) {
                     {/* Thumbnail image */}
                     <Image
                         src={item.thumb}
-                        alt={`${item.altText} — Ahmed Al Maghribi Luxury Gift Set`}
+                        alt={
+                            locale === "ar"
+                                ? `${item.altTextAr} — مجموعة هدايا فاخرة من أحمد المغربي`
+                                : `${item.altText} — Ahmed Al Maghribi Luxury Gift Set`
+                        }
                         fill
                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                         className={`gs2-card__thumb${playing ? " gs2-card__thumb--hidden" : ""}`}

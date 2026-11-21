@@ -173,7 +173,7 @@ export default function BestSellers() {
                 {/* ── Centered heading ── */}
                 <div className="best-sellers__head">
                     <span className="best-sellers__eyebrow">{t("Best Sellers")}</span>
-                    <h2 className="best-sellers__title">{t("EXPLORE BY CATEGORY")}</h2>
+                    <h1 className="best-sellers__title">{t("EXPLORE BY CATEGORY")}</h1>
                 </div>
 
                 {/* ── Centered underline tabs ── */}
@@ -257,7 +257,7 @@ export default function BestSellers() {
                                                 {imgSrc && (
                                                     <Image
                                                         src={imgSrc}
-                                                        alt={prodName ? `${prodName} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Perfume"}
+                                                        alt={prodName && `${prodName}`}
                                                         fill
                                                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                                                         className="bs-card__img"

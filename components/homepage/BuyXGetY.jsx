@@ -194,7 +194,7 @@ export default function BuyXGetY() {
                                 src={promoImage}
                                 alt={
                                     locale === "ar" && currentPromo?.name_ar
-                                        ? `${currentPromo.name_ar} — Ahmed Al Maghribi Perfumes`
+                                        ? `${currentPromo.name_ar} — أحمد المغربي للعطور`
                                         : (currentPromo?.name ? `${he.decode(currentPromo.name)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offers")
                                 }
                                 width={1440}
@@ -309,7 +309,7 @@ export default function BuyXGetY() {
                                                 {imgSrc && (
                                                     <Image
                                                         src={imgSrc}
-                                                        alt={prodName ? `${he.decode(prodName)} — Ahmed Al Maghribi Perfumes` : "Ahmed Al Maghribi Special Offer"}
+                                                        alt={prodName && `${he.decode(prodName)}`}
                                                         fill
                                                         sizes="(max-width: 640px) 70vw, (max-width: 1280px) 30vw, 22vw"
                                                         className="bxy-card__img"

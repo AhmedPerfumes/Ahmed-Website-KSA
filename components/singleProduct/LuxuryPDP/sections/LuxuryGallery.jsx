@@ -85,6 +85,8 @@ const ArrowBtn = ({ direction, onClick, disabled }) => (
 
 /* ─── Main Component ────────────────────────────────────────── */
 const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) => {
+  const locale = useLocale();
+  const isAr = locale === "ar";
   const touchStartX = useRef(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -171,7 +173,9 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
               >
                 <Image
                   src={`${API_URL}storage/${img}`}
-                  alt=""
+                  alt={he.decode(
+                    (isAr ? product?.product_name_ar : product?.product_name) || "Product"
+                  )}
                   width={80}
                   height={80}
                   loading="lazy"
@@ -207,7 +211,13 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
             >
               <Image
                 src={`${API_URL}storage/${img}`}
-                alt={idx === activeIndex ? he.decode(product?.product_name || "Product") : ""}
+                alt={
+                  idx === activeIndex
+                    ? he.decode(
+                        (isAr ? product?.product_name_ar : product?.product_name) || "Product"
+                      )
+                    : ""
+                }
                 fill
                 sizes="(max-width: 991px) 100vw, 42vw"
                 priority={idx === 0}
@@ -220,7 +230,9 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
           {images.length === 0 && (
             <Image
               src="/assets/images/general_product.png"
-              alt={he.decode(product?.product_name || "Product")}
+              alt={he.decode(
+                (isAr ? product?.product_name_ar : product?.product_name) || "Product"
+              )}
               fill
               style={{ objectFit: "contain" }}
               priority
@@ -265,7 +277,9 @@ const LuxuryGallery = ({ images = [], product, activeIndex, setActiveIndex }) =>
             >
               <Image
                 src={`${API_URL}storage/${img}`}
-                alt=""
+                alt={he.decode(
+                  (isAr ? product?.product_name_ar : product?.product_name) || "Product"
+                )}
                 width={80}
                 height={80}
                 loading="lazy"

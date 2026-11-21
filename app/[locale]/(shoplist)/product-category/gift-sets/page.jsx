@@ -12,11 +12,11 @@ export async function generateMetadata({ params }) {
   const isAr = locale === "ar";
 
   const title = isAr
-    ? "مجموعات الهدايا الفاخرة | عطور أحمد المغربي"
-    : "Gift Sets | Buy Best Perfumes Online | Ahmed Al Maghribi Perfumes";
+    ? "أطقم هدايا عطور وبخور فاخرة في السعودية | أحمد المغربي"
+    : "Perfume Gift Sets KSA | Fragrance Gifts for Every Occasion";
   const description = isAr
-    ? "تسوق أرقى أطقم ومجموعات الهدايا الفاخرة من عطور أحمد المغربي. عطور وبخور ودخون فاخر لجميع المناسبات."
-    : "Shop luxury perfume gift sets from Ahmed Al Maghribi Perfumes. Exquisite fragrance collections and gifts for every occasion.";
+    ? "اكتشف مجموعات عطور الهدايا الفاخرة في السعودية بتوليفات راقية من العود والمسك والنفحات الشرقية والزهرية، مثالية للهدايا والمناسبات الخاصة."
+    : "Discover luxury perfume gift sets in KSA featuring premium oud, musk, floral, and oriental fragrances. Perfect for gifting, celebrations, and special occasions.";
 
   return buildPageMetadata({
     locale,
