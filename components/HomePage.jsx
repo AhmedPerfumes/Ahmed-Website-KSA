@@ -50,7 +50,7 @@ const HomePage = ({ initialSliders = [], initialMobileSliders = [] }) => {
                 desktopPoster={`${auric}/auric-full-${lang}-poster.jpg`}
                 mobileMp4Src={`${auric}/auric-reel-${lang}.mp4`}
                 mobilePoster={`${auric}/auric-reel-${lang}-poster.jpg`}
-                mediaHref="/oud-roses-auric"
+                mediaHref="/shop/perfumes/oriental-fragrance/oud-roses-auric"
                 mediaLabel="Oud & Roses Auric"
             />
             {/* Previous hero:
