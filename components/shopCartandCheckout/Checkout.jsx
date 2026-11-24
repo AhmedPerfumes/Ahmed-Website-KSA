@@ -75,11 +75,12 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [OTPError, setOTPError] = useState(null);
-  const [OTPSuccess, setOTPSuccess] = useState(null);
-  const [isSendOTPLoading, setIsSendOTPLoading] = useState(false);
-  const [isOTPButton, setIsOTPButton] = useState(true);
-  const [isOTPVerified, setIsOTPVerified] = useState(false);
+  // OTP disabled — storeOrder does not require OTP verification
+  // const [OTPError, setOTPError] = useState(null);
+  // const [OTPSuccess, setOTPSuccess] = useState(null);
+  // const [isSendOTPLoading, setIsSendOTPLoading] = useState(false);
+  // const [isOTPButton, setIsOTPButton] = useState(true);
+  // const [isOTPVerified, setIsOTPVerified] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState(null);
   const [couponSuccess, setCouponSuccess] = useState(null);
@@ -94,10 +95,10 @@ export default function Checkout() {
   const [showCouponPanel, setShowCouponPanel] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(true);          // desktop: visible by default
   const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
-  // OTP helpers: auto-send once per number, resend cooldown, reset if the number changes
-  const [otpCooldown, setOtpCooldown] = useState(0);
-  const lastOtpMobileRef = useRef('');
-  const verifiedMobileRef = useRef('');
+  // OTP helpers disabled
+  // const [otpCooldown, setOtpCooldown] = useState(0);
+  // const lastOtpMobileRef = useRef('');
+  // const verifiedMobileRef = useRef('');
   const detailsTrackedRef = useRef(false);
   // Guests go through steps (Contact → Delivery → Payment); logged-in customers keep one page
   const [guestStep, setGuestStep] = useState(1);
@@ -324,6 +325,8 @@ export default function Checkout() {
     return () => { document.body.removeChild(s1); document.body.removeChild(s2); };
   }, [selectedOption]);
 
+  // OTP effects disabled — storeOrder does not require OTP verification
+  /*
   // Guest: send the code automatically once a full mobile number is entered (once per number)
   useEffect(() => {
     if (isLoggedIn || isOTPVerified || isSendOTPLoading) return;
@@ -345,6 +348,7 @@ export default function Checkout() {
     if (isLoggedIn || isOTPVerified || isSendOTPLoading) return;
     if (/^\d{4}$/.test(formData.otp || '')) verifyOTP();
   }, [formData.otp]);
+  */
 
   useEffect(() => {
     if (!stepMountedRef.current) { stepMountedRef.current = true; return; }
@@ -463,11 +467,11 @@ export default function Checkout() {
       const field = name.split('.')[1];
       if (field === 'mobile') {
         value = normalizeMobile(value);
-        // Guest changed the number after verifying — the code belonged to the old number
-        if (addr === 'billingAddress' && !isLoggedIn && isOTPVerified && value !== verifiedMobileRef.current) {
-          setIsOTPVerified(false); setIsOTPButton(true); setOTPSuccess(null); setOTPError(null);
-          setFormData(p => ({ ...p, otp: '' }));
-        }
+        // OTP disabled: no need to reset OTP verification on mobile change
+        // if (addr === 'billingAddress' && !isLoggedIn && isOTPVerified && value !== verifiedMobileRef.current) {
+        //   setIsOTPVerified(false); setIsOTPButton(true); setOTPSuccess(null); setOTPError(null);
+        //   setFormData(p => ({ ...p, otp: '' }));
+        // }
       }
       // Picking a known city fills the region automatically
       if (field === 'area') {
@@ -669,7 +673,8 @@ export default function Checkout() {
     e.preventDefault();
     const user = isLoggedIn ? JSON.parse(atob(localStorage.getItem('user'))) : null;
     if (!couponCode.trim()) { setCouponError(tc('couponRequired')); return; }
-    if (!isOTPVerified && !isLoggedIn) { setCouponError(tc('verifyMobileFirst')); return; }
+    // OTP disabled — guests can apply coupons without mobile OTP verification
+    // if (!isOTPVerified && !isLoggedIn) { setCouponError(tc('verifyMobileFirst')); return; }
     const eligibleItems = cartProducts.filter(i => {
       const isBogoProduct = promotionsContext?.some((promo) => promo.buy_products?.some((buyItem) => buyItem.product_id === i.product_id));
       return !i.discount && !isBogoProduct && !i.is_gift && !i.collection_name;
@@ -960,6 +965,8 @@ export default function Checkout() {
     } catch (err) { setError(err.message); } finally { setIsLoading(false); }
   }
 
+  // OTP handlers disabled — storeOrder does not require OTP verification
+  /*
   async function sendOTP(e) {
     e?.preventDefault?.(); setIsSendOTPLoading(true);
     lastOtpMobileRef.current = formData.billingAddress.mobile;
@@ -1013,6 +1020,7 @@ export default function Checkout() {
       }
     } catch (err) { setOTPError(err.message); } finally { setIsSendOTPLoading(false); }
   }
+  */
 
   // Collect validation errors for a scope: 'contact' | 'delivery' | 'all'
   const collectErrors = scope => {
@@ -1021,7 +1029,8 @@ export default function Checkout() {
     const check = field => { const msg = billingRules[field](b[field]); if (msg) errs[field] = msg; };
     if (scope !== 'delivery') {
       ['first_name', 'last_name', 'mobile', 'email'].forEach(check);
-      if (!isLoggedIn && !isOTPVerified) errs._otp = 'verifyMobileBeforeContinue';
+      // OTP disabled — storeOrder does not require OTP verification
+      // if (!isLoggedIn && !isOTPVerified) errs._otp = 'verifyMobileBeforeContinue';
     }
     if (scope !== 'contact') {
       if (!isLoggedIn) {
@@ -1614,9 +1623,9 @@ export default function Checkout() {
                               })}
                             </p>
                             <div className="row g-2">
-                              {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: isOTPVerified ? null : tc('otpWhy'), dir: 'ltr' })}
+                              {textField({ id: 'bill_mobile', name: 'billingAddress.mobile', value: b.mobile, label: tc('mobileNumber'), required: true, type: 'tel', inputMode: 'numeric', autoComplete: 'tel-national', maxLength: 14, errKey: 'mobile', hint: tc('egMobile'), dir: 'ltr' })}
 
-                              {/* Inline OTP — sent automatically, verified automatically on the 4th digit */}
+                              {/* Inline OTP disabled — storeOrder does not require OTP verification
                               {/^\d{10}$/.test(b.mobile) && (
                                 <div className="col-12">
                                   {isOTPVerified ? (
@@ -1663,6 +1672,7 @@ export default function Checkout() {
                                   )}
                                 </div>
                               )}
+                              */}
 
                               {textField({ id: 'bill_fn', name: 'billingAddress.first_name', value: b.first_name, label: tc('firstName'), required: true, autoComplete: 'given-name', errKey: 'first_name' })}
                               {textField({ id: 'bill_ln', name: 'billingAddress.last_name', value: b.last_name, label: tc('lastName'), required: true, autoComplete: 'family-name', errKey: 'last_name' })}
