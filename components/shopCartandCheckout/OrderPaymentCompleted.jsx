@@ -96,7 +96,7 @@ export default function OrderPaymentCompleted({ orderDetails: initialOrderDetail
           order_id: orderId,
           total: parseFloat(orderData.total) || 0,
           revenue: parseFloat(orderData.total) || 0,
-          payment_type: orderData.payment_type || "card",
+          payment_type: orderData.payment_method || orderData.payment_channel || orderData.payment_type || "card",
           customer_phone: orderData.phone || orderData.customer_phone || orderData.mobile || null,
           customer_email: orderData.email || orderData.customer_email || null,
           items: (orderData.products || []).map((item) => ({
